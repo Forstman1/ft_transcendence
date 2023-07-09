@@ -54,6 +54,7 @@ $ npm run start:prod
     |———— common  // Global Nest Module
         |—————— constants   // Constant value and Enum
         |—————— controllers   // Nest Controllers
+        |—————— decorators   // Nest decorators
         |—————— dto   // DTO (Data Transfer Object) Schema,Validation
             |———————— zodSchemas
         |—————— filters   // Nest Filters
