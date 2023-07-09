@@ -45,6 +45,25 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Project Structure
+
+```bash
+
+|— src
+    |———— auth  // Authentication
+    |———— common  // Global Nest Module
+        |—————— constants   // Constant value and Enum
+        |—————— controllers   // Nest Controllers
+        |—————— dto   // DTO (Data Transfer Object) Schema,Validation
+        |—————— filters   // Nest Filters
+        |—————— guards    // Nest Guards
+        |—————— interceptors  // Nest Interceptors
+        |—————— interfaces    // TypeScript Interfaces
+        |—————— middleware    // Nest Middleware
+        |—————— pipes    // Nest Pipes
+        |—————— providers   // Nest Providers
+```
+
 ## Test
 
 ```bash
