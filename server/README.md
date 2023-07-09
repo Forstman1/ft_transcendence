@@ -55,6 +55,7 @@ $ npm run start:prod
         |—————— constants   // Constant value and Enum
         |—————— controllers   // Nest Controllers
         |—————— dto   // DTO (Data Transfer Object) Schema,Validation
+            |———————— zodSchemas
         |—————— filters   // Nest Filters
         |—————— guards    // Nest Guards
         |—————— interceptors  // Nest Interceptors
