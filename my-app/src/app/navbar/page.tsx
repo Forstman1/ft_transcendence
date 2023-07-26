@@ -3,21 +3,23 @@ import React from 'react'
 import Logo from '../../../assets/icons/Logo.svg'
 import Image from 'next/image'
 import wave from '../../../assets/icons/wave.svg'
+import { Avatar, AvatarBadge, Text} from '@chakra-ui/react'
+
 
 
 const MENU_LIST = [
     { text: "Home", href: "/" },
-    { text: "Game", href: "/Game" },
-    { text: "Chat", href: "/Chat" },
+    { text: "Game", href: "/gamePage" },
+    { text: "Chat", href: "/chatPage" },
   ];
 
-export default function NavBar() {
+export default function Navbar() {
 
     // const [navActive, setNavActive] = useState(null);
     // const [activeIdx, setActiveIdx] = useState(-1);
 
     return (
-        <div className="relative w-full h-[24vh]">
+        <div className=" w-full h-[24vh] drop-shadow-xl">
           <nav className="flex items-center justify-between py-6 px-28 ">
               <Image src={wave} alt="wave" className="object-cover w-full" fill/>
             <div className="flex items-center flex-row space-x-52 relative">
@@ -34,13 +36,11 @@ export default function NavBar() {
                 }
               </div>
             </div>
-            <div className="flex items-center flex-row space-x-10">
-              <button className="bg-white hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded relative">
-                Sign In
-              </button>
-              <button className="bg-white hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded relative">
-                Sign Up
-              </button>
+            <div className="flex items-center flex-row space-x-5 relative">
+              <Text className="text-white	font-bold">UserName</Text>
+              <Avatar>
+                <AvatarBadge className='bg-green-500' boxSize="1.25em" border='none' />
+              </Avatar>
             </div>
           </nav>
         </div>
