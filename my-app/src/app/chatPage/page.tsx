@@ -1,14 +1,17 @@
-
-import React from 'react'
-import { Metadata } from 'next'
+import React from "react";
+import { Metadata } from "next";
+import { PageWrapper } from "../animationWrapper/pageWrapper";
 
 export const metadata: Metadata = {
-    title: 'Chat',
-  };
+  title: "Chat",
+};
 
 export default function ChatPage() {
-
   return (
-      <h1 className="text-4xl font-bold mb-4">Hello from Chat</h1>
-  )
+    <PageWrapper>
+      <div className="flex items-center justify-center w-[90%] mt-[-50px] bg-black mx-auto p-10">
+        <h1 className="text-4xl font-bold mb-4 text-white">Hello from Chat</h1>
+      </div>
+    </PageWrapper>
+  );
 }

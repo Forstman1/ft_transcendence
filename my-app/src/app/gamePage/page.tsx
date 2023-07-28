@@ -5,6 +5,7 @@ import { Avatar, Text} from '@chakra-ui/react'
 import Commodore from '../../../assets/icons/Commodore.svg'
 import FreaxLogo from '../../../assets/icons/FreaxLogo.svg'
 import Image from 'next/image'
+import { PageWrapper } from '../animationWrapper/pageWrapper';
 
 // import type { Metadata } from 'next';
 
@@ -38,10 +39,13 @@ const GameHeader = () => {
 export default function GamePage() {
 
   return (
-    <div className=" w-[90%] mx-auto space-y-10 mt-[-50px]">
-      <GameHeader/>
-      <div className=' h-[600px] bg-black mx-auto rounded-lg'/>
-    </div>
+    <PageWrapper>
+      <div className=" w-[90%] mx-auto space-y-10 mt-[-50px]">
+        <GameHeader/>
+        <div className=' h-[600px] bg-black mx-auto rounded-lg'/>
+      </div>
+    </PageWrapper>
+
   )
 }
 
