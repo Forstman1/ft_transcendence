@@ -6,6 +6,8 @@ import Commodore from '../../../assets/icons/Commodore.svg'
 import FreaxLogo from '../../../assets/icons/FreaxLogo.svg'
 import Image from 'next/image'
 
+// import type { Metadata } from 'next';
+
 // export const metadata: Metadata = {
 //   title: 'Game',
 // };
@@ -17,15 +19,15 @@ const GameHeader = () => {
       <div className='flex flex-row items-center space-x-5'>
         <Image src={FreaxLogo} alt="Logo" width={75} height={75} className='mt-9'/>
         <Avatar size='lg'/>
-        <Text className="text-white	font-bold">UserName</Text>
+        <Text className="font-serif text-white	font-bold">UserName</Text>
       </div>
       <div className='flex flex-row items-center space-x-10'>
-        <Text className="text-white	font-bold text-6xl">50</Text>
-        <Text className="text-white	font-bold text-6xl">--</Text>
-        <Text className="text-white	font-bold text-6xl">55</Text>
+        <Text className="font-serif text-white	font-bold text-6xl">50</Text>
+        <Text className="font-serif text-white	font-bold text-6xl">--</Text>
+        <Text className="font-serif text-white	font-bold text-6xl">55</Text>
       </div>
       <div className='flex flex-row items-center space-x-5'>
-        <Text className="text-white	font-bold">UserName</Text>
+        <Text className="font-serif text-white	font-bold">UserName</Text>
         <Avatar size='lg'/>
         <Image src={Commodore} alt="Logo" width={75} height={75} className='mt-9'/>
       </div>
