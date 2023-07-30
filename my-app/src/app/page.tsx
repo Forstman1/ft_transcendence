@@ -1,11 +1,10 @@
-import React from 'react'
-import { Metadata } from 'next'
-import { PageWrapper } from './animationWrapper/pageWrapper';
+import React from "react";
+import { Metadata } from "next";
+import { PageWrapper } from "./animationWrapper/pageWrapper";
 
 export const metadata: Metadata = {
-  title: 'Home',
+  title: "Home",
 };
-
 
 export default function Home() {
   return (
@@ -14,5 +13,5 @@ export default function Home() {
         <h1 className="text-4xl font-bold mb-4 text-white">Home Page</h1>
       </div>
     </PageWrapper>
-  )
+  );
 }
