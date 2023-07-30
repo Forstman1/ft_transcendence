@@ -7,7 +7,8 @@ import { CacheProvider } from "@chakra-ui/next-js";
 import { ChakraProvider } from "@chakra-ui/react";
 import Navbar from "./navbar/page";
 import ReduxProvider from "../redux/provider";
-// import Head from "next/head";
+import SplashScreen from "@/components/elements/spalshScreen/SplashScreen";
+import { usePathname } from "next/navigation";
 
 const geo = Geo({
   subsets: ['latin'],
@@ -22,15 +23,23 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // const router = useRouter();
+
+  const path = usePathname();
+  const isHome = path === "/";
+  const [isloading, setIsLoading] = React.useState(isHome);
+
   return (
     <html lang="en">
       <body className={geo.className}>
         <ReduxProvider>
             <CacheProvider>
               <ChakraProvider>
-                <Navbar />
+                {isloading && isHome ? <SplashScreen  finishLoading={() => setIsLoading(false)}/> :
+                <>
+                  <Navbar />
                   {children}
+                </>
+                }
               </ChakraProvider>
             </CacheProvider>
         </ReduxProvider>

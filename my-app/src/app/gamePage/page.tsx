@@ -51,7 +51,8 @@ export default function GamePage() {
     <PageWrapper>
       <div className=" w-[90%] mx-auto space-y-10 mt-[-50px]">
         <GameHeader />
-        <div className=" h-[600px] bg-black mx-auto rounded-lg" />
+        <canvas id="gameCanvas" className="bg-black rounded-lg w-full h-[600px]">
+        </canvas>
       </div>
     </PageWrapper>
   );

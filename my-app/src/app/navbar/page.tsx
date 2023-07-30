@@ -20,7 +20,7 @@ export default function Navbar() {
     <div className=" h-[24vh] drop-shadow-xl">
       <Image src={wave} alt="wave" className="object-cover w-full" fill />
       <div className="flex items-center justify-between py-6 px-28 ">
-        <div className="flex items-center justify-between w-[40%]">
+        <div className="flex items-center justify-between w-[30%]">
           <Link
             href="/"
             className="relative flex items-center flex-shrink-0 text-white mr-6"
