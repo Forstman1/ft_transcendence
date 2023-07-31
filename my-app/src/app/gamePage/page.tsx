@@ -1,20 +1,16 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import { Avatar, Text } from "@chakra-ui/react";
 import Commodore from "../../../assets/icons/Commodore.svg";
 import FreaxLogo from "../../../assets/icons/FreaxLogo.svg";
 import Image from "next/image";
 import { PageWrapper } from "../animationWrapper/pageWrapper";
-// import { Metadata } from 'next';
 
-// export const metadata: Metadata = {
-//   title: 'Game',
-// };
-
-const GameHeader = () => {
+const GameHeader = () => { 
   return (
-    <div className=" flex items-center justify-between h-[100px] bg-black mx-auto rounded-lg p-10 drop-shadow-xl">
+    <div className=" flex items-center justify-between h-[100px] bg-black mx-auto rounded-lg p-10 drop-shadow-xl"
+    >
       <div className="flex flex-row items-center space-x-5">
         <Image
           src={FreaxLogo}
@@ -47,12 +43,138 @@ const GameHeader = () => {
 };
 
 export default function GamePage() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const leftRectangleRef = useRef({
+    x: 40,
+    y: 220,
+    width: 15,
+    height: 115,
+  });
+  const rightRectangleRef = useRef({
+    x: window.innerWidth - 55,
+    y: 220,
+    width: 15,
+    height: 115,
+  });
+
+  const canvasMiddleLineWidth = 10;
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    canvas.width = window.innerWidth;
+    canvas.height = 600;
+    const context = canvas.getContext("2d");
+    console.log("context: ", context);
+    if (!context) return;
+
+
+    draw(canvas, context);
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current as HTMLCanvasElement;
+    const context = canvas?.getContext("2d");
+    if (!context) return;
+
+    draw(canvas, context);
+  }, [leftRectangleRef, rightRectangleRef]);
+
+  // semicircle drawing function
+
+  const draw = (canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) => {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw the leftRectangle
+    context.fillStyle = "#FFFFFF";
+    context.fillRect(
+      leftRectangleRef.current.x,
+      leftRectangleRef.current.y,
+      leftRectangleRef.current.width,
+      leftRectangleRef.current.height
+    );
+
+    // Draw the rightRectangle
+    context.fillStyle = "#FFFFFF";
+    context.fillRect(
+      rightRectangleRef.current.x,
+      rightRectangleRef.current.y,
+      rightRectangleRef.current.width,
+      rightRectangleRef.current.height
+    );
+
+    // Draw the middle line
+    const middleX = canvas.width / 2;
+    context.strokeStyle = "#FFFFFF";
+    context.lineWidth = canvasMiddleLineWidth;
+    context.setLineDash([20, 25]);
+    context.beginPath();
+    context.moveTo(middleX, 0);
+    context.lineTo(middleX, canvas.height);
+    context.stroke();
+    context.setLineDash([]);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    const speed = 10;
+    const leftRectangle = leftRectangleRef.current;
+    const rightRectangle = rightRectangleRef.current;
+    // const middleX = canvasRef.current!.width / 2;
+
+    switch (event.key) {
+      case 'ArrowUp':
+        rightRectangle.y = Math.max(0, rightRectangle.y - speed);
+        break;
+      case 'ArrowDown':
+        rightRectangle.y = Math.min(canvasRef.current!.height - rightRectangle.height, rightRectangle.y + speed);
+        break;
+      // case 'ArrowLeft':
+      //   rightRectangle.x = Math.max(middleX + 10, rightRectangle.x - speed);
+      //   break;
+      // case 'ArrowRight':
+      //   rightRectangle.x = Math.min(canvasRef.current!.width - rightRectangle.width, rightRectangle.x + speed);
+      //   break;
+      case 'w':
+        leftRectangle.y = Math.max(0, leftRectangle.y - speed);
+        break;
+      case 's':
+        leftRectangle.y = Math.min(canvasRef.current!.height - leftRectangle.height, leftRectangle.y + speed);
+        break;
+      // case 'a':
+      //   leftRectangle.x = Math.max(0, leftRectangle.x - speed);
+      //   break;
+      // case 'd':
+      //   leftRectangle.x = Math.min(middleX - canvasMiddleLineWidth - leftRectangle.width, leftRectangle.x + speed);
+      //   break;
+      default:
+        break;
+    }
+
+    // Force re-render by updating the refs
+    leftRectangleRef.current = { ...leftRectangle };
+    rightRectangleRef.current = { ...rightRectangle };
+
+    // Redraw the canvas
+    const context = canvasRef.current?.getContext("2d");
+    if (context) draw(canvasRef.current!, context);
+  };
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   return (
     <PageWrapper>
-      <div className=" w-[90%] mx-auto space-y-10 mt-[-50px]">
+      <div className="w-[90%] mx-auto space-y-10 mt-[-50px]">
         <GameHeader />
-        <canvas id="gameCanvas" className="bg-black rounded-lg w-full h-[600px]">
-        </canvas>
+        <div className="flex justify-center">
+          <canvas ref={canvasRef} className="bg-black rounded-lg w-full h-[600px]" />
+        </div>
       </div>
     </PageWrapper>
   );
