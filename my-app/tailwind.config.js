@@ -7,7 +7,10 @@ module.exports = {
   ],
   theme: {
     extend: {
-
+      colors: {
+        'background-primary':'#121212',
+        'text-primary':'#E4E4E4',
+      }
     },
   },
   plugins: [],

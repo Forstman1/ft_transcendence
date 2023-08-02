@@ -23,7 +23,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between w-[30%]">
           <Link
             href="/"
-            className="relative flex items-center flex-shrink-0 text-white mr-6"
+            className="relative flex items-center flex-shrink-0 text-text-primary mr-6"
           >
             <Image src={Logo} alt="Logo" width={150} height={150} />
           </Link>
@@ -33,7 +33,7 @@ export default function Navbar() {
                 <li key={idx}>
                   <Link
                     href={item.href}
-                    className="relative text-xl text-white font-bold hover:text-yellow-500"
+                    className="relative text-xl text-text-primary font-bold hover:text-yellow-500"
                   >
                     {path === item.href ? (
                       <motion.span
@@ -49,7 +49,7 @@ export default function Navbar() {
           </nav>
         </div>
         <div className="flex items-center flex-row space-x-5 relative">
-          <Text className="text-white font-bold">UserName</Text>
+          <Text className="text-text-primary font-bold text-xl">UserName</Text>
           <Avatar>
             <AvatarBadge
               className="bg-green-500"

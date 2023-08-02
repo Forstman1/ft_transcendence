@@ -12,7 +12,7 @@ const canvasMiddleLineWidth = 10;
 
 const GameHeader = ({ leftScore, rightScore }: { leftScore: number; rightScore: number }) => {
   return (
-    <div className="flex items-center justify-between h-[100px] bg-black mx-auto rounded-lg p-10 drop-shadow-xl">
+    <div className="flex items-center justify-between h-[100px] bg-black mx-auto rounded-lg p-10 drop-shadow-xl w-[100%]">
       <div className="flex flex-row items-center space-x-5">
         <Image src={FreaxLogo} alt="Logo" width={75} height={75} className="mt-9" />
         <Avatar size="lg" />
@@ -65,36 +65,36 @@ const drawRoundedRectangle = (
 export default function GamePage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [keysPressed, setKeysPressed] = useState<Record<string, boolean>>({});
+  const [canvasSize, setCanvasSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight - 250,
+  });
+  const leftRectangleRef = useRef({
+    x: 10,
+    y: canvasSize.height / 2 - 250,
+    width: 15,
+    height: canvasSize.height / 6,
+  });
+
+  const rightRectangleRef = useRef({
+    x: canvasSize.width - 25,
+    y: canvasSize.height / 2 - 250,
+    width: 15,
+    height: canvasSize.height / 6,
+  });
   const initialBallState = {
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2,
-    speedX: 5,
-    speedY: 5,
-    radius: 18,
+    x: canvasSize.width / 2,
+    y: canvasSize.height / 2,
+    speedX: 10,
+    speedY: 10,
+    radius: (canvasSize.width + canvasSize.height) / 140,
   };
   const [ball, setBall] = useState(initialBallState);
   const [leftScore, setLeftScore] = useState(0);
   const [rightScore, setRightScore] = useState(0);
+  const [gameStarted, setGameStarted] = useState(false);
 
-  const [canvasSize, setCanvasSize] = useState({
-    width: window.innerWidth,
-    height: 600,
-  });
-
-  const leftRectangleRef = useRef({
-    x: 40,
-    y: canvasSize.height / 2 - 250,
-    width: 15,
-    height: 115,
-  });
-
-  // Adjust the rightRectangleRef x position based on the canvas padding
-  const rightRectangleRef = useRef({
-    x: canvasSize.width - 55,
-    y: canvasSize.height / 2 - 250,
-    width: 15,
-    height: 115,
-  });
+ 
 
   useLayoutEffect(() => {
     const handleResize = () => {
@@ -112,10 +112,24 @@ export default function GamePage() {
   }, []);
 
   useEffect(() => {
+
     // Recalculate the positions based on the new canvas size
+    leftRectangleRef.current.x = 10;
     leftRectangleRef.current.y = canvasSize.height / 2 - 250;
-    rightRectangleRef.current.x = canvasSize.width - 55;
+    rightRectangleRef.current.x = canvasSize.width - 25;
     rightRectangleRef.current.y = canvasSize.height / 2 - 250;
+    leftRectangleRef.current.height = canvasSize.height / 6;
+    rightRectangleRef.current.height = canvasSize.height / 6;
+
+    setBall({
+      x: canvasSize.width / 2,
+      y: canvasSize.height / 2 - 50,
+      speedX: 10,
+      speedY: 10,
+      radius: (canvasSize.width + canvasSize.height) / 140,
+    });
+
+
 
     // Redraw the canvas with updated positions
     const context = canvasRef.current?.getContext("2d");
@@ -136,18 +150,34 @@ export default function GamePage() {
   });
 
   useEffect(() => {
+
+    const handleStartGame = (event: KeyboardEvent) => {
+      if(event.key === ' ')
+        setGameStarted(true);
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: true }));
+    };
+  
+    const handleKeyUp = (event: KeyboardEvent) => {
+      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: false }));
+    };
+
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
+    document.addEventListener("keydown", handleStartGame);
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);
+      document.removeEventListener("keydown", handleStartGame);
     };
   }, []);
 
   useEffect(() => {
     // Update the positions based on the keys pressed
-    const speed = 15;
+    const speed = 20;
     const leftRectangle = leftRectangleRef.current;
     const rightRectangle = rightRectangleRef.current;
     // const middleX = canvasRef?.current!.width / 2;
@@ -203,20 +233,20 @@ export default function GamePage() {
       // Check for collisions with the rectangles
       const leftRect = leftRectangleRef.current;
       const rightRect = rightRectangleRef.current;
-  
+
       if (
         newBallX - ball.radius <= leftRect.x + leftRect.width &&
-        newBallY > leftRect.y &&
-        newBallY < leftRect.y + leftRect.height
+        newBallY + ball.radius >= leftRect.y &&
+        newBallY - ball.radius <= leftRect.y + leftRect.height
       ) {
         // Ball hits left rectangle
         setBall((prevBall) => ({ ...prevBall, speedX: Math.abs(prevBall.speedX) }));
       }
-  
+
       if (
         newBallX + ball.radius >= rightRect.x &&
-        newBallY >= rightRect.y &&
-        newBallY <= rightRect.y + rightRect.height
+        newBallY + ball.radius >= rightRect.y &&
+        newBallY - ball.radius <= rightRect.y + rightRect.height
       ) {
         // Ball hits right rectangle
         setBall((prevBall) => ({ ...prevBall, speedX: -Math.abs(prevBall.speedX) }));
@@ -226,10 +256,11 @@ export default function GamePage() {
       setBall((prevBall) => ({ ...prevBall, x: newBallX, y: newBallY }));
     };
   
-    const animationFrameId = requestAnimationFrame(animate);
-  
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [ball]);
+    if (gameStarted) {
+      const animationFrameId = requestAnimationFrame(animate);
+      return () => cancelAnimationFrame(animationFrameId);
+    }
+  }, [ball, gameStarted]);
   
   
   
@@ -262,23 +293,16 @@ export default function GamePage() {
     context.fill();
   };
 
-  const handleKeyDown = (event: KeyboardEvent) => {
-    setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: true }));
-  };
-
-  const handleKeyUp = (event: KeyboardEvent) => {
-    setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: false }));
-  };
-
 
   return (
     <PageWrapper>
-      <div className="w-[90%] mx-auto space-y-10 mt-[-50px]">
+      <div className="flex flex-col w-[80%] mx-auto space-y-10 mt-[-50px]">
         <GameHeader leftScore={leftScore} rightScore={rightScore} />
         <div className="flex justify-center">
-          <canvas ref={canvasRef} className="flex bg-black rounded-lg w-full h-[600px]" />
+          <canvas ref={canvasRef} className="flex bg-black rounded-lg w-full " />
         </div>
       </div>
     </PageWrapper>
   );
 }
+
