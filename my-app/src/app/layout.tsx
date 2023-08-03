@@ -1,6 +1,7 @@
 "use client";
 
 import "./globals.css";
+import 'tailwindcss/tailwind.css'
 import { Geo } from "next/font/google";
 import * as React from "react";
 import { CacheProvider } from "@chakra-ui/next-js";
