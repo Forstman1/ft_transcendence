@@ -1,19 +1,18 @@
 "use client";
 
-import React, { useRef, useEffect, useState} from "react";
-import { Avatar, Text } from "@chakra-ui/react";
-import Commodore from "../../../assets/icons/Commodore.svg";
-import FreaxLogo from "../../../assets/icons/FreaxLogo.svg";
-import Image from "next/image";
+import React, { useRef, useEffect, useState } from "react";
 import { PageWrapper } from "../animationWrapper/pageWrapper";
 import Countdown from "./ui/Countdown";
+import GameHeader from "./ui/GameHeader";
 
 const canvasMiddleLineWidth = 10;
+const maxBallSpeed = 25;
+const RecSpeed = 20;
 
 type Ball = {
   x: number;
   y: number;
-  speedX: number
+  speedX: number;
   speedY: number;
   radius: number;
 };
@@ -25,106 +24,62 @@ type Rectangle = {
   height: number;
 };
 
-const GameHeader = ({
-  leftScore,
-  rightScore,
-}: {
-  leftScore: number;
-  rightScore: number;
-}) => {
-  return (
-    <div className="flex items-center justify-between h-[100px] bg-background-primary mx-auto rounded-lg p-10 drop-shadow-xl w-[100%]">
-      <div className="flex flex-row items-center space-x-5">
-        <Image
-          src={FreaxLogo}
-          alt="Logo"
-          width={75}
-          height={75}
-          className="mt-9"
-        />
-        <Avatar size="lg" />
-        <Text className="text-text-primary font-bold text-xl">UserName</Text>
-      </div>
-      <div className="flex flex-row items-center space-x-10">
-        <Text className="text-text-primary font-bold text-6xl">
-          {leftScore}
-        </Text>
-        <Text className="text-text-primary font-bold text-6xl">--</Text>
-        <Text className="text-text-primary font-bold text-6xl">
-          {rightScore}
-        </Text>
-      </div>
-      <div className="flex flex-row items-center space-x-5">
-        <Text className="text-text-primary font-bold text-xl">UserName</Text>
-        <Avatar size="lg" />
-        <Image
-          src={Commodore}
-          alt="Logo"
-          width={75}
-          height={75}
-          className="mt-9"
-        />
-      </div>
-    </div>
-  );
+type throttleProps = {
+  // eslint-disable-next-line no-unused-vars
+  func: (...args: any) => void;
+  delay: number;
 };
+
+function throttle({ func, delay }: throttleProps) {
+  let lastCall = 0;
+  return function (...args: any) {
+    const now = new Date().getTime();
+    if (now - lastCall >= delay) {
+      lastCall = now;
+      func(...args);
+    }
+  };
+}
+
 
 const drawRoundedRectangle = (
   context: CanvasRenderingContext2D,
   rectangle: Rectangle,
   borderRadius: number
 ) => {
+  const { x, y, width, height } = rectangle;
+
   context.fillStyle = "#FFFFFF";
   context.beginPath();
-  context.moveTo(rectangle.x + borderRadius, rectangle.y);
-  context.lineTo(rectangle.x + rectangle.width - borderRadius, rectangle.y);
-  context.quadraticCurveTo(
-    rectangle.x + rectangle.width,
-    rectangle.y,
-    rectangle.x + rectangle.width,
-    rectangle.y + borderRadius
-  );
-  context.lineTo(
-    rectangle.x + rectangle.width,
-    rectangle.y + rectangle.height - borderRadius
-  );
-  context.quadraticCurveTo(
-    rectangle.x + rectangle.width,
-    rectangle.y + rectangle.height,
-    rectangle.x + rectangle.width - borderRadius,
-    rectangle.y + rectangle.height
-  );
-  context.lineTo(rectangle.x + borderRadius, rectangle.y + rectangle.height);
-  context.quadraticCurveTo(
-    rectangle.x,
-    rectangle.y + rectangle.height,
-    rectangle.x,
-    rectangle.y + rectangle.height - borderRadius
-  );
-  context.lineTo(rectangle.x, rectangle.y + borderRadius);
-  context.quadraticCurveTo(
-    rectangle.x,
-    rectangle.y,
-    rectangle.x + borderRadius,
-    rectangle.y
-  );
+
+  context.moveTo(x + borderRadius, y);
+  context.lineTo(x + width - borderRadius, y);
+  context.quadraticCurveTo(x + width, y, x + width, y + borderRadius);
+  context.lineTo(x + width, y + height - borderRadius);
+  context.quadraticCurveTo(x + width, y + height, x + width - borderRadius, y + height);
+  context.lineTo(x + borderRadius, y + height);
+  context.quadraticCurveTo(x, y + height, x, y + height - borderRadius);
+  context.lineTo(x, y + borderRadius);
+  context.quadraticCurveTo(x, y, x + borderRadius, y);
+
   context.closePath();
   context.fill();
 };
 
+
 const draw = (
   canvas: HTMLCanvasElement,
   context: CanvasRenderingContext2D,
-  leftRectangleRef: Rectangle,
-  rightRectangleRef: Rectangle,
+  leftRectangle: Rectangle,
+  rightRectangle: Rectangle,
   ball: Ball
 ) => {
   context.clearRect(0, 0, canvas.width, canvas.height);
 
   const borderRadius = 5;
+  const middleX = canvas.width / 2;
 
   // Draw the middle line
-  const middleX = canvas.width / 2;
   context.strokeStyle = "#E4E4E4";
   context.lineWidth = canvasMiddleLineWidth;
   context.setLineDash([20, 30]);
@@ -140,9 +95,11 @@ const draw = (
   context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
   context.fill();
 
-  drawRoundedRectangle(context, leftRectangleRef, borderRadius);
-  drawRoundedRectangle(context, rightRectangleRef, borderRadius);
+  // Draw the rounded rectangles
+  drawRoundedRectangle(context, leftRectangle, borderRadius);
+  drawRoundedRectangle(context, rightRectangle, borderRadius);
 };
+
 
 export default function GamePage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -151,113 +108,159 @@ export default function GamePage() {
     width: window.innerWidth,
     height: 600,
   });
-  const leftRectangleRef = useRef({
+  const leftRectangleRef = useRef<Rectangle>({
     x: 10,
     y: canvasSize.height / 2,
     width: 15,
     height: canvasSize.height / 5,
   });
 
-  const rightRectangleRef = useRef({
+  const rightRectangleRef = useRef<Rectangle>({
     x: canvasSize.width - 25,
     y: canvasSize.height / 2,
     width: 15,
     height: canvasSize.height / 5,
   });
-  const initialBallState = {
+  const initialBallState: Ball = {
     x: canvasSize.width / 2,
     y: canvasSize.height / 2,
     speedX: 7,
     speedY: 7,
-    radius: Math.floor((canvasSize.width + canvasSize.height) / 150)
+    radius: Math.floor((canvasSize.width + canvasSize.height) / 150),
   };
-  const [ball, setBall] = useState(initialBallState);
-  const [leftScore, setLeftScore] = useState(0);
-  const [rightScore, setRightScore] = useState(0);
-  const [gameStarted, setGameStarted] = useState(false);
-
-    useEffect(() => {
-      const handleResize = () => {
-        // Calculate canvas height based on a 16:9 aspect ratio
-        const aspectRatioWidth = 16;
-        const aspectRatioHeight = 9;
-        const newCanvasWidth = window.innerWidth;
-        const newCanvasHeight = (newCanvasWidth / aspectRatioWidth) * aspectRatioHeight;
-      
-        setCanvasSize({
-          width: newCanvasWidth,
-          height: newCanvasHeight,
-        });
-      };
-    
-      handleResize(); // Initial resize
-    
-      window.addEventListener("resize", handleResize);
-    
-      return () => {
-        window.removeEventListener("resize", handleResize);
-      };
-    }, []);
+  const [ball, setBall] = useState<Ball>(initialBallState);
+  const [leftScore, setLeftScore] = useState<number>(0);
+  const [rightScore, setRightScore] = useState<number>(0);
+  const [gameStarted, setGameStarted] = useState<boolean>(false);
+  const [leftRectangle, setLeftRectangle] = useState<Rectangle>(
+    leftRectangleRef.current
+  );
+  const [rightRectangle, setRightRectangle] = useState<Rectangle>(
+    rightRectangleRef.current
+  );
+  const prevErrorRef = useRef<number>(0);
 
 
+  const botMove = (
+    ball: Ball,
+    leftRectangle: Rectangle,
+    canvasHeight: number,
+    prevErrorRef: React.MutableRefObject<number>
+  ) => {
+    const botCenterY = leftRectangle.y + leftRectangle.height / 2;
+    const error = botCenterY - ball.y;
+  
+    // PID constants (can be tuned based on scenario)
+    const Kp = 0.2; // Proportional constant
+    const Ki = 0.02; // Integral constant
+    const Kd = 0.08; // Derivative constant
+  
+    // Retrieve previous error from the ref
+    const prevError = prevErrorRef.current;
+  
+    // Calculate PID components
+    const proportional = Kp * error;
+    prevErrorRef.current = error; // Update the ref
+  
+    // Calculate control output
+    const controlOutput = proportional + Ki * error + Kd * (error - prevError);
+  
+    // Update bot's Y position with responsiveness limits
+    const maxMove = RecSpeed;
+    const newLeftRectangleY = Math.max(
+      0,
+      Math.min(
+        canvasHeight - leftRectangle.height,
+        leftRectangle.y - controlOutput
+      )
+    );
+    
+    // Ensure that the movement is not too abrupt
+    const movementDiff = newLeftRectangleY - leftRectangle.y;
+    const limitedNewY = leftRectangle.y + Math.min(maxMove, Math.max(-maxMove, movementDiff));
+  
+    setLeftRectangle((prevLeftRectangle) => ({
+      ...prevLeftRectangle,
+      y: limitedNewY,
+    }));
+  };
+  
 
   useEffect(() => {
-    // Recalculate the positions based on the new canvas size
-    leftRectangleRef.current.x = 10;
-    leftRectangleRef.current.y = canvasSize.height / 2 - (canvasSize.height / 10)
+    const handleResize = () => {
+      const aspectRatioWidth = 16;
+      const aspectRatioHeight = 9;
+      const newCanvasWidth = window.innerWidth;
+      const newCanvasHeight = (newCanvasWidth / aspectRatioWidth) * aspectRatioHeight;
 
-    rightRectangleRef.current.x = canvasSize.width - 25;
-    rightRectangleRef.current.y = canvasSize.height / 2 - (canvasSize.height / 10)
+      setCanvasSize({
+        width: newCanvasWidth,
+        height: newCanvasHeight,
+      });
 
-    leftRectangleRef.current.height = canvasSize.height / 5;
-    rightRectangleRef.current.height = canvasSize.height / 5;
+      setLeftRectangle((prev) => ({
+        ...prev,
+        x: 10,
+        y: newCanvasHeight / 2 - newCanvasHeight / 10,
+        height: newCanvasHeight / 5,
+      }));
 
-    setBall({
-      x: canvasSize.width / 2,
-      y: canvasSize.height / 2,
-      speedX: 7,
-      speedY: 7,
-      radius: Math.floor((canvasSize.width + canvasSize.height) / 150)
-    });
+      setRightRectangle((prev) => ({
+        ...prev,
+        x: newCanvasWidth - 25,
+        y: newCanvasHeight / 2 - newCanvasHeight / 10,
+        height: newCanvasHeight / 5,
+      }));
 
-    // Redraw the canvas with updated positions
-    const context = canvasRef.current?.getContext("2d");
-    if (context)
-      draw(
-        canvasRef.current!,
-        context,
-        leftRectangleRef.current,
-        rightRectangleRef.current,
-        ball
-      );
-  }, [canvasSize]);
+      setBall({
+        x: newCanvasWidth / 2,
+        y: newCanvasHeight / 2,
+        speedX: 7,
+        speedY: 7,
+        radius: Math.floor((newCanvasWidth + newCanvasHeight) / 150),
+      });
+
+      // Redraw the canvas with updated positions
+      const context = canvasRef.current?.getContext("2d");
+      if (context)
+        draw(
+          canvasRef.current!,
+          context,
+          leftRectangle,
+          rightRectangle,
+          ball
+        );
+    };
+
+    handleResize();
+
+    const handleResizeThrottled = throttle({ func: handleResize, delay: 200 });
+
+    window.addEventListener("resize", handleResizeThrottled);
+
+    return () => {
+      window.removeEventListener("resize", handleResizeThrottled);
+    };
+  }, []);
 
   useEffect(() => {
     if (!canvasRef.current) return;
 
-    const canvas = canvasRef?.current;
-    canvas.width = window.innerWidth;
+    const canvas = canvasRef.current;
+    canvas.width = canvasSize.width;
     canvas.height = canvasSize.height;
     const context = canvas.getContext("2d");
     if (!context) return;
 
-    draw(
-      canvas,
-      context,
-      leftRectangleRef.current,
-      rightRectangleRef.current,
-      ball
-    );
-  });
+    draw(canvas, context, leftRectangle, rightRectangle, ball);
+  }, [canvasSize, ball]);
 
   const handleCountdownEnd = () => {
     setGameStarted(true);
   };
 
   useEffect(() => {
-    // const handleStartGame = (event: KeyboardEvent) => {
-    //   if (event.key === " ") setGameStarted(true);
-    // };
+    if (!gameStarted) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: true }));
@@ -269,62 +272,53 @@ export default function GamePage() {
 
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
-    // document.addEventListener("keydown", handleStartGame);
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);
-      // document.removeEventListener("keydown", handleStartGame);
     };
-  }, []);
+  }, [gameStarted]);
 
   useEffect(() => {
     // Update the positions based on the keys pressed
-    const speed = 20;
-    const leftRectangle = leftRectangleRef.current;
-    const rightRectangle = rightRectangleRef.current;
-    // const middleX = canvasRef?.current!.width / 2;
+    const speed = RecSpeed;
 
     if (keysPressed["ArrowUp"]) {
-      rightRectangle.y = Math.max(0, rightRectangle.y - speed);
+      setRightRectangle((prev) => ({
+        ...prev,
+        y: Math.max(0, prev.y - speed),
+      }));
     }
     if (keysPressed["ArrowDown"]) {
-      rightRectangle.y = Math.min(
-        canvasRef?.current!.height - rightRectangle.height,
-        rightRectangle.y + speed
-      );
+      setRightRectangle((prev) => ({
+        ...prev,
+        y: Math.min(
+          canvasSize.height - prev.height,
+          prev.y + speed
+        ),
+      }));
     }
-
-    if (keysPressed["w"]) {
-      leftRectangle.y = Math.max(0, leftRectangle.y - speed);
-    }
-    if (keysPressed["s"]) {
-      leftRectangle.y = Math.min(
-        canvasRef?.current!.height - leftRectangle.height,
-        leftRectangle.y + speed
-      );
-    }
-
-    // Force re-render by updating the refs
-    leftRectangleRef.current = { ...leftRectangle };
-    rightRectangleRef.current = { ...rightRectangle };
 
     // Redraw the canvas
-    const context = canvasRef?.current?.getContext("2d");
+    const context = canvasRef.current?.getContext("2d");
     if (context)
-      draw(canvasRef?.current!, context, leftRectangle, rightRectangle, ball);
-  }, [keysPressed]);
+      draw(canvasRef.current!, context, leftRectangle, rightRectangle, ball);
+  }, [keysPressed, canvasSize, ball]);
 
   useEffect(() => {
     const animate = () => {
       // Update ball position
       let newBallX = ball.x + ball.speedX;
       let newBallY = ball.y + ball.speedY;
-      const canvasWidth = window.innerWidth;
-      const canvasHeight = canvasRef?.current?.height || 600;
-  
+      const canvasWidth = canvasSize.width;
+      const canvasHeight = canvasSize.height;
+      const radius = ball.radius;
+    
       // Wrap the ball around when it exceeds the left or right side of the canvas
-      if (newBallX + ball.radius <= 0 || newBallX - ball.radius >= canvasWidth) {
+      if (
+        newBallX + ball.radius <= 0 ||
+        newBallX - ball.radius >= canvasWidth
+      ) {
         if (newBallX + ball.radius <= 0) {
           setRightScore((prevScore) => prevScore + 1);
         } else {
@@ -333,44 +327,85 @@ export default function GamePage() {
         newBallX = canvasWidth / 2;
         newBallY = canvasHeight / 2;
       }
-  
-      // Check for collisions with the canvas boundaries
-      if (newBallY - ball.radius <= 0 || newBallY + ball.radius >= canvasHeight) {
-        // Ball hits top or bottom boundary
-        setBall((prevBall) => ({ ...prevBall, speedY: -prevBall.speedY }));
+    
+      // Bouncing effect when the ball hits the top or bottom boundary
+      if (newBallY - radius <= 0) {
+        newBallY = radius; // Adjust the ball's position slightly
+        setBall((prevBall) => ({ ...prevBall, speedY: Math.abs(prevBall.speedY) }));
+      } else if (newBallY + radius >= canvasHeight) {
+        newBallY = canvasHeight - radius; // Adjust the ball's position slightly
+        setBall((prevBall) => ({ ...prevBall, speedY: -Math.abs(prevBall.speedY) }));
       }
-  
+    
       // Check for collisions with the rectangles
-      const leftRect = leftRectangleRef.current;
-      const rightRect = rightRectangleRef.current;
-
+    
       if (
-        newBallX - ball.radius <= leftRect.x + leftRect.width &&
-        newBallY + ball.radius >= leftRect.y &&
-        newBallY - ball.radius <= leftRect.y + leftRect.height
+        newBallX - radius <= leftRectangle.x + leftRectangle.width &&
+        newBallY + radius >= leftRectangle.y &&
+        newBallY - radius <= leftRectangle.y + leftRectangle.height
       ) {
-        // Ball hits left rectangle
-        setBall((prevBall) => ({ ...prevBall, speedX: Math.abs(prevBall.speedX) }));
+        // Ball hits the left rectangle, change direction and angle
+        const relativeIntersectY = leftRectangle.y + leftRectangle.height / 2 - newBallY;
+        const normalizedRelativeIntersectY = relativeIntersectY / (leftRectangle.height / 2);
+        const bounceAngle = (normalizedRelativeIntersectY * Math.PI) / 4;
+        const speed = Math.sqrt(ball.speedX * ball.speedX + ball.speedY * ball.speedY) * 1.05;
+        setBall((prevBall) => ({
+          ...prevBall,
+          speedX: Math.cos(bounceAngle) * speed,
+          speedY: -Math.sin(bounceAngle) * speed,
+        }));
       }
-
+    
       if (
-        newBallX + ball.radius >= rightRect.x &&
-        newBallY + ball.radius >= rightRect.y &&
-        newBallY - ball.radius <= rightRect.y + rightRect.height
+        newBallX + radius >= rightRectangle.x &&
+        newBallY + radius >= rightRectangle.y &&
+        newBallY - radius <= rightRectangle.y + rightRectangle.height
       ) {
-        // Ball hits right rectangle
-        setBall((prevBall) => ({ ...prevBall, speedX: -Math.abs(prevBall.speedX) }));
+        // Ball hits the right rectangle, change direction and angle
+        const relativeIntersectY = rightRectangle.y + rightRectangle.height / 2 - newBallY;
+        const normalizedRelativeIntersectY = relativeIntersectY / (rightRectangle.height / 2);
+        const bounceAngle = (normalizedRelativeIntersectY * Math.PI) / 4;
+        const speed = Math.sqrt(ball.speedX * ball.speedX + ball.speedY * ball.speedY) * 1.05;
+        setBall((prevBall) => ({
+          ...prevBall,
+          speedX: -Math.cos(bounceAngle) * speed,
+          speedY: -Math.sin(bounceAngle) * speed,
+        }));
       }
-  
+    
+      // Calculate current speed
+      const currentSpeed = Math.sqrt(ball.speedX * ball.speedX + ball.speedY * ball.speedY);
+    
+      // Limit the speed to the maximum speed
+      if (currentSpeed > maxBallSpeed) {
+        // Calculate the scaling factor
+        const scale = maxBallSpeed / currentSpeed;
+    
+        // Scale the speed components
+        ball.speedX *= scale;
+        ball.speedY *= scale;
+      }
+    
       // Update ball position
       setBall((prevBall) => ({ ...prevBall, x: newBallX, y: newBallY }));
     };
-  
+
     if (gameStarted) {
-      const animationFrameId = requestAnimationFrame(animate);
-      return () => cancelAnimationFrame(animationFrameId);
+      const animationFrameId = requestAnimationFrame(() => {
+        animate();
+        botMove(ball, leftRectangle, canvasSize.height, prevErrorRef);
+      });
+  
+      const botInterval = setInterval(() => {
+        botMove(ball, leftRectangle, canvasSize.height, prevErrorRef);
+      }, 200); // Adjust the interval as needed
+  
+      return () => {
+        cancelAnimationFrame(animationFrameId);
+        clearInterval(botInterval);
+      };
     }
-  }, [ball, gameStarted]);
+  }, [ball, gameStarted, canvasSize]);
 
   return (
     <PageWrapper>
@@ -381,10 +416,10 @@ export default function GamePage() {
           className="bg-background-primary rounded-lg w-full h-[55vh] "
         >
           <div className=" absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ">
-          {!gameStarted &&
-            <Countdown  seconds={5} onCountdownEnd={handleCountdownEnd} />
-          }
-        </div>
+            {!gameStarted && (
+              <Countdown seconds={5} onCountdownEnd={handleCountdownEnd} />
+            )}
+          </div>
           <canvas
             ref={canvasRef}
             width={canvasSize.width}

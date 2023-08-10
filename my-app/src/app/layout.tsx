@@ -35,7 +35,7 @@ export default function RootLayout({
         <ReduxProvider>
             <CacheProvider>
               <ChakraProvider>
-                {isloading && isHome ? <SplashScreen  finishLoading={() => setIsLoading(false)}/> :
+                {isloading ? <SplashScreen  finishLoading={() => setIsLoading(false)}/> :
                 <>
                   <Navbar />
                   {children}
