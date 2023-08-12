@@ -14,7 +14,11 @@ const MENU_LIST = [
 ];
 
 export default function Navbar() {
-  const path = usePathname();
+  let path = usePathname();
+
+  if (path === "/gameBotPage") {
+    path = "/gamePage";
+  }
 
   return (
     <div className=" h-[24vh] drop-shadow-xl">
