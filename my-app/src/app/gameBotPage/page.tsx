@@ -4,6 +4,8 @@ import React, { useRef, useEffect, useState } from "react";
 import { PageWrapper } from "../animationWrapper/pageWrapper";
 import Countdown from "./ui/Countdown";
 import GameHeader from "./ui/GameHeader";
+import Image from "next/image";
+import ImgBackground from "../../../assets/icons/background.svg";
 
 const canvasMiddleLineWidth = 10;
 const maxBallSpeed = 25;
@@ -325,6 +327,8 @@ export default function GameBotPage() {
         }
         newBallX = canvasWidth / 2;
         newBallY = canvasHeight / 2;
+        ball.speedX = -ball.speedX;
+        ball.speedY = -ball.speedY;
       }
     
       // Bouncing effect when the ball hits the top or bottom boundary
@@ -408,23 +412,32 @@ export default function GameBotPage() {
 
   return (
     <PageWrapper>
-      <div className="flex flex-col w-[80%] mx-auto space-y-10 mt-[-50px]">
-        <GameHeader leftScore={leftScore} rightScore={rightScore} />
-        <div
-          id="canvas-container"
-          className="bg-background-primary rounded-lg w-full h-[55vh] "
-        >
-          <div className=" absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ">
-            {!gameStarted && (
-              <Countdown seconds={5} onCountdownEnd={handleCountdownEnd} />
-            )}
-          </div>
-          <canvas
-            ref={canvasRef}
-            width={canvasSize.width}
-            height={canvasSize.height}
-            className="w-full h-full"
+      <div className="absolute inset-0 flex justify-center items-center h-screen w-screen">
+        <div className="relative w-full h-full">
+          <Image
+            src={ImgBackground}
+            alt="Background"
+            className="object-cover w-full h-full"
           />
+        </div>
+        <div className="absolute flex-col w-[80%] mx-auto space-y-10 mt-[-50px] ">
+          <GameHeader leftScore={leftScore} rightScore={rightScore} />
+          <div
+            id="canvas-container"
+            className="flex items-center bg-background-primary rounded-lg w-[80%] h-[55vh] mx-auto"
+          >
+            <div className=" absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ">
+              {!gameStarted && (
+                <Countdown seconds={5} onCountdownEnd={handleCountdownEnd} />
+              )}
+            </div>
+            <canvas
+              ref={canvasRef}
+              width={canvasSize.width}
+              height={canvasSize.height}
+              className="w-full h-full rounded-lg"
+            />
+          </div>
         </div>
       </div>
     </PageWrapper>
