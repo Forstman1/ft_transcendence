@@ -66,7 +66,6 @@ const drawRoundedRectangle = (
   context.fill();
 };
 
-
 const draw = (
   canvas: HTMLCanvasElement,
   context: CanvasRenderingContext2D,
@@ -165,7 +164,7 @@ export default function GameBotPage() {
     // Calculate control output
     const controlOutput = proportional + Ki * error + Kd * (error - prevError);
   
-    // Update bot's Y position with responsiveness limits
+    // Update bot Y position with responsiveness limits
     const maxMove = RecSpeed;
     const newLeftRectangleY = Math.max(
       0,
@@ -215,8 +214,8 @@ export default function GameBotPage() {
       setBall({
         x: newCanvasWidth / 2,
         y: newCanvasHeight / 2,
-        speedX: 7,
-        speedY: 7,
+        speedX: 10,
+        speedY: 10,
         radius: Math.floor((newCanvasWidth + newCanvasHeight) / 150),
       });
 
