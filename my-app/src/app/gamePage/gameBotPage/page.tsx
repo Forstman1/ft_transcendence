@@ -1,11 +1,16 @@
 "use client";
 
+// import { Metadata } from "next";
 import React, { useRef, useEffect, useState } from "react";
-import { PageWrapper } from "../animationWrapper/pageWrapper";
-import Countdown from "./ui/Countdown";
-import GameHeader from "./ui/GameHeader";
+import { PageWrapper } from "../../animationWrapper/pageWrapper";
+import Countdown from "../ui/Countdown";
+import GameHeader from "../ui/GameHeader";
 import Image from "next/image";
-import ImgBackground from "../../../assets/icons/background.svg";
+import ImgBackground from "../../../../assets/icons/background.svg";
+
+// export const metadata: Metadata = {
+//   title: "Game with Bot",
+// };
 
 const canvasMiddleLineWidth = 10;
 const maxBallSpeed = 25;

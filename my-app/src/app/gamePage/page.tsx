@@ -12,8 +12,12 @@ import ImgBackground from "../../../assets/icons/background.svg";
 export default function GamePage() {
   const router = useRouter();
 
-  const handleClick = () => {
-    router.push("/gameBotPage");
+  const handleBotClick = () => {
+    router.push("/gamePage/gameBotPage");
+  };
+
+  const handleFriendClick = () => {
+    router.push("/gamePage/gameFriendPage");
   };
 
   return (
@@ -39,6 +43,7 @@ export default function GamePage() {
                 leftIcon={
                   <Image src={Gamepad} alt="Gamepad" width={25} height={25} />
                 }
+                onClick={handleFriendClick}
               >
                 Play with a friend
               </Button>
@@ -49,7 +54,7 @@ export default function GamePage() {
                 leftIcon={
                   <Image src={Robot} alt="Robot" width={25} height={25} />
                 }
-                onClick={handleClick}
+                onClick={handleBotClick}
               >
                 Play with a robot
               </Button>

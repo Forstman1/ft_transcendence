@@ -7,6 +7,8 @@ import { Avatar, AvatarBadge, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 
+const GameRouter = ["/gamePage/gameFriendPage", "/gamePage/gameBotPage"]
+
 const MENU_LIST = [
   { text: "Home", href: "/" },
   { text: "Game", href: "/gamePage" },
@@ -16,7 +18,7 @@ const MENU_LIST = [
 export default function Navbar() {
   let path = usePathname();
 
-  if (path === "/gameBotPage") {
+  if (GameRouter.includes(path)) {
     path = "/gamePage";
   }
 
