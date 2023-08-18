@@ -21,7 +21,7 @@ export default function Navbar() {
   }
 
   return (
-    <div className=" h-[24vh] drop-shadow-xl">
+    <div className=" h-[24vh] drop-shadow-xl relative z-10">
       <Image src={wave} alt="wave" className="object-cover w-full" fill />
       <div className="flex items-center justify-between py-6 px-28 ">
         <div className="flex items-center justify-between w-[30%]">

@@ -1,6 +1,8 @@
 import React from "react";
 import { Metadata } from "next";
 import { PageWrapper } from "./animationWrapper/pageWrapper";
+import ImgBackground from "../../assets/icons/background.svg";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -9,9 +11,16 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <PageWrapper>
-      <div className="flex items-center justify-center w-[90%] mt-[-50px] bg-background-primary mx-auto p-10">
-        <h1 className="text-4xl font-bold mb-4 text-text-primary">Home Page</h1>
+      <div className="absolute inset-0 flex justify-center items-center h-screen w-screen">
+        <div className="relative w-full h-full">
+          <Image
+            src={ImgBackground}
+            alt="Background"
+            className="object-cover w-full h-full"
+          />
+        </div>
       </div>
     </PageWrapper>
   );
 }
+
