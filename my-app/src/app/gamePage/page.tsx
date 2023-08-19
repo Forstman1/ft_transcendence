@@ -8,7 +8,7 @@ import Gamepad from "../../../assets/icons/gamepad.svg";
 import Robot from "../../../assets/icons/robot.svg";
 import ImgBackground from "../../../assets/icons/background.svg";
 import Lottie from "lottie-react";
-import animationData from "../../../assets/animations/animation2.json";
+import animationData from "../../../assets/animations/animation3.json";
 import GameModesModal from "./ui/GameModesModal";
 
 
