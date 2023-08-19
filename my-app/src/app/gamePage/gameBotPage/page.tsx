@@ -7,6 +7,7 @@ import Countdown from "../ui/Countdown";
 import GameHeader from "../ui/GameHeader";
 import Image from "next/image";
 import ImgBackground from "../../../../assets/icons/background.svg";
+import { useAppSelector } from "@/redux/store/store";
 
 // export const metadata: Metadata = {
 //   title: "Game with Bot",
@@ -15,6 +16,42 @@ import ImgBackground from "../../../../assets/icons/background.svg";
 const canvasMiddleLineWidth = 10;
 const maxBallSpeed = 25;
 const RecSpeed = 20;
+
+const getGameColor = (gameSettings: gameSettingsProps) => {
+  switch (gameSettings.playgroundtheme.id) {
+    case 1:
+      return {
+        playgroundColor: "bg-black",
+        balColor: "#ffffff",
+      };
+    case 2:
+      return {
+        playgroundColor: "bg-lime-500",
+        balColor: "#FF0000",
+      };
+    case 3:
+      return {
+        playgroundColor: "bg-cyan-400",
+        balColor: "#FFEB3B",
+      };
+    default:
+      return {
+        playgroundColor: "bg-black",
+        balColor: "#ffffff",
+      };
+  }
+}
+
+type gameSettingsProps = {
+  mode: string;
+  playgroundtheme: {
+    id: number;
+    playgroundColor: string;
+    balColor: string;
+  };
+  rounds: number;
+  matches: number;
+};
 
 type Ball = {
   x: number;
@@ -52,11 +89,14 @@ function throttle({ func, delay }: throttleProps) {
 const drawRoundedRectangle = (
   context: CanvasRenderingContext2D,
   rectangle: Rectangle,
-  borderRadius: number
+  borderRadius: number,
+  gameSettings: gameSettingsProps
 ) => {
   const { x, y, width, height } = rectangle;
 
-  context.fillStyle = "#FFFFFF";
+  const { balColor } = getGameColor(gameSettings);
+
+  context.fillStyle = balColor;
   context.beginPath();
 
   context.moveTo(x + borderRadius, y);
@@ -78,15 +118,17 @@ const draw = (
   context: CanvasRenderingContext2D,
   leftRectangle: Rectangle,
   rightRectangle: Rectangle,
-  ball: Ball
+  ball: Ball,
+  gameSettings: gameSettingsProps
 ) => {
   context.clearRect(0, 0, canvas.width, canvas.height);
 
   const borderRadius = 5;
   const middleX = canvas.width / 2;
+  const {balColor} = getGameColor(gameSettings);
 
   // Draw the middle line
-  context.strokeStyle = "#E4E4E4";
+  context.strokeStyle = balColor;
   context.lineWidth = canvasMiddleLineWidth;
   context.setLineDash([20, 30]);
   context.beginPath();
@@ -96,18 +138,19 @@ const draw = (
   context.setLineDash([]);
 
   // Draw the ball
-  context.fillStyle = "#FFFFFF";
+  context.fillStyle = balColor;
   context.beginPath();
   context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
   context.fill();
 
   // Draw the rounded rectangles
-  drawRoundedRectangle(context, leftRectangle, borderRadius);
-  drawRoundedRectangle(context, rightRectangle, borderRadius);
+  drawRoundedRectangle(context, leftRectangle, borderRadius, gameSettings);
+  drawRoundedRectangle(context, rightRectangle, borderRadius, gameSettings);
 };
 
 
 export default function GameBotPage() {
+  const gameSettings = useAppSelector((state) => state.gameReducer);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [keysPressed, setKeysPressed] = useState<Record<string, boolean>>({});
   const [canvasSize, setCanvasSize] = useState({
@@ -234,7 +277,8 @@ export default function GameBotPage() {
           context,
           leftRectangle,
           rightRectangle,
-          ball
+          ball,
+          gameSettings
         );
     };
 
@@ -258,7 +302,7 @@ export default function GameBotPage() {
     const context = canvas.getContext("2d");
     if (!context) return;
 
-    draw(canvas, context, leftRectangle, rightRectangle, ball);
+    draw(canvas, context, leftRectangle, rightRectangle, ball, gameSettings);
   }, [canvasSize, ball]);
 
   const handleCountdownEnd = () => {
@@ -308,7 +352,7 @@ export default function GameBotPage() {
     // Redraw the canvas
     const context = canvasRef.current?.getContext("2d");
     if (context)
-      draw(canvasRef.current!, context, leftRectangle, rightRectangle, ball);
+      draw(canvasRef.current!, context, leftRectangle, rightRectangle, ball, gameSettings);
   }, [keysPressed, canvasSize, ball]);
 
   useEffect(() => {
@@ -440,7 +484,7 @@ export default function GameBotPage() {
               ref={canvasRef}
               width={canvasSize.width}
               height={canvasSize.height}
-              className="w-full h-full rounded-lg"
+              className={`w-full h-full rounded-lg ${gameSettings.playgroundtheme.playgroundColor}`}
             />
           </div>
         </div>
