@@ -8,6 +8,7 @@ import GameHeader from "../ui/GameHeader";
 import Image from "next/image";
 import ImgBackground from "../../../../assets/icons/background.svg";
 import { useAppSelector } from "@/redux/store/store";
+import GameSideBar from "../ui/GameSideBar";
 
 // export const metadata: Metadata = {
 //   title: "Game with Bot",
@@ -33,6 +34,11 @@ const getGameColor = (gameSettings: gameSettingsProps) => {
       return {
         playgroundColor: "bg-cyan-400",
         balColor: "#FFEB3B",
+      };
+    case 4:
+      return {
+        playgroundColor: "bg-emerald-700",
+        balColor: "#ffffff",
       };
     default:
       return {
@@ -150,7 +156,7 @@ const draw = (
 
 
 export default function GameBotPage() {
-  const gameSettings = useAppSelector((state) => state.gameReducer);
+  let gameSettings = useAppSelector((state) => state.gameReducer);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [keysPressed, setKeysPressed] = useState<Record<string, boolean>>({});
   const [canvasSize, setCanvasSize] = useState({
@@ -233,54 +239,56 @@ export default function GameBotPage() {
       y: limitedNewY,
     }));
   };
+
+
+  const handleResize = () => {
+    const aspectRatioWidth = 16;
+    const aspectRatioHeight = 9;
+    const newCanvasWidth = window.innerWidth;
+    const newCanvasHeight = (newCanvasWidth / aspectRatioWidth) * aspectRatioHeight;
+
+    setCanvasSize({
+      width: newCanvasWidth,
+      height: newCanvasHeight,
+    });
+
+    setLeftRectangle((prev) => ({
+      ...prev,
+      x: 10,
+      y: newCanvasHeight / 2 - newCanvasHeight / 10,
+      height: newCanvasHeight / 5,
+    }));
+
+    setRightRectangle((prev) => ({
+      ...prev,
+      x: newCanvasWidth - 25,
+      y: newCanvasHeight / 2 - newCanvasHeight / 10,
+      height: newCanvasHeight / 5,
+    }));
+
+    setBall({
+      x: newCanvasWidth / 2,
+      y: newCanvasHeight / 2,
+      speedX: 10,
+      speedY: 10,
+      radius: Math.floor((newCanvasWidth + newCanvasHeight) / 150),
+    });
+
+    // Redraw the canvas with updated positions
+    const context = canvasRef.current?.getContext("2d");
+    if (context)
+      draw(
+        canvasRef.current!,
+        context,
+        leftRectangle,
+        rightRectangle,
+        ball,
+        gameSettings
+      );
+  };
   
 
   useEffect(() => {
-    const handleResize = () => {
-      const aspectRatioWidth = 16;
-      const aspectRatioHeight = 9;
-      const newCanvasWidth = window.innerWidth;
-      const newCanvasHeight = (newCanvasWidth / aspectRatioWidth) * aspectRatioHeight;
-
-      setCanvasSize({
-        width: newCanvasWidth,
-        height: newCanvasHeight,
-      });
-
-      setLeftRectangle((prev) => ({
-        ...prev,
-        x: 10,
-        y: newCanvasHeight / 2 - newCanvasHeight / 10,
-        height: newCanvasHeight / 5,
-      }));
-
-      setRightRectangle((prev) => ({
-        ...prev,
-        x: newCanvasWidth - 25,
-        y: newCanvasHeight / 2 - newCanvasHeight / 10,
-        height: newCanvasHeight / 5,
-      }));
-
-      setBall({
-        x: newCanvasWidth / 2,
-        y: newCanvasHeight / 2,
-        speedX: 10,
-        speedY: 10,
-        radius: Math.floor((newCanvasWidth + newCanvasHeight) / 150),
-      });
-
-      // Redraw the canvas with updated positions
-      const context = canvasRef.current?.getContext("2d");
-      if (context)
-        draw(
-          canvasRef.current!,
-          context,
-          leftRectangle,
-          rightRectangle,
-          ball,
-          gameSettings
-        );
-    };
 
     handleResize();
 
@@ -291,7 +299,7 @@ export default function GameBotPage() {
     return () => {
       window.removeEventListener("resize", handleResizeThrottled);
     };
-  }, []);
+  }, [gameSettings]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -457,35 +465,42 @@ export default function GameBotPage() {
         clearInterval(botInterval);
       };
     }
-  }, [ball, gameStarted, canvasSize]);
+  }, [ball, gameStarted, canvasSize, gameSettings]);
 
   return (
     <PageWrapper>
-      <div className="absolute inset-0 flex justify-center items-center h-screen w-screen">
-        <div className="relative w-full h-full">
-          <Image
-            src={ImgBackground}
-            alt="Background"
-            className="object-cover w-full h-full"
-          />
-        </div>
-        <div className="absolute flex-col w-[80%] mx-auto space-y-10 mt-[-50px] ">
-          <GameHeader leftScore={leftScore} rightScore={rightScore} />
-          <div
-            id="canvas-container"
-            className="flex items-center bg-background-primary rounded-lg w-[80%] h-[55vh] mx-auto"
-          >
-            <div className=" absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ">
-              {!gameStarted && (
-                <Countdown seconds={5} onCountdownEnd={handleCountdownEnd} />
-              )}
-            </div>
-            <canvas
-              ref={canvasRef}
-              width={canvasSize.width}
-              height={canvasSize.height}
-              className={`w-full h-full rounded-lg ${gameSettings.playgroundtheme.playgroundColor}`}
+      <div className="absolute top-0 left-0 w-full h-full flex flex-row">
+        <div className="absolute inset-0 flex justify-center items-center h-screen w-screen ">
+          <div className="relative w-full h-full">
+            <Image
+              src={ImgBackground}
+              alt="Background"
+              className="object-cover w-full h-full"
             />
+          </div>
+          <div className="absolute flex-col w-[100%]">
+            <div className="flex flex-row">
+              <GameSideBar />
+              <div className="flex flex-col space-y-10 w-full mx-[10%] h-screen justify-center items-center ">
+                <GameHeader leftScore={leftScore} rightScore={rightScore} />
+                <div
+                  id="canvas-container"
+                  className="flex items-center bg-background-primary rounded-lg  h-[55vh] w-full max-w-[1200px]"
+                >
+                  <div className=" absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ">
+                    {!gameStarted && (
+                      <Countdown seconds={5} onCountdownEnd={handleCountdownEnd} />
+                    )}
+                  </div>
+                  <canvas
+                    ref={canvasRef}
+                    width={canvasSize.width}
+                    height={canvasSize.height}
+                    className={`w-full h-full rounded-lg ${gameSettings.playgroundtheme.playgroundColor}`}
+                  />
+                </div>
+            </div>
+            </div>
           </div>
         </div>
       </div>

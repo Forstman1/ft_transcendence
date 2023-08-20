@@ -9,7 +9,6 @@ import {
   ModalBody,
   ModalCloseButton,
   Select,
-  Box,
   Text,
   Radio,
   RadioGroup,
@@ -21,6 +20,17 @@ import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store/store";
 import { setModal } from "@/redux/slices/game/gameModalSlice";
+import {
+  Modes,
+  Rounds,
+  Matches,
+  PlaygroundTheme,
+} from "@/utils/constants/game/GameConstants";
+import Lottie from "lottie-react";
+import animationData from "../../../../assets/animations/animation1.json";
+import levelEasy from "../../../../assets/icons/levelEasy.svg";
+import levelMedium from "../../../../assets/icons/levelMedium.svg";
+import levelHard from "../../../../assets/icons/levelHard.svg";
 
 type Props = {
   isOpen: boolean;
@@ -28,50 +38,46 @@ type Props = {
   gameType: "friend" | "bot";
 };
 
-const modes = ["EASY", "MEDIUM", "HARD"];
-const Rounds = [1, 2, 3, 4, 5];
-const matches = [1, 2, 3, 4, 5];
-const playgroundTheme = [
-  {
-    id: 1,
-    playgroundColor: "bg-black",
-    balColor: "bg-white",
-  },
-  {
-    id: 2,
-    playgroundColor: "bg-lime-500",
-    balColor: "bg-red-600",
-  },
-  {
-    id: 3,
-    playgroundColor: "bg-cyan-400",
-    balColor: "bg-yellow-500",
-  },
-];
+const getIcon = (mode:string) => {
+  switch (mode) {
+    case "EASY":
+      return levelEasy
+    case "MEDIUM":
+      return levelMedium;
+    case "HARD":
+      return levelHard;
+    default:
+      return levelEasy;
+  }
+}
 
 const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
-  const [value, setValue] = useState("EASY");
-  const [Playground, setPlayground] = useState(playgroundTheme[0]);
-  const [rounds, setRounds] = useState(1);
-  const [matchesSelected, setMatchesSelected] = useState(1);
+  const [modeValue, setmodeValue] = useState<string>(Modes[0]);
+  const [Playground, setPlayground] = useState(PlaygroundTheme[0]);
+  const [rounds, setRounds] = useState<number>(1);
+  const [matchesSelected, setMatchesSelected] = useState<number>(1);
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
 
   const handleModeChange = (mode: string) => {
-    setValue(mode);
+    setmodeValue(mode);
   };
 
   const handelStartGame = () => {
+    console.log("modeValue", modeValue);
+    console.log("Playground", Playground);
+    console.log("rounds", rounds);
+    console.log("matchesSelected", matchesSelected);
 
     dispatch(
       setModal({
-        mode: value,
+        mode: modeValue,
         playgroundtheme: Playground,
         rounds: rounds,
         matches: matchesSelected,
       })
     );
-    
+
     if (gameType === "friend") {
       router.push("/gamePage/gameFriendPage");
     } else {
@@ -80,7 +86,6 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
     onClose();
   };
 
-
   return (
     <Modal
       blockScrollOnMount={false}
@@ -88,64 +93,86 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
       onClose={onClose}
       isCentered
     >
-      <ModalOverlay />
-      <ModalContent bg={`rgba(255, 255, 255, 0.95)`}>
+      <ModalOverlay  style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)', backdropFilter: 'blur(5px)' }} />
+      <ModalContent
+        bg={`rgba(255, 255, 255, 0.95)`}
+        className="relative duration-500 ease-in-out rounded-2xl shadow-2xl border-1 border-black"
+      >
+        <Lottie
+          animationData={animationData}
+          className="absolute inset-0 border-2 border-white rounded-[100%] w-full h-full z-[-1] opacity-10 bg-white"
+        />
         <ModalHeader>Game Modes</ModalHeader>
         <ModalCloseButton />
-        <ModalBody className="space-y-5">
-          <div className="flex flex-row justify-between items-center space-x-5">
-            {modes.map((mode) => (
-              <Box key={mode}>
-                <Button
-                  colorScheme={mode === value ? "green" : "gray"}
-                  onClick={() => handleModeChange(mode)}
-                  className="border-1 border-black rounded-full shadow-xl"
-                >
-                  {mode}
-                </Button>
-              </Box>
-            ))}
-          </div>
-          <Select placeholder="Select game Rounds" >
-            {Rounds.map((round) => (
-              <option key={round} value={round} onClick={() => setRounds(round)}>
-                {round}
-              </option>
-            ))}
-          </Select>
-          <Select placeholder="Select game Matches for each round">
-            {matches.map((match) => (
-              <option key={match} value={match} onClick={() => setMatchesSelected(match)}>
-                {match}
-              </option>
-            ))}
-          </Select>
-          <div className="flex flex-col justify-between space-y-2">
-            <Text>Playground Theme</Text>
-            <RadioGroup
-              value={Playground.id.toString()}
-              onChange={(id) =>
-                setPlayground(
-                  playgroundTheme.find((theme) => theme.id === Number(id))
-                )
-              }
-            >
-              <div className="flex flex-row justify-between items-center mx-10">
-                {playgroundTheme.map((theme) => (
-                  <Radio key={theme.id} value={theme.id.toString()}>
-                    <div className="relative w-8 h-8">
-                      <div
-                        className={`w-full h-full rounded-full absolute border-1 border-black ${theme.playgroundColor}`}
-                      />
-                      <div
-                        className={`w-8 h-8 rounded-full absolute top-1/2 left-5 transform -translate-y-1/2 border-1 border-black ${theme.balColor}`}
-                      />
-                    </div>
-                  </Radio>
+        <ModalBody className="flex">
+            <div className="flex flex-col space-y-5">
+              <div className="flex flex-row justify-between items-center space-x-5">
+                {Modes.map((mode: string) => (
+                  <Button
+                    key={mode}
+                    colorScheme="green"
+                    onClick={() => handleModeChange(mode)}
+                    className={`rounded-full shadow-xl ${
+                      modeValue === mode ? "text-white" : "text-black"
+                    } ${modeValue === mode ? "bg-green-500" : "bg-gray-200"}`}
+                    variant="solid"
+                    leftIcon={
+                      <Image  src={getIcon(mode)} alt="levelIcon" width={25} height={25} />
+                    }
+                  >
+                    {mode}
+                  </Button>
                 ))}
               </div>
-            </RadioGroup>
-          </div>
+              <Select
+                placeholder="Select game Rounds"
+                onChange={(e) => setRounds(Number(e.target.value))}
+              >
+                {Rounds.map((round) => (
+                  <option key={round} value={round}>
+                    {round}
+                  </option>
+                ))}
+              </Select>
+              <Select
+                placeholder="Select game Matches for each round"
+                onChange={(e) => setMatchesSelected(Number(e.target.value))}
+              >
+                {Matches.map((match) => (
+                  <option key={match} value={match}>
+                    {match}
+                  </option>
+                ))}
+              </Select>
+              <div className="flex flex-col justify-between space-y-2">
+                <Text>Playground Theme</Text>
+                <RadioGroup
+                  value={Playground.id.toString()}
+                  onChange={(id) =>
+                    setPlayground(
+                      PlaygroundTheme.find(
+                        (theme) => theme.id === Number(id)
+                      ) || PlaygroundTheme[0]
+                    )
+                  }
+                >
+                  <div className="flex flex-row justify-between items-center mx-10 space-x-8">
+                    {PlaygroundTheme.map((theme) => (
+                      <Radio key={theme.id} value={theme.id.toString()}>
+                        <div className="relative w-8 h-8">
+                          <div
+                            className={`w-full h-full rounded-full absolute border-1 border-black ${theme.playgroundColor}`}
+                          />
+                          <div
+                            className={`w-8 h-8 rounded-full absolute top-1/2 left-5 transform -translate-y-1/2 border-1 border-black ${theme.balColor}`}
+                          />
+                        </div>
+                      </Radio>
+                    ))}
+                  </div>
+                </RadioGroup>
+              </div>
+            </div>
         </ModalBody>
 
         <ModalFooter>

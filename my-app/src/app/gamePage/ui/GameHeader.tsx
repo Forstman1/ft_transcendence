@@ -13,7 +13,7 @@ const GameHeader = ({
     rightScore: number;
   }) => {
     return (
-      <div className="flex items-center justify-between h-[100px] bg-background-primary mx-auto rounded-lg p-10 drop-shadow-xl w-[80%] ">
+      <div className="flex items-center justify-between h-[100px] bg-background-primary mx-auto rounded-lg p-10 drop-shadow-xl w-full max-w-[1200px]">
         <div className="flex flex-row items-center space-x-5">
           <Image
             src={FreaxLogo}
