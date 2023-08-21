@@ -23,20 +23,24 @@ const initialState : GameModalState = {
 }
 
 const gameModalSlice = createSlice({
-    name : "game",
+    name: "game",
     initialState,
-    reducers : {
-        setModal : (state, action : PayloadAction<GameModalState>) => {
-            state.mode = action.payload.mode;
-            state.playgroundtheme = action.payload.playgroundtheme;
-            state.rounds = action.payload.rounds;
-            state.matches = action.payload.matches;
-        },
-        getModal : (state) => {
-            return state;
-        }
-    }
-})
+    reducers: {
+      setModal: (state, action: PayloadAction<GameModalState>) => {
+        return {
+          ...state,
+          mode: action.payload.mode,
+          playgroundtheme: { ...action.payload.playgroundtheme },
+          rounds: action.payload.rounds,
+          matches: action.payload.matches,
+        };
+      },
+      getModal: (state) => {
+        return state;
+      },
+    },
+  });
+  
 
 export const { setModal, getModal } = gameModalSlice.actions;
 export default gameModalSlice.reducer;

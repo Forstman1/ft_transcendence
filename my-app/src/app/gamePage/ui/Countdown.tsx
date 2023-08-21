@@ -25,13 +25,13 @@ const Countdown = ({ seconds, onCountdownEnd }: { seconds: number, onCountdownEn
   return (
     <>
       {isCountdownVisible ? (
-        <div className="flex items-center justify-center bg-white rounded-lg p-5 w-full h-full bg-opacity-0">
+        <div className="flex items-center justify-center bg-white rounded-lg p-5 w-full h-full bg-opacity-0 z-100">
           <h2 className='text-white text-[200px] z-100 font-bold '>
             {timeLeft}
           </h2>
         </div>
       ) : (
-        <div className="flex items-center justify-center bg-white rounded-lg p-5 w-full h-full bg-opacity-0">
+        <div className="flex items-center justify-center bg-white rounded-lg p-5 w-full h-full bg-opacity-0 z-100">
           <Image src={GoStart} alt="Go Start" width={200} height={200} />
         </div>
       )}

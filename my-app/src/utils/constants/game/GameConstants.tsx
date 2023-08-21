@@ -16,7 +16,7 @@ export const PlaygroundTheme = [
     {
         id: 3,
         playgroundColor: "bg-cyan-400",
-        balColor: "bg-yellow-500",
+        balColor: "bg-black",
     },
     {
         id: 4,
@@ -24,3 +24,4 @@ export const PlaygroundTheme = [
         balColor: "bg-white",
     },
 ];
+

@@ -18,15 +18,6 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store/store";
 import { setModal } from "@/redux/slices/game/gameModalSlice";
 
-type GameModalState = {
-  gameSettings: {
-    mode: string;
-    rounds: number;
-    matches: number;
-    playgroundtheme: typeof PlaygroundTheme[0];
-  };
-};
-
 const GameSideBar = () => {
   const [open, setOpen] = useState(true);
   const gameSettings = useAppSelector((state) => state.gameReducer);
@@ -37,16 +28,19 @@ const GameSideBar = () => {
     setOpen(!open);
   };
 
-  async function handleDispatchAsync() {
-    await dispatch(
+  const handleRadioChange = (id: string) => {
+    const selectedTheme = PlaygroundTheme.find((theme) => theme.id === Number(id)) || PlaygroundTheme[0];
+    setPlayground(selectedTheme);
+
+    dispatch(
       setModal({
-          mode: gameSettings.mode,
-          rounds: gameSettings.rounds,
-          matches: gameSettings.matches,
-          playgroundtheme: Playground,
-        })
+        mode: gameSettings.mode,
+        rounds: gameSettings.rounds,
+        matches: gameSettings.matches,
+        playgroundtheme: selectedTheme,
+      })
     );
-  }
+  };
 
   return (
     <motion.div
@@ -156,17 +150,8 @@ const GameSideBar = () => {
                   </Text>
                   <RadioGroup
                     value={Playground.id.toString()}
-                    onChange={(id) =>
-                      {
-                      setPlayground(
-                        PlaygroundTheme.find(
-                          (theme) => theme.id === Number(id)
-                        ) || PlaygroundTheme[0]
-                      )
-                      handleDispatchAsync()
-                        }
-                    }
-                  >
+                    onChange={(id) => handleRadioChange(id)}
+                    >
                     <div className="flex flex-row justify-center items-center space-x-10">
                       {PlaygroundTheme.map((theme) => (
                         <Radio key={theme.id} value={theme.id.toString()}>
