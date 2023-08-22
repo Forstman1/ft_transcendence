@@ -64,10 +64,6 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
   };
 
   const handelStartGame = () => {
-    console.log("modeValue", modeValue);
-    console.log("Playground", Playground);
-    console.log("rounds", rounds);
-    console.log("matchesSelected", matchesSelected);
 
     dispatch(
       setModal({
@@ -84,6 +80,11 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
       router.push("/gamePage/gameBotPage");
     }
     onClose();
+  };
+
+  const handleRadioChange = (id: string) => {
+    const selectedTheme = PlaygroundTheme.find((theme) => theme.id === Number(id)) || PlaygroundTheme[0];
+    setPlayground(selectedTheme);
   };
 
   return (
@@ -158,13 +159,7 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
               <Text>Playground Theme</Text>
               <RadioGroup
                 value={Playground.id.toString()}
-                onChange={(idString) => {
-                  const id = parseInt(idString);
-                  setPlayground(
-                    PlaygroundTheme.find((theme) => theme.id === id) ||
-                      PlaygroundTheme[0]
-                  );
-                }}
+                onChange={(id) => handleRadioChange(id)}
               >
                 <div className="flex flex-row justify-between items-center mx-10 space-x-8">
                   {PlaygroundTheme.map((theme) => (

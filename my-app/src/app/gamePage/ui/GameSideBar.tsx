@@ -19,7 +19,7 @@ import { AppDispatch } from "@/redux/store/store";
 import { setModal } from "@/redux/slices/game/gameModalSlice";
 
 const GameSideBar = () => {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const gameSettings = useAppSelector((state) => state.gameReducer);
   const [Playground, setPlayground] = useState(gameSettings.playgroundtheme);
   const dispatch = useDispatch<AppDispatch>();
