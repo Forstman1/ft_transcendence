@@ -13,7 +13,7 @@ import { getGameColor } from "@/utils/functions/game/GetGameColor";
 import LoadingScreen from "@/components/elements/loadingScreen/LoadingScreen";
 import { motion } from "framer-motion";
 import GameEndStatic from "../ui/GameEndStatic";
-import { set } from "animejs";
+import { BackgroundsImg } from "@/utils/constants/game/GameConstants";
 
 const canvasMiddleLineWidth: number = 10;
 let maxBallSpeed: number;
@@ -36,6 +36,11 @@ const appliyGameMode = (gameSettings: gameSettingsProps) => {
   }
 };
 
+type tableResultProps = {
+  botPoints: number;
+  userPoints: number;
+  RoundNamber: number;
+};
 
 type gameSettingsProps = {
   mode: string;
@@ -157,7 +162,9 @@ const animate = (
   canvasSize: { width: number; height: number },
   setRightScore: React.Dispatch<React.SetStateAction<number>>,
   setLeftScore: React.Dispatch<React.SetStateAction<number>>,
-  setGameMatches: React.Dispatch<React.SetStateAction<number>>
+  setGameMatches: React.Dispatch<React.SetStateAction<number>>,
+  setBotPoints: React.Dispatch<React.SetStateAction<number>>,
+  setUserPoints: React.Dispatch<React.SetStateAction<number>>
 ) => {
   // Update ball position
   let newBallX = ball.x + ball.speedX;
@@ -171,9 +178,12 @@ const animate = (
     if (newBallX + ball.radius <= 0) {
       setRightScore((prevScore) => prevScore + 1);
       setGameMatches((prev) => prev - 1);
+      setUserPoints((prev) => prev + 1);
+      
     } else {
       setLeftScore((prevScore) => prevScore + 1);
       setGameMatches((prev) => prev - 1);
+      setBotPoints((prev) => prev + 1);
     }
     newBallX = canvasWidth / 2;
     newBallY = canvasHeight / 2;
@@ -338,6 +348,9 @@ export default function GameBotPage() {
   const [RobotScore, setRobotScore] = useState<number>(0);
   const [UserScore, setUserScore] = useState<number>(0);
   const [gameMatches, setGameMatches] = useState<number>(gameSettings.matches);
+  const [tableResults, setTableResults] = useState<tableResultProps[]>([]);
+  const [botPoints, setBotPoints] = useState<number>(0);
+  const [userPoints, setUserPoints] = useState<number>(0);
 
 
   const botMove = (
@@ -407,9 +420,19 @@ export default function GameBotPage() {
       setGameEnded(true);
     }
     if (gameMatches == 0){
+      setTableResults((prev) => [
+        ...prev,
+        {
+          botPoints: botPoints,
+          userPoints: userPoints,
+          RoundNamber: RoundNumber,
+        },
+      ]);
       setGameStarted(false);
       setGameMatches(gameSettings.matches);
       setRoundNumber((prev) => prev + 1);
+      setBotPoints(0);
+      setUserPoints(0);
     }
 
   }, [RobotScore, UserScore]);
@@ -559,7 +582,9 @@ export default function GameBotPage() {
           canvasSize,
           setRightScore,
           setLeftScore,
-          setGameMatches
+          setGameMatches,
+          setBotPoints,
+          setUserPoints
         );
         botMove(ball, leftRectangle, canvasSize.height, prevErrorRef);
       });
@@ -575,15 +600,16 @@ export default function GameBotPage() {
     }
   }, [ball, gameStarted, canvasSize]);
 
+
   return (
     <PageWrapper>
-      <LoadingScreen loading={loading}  setLoading={setLoading} />
-      {!loading && (
-        <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-      >
+  <LoadingScreen loading={loading} setLoading={setLoading} />
+  {!loading && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1 }}
+    >
       <div className="absolute top-0 left-0 w-full h-full flex flex-row">
         <div className="absolute inset-0 flex justify-center items-center h-screen w-screen ">
           <div className="relative w-full h-full">
@@ -595,35 +621,60 @@ export default function GameBotPage() {
           </div>
           <div className="absolute flex-col w-[100%]">
             <div className="flex flex-row">
-              <GameSideBar />
+              <GameSideBar tableResults={tableResults} />
               <div className="flex flex-col space-y-10 w-full mx-[10%] h-screen justify-center items-center ">
                 <GameHeader leftScore={leftScore} rightScore={rightScore} />
                 <div
                   id="canvas-container"
-                  className="relative flex items-center bg-background-primary rounded-lg  h-[55vh] w-full max-w-[1200px]"
+                  className="relative flex items-center bg-background-primary rounded-lg h-[55vh] w-full max-w-[1200px]"
                 >
-                  <div className=" absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ">
-                    {!gameStarted &&  !gameEnded && (
-                      <Countdown seconds={3} onCountdownEnd={handleCountdownEnd} RoundNumber={RoundNumber}/>
+                  <div className="absolute top-0 left-0 w-full h-full rounded-lg z-10">
+                    {!gameStarted && !gameEnded && (
+                      <div className="w-full h-full">
+                        <Countdown
+                          seconds={3}
+                          onCountdownEnd={handleCountdownEnd}
+                          RoundNumber={RoundNumber}
+                        />
+                      </div>
                     )}
                     {gameEnded && (
-                        <GameEndStatic bot={gameEndStatic.bot} user={gameEndStatic.user} />
-                      )}
+                      <div className="w-full h-full">
+                        <GameEndStatic
+                          bot={gameEndStatic.bot}
+                          user={gameEndStatic.user}
+                        />
+                      </div>
+                    )}
                   </div>
-                  <canvas
-                    ref={canvasRef}
-                    width={canvasSize.width}
-                    height={canvasSize.height}
-                    className={`w-full h-full rounded-lg ${gameSettings.playgroundtheme.playgroundColor}`}
-                  />
+                  <div className="relative w-full h-full">
+                    {gameSettings.backgroundImg !== -1 && (
+                      <Image
+                        src={BackgroundsImg[gameSettings.backgroundImg].src}
+                        alt="Background"
+                        className={`object-cover w-full h-full rounded-lg opacity-60 ${gameSettings.playgroundtheme.playgroundColor}}`}
+                      />
+                    )}
+                    <canvas
+                      ref={canvasRef}
+                      width={canvasSize.width}
+                      height={canvasSize.height}
+                      className={`w-full h-full rounded-lg absolute top-0 left-0 ${
+                        gameSettings.backgroundImg === -1
+                          ? gameSettings.playgroundtheme.playgroundColor
+                          : ""
+                      }`}
+                    />
+                  </div>
                 </div>
-            </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      </motion.div>
-      )}
-    </PageWrapper>
+    </motion.div>
+  )}
+</PageWrapper>
+
   );
 }

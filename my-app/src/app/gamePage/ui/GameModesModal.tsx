@@ -31,6 +31,7 @@ import animationData from "../../../../assets/animations/animation1.json";
 import levelEasy from "../../../../assets/icons/levelEasy.svg";
 import levelMedium from "../../../../assets/icons/levelMedium.svg";
 import levelHard from "../../../../assets/icons/levelHard.svg";
+import { BackgroundsImg } from "@/utils/constants/game/GameConstants";
 
 type Props = {
   isOpen: boolean;
@@ -56,6 +57,7 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
   const [Playground, setPlayground] = useState(PlaygroundTheme[0]);
   const [rounds, setRounds] = useState<number>(1);
   const [matchesSelected, setMatchesSelected] = useState<number>(1);
+  const [canvasBgImg, setCanvasBgImg] = useState<number>(-1);
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -64,13 +66,14 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
   };
 
   const handelStartGame = () => {
-
+    console.log("canvasBgImg", canvasBgImg);
     dispatch(
       setModal({
         mode: modeValue,
         playgroundtheme: Playground,
         rounds: rounds,
         matches: matchesSelected,
+        backgroundImg: canvasBgImg,
       })
     );
 
@@ -83,8 +86,14 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
   };
 
   const handleRadioChange = (id: string) => {
-    const selectedTheme = PlaygroundTheme.find((theme) => theme.id === Number(id)) || PlaygroundTheme[0];
+    const selectedTheme =
+      PlaygroundTheme.find((theme) => theme.id === Number(id)) ||
+      PlaygroundTheme[0];
     setPlayground(selectedTheme);
+  };
+
+  const handleBackgroundSelect = (id: number) => {
+    setCanvasBgImg(id);
   };
 
   return (
@@ -176,6 +185,32 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
                   ))}
                 </div>
               </RadioGroup>
+            </div>
+            <div className="flex flex-col justify-between space-y-2">
+              <Text>Playground Background</Text>
+              <div className="flex flex-wrap flex-row w-full justify-between items-center max-w-[320px] mx-auto ">
+                {BackgroundsImg.map((bg) => (
+                  <button
+                    key={bg.id}
+                    onClick={() => handleBackgroundSelect(bg.id)}
+                    className={`relative w-16 h-10 rounded-lg border-2 ${ canvasBgImg === bg.id ? "bg-green-500 border-green-500" : "border-white" } `}
+                  >
+                    <Image
+                      src={bg.src}
+                      alt="background"
+                      className={`rounded-lg w-full h-full`}
+                    />
+                  </button>
+                ))}
+                <button
+                      onClick={() => handleBackgroundSelect(-1)}
+                      className={`relative w-16 h-10 rounded-lg border-2 text-black ${
+                        canvasBgImg === -1 ? "border-green-500" : "border-white"
+                      } `}
+                    >
+                      None
+                </button>
+              </div>
             </div>
           </div>
         </ModalBody>

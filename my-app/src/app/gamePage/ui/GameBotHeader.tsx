@@ -23,21 +23,21 @@ const GameHeader = ({
           <Avatar size="lg">
             <Image src={Robot} alt="Logo" />
           </Avatar>
-          <Text className={`font-bold text-2xl ${getTextColor(gameSettings)}`}>
+          <Text className={`font-bold text-2xl ${getTextColor(gameSettings)} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}>
             Robot
           </Text>
         </div>
         <div className="flex flex-row items-center space-x-10">
-          <Text className={`font-bold text-6xl ${getTextColor(gameSettings)}`}>
+          <Text className={`font-bold text-6xl ${getTextColor(gameSettings)} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}>
             {leftScore}
           </Text>
-          <Text className={`font-bold text-6xl ${getTextColor(gameSettings)}`}>--</Text>
-          <Text className={`font-bold text-6xl ${getTextColor(gameSettings)}`}>
+          <Text className={`font-bold text-6xl ${getTextColor(gameSettings)} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}>--</Text>
+          <Text className={`font-bold text-6xl ${getTextColor(gameSettings)} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}>
             {rightScore}
           </Text>
         </div>
         <div className="flex flex-row items-center space-x-5">
-          <Text className={`font-bold text-2xl ${getTextColor(gameSettings)}`}>UserName</Text>
+          <Text className={`font-bold text-2xl ${getTextColor(gameSettings)} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}>UserName</Text>
           <Avatar size="lg" />
         </div>
       </div>

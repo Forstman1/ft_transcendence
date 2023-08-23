@@ -3,7 +3,19 @@ import openBarIcon from "../../../../assets/icons/openBarIcon.svg";
 import closeBarIcon from "../../../../assets/icons/closeBarIcon.svg";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Text, Radio, RadioGroup } from "@chakra-ui/react";
+import {
+  Text,
+  Radio,
+  RadioGroup,
+  TableContainer,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Td,
+  Th,
+  Divider,
+} from "@chakra-ui/react";
 import { useAppSelector } from "@/redux/store/store";
 import {
   Modes,
@@ -17,19 +29,38 @@ import levelHard from "../../../../assets/icons/levelHard.svg";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store/store";
 import { setModal } from "@/redux/slices/game/gameModalSlice";
+import { BackgroundsImg } from "@/utils/constants/game/GameConstants";
 
-const GameSideBar = () => {
-  const [open, setOpen] = useState(false);
+type tableResultProps = {
+  botPoints: number;
+  userPoints: number;
+  RoundNamber: number;
+};
+
+const GameSideBar = ({
+  tableResults,
+}: {
+  tableResults: tableResultProps[];
+}) => {
+  const [open, setOpen] = useState(true);
   const gameSettings = useAppSelector((state) => state.gameReducer);
   const [Playground, setPlayground] = useState(gameSettings.playgroundtheme);
+  const [canvasBgImg, setCanvasBgImg] = useState<number>(
+    gameSettings.backgroundImg
+  );
   const dispatch = useDispatch<AppDispatch>();
+
+  console.log("tableResults", tableResults);
 
   const toggleSidebar = () => {
     setOpen(!open);
+
   };
 
   const handleRadioChange = (id: string) => {
-    const selectedTheme = PlaygroundTheme.find((theme) => theme.id === Number(id)) || PlaygroundTheme[0];
+    const selectedTheme =
+      PlaygroundTheme.find((theme) => theme.id === Number(id)) ||
+      PlaygroundTheme[0];
     setPlayground(selectedTheme);
 
     dispatch(
@@ -38,6 +69,20 @@ const GameSideBar = () => {
         rounds: gameSettings.rounds,
         matches: gameSettings.matches,
         playgroundtheme: selectedTheme,
+        backgroundImg: canvasBgImg,
+      })
+    );
+  };
+
+  const handleBackgroundSelect = (id: number) => {
+    setCanvasBgImg(id);
+    dispatch(
+      setModal({
+        mode: gameSettings.mode,
+        rounds: gameSettings.rounds,
+        matches: gameSettings.matches,
+        playgroundtheme: Playground,
+        backgroundImg: id,
       })
     );
   };
@@ -51,15 +96,20 @@ const GameSideBar = () => {
       <div
         className={` relative h-screen bg-background-primary opacity-80 ${
           open ? "w-[500px]" : "w-[50px]"
-        } duration-500 ease-in-out`}
+        } duration-500 ease-in-out overflow-y-auto scrollbar-hide`}
       >
-        <div className="flex justify-between items-center mb-4 absolute top-60 -right-5">
-          <button onClick={toggleSidebar} className="focus:outline-none">
+        <div className="flex justify-between items-center mb-4 absolute top-60 right-1.5 z-10">
+          <button
+            onClick={toggleSidebar}
+            tabIndex={0}
+            className="z-10"
+          >
             <Image
               src={open ? closeBarIcon : openBarIcon}
               alt={open ? "Close Bar" : "Open Bar"}
               width={41}
               height={41}
+              className="cursor-pointer"
             />
           </button>
         </div>
@@ -69,7 +119,7 @@ const GameSideBar = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="flex flex-col justify-center items-center absolute top-32 p-10 w-full space-y-10">
+            <div className="flex flex-col justify-center items-center absolute top-32 p-10 w-full space-y-10 ">
               <div className="flex flex-col justify-center items-center space-y-6">
                 <Text className="text-white font-bold text-2xl">
                   mode chosen
@@ -102,6 +152,7 @@ const GameSideBar = () => {
                     </div>
                   ))}
                 </div>
+                <Divider />
                 <div className="flex flex-col justify-center items-center space-y-6">
                   <Text className="text-white font-bold text-2xl">
                     rounds chosen
@@ -123,6 +174,7 @@ const GameSideBar = () => {
                     ))}
                   </div>
                 </div>
+                <Divider />
                 <div className="flex flex-col justify-center items-center space-y-6">
                   <Text className="text-white font-bold text-2xl">
                     matches chosen
@@ -144,6 +196,7 @@ const GameSideBar = () => {
                     ))}
                   </div>
                 </div>
+                <Divider />
                 <div className="flex flex-col justify-center items-center space-y-6">
                   <Text className="text-white font-bold text-2xl">
                     playground theme
@@ -151,7 +204,7 @@ const GameSideBar = () => {
                   <RadioGroup
                     value={Playground.id.toString()}
                     onChange={(id) => handleRadioChange(id)}
-                    >
+                  >
                     <div className="flex flex-row justify-center items-center space-x-10">
                       {PlaygroundTheme.map((theme) => (
                         <Radio key={theme.id} value={theme.id.toString()}>
@@ -167,6 +220,79 @@ const GameSideBar = () => {
                       ))}
                     </div>
                   </RadioGroup>
+                </div>
+                <Divider />
+                <div className="flex flex-col justify-center items-center space-y-6">
+                  <Text className="text-white font-bold text-2xl">
+                    playground Background
+                  </Text>
+                  <div className="flex flex-wrap flex-row justify-between items-center mx-10 ">
+                    {BackgroundsImg.map((bg) => (
+                      <button
+                        key={bg.id}
+                        onClick={() => handleBackgroundSelect(bg.id)}
+                        className={`relative w-16 h-10 rounded-lg border-2 ${
+                          canvasBgImg === bg.id
+                            ? "bg-green-500 border-green-500"
+                            : "border-white"
+                        } `}
+                      >
+                        <Image
+                          src={bg.src}
+                          alt="background"
+                          className={`rounded-lg w-full h-full`}
+                        />
+                      </button>
+                    ))}
+                    <button
+                      onClick={() => handleBackgroundSelect(-1)}
+                      className={`relative w-16 h-10 rounded-lg border-2 text-white ${
+                        canvasBgImg === -1 ? "border-green-500" : "border-white"
+                      } `}
+                    >
+                      None
+                    </button>
+                  </div>
+                  {tableResults.length !== 0 && (
+                    <Divider />
+                  )}
+                  <div className="flex flex-col justify-center items-center space-y-6">
+                    {tableResults.length !== 0 && (
+                      <>
+                        <Text className="text-white font-bold text-2xl">
+                          Results
+                        </Text>
+                        <div className="p-4 border-2 border-white rounded-lg ">
+                        <TableContainer >
+                          <Table variant="striped" colorScheme="teal" maxWidth="100%">
+                            <Thead>
+                              <Tr>
+                                <Th color="white" className=" font-bold">Round</Th>
+                                <Th color="white" className=" font-bold">UserScore</Th>
+                                <Th color="white" className=" font-bold">BotScore</Th>
+                              </Tr>
+                            </Thead>
+                            <Tbody className=" overflow-y-auto scrollbar-hide rounded-lg">
+                              {tableResults.map((result) => (
+                                <Tr key={result.RoundNamber}>
+                                  <Td className="text-green-700 text-xl font-bold">
+                                    {result.RoundNamber}
+                                  </Td>
+                                  <Td className="text-red-700 text-xl font-bold">
+                                    {result.userPoints}
+                                  </Td>
+                                  <Td className="text-red-700 text-xl font-bold">
+                                    {result.botPoints}
+                                  </Td>
+                                </Tr>
+                              ))}
+                            </Tbody>
+                          </Table>
+                        </TableContainer>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

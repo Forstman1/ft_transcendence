@@ -35,16 +35,16 @@ const Countdown = ({ seconds, onCountdownEnd, RoundNumber }: { seconds: number, 
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
-          <div className="flex flex-col items-center justify-center bg-white rounded-lg p-5 w-full h-full bg-opacity-0 z-100">
+          <div className="flex flex-col items-center justify-center bg-white rounded-lg p-5 w-full h-full bg-opacity-0 ">
               <div className='flex flex-row items-center justify-center space-x-5'>
-                <Text className={`text-[200px] z-100 font-bold opacity-90 ${getTextColor2(gameSettings)}`}>ROUND</Text>
-                <Text className={`text-[200px] z-100 font-bold opacity-90 ${getTextColor2(gameSettings)}`}>{RoundNumber}</Text>
+                <Text className={`text-[200px] font-bold opacity-90 ${getTextColor2(gameSettings)}`}>ROUND</Text>
+                <Text className={`text-[200px] font-bold opacity-90 ${getTextColor2(gameSettings)}`}>{RoundNumber}</Text>
               </div>
-              <Text className={` text-[200px] z-100 font-bold opacity-90 ${getTextColor2(gameSettings)}`}>{timeLeft}</Text>
+              <Text className={` text-[200px] font-bold opacity-90 ${getTextColor2(gameSettings)}`}>{timeLeft}</Text>
           </div>
         </motion.div>
       ) : (
-        <div className="flex items-center justify-center bg-white rounded-lg p-5 w-full h-full bg-opacity-0 z-100">
+        <div className="flex items-center justify-center bg-white rounded-lg p-5 w-full h-full bg-opacity-0 ">
           <Image src={GoStart} alt="Go Start" width={200} height={200} className={`opacity-90`} />
         </div>
       )}

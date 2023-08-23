@@ -9,6 +9,7 @@ export interface GameModalState {
     }
     rounds : number;
     matches : number;
+    backgroundImg : number;
 }
 
 const initialState : GameModalState = {
@@ -20,6 +21,7 @@ const initialState : GameModalState = {
     },
     rounds : 1,
     matches : 1,
+    backgroundImg : -1,
 }
 
 const gameModalSlice = createSlice({
@@ -33,6 +35,7 @@ const gameModalSlice = createSlice({
           playgroundtheme: { ...action.payload.playgroundtheme },
           rounds: action.payload.rounds,
           matches: action.payload.matches,
+          backgroundImg: action.payload.backgroundImg,
         };
       },
       getModal: (state) => {
