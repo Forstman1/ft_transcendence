@@ -79,7 +79,7 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
 
     if (gameType === "friend") {
       router.push("/gamePage/gameFriendPage");
-    } else {
+    } else if (gameType === "bot") {
       router.push("/gamePage/gameBotPage");
     }
     onClose();

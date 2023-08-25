@@ -1,31 +1,8 @@
 import { getGameColor } from "./GetGameColor";
 import React from "react";
+import { Rectangle, gameSettingsProps, Ball } from "@/utils/types/game/GameTypes";
 
-export type Rectangle = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
 
-export type gameSettingsProps = {
-  mode: string;
-  playgroundtheme: {
-    id: number;
-    playgroundColor: string;
-    balColor: string;
-  };
-  rounds: number;
-  matches: number;
-};
-
-export type Ball = {
-  x: number;
-  y: number;
-  speedX: number;
-  speedY: number;
-  radius: number;
-};
 
 type throttleProps = {
   // eslint-disable-next-line no-unused-vars
@@ -238,19 +215,16 @@ export const handleResize = (
 };
 
 export const animate = (
-  canvasRef: React.RefObject<HTMLCanvasElement>,
-  setCanvasSize: React.Dispatch<
-    React.SetStateAction<{ width: number; height: number }>
-  >,
-  setLeftRectangle: React.Dispatch<React.SetStateAction<Rectangle>>,
-  setRightRectangle: React.Dispatch<React.SetStateAction<Rectangle>>,
   setBall: React.Dispatch<React.SetStateAction<Ball>>,
   leftRectangle: Rectangle,
   rightRectangle: Rectangle,
   ball: Ball,
   canvasSize: { width: number; height: number },
   setRightScore: React.Dispatch<React.SetStateAction<number>>,
-  setLeftScore: React.Dispatch<React.SetStateAction<number>>
+  setLeftScore: React.Dispatch<React.SetStateAction<number>>,
+  setGameMatches: React.Dispatch<React.SetStateAction<number>>,
+  setBotPoints: React.Dispatch<React.SetStateAction<number>>,
+  setUserPoints: React.Dispatch<React.SetStateAction<number>>
 ) => {
   // Update ball position
   let newBallX = ball.x + ball.speedX;
@@ -263,8 +237,13 @@ export const animate = (
   if (newBallX + ball.radius <= 0 || newBallX - ball.radius >= canvasWidth) {
     if (newBallX + ball.radius <= 0) {
       setRightScore((prevScore) => prevScore + 1);
+      setGameMatches((prev) => prev - 1);
+      setUserPoints((prev) => prev + 1);
+      
     } else {
       setLeftScore((prevScore) => prevScore + 1);
+      setGameMatches((prev) => prev - 1);
+      setBotPoints((prev) => prev + 1);
     }
     newBallX = canvasWidth / 2;
     newBallY = canvasHeight / 2;
@@ -347,3 +326,25 @@ export const animate = (
   // Update ball position
   setBall((prevBall) => ({ ...prevBall, x: newBallX, y: newBallY }));
 };
+
+export const handelGameStatic = (
+  setRobotScore: React.Dispatch<React.SetStateAction<number>>,
+  setUserScore: React.Dispatch<React.SetStateAction<number>>,
+  leftScore: number,
+  rightScore: number,
+  gameMatches: number
+) => {
+
+  if (gameMatches === 0){
+    if (leftScore > rightScore){
+      setRobotScore((prev) => prev + 1);
+    }
+    else if (leftScore < rightScore){
+      setUserScore((prev) => prev + 1);
+    }
+    else {
+      setRobotScore((prev) => prev + 1);
+      setUserScore((prev) => prev + 1);
+    }
+  }
+}
