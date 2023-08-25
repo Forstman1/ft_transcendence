@@ -30,6 +30,8 @@
     "@nestjs/common": "^10.0.4",
     "@nestjs/core": "^10.0.4",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/platform-socket.io": "^10.2.1",
+    "@nestjs/websockets": "^10.2.1",
     "@prisma/client": "^4.16.2",
     "argon2": "^0.27.1",
     "nodemon": "^3.0.1",

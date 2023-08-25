@@ -1,17 +1,11 @@
 import {configureStore} from '@reduxjs/toolkit'
-// import navReducer from '../slices/nav/navSlice'
 import { TypedUseSelectorHook, useSelector } from "react-redux";
+import  gameReducer  from '../slices/game/gameModalSlice';
 
 
 export const store = configureStore({
     reducer: {
-        // nav: navReducer,
-        // user: userReducer,
-        // auth: authReducer,
-        // profile: profileReducer,
-        // chat: chatReducer,
-        // friends: friendsReducer,
-        // settings: settingsReducer,
+        gameReducer,
     },
 })
 
