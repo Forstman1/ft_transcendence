@@ -6,3 +6,9 @@
     --text-primary: #E4E4E4;
     --background-primary: #121212;
   }
+
+body {
+  background-image: url('../../assets/icons/background.svg');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
