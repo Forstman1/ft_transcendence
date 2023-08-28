@@ -9,11 +9,16 @@
 
 /* This one for setting background for the whole body */
 .body-class {
-  background: url( '../../assets/icons/background.svg' ) center center/cover no-repeat fixed;
+  background: url( '../../public/background.svg' ) center center/cover no-repeat fixed;
 }
 /* This one is for settingn backround for the navbar */
 .bg-img {
-  background: url( '../../public/bg-nav.svg' ) center center/cover no-repeat fixed;
+  background: url( '../../public/two.svg' ) ;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  min-height: "100%";
+  background-position-y: -5rem
 }
 
 /* This is some custom styling for navbar underline animation */
@@ -32,17 +37,4 @@
   background-size: 100% 3px;
   background-position: 0 100%
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -63,7 +63,6 @@
 
 "use client";
 
-import Link from "next/link";
 
 import {
 	Box,
@@ -83,9 +82,15 @@ import {
 	Stack,
 	AvatarBadge,
 } from "@chakra-ui/react";
+
+import Link from "next/link";
+import Image from "next/image";
+import Logo from "../../../assets/icons/Logo.svg";
+
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 
 import { usePathname } from "next/navigation";
+import wave from "../../../public/two.svg";
 
 const GameRouter = ["/gamePage/gameFriendPage", "/gamePage/gameBotPage"];
 interface Props {
@@ -128,10 +133,10 @@ export default function Simple() {
 
 	return (
 		<>
+			<Image src={wave} alt="wave" className="object-cover absolute top-0 left-0 w-screen" />
 			<Box
-				bg={useColorModeValue("gray.100", "gray.900")}
 				px={4}
-				className="bg-img"
+				className="absolute top-0 left-0 w-full z-10"
 			>
 				<Flex
 					h={16}
@@ -147,7 +152,9 @@ export default function Simple() {
 						className="bg-slate-50"
 					/>
 					<HStack spacing={8} alignItems={"center"}>
-						<Box>Logo</Box>
+						<Box>
+							<Image src={Logo} alt="Logo"/>
+						</Box>
 						<HStack
 							as={"nav"}
 							spacing={4}
