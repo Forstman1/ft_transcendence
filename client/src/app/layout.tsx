@@ -31,7 +31,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={geo.className}>
+      <body className={`${geo.className} body-class`}>
         <ReduxProvider>
             <CacheProvider>
               <ChakraProvider>

@@ -11,7 +11,9 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <PageWrapper>
-      <div className="absolute inset-0 flex justify-center items-center h-screen w-screen">
+      {/* I commented this image because i already set from css for the hole application  */}
+
+      {/* <div className="absolute inset-0 flex justify-center items-center h-screen w-screen">
         <div className="relative w-full h-full">
           <Image
             src={ImgBackground}
@@ -19,7 +21,7 @@ export default function Home() {
             className="object-cover w-full h-full"
           />
         </div>
-      </div>
+      </div> */}
     </PageWrapper>
   );
 }

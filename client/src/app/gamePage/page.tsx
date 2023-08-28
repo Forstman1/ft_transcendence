@@ -29,13 +29,16 @@ export default function GamePage() {
   return (
     <PageWrapper>
       <div className="absolute inset-0 flex justify-center items-center  w-screen h-screen">
-        <div className="relative w-full h-full">
+
+      {/* I commented this image because i already set from css for the hole application  */}
+
+        {/* <div className="relative w-full h-full">
           <Image
             src={ImgBackground}
             alt="Background"
             className="object-cover w-full h-full"
           />
-        </div>
+        </div> */}
         <div className="flex flex-row justify-center items-center absolute top-0 left-0 w-full h-full">
           <div className=" absolute justify-center items-center ">
             <div className="flex flex-row justify-center items-center mx-auto">
