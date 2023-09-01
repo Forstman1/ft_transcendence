@@ -3,17 +3,12 @@
 @tailwind utilities;
 
 :root {
-<<<<<<< HEAD
-    --text-primary: #E4E4E4;
-    --background-primary: #121212;
+    --text-primary: #fafafa;
+    --background-primary: #0a0a0a;
   }
 
 body {
   background-image: url('../../assets/icons/background.svg');
   background-size: cover;
   background-repeat: no-repeat;
-=======
-  --text-primary: #E4E4E4;
-  --background-primary: #121212;
->>>>>>> origin/staging
 }

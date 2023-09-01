@@ -11,12 +11,15 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <PageWrapper>
-      <div className="absolute inset-0 flex justify-center items-center h-screen w-screen">
-        <div className="relative w-full h-full">
+    <div>
+      
+    </div>
+    // <PageWrapper>
+    //   <div className="absolute inset-0 flex justify-center items-center h-screen w-screen">
+    //     <div className="relative w-full h-full">
 
-        </div>
-      </div>
-    </PageWrapper>
+    //     </div>
+    //   </div>
+    // </PageWrapper>
   );
 }
