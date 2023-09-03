@@ -11,15 +11,8 @@ export const metadata: Metadata = {
 export default function GameFriendPage() {
   return (
     <PageWrapper>
-      <div className="absolute inset-0 flex justify-center items-center h-screen w-screen">
-        <div className="relative w-full h-full">
-          <Image
-            src={ImgBackground}
-            alt="Background"
-            className="object-cover w-full h-full"
-          />
-        </div>
-        <div className=" absolute justify-center items-center">
+      <div className=" flex justify-center items-center h-full w-full mt-[100px]">
+        <div className=" justify-center items-center">
             <h1 className="text-5xl text-text-primary font-bold">Game with a friend</h1>
         </div>
       </div>

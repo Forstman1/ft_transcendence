@@ -3,6 +3,7 @@ import { Text, Button } from '@chakra-ui/react';
 import { PageWrapper } from '@/app/animationWrapper/pageWrapper';
 import Image from 'next/image';
 import closeIcon from '../../../../assets/icons/closeIcon.svg';
+import restartIcon from '../../../../assets/icons/restartIcon.svg';
 import { useRouter } from "next/navigation";
 import Lottie from "lottie-react";
 import ggAnimation from "../../../../assets/animations/ggAnimation.json";
@@ -52,6 +53,15 @@ const GameEndStatic = ({bot, user}: GameStaticProps) => {
               animationData={ggAnimation}
               className=" inset-0 border-2 border-white rounded-[100%] w-[80px] h-[80px] "
             />
+            <Button 
+              colorScheme="teal"
+              variant="outline"
+              leftIcon={
+                <Image src={restartIcon} alt="restartIcon" width={25} height={25} />
+              }
+            >
+              Restart
+            </Button>
             <Button
               colorScheme="teal"
               variant="outline"

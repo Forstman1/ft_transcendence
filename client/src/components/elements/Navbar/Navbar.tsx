@@ -196,7 +196,7 @@ const Navbar: React.FC = () => {
 
   if (breakpoint === "base") {
     return (
-      <Box className="w-full h-20 bg-neutral-950">
+      <Box className="w-full h-20 bg-neutral-950 sticky top-0 z-100">
         <Flex className="w-full h-full items-center justify-end">
           <Box className="w-1/3 h-auto">
             <Center>
@@ -222,7 +222,7 @@ const Navbar: React.FC = () => {
   }
   else {
     return (
-      <Box className="w-full h-24 bg-neutral-950">
+      <Box className="w-full h-24 bg-neutral-950 sticky top-0 z-100">
         <Flex className="w-full h-full items-center grid-cols-4">
           <Box className="col-span-1 ml-20 p-auto w-auto h-auto ">
             <Link href="/">

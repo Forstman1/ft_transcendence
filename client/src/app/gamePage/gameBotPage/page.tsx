@@ -377,78 +377,71 @@ export default function GameBotPage() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
-          <div className="absolute top-0 left-0 w-full h-full flex flex-row">
-            <div className="absolute inset-0 flex justify-center items-center h-screen w-screen ">
-              <div className="relative w-full h-full">
-                <Image
-                  src={ImgBackground}
-                  alt="Background"
-                  className="object-cover w-full h-full"
+            <div className="flex-col w-full">
+              <div className="flex flex-row">
+                <GameSideBar
+                  tableResults={tableResults}
+                  gamePause={gamePause}
+                  setGamePause={setGamePause}
                 />
-              </div>
-              <div className="absolute flex-col w-[100%]">
-                <div className="flex flex-row">
-                  <GameSideBar tableResults={tableResults} gamePause={gamePause} setGamePause={setGamePause} />
-                  <div className="flex flex-col space-y-10 w-full mx-[10%] h-screen justify-center items-center ">
-                    <GameHeader leftScore={leftScore} rightScore={rightScore} />
-                    <div
-                      id="canvas-container"
-                      className="relative flex items-center bg-background-primary rounded-lg h-[55vh] w-full max-w-[1200px]"
-                    >
-                      <div className="absolute top-0 left-0 w-full h-full rounded-lg z-10">
-                        {gamePause && !gameEnded && (
-                          <div className="flex justify-center w-full h-full bg-black opacity-50 rounded-lg z-10">
-                            <Text className="text-white text-4xl font-semibold">
-                              Pause
-                            </Text>
-                          </div>
-                        )}
-                        {!gameStarted && !gameEnded && (
+                <div className="flex flex-col space-y-10 w-full mx-[10%] h-full justify-center items-center mt-[100px]">
+                  <GameHeader leftScore={leftScore} rightScore={rightScore} />
+                  <div
+                    id="canvas-container"
+                    className="relative flex items-center bg-background-primary rounded-lg h-[55vh] w-full max-w-[1200px]"
+                  >
+                    <div className="absolute top-0 left-0 w-full h-full rounded-lg z-10">
+                      {gamePause && !gameEnded && (
+                        <div className="flex justify-center w-full h-full bg-black opacity-50 rounded-lg z-10">
+                          <Text className="text-white text-4xl font-semibold">
+                            Pause
+                          </Text>
+                        </div>
+                      )}
+                      {!gameStarted && !gameEnded && (
+                        <div className="w-full h-full">
+                          <Countdown
+                            seconds={3}
+                            onCountdownEnd={handleCountdownEnd}
+                            RoundNumber={RoundNumber}
+                            gamePause={gamePause}
+                          />
+                        </div>
+                      )}
+                      {gameEnded && (
+                        <>
                           <div className="w-full h-full">
-                            <Countdown
-                              seconds={3}
-                              onCountdownEnd={handleCountdownEnd}
-                              RoundNumber={RoundNumber}
-                              gamePause={gamePause}
+                            <GameEndStatic
+                              bot={gameEndStatic.bot}
+                              user={gameEndStatic.user}
                             />
                           </div>
-                        )}
-                        {gameEnded && (
-                          <>
-                            <div className="w-full h-full">
-                              <GameEndStatic
-                                bot={gameEndStatic.bot}
-                                user={gameEndStatic.user}
-                              />
-                            </div>
-                          </>
-                        )}
-                      </div>
-                      <div className="relative w-full h-full">
-                        {gameSettings.backgroundImg !== -1 && (
-                          <Image
-                            src={BackgroundsImg[gameSettings.backgroundImg].src}
-                            alt="Background"
-                            className={`object-cover w-full h-full rounded-lg opacity-60 ${gameSettings.playgroundtheme.playgroundColor}}`}
-                          />
-                        )}
-                        <canvas
-                          ref={canvasRef}
-                          width={canvasSize.width}
-                          height={canvasSize.height}
-                          className={`w-full h-full rounded-lg absolute top-0 left-0 ${
-                            gameSettings.backgroundImg === -1
-                              ? gameSettings.playgroundtheme.playgroundColor
-                              : ""
-                          }`}
+                        </>
+                      )}
+                    </div>
+                    <div className="relative w-full h-full">
+                      {gameSettings.backgroundImg !== -1 && (
+                        <Image
+                          src={BackgroundsImg[gameSettings.backgroundImg].src}
+                          alt="Background"
+                          className={`object-cover w-full h-full rounded-lg opacity-60 ${gameSettings.playgroundtheme.playgroundColor}}`}
                         />
-                      </div>
+                      )}
+                      <canvas
+                        ref={canvasRef}
+                        width={canvasSize.width}
+                        height={canvasSize.height}
+                        className={`w-full h-full rounded-lg absolute top-0 left-0 ${
+                          gameSettings.backgroundImg === -1
+                            ? gameSettings.playgroundtheme.playgroundColor
+                            : ""
+                        }`}
+                      />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
         </motion.div>
       )}
     </PageWrapper>
