@@ -13,9 +13,11 @@ import Link from "next/link";
 import React from 'react';
 import { usePathname } from 'next/navigation';
 
+/* ------------------------------------------------------------------------------------------------------------------ */
 
 const GameRouter = ["/gamePage/gameFriendPage", "/gamePage/gameBotPage"]
 
+/* ------------------------------------------------------------------------------------------------------------------ */
 
 let NAVBAR_BUTTONS: Array<{
   text: string,
@@ -27,15 +29,17 @@ let NAVBAR_BUTTONS: Array<{
       text: "Log In",
       color: "text-neutral-50",
       backgroundColor: "bg-neutral-950",
-      href: "#0",
+      href: "#",
     },
     {
       text: "Sign Up",
-      href: "#",
       color: "text-neutral-950",
       backgroundColor: "bg-neutral-50",
+      href: "#",
     },
   ];
+
+/* ------------------------------------------------------------------------------------------------------------------ */
 
 let NAVBAR_ITEMS: Array<{
   text: string,
@@ -54,6 +58,8 @@ let NAVBAR_ITEMS: Array<{
       href: "/chatPage"
     }
   ];
+
+/* ------------------------------------------------------------------------------------------------------------------ */
 
 const MyButton: React.FC<{
   color: string,
@@ -79,16 +85,17 @@ const MyButton: React.FC<{
   )
 }
 
+/* ------------------------------------------------------------------------------------------------------------------ */
+
 const NavbarAuthButtons: React.FC = () => {
   const breakpoint = useBreakpointValue({ base: "base", md: "md", lg: "lg" });
-
   return (
     <ButtonGroup className="flex flex-row justify-center space-x-5">
       {NAVBAR_BUTTONS.map((item: {
         text: string,
         color: string,
         backgroundColor: string,
-        href: string
+        href: string,
       }, index: number) => {
         return (
           breakpoint === "base" && index === 1 ? null : <MyButton
@@ -105,12 +112,14 @@ const NavbarAuthButtons: React.FC = () => {
   );
 }
 
+/* ------------------------------------------------------------------------------------------------------------------ */
+
 const NavbarLinks: React.FC = () => {
   let path = usePathname();
 
-  // if (GameRouter.includes(path)) {
-  //   path = "/gamePage";
-  // }
+  if (GameRouter.includes(path)) {
+    path = "/gamePage";
+  }
   return (
     <motion.div>
       <Flex color={'white'} className={`grid-cols-${NAVBAR_ITEMS.length} w-full h-full items-center justify-start space-x-10`}>
@@ -140,6 +149,9 @@ const NavbarLinks: React.FC = () => {
     </motion.div>
   )
 }
+
+/* ------------------------------------------------------------------------------------------------------------------ */
+
 const MenuLinks: React.FC = () => {
   return (
     <Menu>
@@ -177,6 +189,7 @@ const MenuLinks: React.FC = () => {
   )
 }
 
+/* ------------------------------------------------------------------------------------------------------------------ */
 
 const Navbar: React.FC = () => {
   const breakpoint = useBreakpointValue({ base: "base", md: "md", lg: "lg" });

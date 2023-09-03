@@ -11,15 +11,6 @@ export const metadata: Metadata = {
 export default function ChatPage() {
   return (
     <PageWrapper>
-      <div className="absolute inset-0 flex justify-center items-center h-screen w-screen">
-        <div className="relative w-full h-full">
-          <Image
-            src={ImgBackground}
-            alt="Background"
-            className="object-cover w-full h-full"
-          />
-        </div>
-      </div>
     </PageWrapper>
   );
 }
