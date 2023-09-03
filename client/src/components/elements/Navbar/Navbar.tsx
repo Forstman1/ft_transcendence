@@ -70,7 +70,7 @@ const MyButton: React.FC<{
   return (
     <motion.div>
       <Button as={"a"} href={href} size='sm'
-        className={`${backgroundColor} ${color} border-neutral-50 text-xl 
+        className={`${backgroundColor} ${color} border-neutral-50 text-2xl 
           rounded border border-current font-semibold`}
         boxShadow={"0.2rem 0.2rem 0rem 0rem rgb(150,150,150)"}
         _hover={{}}
@@ -131,13 +131,13 @@ const NavbarLinks: React.FC = () => {
             <Box key={index} className='col-span-1'>
               <Center>
                 <Link href={item.href} className="w-auto">
-                  <Text className="text-xl font-semibold">
+                  <Text className="text-2xl font-semibold">
                     {item.text}
                   </Text>
                   {path === item.href ? (
                     <motion.span
                       layoutId="underline"
-                      className="absolute w-5 h-1 bg-white rounded-full"
+                      className="absolute w-6 h-1 bg-white rounded-full"
                     />
                   ) : null}
                 </Link>
@@ -194,7 +194,7 @@ const MenuLinks: React.FC = () => {
 const Navbar: React.FC = () => {
   const breakpoint = useBreakpointValue({ base: "base", md: "md", lg: "lg" });
 
-  if (breakpoint === "base") {
+  if (breakpoint === "md" || breakpoint === "base") {
     return (
       <Box className="w-full h-20 bg-neutral-950">
         <Flex className="w-full h-full items-center justify-end">
@@ -239,7 +239,7 @@ const Navbar: React.FC = () => {
             <NavbarAuthButtons />
           </Box>
         </Flex>
-        <Image src={WavesDivider} alt="WavesDivider" className="w-full h-8" />
+        <Image src={WavesDivider} alt="WavesDivider" className="w-full h-10 m-0 p-0" />
       </Box>
     )
   }
