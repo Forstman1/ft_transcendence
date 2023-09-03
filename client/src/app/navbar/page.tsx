@@ -16,6 +16,7 @@ const MENU_LIST = [
   { text: "Chat", href: "/chatPage" },
 ];
 
+
 export default function Navbar() {
   let path = usePathname();
 

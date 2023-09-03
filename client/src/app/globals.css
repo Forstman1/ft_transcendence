@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --text-primary: #fafafa;
+    --background-primary: #0a0a0a;
+  }
+
+body {
+  background-image: url('../../assets/icons/background.svg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  margin: 0;
+  padding: 0;
+}
