@@ -1,8 +1,15 @@
 "use client";
 
 import {
-  Box, Flex, Button, ButtonGroup, Center, Text, Menu, MenuButton,
-  MenuList, MenuItem, IconButton, useBreakpointValue,
+  Box, Flex, Button, Center, Text,
+  Menu, MenuButton, MenuList, MenuItem, IconButton,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
 } from '@chakra-ui/react'
 import { HamburgerIcon } from '@chakra-ui/icons'
 import Logo from "../../../../assets/icons/Logo.svg";
@@ -12,34 +19,67 @@ import Image from 'next/image'
 import Link from "next/link";
 import React from 'react';
 import { usePathname } from 'next/navigation';
+import { useDisclosure } from '@chakra-ui/react';
 
-/* ------------------------------------------------------------------------------------------------------------------ */
 
-const GameRouter = ["/gamePage/gameFriendPage", "/gamePage/gameBotPage"]
 
-/* ------------------------------------------------------------------------------------------------------------------ */
+function LoginButton() {
+  const OverlayOne = () => (
+    <ModalOverlay
+      bg='blackAlpha.300'
+      backdropFilter='blur(10px) hue-rotate(90deg)'
+    />
+  )
 
-let NAVBAR_BUTTONS: Array<{
-  text: string,
-  color: string,
-  backgroundColor: string,
-  href: string,
-}> = [
-    {
-      text: "Log In",
-      color: "text-neutral-50",
-      backgroundColor: "bg-neutral-950",
-      href: "#",
-    },
-    {
-      text: "Sign Up",
-      color: "text-neutral-950",
-      backgroundColor: "bg-neutral-50",
-      href: "#",
-    },
-  ];
 
-/* ------------------------------------------------------------------------------------------------------------------ */
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [overlay, setOverlay] = React.useState(<OverlayOne />)
+
+  return (
+    <>
+      <motion.div>
+        <Button as={"a"} size='sm' href="#" _hover={{}}
+          className="bg-neutral-50 text-neutral-950 border-neutral-50 text-2xl 
+            rounded border border-current font-semibold"
+          boxShadow="0.2rem 0.2rem 0rem 0rem rgb(150,150,150)"
+          _active={{
+            transform: 'translate(0.2rem, 0.2rem)',
+            boxShadow: "0rem 0rem 0rem 0rem rgb(20,20,20)",
+          }}
+          onClick={() => {
+            setOverlay(<OverlayOne />)
+            onOpen()
+          }}
+        >
+          Log In
+        </Button>
+        <Modal isCentered isOpen={isOpen} onClose={onClose}>
+          {overlay}
+          <ModalContent>
+            <ModalHeader>Log In</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <Flex className="justify-center items-center flex-col">
+                <Button className="text-neutral-50 rounded border-2 border-teal-500 bg-teal-500">Log In with 42 Intra</Button>
+                <Button className="text-sky-600 rounded border-2 border-sky-600">Log In with Google</Button>
+                <Button className="text-gray-50 rounded border-2 border-gray-900 bg-gray-900">Log In with Github</Button>
+              </Flex>
+              <Center>
+                <Text>
+                  Don&apos;t Worry, we won&apos;t collect any private informations!
+                </Text>
+              </Center>
+            </ModalBody>
+            <ModalFooter>
+              {/* self-explanatory */}
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </motion.div>
+    </>
+  )
+}
+
 
 let NAVBAR_ITEMS: Array<{
   text: string,
@@ -59,70 +99,14 @@ let NAVBAR_ITEMS: Array<{
     }
   ];
 
-/* ------------------------------------------------------------------------------------------------------------------ */
-
-const MyButton: React.FC<{
-  color: string,
-  backgroundColor: string,
-  href: string,
-  children: React.ReactNode,
-}> = ({ color, backgroundColor, href, children }) => {
-  return (
-    <motion.div>
-      <Button as={"a"} href={href} size='sm'
-        className={`${backgroundColor} ${color} border-neutral-50 text-2xl 
-          rounded border border-current font-semibold`}
-        boxShadow={"0.2rem 0.2rem 0rem 0rem rgb(150,150,150)"}
-        _hover={{}}
-        _active={{
-          transform: 'translate(0.2rem, 0.2rem)',
-          boxShadow: "0rem 0rem 0rem 0rem rgb(20,20,20)",
-        }}
-      >
-        {children}
-      </Button>
-    </motion.div>
-  )
-}
-
-/* ------------------------------------------------------------------------------------------------------------------ */
-
-const NavbarAuthButtons: React.FC = () => {
-  const breakpoint = useBreakpointValue({ base: "base", md: "md", lg: "lg" });
-  return (
-    <ButtonGroup className="flex flex-row justify-center space-x-5">
-      {NAVBAR_BUTTONS.map((item: {
-        text: string,
-        color: string,
-        backgroundColor: string,
-        href: string,
-      }, index: number) => {
-        return (
-          breakpoint === "base" && index === 1 ? null : <MyButton
-            key={index}
-            color={item.color}
-            backgroundColor={item.backgroundColor}
-            href={item.href}
-          >
-            {item.text}
-          </MyButton>
-        )
-      })}
-    </ButtonGroup>
-  );
-}
-
-/* ------------------------------------------------------------------------------------------------------------------ */
-
 const NavbarLinks: React.FC = () => {
   let path = usePathname();
+  const GameRouter = ["/gamePage/gameFriendPage", "/gamePage/gameBotPage"]
+  path = GameRouter.includes(path) ? "/gamePage" : path;
 
-  if (GameRouter.includes(path)) {
-    path = "/gamePage";
-  }
   return (
     <motion.div>
-      <Flex color={'white'} className={`grid-cols-${NAVBAR_ITEMS.length} w-full h-full items-center justify-start space-x-10`}>
+      <Flex color={'white'} className="grid-cols-3 w-full h-full items-center justify-start space-x-8">
         {NAVBAR_ITEMS.map((item: {
           text: string,
           href: string
@@ -149,8 +133,6 @@ const NavbarLinks: React.FC = () => {
     </motion.div>
   )
 }
-
-/* ------------------------------------------------------------------------------------------------------------------ */
 
 const MenuLinks: React.FC = () => {
   return (
@@ -189,60 +171,37 @@ const MenuLinks: React.FC = () => {
   )
 }
 
-/* ------------------------------------------------------------------------------------------------------------------ */
-
 const Navbar: React.FC = () => {
-  const breakpoint = useBreakpointValue({ base: "base", md: "md", lg: "lg" });
+  return (
+    <header className="w-screen h-20 md:h-24 bg-neutral-950">
 
-  if (breakpoint === "md" || breakpoint === "base") {
-    return (
-      <Box className="w-full h-20 bg-neutral-950">
-        <Flex className="w-full h-full items-center justify-end">
-          <Box className="w-1/3 h-auto">
-            <Center>
-              <MenuLinks />
-            </Center>
-          </Box>
-          <Box className="w-1/3 h-auto">
-            <Center>
-              <Link href="/">
-                <Image src={Logo} alt="Logo" width={150} height={150} />
-              </Link>
-            </Center>
-          </Box>
-          <Box className="w-1/3 h-auto">
-            <Center>
-              <NavbarAuthButtons />
-            </Center>
-          </Box>
-        </Flex>
-        <Image src={WavesDivider} alt="WavesDivider" className="w-full h-5" />
-      </Box>
-    )
-  }
-  else {
-    return (
-      <Box className="w-full h-24 bg-neutral-950">
-        <Flex className="w-full h-full items-center grid-cols-4">
-          <Box className="col-span-1 ml-20 p-auto w-auto h-auto ">
-            <Link href="/">
-              <Image src={Logo} alt="Logo" width={150} height={150} />
-            </Link>
-          </Box>
-          <Box className="col-span-1 ml-20 w-auto h-auto">
+      <Flex className="w-full h-full grid-cols-3 justify-between items-center ">
+
+        <Flex className="order-1 md:order-2 basic-1/3 md:basis-4/6 justify-center md:justify-start items-center col-span-1">
+          <Box className="invisible md:visible">
             <NavbarLinks />
           </Box>
-          <Box className="col-span-1 m-auto w-auto h-auto">
-
-          </Box>
-          <Box className="col-span-1 mr-20 w-auto h-auto">
-            <NavbarAuthButtons />
+          <Box className="md:invisible">
+            <MenuLinks />
           </Box>
         </Flex>
-        <Image src={WavesDivider} alt="WavesDivider" className="w-full h-10 m-0 p-0" />
-      </Box>
-    )
-  }
+
+        <Flex className="order-2 md:order-1 basic-1/3 md:basis-1/6 justify-center items-center col-span-1">
+          <Link href="/">
+            <Image src={Logo} alt="Logo" width={150} height={150} />
+          </Link>
+        </Flex>
+
+        <Flex className="order-last basic-1/3 md:basis-1/6 justify-end md:justify-end md:pr-10 items-center col-span-1">
+          <LoginButton />
+        </Flex>
+
+      </Flex>
+
+      <Image src={WavesDivider} alt="WavesDivider" className="w-full h-5" />
+
+    </header>
+  )
 }
 
 export default Navbar;

@@ -8,12 +8,11 @@ import { PageWrapper } from "./animationWrapper/pageWrapper";
 import WhiteWavesImage from "../../assets/icons/wavesOpacityInversed.svg"
 import BlackBackground from "../../assets/icons/blackBackground.svg"
 
-/* ------------------------------------------------------------------------------------------------------------------ */
 
 export default function Home() {
   return (
     <PageWrapper>
-      <Box className="w-screen h-screen">
+      {/* <Box className="w-screen h-screen">
         <Flex className=" lg:m-0 p-0 w-full h-5/6 lg:flex-row flex-col justify-center content-center justify-items-center items-center grid-cols-2">
           <Box className="mt-20 mx-12 col-span-1 order-2 lg:order-1 lg:w-1/2 ">
             <Image className="m-auto p-auto" width={850} src={GamePreview} alt="Game Preview" />
@@ -33,7 +32,7 @@ export default function Home() {
             </Flex>
           </Box>
         </Flex>
-      </Box>
+      </Box> */}
 
     </PageWrapper>
   );
