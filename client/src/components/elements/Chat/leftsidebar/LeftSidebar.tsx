@@ -14,13 +14,8 @@ import {
   ModalBody,
   ModalCloseButton,
 } from '@chakra-ui/react'
+import Hashtag from './hatshtag';
 
-function Hashtag(props: any) {
-  return (<div className='flex items-center cursor-pointer'>
-    <div className='h-[20px] text-[40px] mr-3'>#</div>
-    <div className='h-[20px] text-[30px]'>{props.text}</div>
-  </div>)
-}
 
 
 function Usercard(props: any) {
@@ -39,8 +34,8 @@ function Usercard(props: any) {
     </div>
 
     <div className='flex flex-col items-center'>
-        <div>06:49 pm</div>
-        <div className='rounded-full bg-black w-7 h-7 flex items-center justify-center text-[25px] text-white'>3</div>
+      <div>06:49 pm</div>
+      <div className='rounded-full bg-black w-7 h-7 flex items-center justify-center text-[25px] text-white'>3</div>
     </div>
 
   </div>)
@@ -49,6 +44,11 @@ function Usercard(props: any) {
 
 
 
+type ChannelValues = {
+  channelName: string
+  password: string
+  type: string
+}
 
 
 
@@ -56,60 +56,61 @@ function Usercard(props: any) {
 
 export default function LeftSidebar() {
 
-  let Channels = ["General", "Random", "Music", "Anime", "Manga"]
 
   let users = ["General", "General", "General", "General", "General", "General", "General", "General", "General", "General", "General"]
 
-  let [channels, setNewChannels] = useState([])
+
+  let [channels, setNewChannels]: any = useState([])
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const handelNewChannels = (data: any) => {
-    
-  }
+
 
 
 
   return (
-    <div>
-    <div className=' w-[465px]   flex flex-col items-center   '>
+    <>
+      <div className=' w-[465px]   flex flex-col items-center   '>
 
-      <div className=' w-[350px] h-[65px] mt-5 border-2 border-black rounded-sm flex justify-between items-center shadow-md shadow-black'>
-        <div className='ml-5 text-gray-200 text-[30px]'>Search...</div>
-        <div className='w-[75px] h-[63px] bg-black flex items-center justify-center cursor-pointer'><Icon boxSize={8} color="white" as={SearchIcon} /></div>
+        <div className=' w-[350px] h-[65px] mt-5 border-2 border-black rounded-sm flex justify-between items-center shadow-md shadow-black'>
+          <div className='ml-5 text-gray-200 text-[30px]'>Search...</div>
+          <div className='w-[75px] h-[63px] bg-black flex items-center justify-center cursor-pointer'><Icon boxSize={8} color="white" as={SearchIcon} /></div>
+        </div>
+
+        <div className='w-[350px] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
+          <div className='text-[40px] font-bold'>Channels</div>
+          <div onClick={onOpen} className='cursor-pointer' ><Icon boxSize={10} as={SmallAddIcon} /></div>
+        </div>
+
+        <div className='flex h-[500px] flex-col w-[350px]  gap-6 overflow-y-scroll'>
+
+          {channels.map((data: ChannelValues) => {
+            return <Hashtag data={data} />
+          })}
+
+        </div>
+
+        <div className='w-[350px] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
+          <div className='text-[40px] font-bold'>Direct Messages</div>
+          <div className='cursor-pointer'><Icon boxSize={10} as={SmallAddIcon} /></div>
+        </div>
+
+        <div className=' mt-[50px] flex  justify-between h-[500px] flex-col w-[350px]  gap-6 overflow-y-scroll'>
+
+          {users.map((data: any) => {
+            return <Usercard text={data} />
+          })}
+
+        </div>
       </div>
 
-      <div className='w-[350px] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
-        <div className='text-[40px] font-bold'>Channels</div>
-        <div onClick={onOpen} className='cursor-pointer' ><Icon boxSize={10} as={SmallAddIcon} /></div>
-      </div>
-
-      <div className='flex h-[500px] flex-col w-[350px]  gap-6 overflow-y-scroll'>
-
-        {Channels.map((data: any) => {
-          return <Hashtag text={data} />
-        })}
-
-      </div>
-
-      <div className='w-[350px] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
-        <div className='text-[40px] font-bold'>Direct Messages</div>
-        <div className='cursor-pointer'><Icon boxSize={10} as={SmallAddIcon} /></div>
-      </div>
-
-      <div className=' mt-[50px] flex  justify-between h-[500px] flex-col w-[350px]  gap-6 overflow-y-scroll'>
-
-        {users.map((data: any) => {
-          return <Usercard text={data} />
-        })}
-
-      </div>
-    </div>
-    <Modal isOpen={isOpen} onClose={onClose} isCentered>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <Newchannel isOpen={isOpen}
-        onClose={onClose}
-          /> 
+          onClose={onClose}
+          setNewChannels={setNewChannels}
+          channels={channels}
+        />
       </Modal>
-    
-    </div>
+
+    </>
   )
 }
