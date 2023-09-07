@@ -29,8 +29,8 @@ export default function GamePage() {
 
   return (
     <PageWrapper>
-      <div className="flex flex-row justify-center items-center mx-[10%] mt-[100px]">
-        <div className={`${breakpoint === "base" ? "absolute" : "flex"} flex-col justify-center  P-20 space-y-6 z-10`}>
+      <div className="flex flex-row justify-center items-center mx-[10%] mt-[100px] z-0">
+        <div className={`${breakpoint === "base" ? "absolute" : "flex"} flex-col justify-center items-center  P-20 space-y-6 z-10`}>
           <Text className=" flex text-emerald-300 font-bold text-2xl">
             EXPLORE THE GAME
           </Text>

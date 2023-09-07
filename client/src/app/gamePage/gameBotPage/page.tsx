@@ -56,65 +56,6 @@ const initialGameEndStatic = {
   user: "DRAW",
 };
 
-// const handleResize = (
-//   canvasRef: React.RefObject<HTMLCanvasElement>,
-//   setCanvasSize: React.Dispatch<
-//     React.SetStateAction<{ width: number; height: number }>
-//   >,
-//   setLeftRectangle: React.Dispatch<React.SetStateAction<Rectangle>>,
-//   setRightRectangle: React.Dispatch<React.SetStateAction<Rectangle>>,
-//   setBall: React.Dispatch<React.SetStateAction<Ball>>,
-//   leftRectangle: Rectangle,
-//   rightRectangle: Rectangle,
-//   ball: Ball,
-//   gameSettings: gameSettingsProps
-// ) => {
-//   const aspectRatioWidth = 16;
-//   const aspectRatioHeight = 9;
-//   const newCanvasWidth = window.innerWidth;
-//   const newCanvasHeight =
-//     (newCanvasWidth / aspectRatioWidth) * aspectRatioHeight;
-
-//   setCanvasSize({
-//     width: newCanvasWidth,
-//     height: newCanvasHeight,
-//   });
-
-//   setLeftRectangle((prev) => ({
-//     ...prev,
-//     x: 10,
-//     y: newCanvasHeight / 2 - newCanvasHeight / 10,
-//     height: newCanvasHeight / 5,
-//   }));
-
-//   setRightRectangle((prev) => ({
-//     ...prev,
-//     x: newCanvasWidth - 25,
-//     y: newCanvasHeight / 2 - newCanvasHeight / 10,
-//     height: newCanvasHeight / 5,
-//   }));
-
-//   setBall({
-//     x: newCanvasWidth / 2,
-//     y: newCanvasHeight / 2,
-//     speedX: initialBallSpeed,
-//     speedY: initialBallSpeed,
-//     radius: Math.floor((newCanvasWidth + newCanvasHeight) / 150),
-//   });
-
-//   // Redraw the canvas with updated positions
-//   const context = canvasRef.current?.getContext("2d");
-//   if (context)
-//     draw(
-//       canvasRef.current!,
-//       context,
-//       leftRectangle,
-//       rightRectangle,
-//       ball,
-//       gameSettings
-//     );
-// };
-
 export default function GameBotPage() {
   let gameSettings = useAppSelector((state) => state.gameReducer);
   appliyGameMode(gameSettings);
@@ -276,7 +217,7 @@ export default function GameBotPage() {
   };
 
   useEffect(() => {
-    if(!gameStarted) return;
+    if(!gameStarted || gameEnded) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === " ") {
@@ -383,6 +324,8 @@ export default function GameBotPage() {
                   tableResults={tableResults}
                   gamePause={gamePause}
                   setGamePause={setGamePause}
+                  gameEnded={gameEnded}
+                  gameStarted={gameStarted}
                 />
                 <div className="flex flex-col space-y-10 w-full mx-[10%] h-full justify-center items-center mt-[100px]">
                   <GameHeader leftScore={leftScore} rightScore={rightScore} />
