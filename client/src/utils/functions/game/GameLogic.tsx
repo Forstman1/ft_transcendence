@@ -3,13 +3,6 @@ import React from "react";
 import { Rectangle, gameSettingsProps, Ball } from "@/utils/types/game/GameTypes";
 
 
-
-type throttleProps = {
-  // eslint-disable-next-line no-unused-vars
-  func: (...args: any) => void;
-  delay: number;
-};
-
 export const canvasMiddleLineWidth = 10;
 export let maxBallSpeed: number;
 export let initialBallSpeed: number;
@@ -142,76 +135,6 @@ export const botMove = (
     ...prevLeftRectangle,
     y: limitedNewY,
   }));
-};
-
-export function throttle({ func, delay }: throttleProps) {
-  let lastCall = 0;
-  return function (...args: any) {
-    const now = new Date().getTime();
-    if (now - lastCall >= delay) {
-      lastCall = now;
-      func(...args);
-    }
-  };
-}
-
-export const handleResize = (
-  canvasRef: React.RefObject<HTMLCanvasElement>,
-  setCanvasSize: React.Dispatch<
-    React.SetStateAction<{ width: number; height: number }>
-  >,
-  setLeftRectangle: React.Dispatch<React.SetStateAction<Rectangle>>,
-  setRightRectangle: React.Dispatch<React.SetStateAction<Rectangle>>,
-  setBall: React.Dispatch<React.SetStateAction<Ball>>,
-  leftRectangle: Rectangle,
-  rightRectangle: Rectangle,
-  ball: Ball,
-  gameSettings: gameSettingsProps
-) => {
-  const aspectRatioWidth = 16;
-  const aspectRatioHeight = 9;
-  const newCanvasWidth = window.innerWidth;
-  const newCanvasHeight =
-    (newCanvasWidth / aspectRatioWidth) * aspectRatioHeight;
-
-  setCanvasSize({
-    width: newCanvasWidth,
-    height: newCanvasHeight,
-  });
-
-  setLeftRectangle((prev) => ({
-    ...prev,
-    x: 10,
-    y: newCanvasHeight / 2 - newCanvasHeight / 10,
-    height: newCanvasHeight / 5,
-  }));
-
-  setRightRectangle((prev) => ({
-    ...prev,
-    x: newCanvasWidth - 25,
-    y: newCanvasHeight / 2 - newCanvasHeight / 10,
-    height: newCanvasHeight / 5,
-  }));
-
-  setBall({
-    x: newCanvasWidth / 2,
-    y: newCanvasHeight / 2,
-    speedX: initialBallSpeed,
-    speedY: initialBallSpeed,
-    radius: Math.floor((newCanvasWidth + newCanvasHeight) / 150),
-  });
-
-  // Redraw the canvas with updated positions
-  const context = canvasRef.current?.getContext("2d");
-  if (context)
-    draw(
-      canvasRef.current!,
-      context,
-      leftRectangle,
-      rightRectangle,
-      ball,
-      gameSettings
-    );
 };
 
 export const animate = (

@@ -1,8 +1,6 @@
 
 import React from "react";
 import { Avatar, Text } from "@chakra-ui/react";
-import Robot from "../../../../assets/icons/botAvatar.svg"; 
-import Image from "next/image";
 import { useAppSelector } from "@/redux/store/store";
 import { getTextColor } from "@/utils/functions/game/GetGameColor";
 

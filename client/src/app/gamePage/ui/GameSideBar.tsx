@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import openBarIcon from "../../../../assets/icons/openBarIcon.svg";
 import Image from "next/image";
 import {

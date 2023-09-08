@@ -52,6 +52,8 @@ const getIcon = (mode: string) => {
   }
 };
 
+
+
 const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
   const [modeValue, setmodeValue] = useState<string>(Modes[0]);
   const [Playground, setPlayground] = useState(PlaygroundTheme[0]);
@@ -66,7 +68,6 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
   };
 
   const handelStartGame = () => {
-    console.log("canvasBgImg", canvasBgImg);
     dispatch(
       setModal({
         mode: modeValue,

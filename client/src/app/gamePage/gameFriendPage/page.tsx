@@ -2,7 +2,7 @@
 "use client";
 
 // import { Metadata } from "next";
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { PageWrapper } from "../../animationWrapper/pageWrapper";
 import Countdown from "../ui/Countdown";
 import GameHeader from "../ui/GameFriendHeader";
@@ -19,7 +19,6 @@ import {
   appliyGameMode,
   RecSpeed,
   initialBallSpeed,
-  throttle,
   draw,
   handelGameStatic,
   botMove,
@@ -33,7 +32,7 @@ import { io } from "socket.io-client";
 
 
 const initialCanvasSize = {
-  width: window?.innerWidth | 1200,
+  width: 1500,
   height: 600,
 };
 
@@ -56,12 +55,25 @@ const initialGameEndStatic = {
   user: "DRAW",
 };
 
+type DataPersentage = {
+  isgameStarted: boolean;
+  isgameEnded: boolean;
+  isgAmePause: boolean;
+  ballX: number;
+  ballY: number;
+  ballRadius: number;
+  ballSpeedX: number;
+  ballSpeedY: number;
+  leftRectangleY: number;
+  rightRectangleY: number;
+};
+
 export default function GameFriendPage() {
   let gameSettings = useAppSelector((state) => state.gameReducer);
   appliyGameMode(gameSettings);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [keysPressed, setKeysPressed] = useState<Record<string, boolean>>({});
-  const [canvasSize, setCanvasSize] = useState(initialCanvasSize);
+  const canvasSize = initialCanvasSize;
   const leftRectangleRef = useRef<Rectangle>(initialLeftRectangle);
   const rightRectangleRef = useRef<Rectangle>(initialRightRectangle);
   const initialBallState: Ball = {
@@ -96,7 +108,14 @@ export default function GameFriendPage() {
   const [userPoints, setUserPoints] = useState<number>(0);
   const [gamePause, setGamePause] = useState<boolean>(false);
 
-  const socket = io("http://localhost:3001");
+  //---------------------------------------------------------------------------
+
+  const socket = io('http://localhost:3001', {
+    transports: ['websocket'],
+    upgrade: false,
+  });
+
+  //---------------------------------------------------------------------------
 
   useEffect (() => {
     if (RoundNumber == gameSettings.rounds && gameStarted) {
@@ -138,69 +157,7 @@ export default function GameFriendPage() {
 
   }, [RobotScore, UserScore]);
 
-  const handleResize = useCallback(
-    () => {
-      if (!canvasRef.current) return;
-  const aspectRatioWidth = 16;
-  const aspectRatioHeight = 9;
-  const newCanvasWidth = window.innerWidth;
-  const newCanvasHeight =
-    (newCanvasWidth / aspectRatioWidth) * aspectRatioHeight;
-
-  setCanvasSize({
-    width: newCanvasWidth,
-    height: newCanvasHeight,
-  });
-
-  setLeftRectangle((prev) => ({
-    ...prev,
-    x: 10,
-    y: newCanvasHeight / 2 - newCanvasHeight / 10,
-    height: newCanvasHeight / 5,
-  }));
-
-  setRightRectangle((prev) => ({
-    ...prev,
-    x: newCanvasWidth - 25,
-    y: newCanvasHeight / 2 - newCanvasHeight / 10,
-    height: newCanvasHeight / 5,
-  }));
-
-  setBall({
-    x: newCanvasWidth / 2,
-    y: newCanvasHeight / 2,
-    speedX: initialBallSpeed,
-    speedY: initialBallSpeed,
-    radius: Math.floor((newCanvasWidth + newCanvasHeight) / 150),
-  });
-
-  // Redraw the canvas with updated positions
-  const context = canvasRef.current?.getContext("2d");
-  if (context)
-    draw(
-      canvasRef.current!,
-      context,
-      leftRectangle,
-      rightRectangle,
-      ball,
-      gameSettings
-    );
-    },
-    []
-  );
-
-  useEffect(() => {
-
-    handleResize();
-
-    const handleResizeThrottled = throttle({ func: handleResize, delay: 200 });
-
-    window.addEventListener("resize", handleResizeThrottled);
-
-    return () => {
-      window.removeEventListener("resize", handleResizeThrottled);
-    };
-  }, [handleResize]);
+  //---------------------------------------------------------------------------
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -218,14 +175,10 @@ export default function GameFriendPage() {
     setGameStarted(true);
   };
 
+  //---------------------------------------------------------------------------
+
   useEffect(() => {
     if(!gameStarted || gameEnded) return;
-
-    if (gameStarted){
-      socket.emit("findAllGame", {}, (Response: any) => {
-        console.log(Response);
-      });
-    }
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === " ") {
@@ -248,6 +201,8 @@ export default function GameFriendPage() {
       document.removeEventListener("keyup", handleKeyUp);
     };
   }, [gameStarted, gamePause, gameEnded]);
+
+  //---------------------------------------------------------------------------
   
 
   useEffect(() => {
@@ -278,6 +233,8 @@ export default function GameFriendPage() {
   
   }, [keysPressed, canvasSize, ball, gameStarted, gameEnded]);
 
+  //---------------------------------------------------------------------------
+
   useEffect(() => {
 
     if (gamePause || !gameStarted || gameEnded) return;
@@ -290,6 +247,25 @@ export default function GameFriendPage() {
       gameMatches
     );
       const animationFrameId = requestAnimationFrame(() => {
+
+        //----------------------------------------------
+        const dataPersentage: DataPersentage = {
+          isgameStarted: gameStarted,
+          isgameEnded: gameEnded,
+          isgAmePause: gamePause,
+          ballX: (ball.x * 100) / canvasSize.width,
+          ballY: (ball.y * 100) / canvasSize.height,
+          ballRadius: ball.radius,
+          ballSpeedX: ball.speedX,
+          ballSpeedY: ball.speedY,
+          leftRectangleY: (leftRectangle.y * 100) / canvasSize.height,
+          rightRectangleY: (rightRectangle.y * 100) / canvasSize.height,
+        }
+        socket.emit("sendGameData", {dataPersentage} , (Response: any) => {
+          console.log("resBody: " + Response);
+        });
+        //----------------------------------------------
+
         animate(
           setBall,
           leftRectangle,
@@ -315,6 +291,8 @@ export default function GameFriendPage() {
         clearInterval(botInterval);
       };
   }, [ball, gameStarted, canvasSize, gamePause, gameEnded]);
+
+  //---------------------------------------------------------------------------
 
 
   return (

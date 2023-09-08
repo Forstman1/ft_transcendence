@@ -2,12 +2,11 @@
 "use client";
 
 // import { Metadata } from "next";
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { PageWrapper } from "../../animationWrapper/pageWrapper";
 import Countdown from "../ui/Countdown";
 import GameHeader from "../ui/GameBotHeader";
 import Image from "next/image";
-import ImgBackground from "../../../../assets/icons/background.svg";
 import { useAppSelector } from "@/redux/store/store";
 import GameSideBar from "../ui/GameSideBar";
 import LoadingScreen from "@/components/elements/loadingScreen/LoadingScreen";
@@ -20,7 +19,6 @@ import {
   appliyGameMode,
   RecSpeed,
   initialBallSpeed,
-  throttle,
   draw,
   handelGameStatic,
   botMove,
@@ -33,7 +31,7 @@ import {
 
 
 const initialCanvasSize = {
-  width: window.innerWidth,
+  width: 1500,
   height: 600,
 };
 
@@ -61,7 +59,7 @@ export default function GameBotPage() {
   appliyGameMode(gameSettings);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [keysPressed, setKeysPressed] = useState<Record<string, boolean>>({});
-  const [canvasSize, setCanvasSize] = useState(initialCanvasSize);
+  const canvasSize = initialCanvasSize;
   const leftRectangleRef = useRef<Rectangle>(initialLeftRectangle);
   const rightRectangleRef = useRef<Rectangle>(initialRightRectangle);
   const initialBallState: Ball = {
@@ -95,6 +93,8 @@ export default function GameBotPage() {
   const [botPoints, setBotPoints] = useState<number>(0);
   const [userPoints, setUserPoints] = useState<number>(0);
   const [gamePause, setGamePause] = useState<boolean>(false);
+
+  //---------------------------------------------------------------------------
 
   useEffect (() => {
     if (RoundNumber == gameSettings.rounds && gameStarted) {
@@ -136,69 +136,8 @@ export default function GameBotPage() {
 
   }, [RobotScore, UserScore]);
 
-  const handleResize = useCallback(
-    () => {
-      if (!canvasRef.current) return;
-  const aspectRatioWidth = 16;
-  const aspectRatioHeight = 9;
-  const newCanvasWidth = window.innerWidth;
-  const newCanvasHeight =
-    (newCanvasWidth / aspectRatioWidth) * aspectRatioHeight;
+  //---------------------------------------------------------------------------
 
-  setCanvasSize({
-    width: newCanvasWidth,
-    height: newCanvasHeight,
-  });
-
-  setLeftRectangle((prev) => ({
-    ...prev,
-    x: 10,
-    y: newCanvasHeight / 2 - newCanvasHeight / 10,
-    height: newCanvasHeight / 5,
-  }));
-
-  setRightRectangle((prev) => ({
-    ...prev,
-    x: newCanvasWidth - 25,
-    y: newCanvasHeight / 2 - newCanvasHeight / 10,
-    height: newCanvasHeight / 5,
-  }));
-
-  setBall({
-    x: newCanvasWidth / 2,
-    y: newCanvasHeight / 2,
-    speedX: initialBallSpeed,
-    speedY: initialBallSpeed,
-    radius: Math.floor((newCanvasWidth + newCanvasHeight) / 150),
-  });
-
-  // Redraw the canvas with updated positions
-  const context = canvasRef.current?.getContext("2d");
-  if (context)
-    draw(
-      canvasRef.current!,
-      context,
-      leftRectangle,
-      rightRectangle,
-      ball,
-      gameSettings
-    );
-    },
-    []
-  );
-
-  useEffect(() => {
-
-    handleResize();
-
-    const handleResizeThrottled = throttle({ func: handleResize, delay: 200 });
-
-    window.addEventListener("resize", handleResizeThrottled);
-
-    return () => {
-      window.removeEventListener("resize", handleResizeThrottled);
-    };
-  }, [handleResize]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -240,7 +179,8 @@ export default function GameBotPage() {
       document.removeEventListener("keyup", handleKeyUp);
     };
   }, [gameStarted, gamePause, gameEnded]);
-  
+
+  //---------------------------------------------------------------------------
 
   useEffect(() => {
     if (gamePause || !gameStarted || gameEnded) return;
@@ -269,6 +209,8 @@ export default function GameBotPage() {
       draw(canvasRef.current!, context, leftRectangle, rightRectangle, ball, gameSettings);
   
   }, [keysPressed, canvasSize, ball, gameStarted, gameEnded]);
+
+  //---------------------------------------------------------------------------
 
   useEffect(() => {
 
@@ -307,6 +249,8 @@ export default function GameBotPage() {
         clearInterval(botInterval);
       };
   }, [ball, gameStarted, canvasSize, gamePause, gameEnded]);
+
+  //---------------------------------------------------------------------------
 
 
   return (
