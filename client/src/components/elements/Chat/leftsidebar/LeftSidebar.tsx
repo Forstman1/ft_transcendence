@@ -7,14 +7,9 @@ import Newchannel from './newchannel';
 
 import {
   Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
 } from '@chakra-ui/react'
 import Hashtag from './hatshtag';
+import Newmessage from './newmessage';
 
 
 
@@ -52,6 +47,10 @@ type ChannelValues = {
 
 
 
+type MessageValues = {
+  userName: string
+}
+
 
 
 export default function LeftSidebar() {
@@ -62,7 +61,7 @@ export default function LeftSidebar() {
 
   let [channels, setNewChannels]: any = useState([])
   const { isOpen, onOpen, onClose } = useDisclosure()
-
+  const [ChannelOrUser, setChannelOrUser] = useState(false)
 
 
 
@@ -78,10 +77,10 @@ export default function LeftSidebar() {
 
         <div className='w-[350px] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
           <div className='text-[40px] font-bold'>Channels</div>
-          <div onClick={onOpen} className='cursor-pointer' ><Icon boxSize={10} as={SmallAddIcon} /></div>
+          <div onClick={() =>  {onOpen(), setChannelOrUser(true) }} className='cursor-pointer' ><Icon boxSize={10} as={SmallAddIcon} /></div>
         </div>
 
-        <div className='flex h-[500px] flex-col w-[350px]  gap-6 overflow-y-scroll'>
+        <div className='flex h-[500px] flex-col w-[350px] mt-[30px]  gap-6 overflow-y-scroll'>
 
           {channels.map((data: ChannelValues) => {
             return <Hashtag data={data} />
@@ -91,7 +90,7 @@ export default function LeftSidebar() {
 
         <div className='w-[350px] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
           <div className='text-[40px] font-bold'>Direct Messages</div>
-          <div className='cursor-pointer'><Icon boxSize={10} as={SmallAddIcon} /></div>
+          <div onClick={() =>  {onOpen(), setChannelOrUser(false) }}  className='cursor-pointer'><Icon boxSize={10} as={SmallAddIcon} /></div>
         </div>
 
         <div className=' mt-[50px] flex  justify-between h-[500px] flex-col w-[350px]  gap-6 overflow-y-scroll'>
@@ -103,13 +102,28 @@ export default function LeftSidebar() {
         </div>
       </div>
 
-      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+      {ChannelOrUser === true ? <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <Newchannel isOpen={isOpen}
           onClose={onClose}
           setNewChannels={setNewChannels}
           channels={channels}
+
         />
-      </Modal>
+      </Modal> : <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <Newmessage isOpen={isOpen}
+          onClose={onClose}
+
+        />
+      </Modal>}
+
+
+      {/* {addUser && <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <Newmessage isOpen={isOpen}
+          onClose={onClose}
+
+        />
+      </Modal>} */}
+
 
     </>
   )
