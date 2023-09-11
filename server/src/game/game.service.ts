@@ -1,5 +1,5 @@
 import { Body, Injectable } from '@nestjs/common';
-import { CreateGameDto, GameStatic } from './dto/create-game.dto';
+import { GameStatic } from './dto/create-game.dto';
 import { Game } from './entities/game.entity';
 
 @Injectable()

@@ -6,10 +6,9 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { GameService } from './game.service';
-// import { CreateGameDto } from './dto/create-game.dto';
 import { Server, Socket } from 'socket.io';
 import { Body } from '@nestjs/common';
-import { CreateGameDto, GameStatic } from './dto/create-game.dto';
+import { GameStatic } from './dto/create-game.dto';
 
 @WebSocketGateway()
 export class GameGateway {

@@ -238,9 +238,9 @@ export default function GameFriendPage() {
 
   //---------------------------------------------------------------------------
 
-  socket.on("GetGameData", (data: any) => {
-      console.log(data);
-  });
+  // socket.on("GetGameData", (data: any) => {
+  //     console.log(data);
+  // });
 
   useEffect(() => {
 
@@ -250,13 +250,13 @@ export default function GameFriendPage() {
     if (gamePause || !gameStarted || gameEnded) return;
 
     //----------------------------------------------
-    const clientId = socket.id;
-    const dataPersentage: GameStatic = {
-      isGameStarted: gameStarted,
-      isGameEnded: gameEnded,
-      isGamePause: gamePause,
-    }
-    socket.emit("sendGameData", {dataPersentage, clientId});
+    // const clientId = socket.id;
+    // const dataPersentage: GameStatic = {
+    //   isGameStarted: gameStarted,
+    //   isGameEnded: gameEnded,
+    //   isGamePause: gamePause,
+    // }
+    // socket.emit("sendGameData", {dataPersentage, clientId});
 
     //----------------------------------------------
     

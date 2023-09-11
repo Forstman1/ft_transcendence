@@ -6,7 +6,6 @@ import { Button, Text, useDisclosure, useBreakpointValue } from "@chakra-ui/reac
 import Image from "next/image";
 import Gamepad from "../../../assets/icons/gamepad.svg";
 import Robot from "../../../assets/icons/robot.svg";
-import ImgBackground from "../../../assets/icons/background.svg";
 import Lottie from "lottie-react";
 import animationData from "../../../assets/animations/animation3.json";
 import GameModesModal from "./ui/GameModesModal";
@@ -29,7 +28,7 @@ export default function GamePage() {
 
   return (
     <PageWrapper>
-      <div className="flex flex-row justify-center items-center mx-[10%] mt-[100px] z-0">
+      <div className="flex flex-row justify-center items-center mx-[10%]  z-0">
         <div className={`${breakpoint === "base" ? "absolute" : "flex"} flex-col justify-center items-center  P-20 space-y-6 z-10`}>
           <Text className=" flex text-emerald-300 font-bold text-2xl">
             EXPLORE THE GAME
