@@ -56,9 +56,6 @@ const initialGameEndStatic = {
 };
 
 type DataPersentage = {
-  isgameStarted: boolean;
-  isgameEnded: boolean;
-  isgAmePause: boolean;
   ballX: number;
   ballY: number;
   ballRadius: number;
@@ -67,6 +64,12 @@ type DataPersentage = {
   leftRectangleY: number;
   rightRectangleY: number;
 };
+
+type GameStatic = {
+  isGameStarted: boolean;
+  isGameEnded: boolean;
+  isGamePause: boolean;
+}
 
 export default function GameFriendPage() {
   let gameSettings = useAppSelector((state) => state.gameReducer);
@@ -235,9 +238,27 @@ export default function GameFriendPage() {
 
   //---------------------------------------------------------------------------
 
+  socket.on("GetGameData", (data: any) => {
+      console.log(data);
+  });
+
   useEffect(() => {
 
+    if(gameEnded)
+      socket.off("GetGameData");
+
     if (gamePause || !gameStarted || gameEnded) return;
+
+    //----------------------------------------------
+    const clientId = socket.id;
+    const dataPersentage: GameStatic = {
+      isGameStarted: gameStarted,
+      isGameEnded: gameEnded,
+      isGamePause: gamePause,
+    }
+    socket.emit("sendGameData", {dataPersentage, clientId});
+
+    //----------------------------------------------
     
     handelGameStatic(
       setRobotScore,
@@ -247,24 +268,6 @@ export default function GameFriendPage() {
       gameMatches
     );
       const animationFrameId = requestAnimationFrame(() => {
-
-        //----------------------------------------------
-        const dataPersentage: DataPersentage = {
-          isgameStarted: gameStarted,
-          isgameEnded: gameEnded,
-          isgAmePause: gamePause,
-          ballX: (ball.x * 100) / canvasSize.width,
-          ballY: (ball.y * 100) / canvasSize.height,
-          ballRadius: ball.radius,
-          ballSpeedX: ball.speedX,
-          ballSpeedY: ball.speedY,
-          leftRectangleY: (leftRectangle.y * 100) / canvasSize.height,
-          rightRectangleY: (rightRectangle.y * 100) / canvasSize.height,
-        }
-        socket.emit("sendGameData", {dataPersentage} , (Response: any) => {
-          console.log("resBody: " + Response);
-        });
-        //----------------------------------------------
 
         animate(
           setBall,

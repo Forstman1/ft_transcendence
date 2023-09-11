@@ -6,9 +6,10 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { GameService } from './game.service';
-import { CreateGameDto } from './dto/create-game.dto';
+// import { CreateGameDto } from './dto/create-game.dto';
 import { Server, Socket } from 'socket.io';
 import { Body } from '@nestjs/common';
+import { CreateGameDto, GameStatic } from './dto/create-game.dto';
 
 @WebSocketGateway()
 export class GameGateway {
@@ -17,17 +18,23 @@ export class GameGateway {
 
   constructor(private readonly gameService: GameService) {}
 
-  @SubscribeMessage('createGame')
-  async create(@MessageBody() createGameDto: CreateGameDto) {
-    const message = await this.gameService.create(createGameDto);
-    this.server.emit('gameCreated', message);
-    return message;
-  }
+  // @SubscribeMessage('createGame')
+  // async create(@MessageBody() createGameDto: CreateGameDto) {
+  //   const message = await this.gameService.create(createGameDto);
+  //   this.server.emit('gameCreated', message);
+  //   return message;
+  // }
 
   @SubscribeMessage('sendGameData')
-  sendGameData(@Body() body: any) {
-    console.log(body);
-    return this.gameService.sendGameData();
+  sendGameData(
+    @Body() GameStatic: GameStatic,
+    @ConnectedSocket() client: Socket,
+  ) {
+    if (!GameStatic.isgameEnded) {
+      setInterval(() => {
+        client.emit('GetGameData', this.gameService.sendGameData(GameStatic));
+      }, 1000 / 60);
+    }
   }
 
   @SubscribeMessage('join')
