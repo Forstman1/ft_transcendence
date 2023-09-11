@@ -1,15 +1,14 @@
 "use client";
 
-import { SearchIcon, SmallAddIcon } from '@chakra-ui/icons';
-import { Avatar, AvatarBadge, Button, Icon, useDisclosure } from '@chakra-ui/react';
+import { SmallAddIcon } from '@chakra-ui/icons';
+import { Avatar, AvatarBadge, Button, Icon, Input, useDisclosure, Modal } from '@chakra-ui/react';
 import React, { useState } from 'react'
 import Newchannel from './newchannel';
 
-import {
-  Modal,
-} from '@chakra-ui/react'
+
 import Hashtag from './hatshtag';
 import Newmessage from './newmessage';
+import Search from './search';
 
 
 
@@ -46,22 +45,26 @@ type ChannelValues = {
 }
 
 
-
-type MessageValues = {
+type UserValues = {
   userName: string
+  id: string
+  onlineStatus: string
 }
-
 
 
 export default function LeftSidebar() {
 
 
-  let users = ["General", "General", "General", "General", "General", "General", "General", "General", "General", "General", "General"]
-
 
   let [channels, setNewChannels]: any = useState([])
+
+  let [users, setNewUsers]: any = useState([])
+
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [ChannelOrUser, setChannelOrUser] = useState(false)
+
+
+
 
 
 
@@ -69,28 +72,25 @@ export default function LeftSidebar() {
   return (
     <>
       <div className=' w-[465px]   flex flex-col items-center   '>
-
-        <div className=' w-[350px] h-[65px] mt-5 border-2 border-black rounded-sm flex justify-between items-center shadow-md shadow-black'>
-          <div className='ml-5 text-gray-200 text-[30px]'>Search...</div>
-          <div className='w-[75px] h-[63px] bg-black flex items-center justify-center cursor-pointer'><Icon boxSize={8} color="white" as={SearchIcon} /></div>
-        </div>
-
+        <Search channels={channels}/>
+        
         <div className='w-[350px] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
           <div className='text-[40px] font-bold'>Channels</div>
-          <div onClick={() =>  {onOpen(), setChannelOrUser(true) }} className='cursor-pointer' ><Icon boxSize={10} as={SmallAddIcon} /></div>
+          <div onClick={() => { onOpen(), setChannelOrUser(true) }} className='cursor-pointer' ><Icon boxSize={10} as={SmallAddIcon} /></div>
         </div>
 
         <div className='flex h-[500px] flex-col w-[350px] mt-[30px]  gap-6 overflow-y-scroll'>
 
           {channels.map((data: ChannelValues) => {
-            return <Hashtag data={data} />
+            if (data.channelName)
+              return <Hashtag data={data} />
           })}
 
         </div>
 
         <div className='w-[350px] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
           <div className='text-[40px] font-bold'>Direct Messages</div>
-          <div onClick={() =>  {onOpen(), setChannelOrUser(false) }}  className='cursor-pointer'><Icon boxSize={10} as={SmallAddIcon} /></div>
+          <div onClick={() => { onOpen(), setChannelOrUser(false) }} className='cursor-pointer'><Icon boxSize={10} as={SmallAddIcon} /></div>
         </div>
 
         <div className=' mt-[50px] flex  justify-between h-[500px] flex-col w-[350px]  gap-6 overflow-y-scroll'>
@@ -102,6 +102,9 @@ export default function LeftSidebar() {
         </div>
       </div>
 
+
+
+
       {ChannelOrUser === true ? <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <Newchannel isOpen={isOpen}
           onClose={onClose}
@@ -112,17 +115,11 @@ export default function LeftSidebar() {
       </Modal> : <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <Newmessage isOpen={isOpen}
           onClose={onClose}
-
+          setNewusers={setNewUsers}
         />
       </Modal>}
 
 
-      {/* {addUser && <Modal isOpen={isOpen} onClose={onClose} isCentered>
-        <Newmessage isOpen={isOpen}
-          onClose={onClose}
-
-        />
-      </Modal>} */}
 
 
     </>

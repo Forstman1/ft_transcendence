@@ -20,20 +20,25 @@ type Props = {
 
     isOpen: boolean;
     onClose: () => void;
+    setNewUsers: Dispatch<SetStateAction<UserValues[]>>;
 
 };
 
-
+type UserValues = {
+    userName: string
+    id: number
+    onlineStatus: string
+}
 
 
 function Usercard(props: any) {
-    
-    
-    const { text, selectedOption, onOptionChange } = props;
-    
+
+
+    const { data, selectedOption, onOptionChange } = props;
+
     const handleChange = () => {
-        onOptionChange(text);
-      };
+        onOptionChange(data.userName);
+    };
 
 
     return (<div onClick={handleChange} className='flex justify-around items-center border-1 border-black  cursor-pointer m-2 ml-0 p-2  rounded-md  '>
@@ -42,17 +47,17 @@ function Usercard(props: any) {
             <Avatar boxSize={12}>
                 <AvatarBadge boxSize={6} bg='green' />
             </Avatar>
-
         </div>
 
         <div className='flex flex-col items-center justify-around'>
-            <div className='text-[30px]'>{text}</div>
+            <div className='text-[30px]'>{data.userName}</div>
         </div>
+
         <Radio
-          className='w-[30px] h-[30px]  rounded-sm'
-          value={text}
-          onChange={handleChange}
-          isChecked={selectedOption === text} 
+            className='w-[30px] h-[30px]  rounded-sm'
+            value={data.userName}
+            onChange={handleChange}
+            isChecked={selectedOption === data.userName}
         >
         </Radio>
 
@@ -61,22 +66,31 @@ function Usercard(props: any) {
 
 
 
-export default function Newmessage({ isOpen, onClose }: Props) {
+export default function Newmessage({ isOpen, onClose, setNewUsers }: Props) {
 
 
-    let users = ["General1", "General2", "General3", "General4", "General5", "General6"]
+    // let users = ["General1", "General2", "General3", "General4", "General5", "General6"]
+    let users1: UserValues[] = [{userName: "sahafid", id: 1, onlineStatus: "active"},
+                                {userName: "houazzan", id: 2, onlineStatus: "active"},
+                                {userName: "rel-fagr", id: 3, onlineStatus: "active"},
+                                {userName: "haitkadir", id: 4, onlineStatus: "busy"},
+                                {userName: "mnaimi", id: 5, onlineStatus: "offline"},
+
+                                ]
     const [selectedOption, setSelectedOption] = useState('');
 
 
+
+
+
     const handleOptionChange = (newValue: any) => {
-        console.log(newValue)
         setSelectedOption(newValue);
-      };
+    };
 
     return (<div>
         <ModalOverlay />
         <ModalContent>
-            <ModalHeader >Find Friend</ModalHeader>
+            <ModalHeader>Find Friend</ModalHeader>
             <ModalCloseButton />
 
             <ModalBody>
@@ -87,12 +101,12 @@ export default function Newmessage({ isOpen, onClose }: Props) {
 
                 <div className=' mt-[20px] flex  justify-between h-[500px] flex-col w-full   gap-6 overflow-y-scroll'>
 
-                    {users.map((data: any) => {
+                    {users1.map((data: any) => {
                         return <Usercard
-                         text={data}
-                         selectedOption={selectedOption}
-                         onOptionChange={handleOptionChange}
-                         />
+                            data={data}
+                            selectedOption={selectedOption}
+                            onOptionChange={handleOptionChange}
+                        />
                     })}
 
                 </div>
