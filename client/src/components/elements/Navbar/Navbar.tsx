@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import {
   Box,
+  Icon,
   Flex,
   Button,
   Center,
@@ -15,6 +16,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  MenuDivider,
   IconButton,
   Modal,
   ModalOverlay,
@@ -62,17 +64,35 @@ interface AuthButtonObj {
   borderClr: string;
   bgClr: string;
   clr: string;
-  icon: IconType;
+  icon: IconType | React.FC;
 }
+
+
+const IntraLogoIcon: React.FC = () => {
+  return (
+    <Icon
+      enableBackground="new 0 0 595.3 841.9"
+      viewBox="0 0 137.6 96.6"
+    >
+      <g transform="translate(-229.2 -372.7)" fill="#fff">
+        <polygon points="229.2 443.9 279.9 443.9 279.9 469.3 305.2 469.3 305.2 423.4 254.6 423.4 305.2 372.7 279.9 372.7 229.2 423.4" />
+        <polygon points="316.1 398.1 341.4 372.7 316.1 372.7" />
+        <polygon points="341.4 398.1 316.1 423.4 316.1 448.7 341.4 448.7 341.4 423.4 366.8 398.1 366.8 372.7 341.4 372.7" />
+        <polygon points="366.8 423.4 341.4 448.7 366.8 448.7" />
+      </g>
+    </Icon>
+  )
+};
+
 
 const AuthButonsList: Array<AuthButtonObj> = [
   {
-    text: 'Send to 42 Intra',
+    text: 'Log in with Intra',
     href: '#0',
-    borderClr: 'teal.500',
-    bgClr: 'teal.500',
+    borderClr: 'teal.400',
+    bgClr: 'teal.400',
     clr: 'white',
-    icon: FaGithub,
+    icon: IntraLogoIcon,
   },
   {
     text: 'Sign in with Google',
@@ -83,7 +103,7 @@ const AuthButonsList: Array<AuthButtonObj> = [
     icon: FcGoogle,
   },
   {
-    text: 'Continue with Github',
+    text: 'Send to Github',
     href: '#0',
     borderClr: 'gray.900',
     bgClr: 'gray.900',
@@ -92,7 +112,7 @@ const AuthButonsList: Array<AuthButtonObj> = [
   },
 ]
 
-const AuthButtons = () => {
+const AuthButtons: React.FC = () => {
   return (
     <>
       <Center className='p-8'>
@@ -102,12 +122,13 @@ const AuthButtons = () => {
             return (
               <Button
                 key={index}
+                className='text-lg md:text-xl'
                 as='a' href={button.href}
                 size='sm' w='full' h='3rem'
                 backgroundColor={button.bgClr} color={button.clr}
-                border='2px' borderColor={button.borderClr} rounded='sm'
+                border='2px' borderColor={button.borderClr} rounded='md'
                 boxShadow='0.2rem 0.2rem 0rem 0rem rgb(150,150,150)'
-                fontWeight='semibold' fontSize='xl'
+                fontWeight='semibold'
                 _hover={{}}
                 _active={{
                   transform: 'translate(0.2rem, 0.2rem)',
@@ -142,7 +163,7 @@ function LoginButton() {
       <motion.div>
         <Button
           as='a'
-          className='w-16 h-6 text-xl md:w-24 md:h-10 md:text-2xl'
+          className='cursor-pointer w-16 h-6 text-xl md:w-24 md:h-10 md:text-2xl'
           backgroundColor='whiteAlpha.900' color='blackAlpha.900'
           border='1px' borderColor='whiteAlpha.900' rounded='sm'
           boxShadow='0.2rem 0.2rem 0rem 0rem rgb(150,150,150)'
@@ -168,7 +189,7 @@ function LoginButton() {
               </Text>
             </ModalHeader>
             <ModalCloseButton />
-            <ModalBody>
+            <ModalBody >
               <AuthButtons />
             </ModalBody>
             <ModalFooter>
@@ -241,10 +262,7 @@ const HeaderButtonRoutes: React.FC = () => {
 
 const HeaderMenuRoutes: React.FC = () => {
   return (
-    <Flex className='block md:hidden'
-    justifyContent='center'
-    justifyItems='center'
-    alignItems='center'>
+    <Box className='block md:hidden'>
       <Menu>
         <MenuButton
           as={IconButton}
@@ -253,7 +271,7 @@ const HeaderMenuRoutes: React.FC = () => {
           variant='solid'
           aria-label='Options'
           icon={<HamburgerIcon w={5} h={5} />}
-          height={6} width={10} rounded='sm'
+          height={6} width={10} rounded='md'
           boxShadow={"0.2rem 0.2rem 0rem 0rem rgb(150,150,150)"}
           _hover={{}}
           _active={{
@@ -261,7 +279,7 @@ const HeaderMenuRoutes: React.FC = () => {
             boxShadow: "0rem 0rem 0rem 0rem rgb(20,20,20)",
           }}
         />
-        <MenuList margin='0' padding='0' rounded='md' className="border-none border-neutral-50 bg-neutral-900">
+        <MenuList rounded='md' className="border-none border-neutral-50 bg-neutral-900">
           {NAVBAR_ITEMS.map((item: {
             text: string,
             href: string
@@ -273,13 +291,13 @@ const HeaderMenuRoutes: React.FC = () => {
                     {item.text}
                   </Text>
                 </MenuItem>
-                {index != NAVBAR_ITEMS.length - 1 ? <hr className="w-full bg-neutral-300"></hr> : null}
+                {index != NAVBAR_ITEMS.length - 1 ? <MenuDivider /> : null}
               </>
             )
           })}
         </MenuList>
       </Menu>
-    </Flex>
+    </Box>
 
   )
 }
@@ -328,7 +346,7 @@ const Navbar: React.FC = () => {
         {
           HEADER_ITEMS.map((item: HeaderComponents, index: number) => {
             let customClasses: string;
-            if (item.name == 'HeaderRoutes'){
+            if (item.name == 'HeaderRoutes') {
               customClasses = 'order-1 md:order-2 w-1/3 md:w-72 md:mr-auto';
             } else if (item.name == 'HeaderLogo') {
               customClasses = 'order-2 md:order-1 w-1/3 md:w-56';
