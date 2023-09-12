@@ -33,7 +33,7 @@ import levelEasy from "../../../../assets/icons/levelEasy.svg";
 import levelMedium from "../../../../assets/icons/levelMedium.svg";
 import levelHard from "../../../../assets/icons/levelHard.svg";
 import { BackgroundsImg } from "@/utils/constants/game/GameConstants";
-import { motion } from "framer-motion";
+import GameSearchFriend from "./GameSearchFriend"; 
 
 type Props = {
   isOpen: boolean;
@@ -273,37 +273,7 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
           </ModalFooter>
         </ModalContent>
       ) : (
-        <ModalContent>
-          <ModalHeader>Search for a Friend</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Text>Search for a Friend</Text>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button
-              colorScheme="teal"
-              variant="outline"
-              mr={3}
-              onClick={onClose}
-              leftIcon={
-                <Image src={closeIcon} alt="closeIcon" width={25} height={25} />
-              }
-            >
-              Close
-            </Button>
-            <Button
-              colorScheme="teal"
-              variant="outline"
-              leftIcon={
-                <Image src={StartGame} alt="StartGame" width={25} height={25} />
-              }
-              onClick={handelStartGame}
-            >
-              Start
-            </Button>
-          </ModalFooter>
-        </ModalContent>
+        <GameSearchFriend onClose={onClose} handelStartGame={handelStartGame} />
       )}
     </Modal>
   );
