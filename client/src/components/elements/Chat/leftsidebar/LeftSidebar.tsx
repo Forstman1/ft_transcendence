@@ -2,38 +2,13 @@
 
 import { SmallAddIcon } from '@chakra-ui/icons';
 import { Avatar, AvatarBadge, Button, Icon, Input, useDisclosure, Modal } from '@chakra-ui/react';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Newchannel from './newchannel';
 
 
 import Hashtag from './hatshtag';
 import Newmessage from './newmessage';
 import Search from './search';
-
-
-
-function Usercard(props: any) {
-  return (<div className='flex justify-between items-center border-1 border-black shadow-lg shadow-gray-400 cursor-pointer m-2 ml-0 p-2  rounded-md'>
-
-    <div>
-      <Avatar boxSize={16}>
-        <AvatarBadge boxSize={6} bg='green' />
-      </Avatar>
-
-    </div>
-
-    <div className='flex flex-col items-center justify-around'>
-      <div className='text-[30px]'>user_69420</div>
-      <div className='text-gray-400'>ok, see you tomorrow</div>
-    </div>
-
-    <div className='flex flex-col items-center'>
-      <div>06:49 pm</div>
-      <div className='rounded-full bg-black w-7 h-7 flex items-center justify-center text-[25px] text-white'>3</div>
-    </div>
-
-  </div>)
-}
 
 
 
@@ -50,6 +25,36 @@ type UserValues = {
   id: string
   onlineStatus: string
 }
+
+
+
+
+
+
+function Usercard(props: any) {
+
+  return (<div className='flex justify-between items-center border-1 border-black shadow-lg shadow-gray-400 cursor-pointer m-2 ml-0 p-2  rounded-md'>
+
+    <div>
+      <Avatar boxSize={16}>
+        <AvatarBadge boxSize={6} bg='green' />
+      </Avatar>
+
+    </div>
+
+    <div className='flex flex-col items-center justify-around'>
+      <div className='text-[30px]'>{props.data.userName}</div>
+      <div className='text-gray-400'>ok, see you tomorrow</div>
+    </div>
+
+    <div className='flex flex-col items-center'>
+      <div>06:49 pm</div>
+      <div className='rounded-full bg-black w-7 h-7 flex items-center justify-center text-[25px] text-white'>3</div>
+    </div>
+
+  </div>)
+}
+
 
 
 export default function LeftSidebar() {
@@ -72,8 +77,11 @@ export default function LeftSidebar() {
   return (
     <>
       <div className=' w-[465px]   flex flex-col items-center   '>
-        <Search channels={channels}/>
-        
+        <Search
+          channels={channels}
+          users={users}
+        />
+
         <div className='w-[350px] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
           <div className='text-[40px] font-bold'>Channels</div>
           <div onClick={() => { onOpen(), setChannelOrUser(true) }} className='cursor-pointer' ><Icon boxSize={10} as={SmallAddIcon} /></div>
@@ -93,10 +101,10 @@ export default function LeftSidebar() {
           <div onClick={() => { onOpen(), setChannelOrUser(false) }} className='cursor-pointer'><Icon boxSize={10} as={SmallAddIcon} /></div>
         </div>
 
-        <div className=' mt-[50px] flex  justify-between h-[500px] flex-col w-[350px]  gap-6 overflow-y-scroll'>
+        <div className=' mt-[50px] flex  h-[500px] flex-col w-[350px]  gap-6 overflow-y-scroll'>
 
-          {users.map((data: any) => {
-            return <Usercard text={data} />
+          {users.map((data: UserValues) => {
+            return <Usercard data={data} />
           })}
 
         </div>
@@ -115,7 +123,8 @@ export default function LeftSidebar() {
       </Modal> : <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <Newmessage isOpen={isOpen}
           onClose={onClose}
-          setNewusers={setNewUsers}
+          setNewUsers={setNewUsers}
+          users={users}
         />
       </Modal>}
 

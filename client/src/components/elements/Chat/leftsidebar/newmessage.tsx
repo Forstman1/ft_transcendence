@@ -21,7 +21,7 @@ type Props = {
     isOpen: boolean;
     onClose: () => void;
     setNewUsers: Dispatch<SetStateAction<UserValues[]>>;
-
+    users: UserValues[]
 };
 
 type UserValues = {
@@ -66,18 +66,23 @@ function Usercard(props: any) {
 
 
 
-export default function Newmessage({ isOpen, onClose, setNewUsers }: Props) {
+export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Props) {
 
 
-    // let users = ["General1", "General2", "General3", "General4", "General5", "General6"]
-    let users1: UserValues[] = [{userName: "sahafid", id: 1, onlineStatus: "active"},
+    let users1: UserValues[] = [ {userName: "sahafid", id: 1, onlineStatus: "active"},
                                 {userName: "houazzan", id: 2, onlineStatus: "active"},
                                 {userName: "rel-fagr", id: 3, onlineStatus: "active"},
                                 {userName: "haitkadir", id: 4, onlineStatus: "busy"},
                                 {userName: "mnaimi", id: 5, onlineStatus: "offline"},
+                                {userName: "test1", id: 5, onlineStatus: "offline"},
+                                {userName: "test2", id: 5, onlineStatus: "offline"},
+                                {userName: "test3", id: 5, onlineStatus: "offline"},
+                                {userName: "test4", id: 5, onlineStatus: "offline"},
 
                                 ]
-    const [selectedOption, setSelectedOption] = useState('');
+
+
+    const [selectedOption, setSelectedOption]: any = useState('');
 
 
 
@@ -86,6 +91,22 @@ export default function Newmessage({ isOpen, onClose, setNewUsers }: Props) {
     const handleOptionChange = (newValue: any) => {
         setSelectedOption(newValue);
     };
+
+
+
+    const handleSubmit = () => {
+        
+        let user: UserValues = { 
+            userName: selectedOption,
+            id: 1,
+            onlineStatus: "available" 
+        }
+        
+
+        setNewUsers([user, ...users ])
+        onClose()
+    }
+
 
     return (<div>
         <ModalOverlay />
@@ -116,7 +137,7 @@ export default function Newmessage({ isOpen, onClose, setNewUsers }: Props) {
             </ModalBody>
 
             <ModalFooter>
-                <Button onClick={onClose} variant='ghost' colorScheme='blue'>GO TO DM</Button>
+                <Button onClick={handleSubmit} variant='ghost' colorScheme='blue'>GO TO DM</Button>
 
             </ModalFooter>
         </ModalContent>
