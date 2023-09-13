@@ -13,4 +13,10 @@ body {
   background-repeat: no-repeat;
   margin: 0;
   padding: 0;
+  overflow: hidden;
+}
+
+
+.custom-shadow {
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.50);
 }

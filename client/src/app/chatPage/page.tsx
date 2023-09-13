@@ -5,9 +5,9 @@ import { PageWrapper } from "../animationWrapper/pageWrapper";
 // import ImgBackground from "../../../assets/icons/background.svg";
 import Image from "next/image";
 import { Flex } from "@chakra-ui/react";
-import LeftSidebar from "@/components/elements/Chat/LeftSidebar";
-import RightSidebar from "@/components/elements/Chat/RightSidebar";
-import ChatWindow from "@/components/elements/Chat/ChatWindow";
+import LeftSidebar from "@/components/elements/ChatPage/LeftSidebar";
+import RightSidebar from "@/components/elements/ChatPage/RightSidebar";
+import ChatWindow from "@/components/elements/ChatPage/ChatWindow";
 
 
 
@@ -18,7 +18,7 @@ import ChatWindow from "@/components/elements/Chat/ChatWindow";
 export default function ChatPage() {
   return (
     <PageWrapper>
-      <Flex className="mt-[40px] w-[100%] justify-center flex-grow">
+      <Flex className="w-[100%] justify-center flex-grow h-[calc(100vh_-_90px)]">
         <LeftSidebar />
         <ChatWindow />
         <RightSidebar />
