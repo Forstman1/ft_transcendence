@@ -82,7 +82,6 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
     );
 
     if (gameType === "friend") {
-      // router.push("/gamePage/gameFriendPage");
       setIsSearchModalOpen(true);
     } else if (gameType === "bot") {
       router.push("/gamePage/gameBotPage");
@@ -273,7 +272,7 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
           </ModalFooter>
         </ModalContent>
       ) : (
-        <GameSearchFriend onClose={onClose} handelStartGame={handelStartGame} />
+        <GameSearchFriend onClose={onClose} />
       )}
     </Modal>
   );

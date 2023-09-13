@@ -15,13 +15,11 @@ import GameEndStatic from "../ui/GameEndStatic";
 import { BackgroundsImg } from "@/utils/constants/game/GameConstants";
 import { Text} from "@chakra-ui/react";
 import {
-  animate,
   appliyGameMode,
   RecSpeed,
   initialBallSpeed,
   draw,
   handelGameStatic,
-  botMove,
 } from "@/utils/functions/game/GameLogic";
 import {
   Ball,
@@ -98,12 +96,11 @@ export default function GameFriendPage() {
   const [rightRectangle, setRightRectangle] = useState<Rectangle>(
     rightRectangleRef.current
   );
-  const prevErrorRef = useRef<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [RoundNumber, setRoundNumber] = useState<number>(1);
   const [gameEnded, setGameEnded] = useState<boolean>(false);
   const [gameEndStatic, setGameEndStatic] = useState(initialGameEndStatic);
-  const [RobotScore, setRobotScore] = useState<number>(0);
+  const [FriendScore, setFriendScore] = useState<number>(0);
   const [UserScore, setUserScore] = useState<number>(0);
   const [gameMatches, setGameMatches] = useState<number>(gameSettings.matches);
   const [tableResults, setTableResults] = useState<tableResultProps[]>([]);
@@ -122,13 +119,13 @@ export default function GameFriendPage() {
 
   useEffect (() => {
     if (RoundNumber == gameSettings.rounds && gameStarted) {
-      if (RobotScore > UserScore){
+      if (FriendScore > UserScore){
         setGameEndStatic({
           bot: "WIN",
           user: "LOSE"
         });
       }
-      else if (RobotScore < UserScore){
+      else if (FriendScore < UserScore){
         setGameEndStatic({
           bot: "LOSE",
           user: "WIN"
@@ -158,7 +155,7 @@ export default function GameFriendPage() {
       setUserPoints(0);
     }
 
-  }, [RobotScore, UserScore]);
+  }, [FriendScore, UserScore]);
 
   //---------------------------------------------------------------------------
 
@@ -238,62 +235,25 @@ export default function GameFriendPage() {
 
   //---------------------------------------------------------------------------
 
-  // socket.on("GetGameData", (data: any) => {
-  //     console.log(data);
-  // });
+  socket.on("GetGameData", (data: any) => {
+      console.log(data);
+  });
 
   useEffect(() => {
-
-    if(gameEnded)
-      socket.off("GetGameData");
-
-    if (gamePause || !gameStarted || gameEnded) return;
-
-    //----------------------------------------------
-    // const clientId = socket.id;
-    // const dataPersentage: GameStatic = {
-    //   isGameStarted: gameStarted,
-    //   isGameEnded: gameEnded,
-    //   isGamePause: gamePause,
-    // }
-    // socket.emit("sendGameData", {dataPersentage, clientId});
-
-    //----------------------------------------------
+    if (gameEnded) socket.off("GetGameData");
     
-    handelGameStatic(
-      setRobotScore,
-      setUserScore,
-      leftScore,
-      rightScore,
-      gameMatches
-    );
-      const animationFrameId = requestAnimationFrame(() => {
+    if (!gameStarted) return;
 
-        animate(
-          setBall,
-          leftRectangle,
-          rightRectangle,
-          ball,
-          canvasSize,
-          setRightScore,
-          setLeftScore,
-          setGameMatches,
-          setBotPoints,
-          setUserPoints,
-        );
+    //----------------------------------------------
+    const clientId = socket.id;
+    const dataPersentage: GameStatic = {
+      isGameStarted: gameStarted,
+      isGameEnded: gameEnded,
+      isGamePause: gamePause,
+    }
+    socket.emit("sendGameData", {dataPersentage, clientId});
 
-        botMove(ball, leftRectangle, canvasSize.height, prevErrorRef, setLeftRectangle);
-      });
-  
-      const botInterval = setInterval(() => {
-        botMove(ball, leftRectangle, canvasSize.height, prevErrorRef, setLeftRectangle);
-      }, 200); // Adjust the interval as needed
-  
-      return () => {
-        cancelAnimationFrame(animationFrameId);
-        clearInterval(botInterval);
-      };
-  }, [ball, gameStarted, canvasSize, gamePause, gameEnded]);
+  }, [gameStarted, gameEnded]);
 
   //---------------------------------------------------------------------------
 

@@ -119,7 +119,7 @@ const GameSideBar = ({
   return (
     <>
       {!isOpen && (
-        <div className={`absolute top-60 left-10`}>
+        <div className={`absolute top-[135px] left-20`}>
           {(gameStarted || gameEnded) && (
             <button
               onClick={() => {

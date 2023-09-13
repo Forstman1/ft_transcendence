@@ -9,6 +9,7 @@ import { GameService } from './game.service';
 import { Server, Socket } from 'socket.io';
 import { Body } from '@nestjs/common';
 import { GameStatic } from './dto/create-game.dto';
+import { Game } from './entities/game.entity';
 
 @WebSocketGateway()
 export class GameGateway {
@@ -24,14 +25,20 @@ export class GameGateway {
   //   return message;
   // }
 
+  count = 0;
+  interval = null;
+
   @SubscribeMessage('sendGameData')
   sendGameData(
     @Body() GameStatic: GameStatic,
     @ConnectedSocket() client: Socket,
   ) {
-    if (!GameStatic.isgameEnded) {
+    console.log('GameStatic', GameStatic);
+    if (GameStatic.isgameStarted) {
       setInterval(() => {
-        client.emit('GetGameData', this.gameService.sendGameData(GameStatic));
+        // if (GameStatic.isgameEnded) clearInterval(this.interval);
+        this.count++;
+        client.emit('GetGameData', 'hello' + this.count);
       }, 1000 / 60);
     }
   }

@@ -18,15 +18,21 @@ import Image from "next/image";
 import { Search2Icon } from "@chakra-ui/icons";
 import animationData from "../../../../assets/animations/animation3.json";
 import Lottie from "lottie-react";
+import { useRouter } from "next/navigation";
 
 type Props = {
   onClose: () => void;
-  handelStartGame: () => void;
 };
 
-export default function GameSearchFriend({ onClose, handelStartGame }: Props) {
+export default function GameSearchFriend({ onClose }: Props) {
+  const router = useRouter();
+
   const handleSearchClick = () => {
     console.log("searching for a friend");
+  };
+
+  const handleInviteClick = () => {
+    router.push("/gamePage/gameFriendPage");
   };
 
   return (
@@ -71,7 +77,7 @@ export default function GameSearchFriend({ onClose, handelStartGame }: Props) {
               leftIcon={
                 <Image src={StartGame} alt="StartGame" width={20} height={20} />
               }
-              onClick={handelStartGame}
+              onClick={() => handleInviteClick()}
             >
               Invite
             </Button>
