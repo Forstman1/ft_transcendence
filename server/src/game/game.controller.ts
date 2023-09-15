@@ -1,12 +1,9 @@
-import { Controller, Get } from "@nestjs/common";
+import { Controller, Get } from '@nestjs/common';
 
-
-@Controller("game")
+@Controller('game')
 export class GameController {
-
-    @Get()
-    getGame() {
-        return "Game";
-    }
-
+  @Get()
+  getGame() {
+    return 'Game';
+  }
 }
