@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --text-primary: #fafafa;
+    --background-primary: #0a0a0a;
+  }
+
+body {
+  background-image: url('../../assets/icons/background.svg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+
+.custom-shadow {
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.50);
+}
