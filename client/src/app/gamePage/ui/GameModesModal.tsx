@@ -33,7 +33,7 @@ import levelEasy from "../../../../assets/icons/levelEasy.svg";
 import levelMedium from "../../../../assets/icons/levelMedium.svg";
 import levelHard from "../../../../assets/icons/levelHard.svg";
 import { BackgroundsImg } from "@/utils/constants/game/GameConstants";
-import GameSearchFriend from "./GameSearchFriend"; 
+import GameSearchFriend from "./GameSearchFriend";
 
 type Props = {
   isOpen: boolean;
@@ -99,9 +99,24 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
     setCanvasBgImg(id);
   };
 
+  const modalVariants = {
+    hidden: {
+      y: "-100%",
+      opacity: 0,
+    },
+    visible: {
+      y: "0%",
+      opacity: 1,
+      transition: {
+        type: "spring",
+        damping: 20,
+        stiffness: 300,
+      },
+    },
+  };
+
   return (
     <Modal
-      blockScrollOnMount={false}
       isOpen={isOpen}
       onClose={onClose}
       isCentered

@@ -2,7 +2,7 @@
 "use client";
 
 // import { Metadata } from "next";
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, MutableRefObject, use } from "react";
 import { PageWrapper } from "../../animationWrapper/pageWrapper";
 import Countdown from "../ui/Countdown";
 import GameHeader from "../ui/GameFriendHeader";
@@ -27,7 +27,6 @@ import {
   Rectangle,
 } from "@/utils/types/game/GameTypes";
 import { io } from "socket.io-client";
-
 
 const initialCanvasSize = {
   width: 1500,
@@ -69,6 +68,9 @@ type GameStatic = {
   isGamePause: boolean;
 }
 
+let socket: any = null;
+let clientId: string;
+
 export default function GameFriendPage() {
   let gameSettings = useAppSelector((state) => state.gameReducer);
   appliyGameMode(gameSettings);
@@ -82,9 +84,7 @@ export default function GameFriendPage() {
     y: initialCanvasSize.height / 2,
     speedX: initialBallSpeed,
     speedY: initialBallSpeed,
-    radius: Math.floor(
-      (initialCanvasSize.width + initialCanvasSize.height) / 150
-    ),
+    radius: 10,
   };
   const [ball, setBall] = useState<Ball>(initialBallState);
   const [leftScore, setLeftScore] = useState<number>(0);
@@ -108,12 +108,29 @@ export default function GameFriendPage() {
   const [userPoints, setUserPoints] = useState<number>(0);
   const [gamePause, setGamePause] = useState<boolean>(false);
 
+
+  useEffect(() => {
+    socket = io('http://localhost:3001', {
+      transports: ['websocket'],
+      upgrade: false,
+    });
+    clientId = socket.id;
+  }, []);
+
   //---------------------------------------------------------------------------
 
-  const socket = io('http://localhost:3001', {
-    transports: ['websocket'],
-    upgrade: false,
-  });
+  if (socket !== null) {
+    socket.on("GetGameData", (data: Ball) => {
+      setBall({
+        x: (data.x * canvasSize.width) / 100,
+        y: (data.y * canvasSize.height) / 100,
+        speedX: data.speedX * initialBallSpeed,
+        speedY: data.speedY * initialBallSpeed,
+        radius: 10,
+      });
+      console.log("ball: ", ball);
+    });
+  }
 
   //---------------------------------------------------------------------------
 
@@ -235,25 +252,27 @@ export default function GameFriendPage() {
 
   //---------------------------------------------------------------------------
 
-  socket.on("GetGameData", (data: any) => {
-      console.log(data);
-  });
-
   useEffect(() => {
-    if (gameEnded) socket.off("GetGameData");
     
     if (!gameStarted) return;
-
-    //----------------------------------------------
-    const clientId = socket.id;
-    const dataPersentage: GameStatic = {
-      isGameStarted: gameStarted,
-      isGameEnded: gameEnded,
-      isGamePause: gamePause,
+    if (gameStarted) {
+      socket.emit("sendGameData", {clientId});
     }
-    socket.emit("sendGameData", {dataPersentage, clientId});
 
-  }, [gameStarted, gameEnded]);
+  }, [gameStarted]);
+
+   //---------------------------------------------------------------------------
+
+  useEffect(() => {
+    if(gameEnded){
+      socket.emit("endGame", {clientId}, (data: any) => {
+        console.log(data);
+      }
+      );
+      socket.off("GetGameData");
+    }
+  }
+  , [gameEnded]);
 
   //---------------------------------------------------------------------------
 

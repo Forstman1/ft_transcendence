@@ -36,7 +36,7 @@ export default function GameSearchFriend({ onClose }: Props) {
   };
 
   return (
-    <ModalContent className="relative">
+    <ModalContent className="relative rounded-2xl">
       <Lottie
         animationData={animationData}
         className="absolute inset-0 border-2 border-white rounded-[100%] w-full h-full z-[-1] opacity-10 bg-white"
