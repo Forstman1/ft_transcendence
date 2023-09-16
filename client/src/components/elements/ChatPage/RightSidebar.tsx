@@ -90,7 +90,7 @@ export default function RightSidebar() {
 
   return (
     
-    <Box className='Main-Box  w-[465px] overflow-y-auto border-l-[3px] border-l-black gap-10 pt-6'>
+    <Box className='Main-Box w-[300px] overflow-y-auto border-l-[3px] border-l-black gap-10 pt-6 xl:w-[465px]'>
       <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7'>
         <Text className='flex text-black text-4xl drop-shadow-[2px_2px_0_rgba(18,18,18,.0.50)]'>
           user_455013
