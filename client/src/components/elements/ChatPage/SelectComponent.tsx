@@ -32,8 +32,9 @@ export default function SelectComponent() {
         size={"lg"}
         width={"300px"}
         justifyContent={"space-between"}
-        whileTap={{ scale: 0.90 }}
+        // whileTap={{ scale: 0.90 }}
         onClick={() => setIsOpen(!isOpen)}
+        className='bg-[#e2e8f1]'
       >
         {Chosen}
         <motion.div
@@ -49,7 +50,7 @@ export default function SelectComponent() {
         </motion.div>
       </Button>
       <motion.ul
-        className={`Channels py-7 flex flex-col gap-10 bg w-[300px] h-[200px] bg-black bg-opacity-80 text-white items-center overflow-y-auto scrollbar scrollbar-thumb-white scrollbar-thin`}
+        className={`Channels py-7 flex flex-col gap-10 bg w-[300px] h-[200px] bg-[#e2e8f1] bg-opacity-80 text-white items-center overflow-y-auto scrollbar scrollbar-thumb-white scrollbar-thin`}
         variants={{
           closed: {
             clipPath: "inset(10% 50% 90% 50% round 10px)",
@@ -72,7 +73,7 @@ export default function SelectComponent() {
         }}
       >
         {Channels.map((channel) =>
-          <li className=' cursor-pointer' onClick={() => { setChosen(channel.name); setIsOpen(false)}}>
+          <li className=' cursor-pointer text-black font-bold' onClick={() => { setChosen(channel.name); setIsOpen(false)}}>
             {channel.name}
           </li>
         )}

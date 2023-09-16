@@ -33,6 +33,7 @@ export default function RightSidebar() {
     { src: AddToChannel, alt: "Add to channel" },
     { src: Ban, alt: "Ban from channel" },
     { src: Mute, alt: "Mute" },
+    {src: Block, alt: " Kick out from channel"}
   ]
 
 
@@ -90,7 +91,7 @@ export default function RightSidebar() {
 
   return (
     
-    <Box className='Main-Box  w-[465px] overflow-y-auto border-l-[3px] border-l-black gap-10 pt-6'>
+    <Box className='Main-Box hidden md:block w-[300px] overflow-y-auto border-l-[3px] border-l-black gap-10 pt-6 xl:w-[465px]'>
       <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7'>
         <Text className='flex text-black text-4xl drop-shadow-[2px_2px_0_rgba(18,18,18,.0.50)]'>
           user_455013
@@ -101,7 +102,7 @@ export default function RightSidebar() {
           <Text className='text-3xl'>Available</Text>
         </Box>
       </Box>
-      <hr className='bg-black h-[2px] mx-10 str' />
+      <hr className='bg-black h-[2px] mx-10' />
       <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7'>
         <Box className='flex items-center gap-6 w-[220px]'>
           <Image src={Profile} width={30} height={30} alt="View Profile" />
@@ -127,7 +128,7 @@ export default function RightSidebar() {
         </Box>
         {Options}
       </Box>
-      <hr className='bg-black h-[2px] mx-10 str' />
+      <hr className='bg-black h-[2px] mx-10'/>
          <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7'>
          {Control}
        </Box>
