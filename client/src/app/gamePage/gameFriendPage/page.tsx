@@ -52,14 +52,19 @@ const initialGameEndStatic = {
   user: "DRAW",
 };
 
-type DataPersentage = {
-  ballX: number;
-  ballY: number;
-  ballRadius: number;
-  ballSpeedX: number;
-  ballSpeedY: number;
-  leftRectangleY: number;
-  rightRectangleY: number;
+type CanvasData = {
+  leftPaddle: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  },
+  rightPaddle: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  },
 };
 
 type GameStatic = {
@@ -77,8 +82,8 @@ export default function GameFriendPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [keysPressed, setKeysPressed] = useState<Record<string, boolean>>({});
   const canvasSize = initialCanvasSize;
-  const leftRectangleRef = useRef<Rectangle>(initialLeftRectangle);
-  const rightRectangleRef = useRef<Rectangle>(initialRightRectangle);
+  const leftPaddleRef = useRef<Rectangle>(initialLeftRectangle);
+  const rightPaddleRef = useRef<Rectangle>(initialRightRectangle);
   const initialBallState: Ball = {
     x: initialCanvasSize.width / 2,
     y: initialCanvasSize.height / 2,
@@ -90,11 +95,11 @@ export default function GameFriendPage() {
   const [leftScore, setLeftScore] = useState<number>(0);
   const [rightScore, setRightScore] = useState<number>(0);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
-  const [leftRectangle, setLeftRectangle] = useState<Rectangle>(
-    leftRectangleRef.current
+  const [leftPaddle, setLeftPaddle] = useState<Rectangle>(
+    leftPaddleRef.current
   );
-  const [rightRectangle, setRightRectangle] = useState<Rectangle>(
-    rightRectangleRef.current
+  const [rightPaddle, setRightPaddle] = useState<Rectangle>(
+    rightPaddleRef.current
   );
   const [loading, setLoading] = useState<boolean>(true);
   const [RoundNumber, setRoundNumber] = useState<number>(1);
@@ -108,6 +113,7 @@ export default function GameFriendPage() {
   const [userPoints, setUserPoints] = useState<number>(0);
   const [gamePause, setGamePause] = useState<boolean>(false);
 
+  //---------------------------------------------------------------------------
 
   useEffect(() => {
     socket = io('http://localhost:3001', {
@@ -115,22 +121,28 @@ export default function GameFriendPage() {
       upgrade: false,
     });
     clientId = socket.id;
-  }, []);
 
-  //---------------------------------------------------------------------------
-
-  if (socket !== null) {
-    socket.on("GetGameData", (data: Ball) => {
-      setBall({
-        x: (data.x * canvasSize.width) / 100,
-        y: (data.y * canvasSize.height) / 100,
-        speedX: data.speedX * initialBallSpeed,
-        speedY: data.speedY * initialBallSpeed,
-        radius: 10,
+    if (socket !== null) {
+      socket.on("GetGameData", (data: Ball) => {
+        setBall({
+          x: (data.x * canvasSize.width) / 100,
+          y: (data.y * canvasSize.height) / 100,
+          speedX: data.speedX * initialBallSpeed,
+          speedY: data.speedY * initialBallSpeed,
+          radius: 10,
+        });
+        // console.log("ball: ", ball);
       });
-      console.log("ball: ", ball);
-    });
-  }
+    }
+
+    return () => {
+      if (socket) {
+        socket.off("GetGameData");
+        socket.disconnect();
+      }
+    };
+
+  }, []);
 
   //---------------------------------------------------------------------------
 
@@ -185,7 +197,7 @@ export default function GameFriendPage() {
     const context = canvas.getContext("2d");
     if (!context) return;
 
-    draw(canvas, context, leftRectangle, rightRectangle, ball, gameSettings);
+    draw(canvas, context, leftPaddle, rightPaddle, ball, gameSettings);
   }, [canvasSize, ball, loading]);
 
   const handleCountdownEnd = () => {
@@ -228,13 +240,13 @@ export default function GameFriendPage() {
     const speed = RecSpeed;
 
     if (keysPressed["ArrowUp"]) {
-      setRightRectangle((prev) => ({
+      setRightPaddle((prev) => ({
         ...prev,
         y: Math.max(0, prev.y - speed),
       }));
     }
     if (keysPressed["ArrowDown"]) {
-      setRightRectangle((prev) => ({
+      setRightPaddle((prev) => ({
         ...prev,
         y: Math.min(
           canvasSize.height - prev.height,
@@ -246,7 +258,7 @@ export default function GameFriendPage() {
     // Redraw the canvas
     const context = canvasRef.current?.getContext("2d");
     if (context)
-      draw(canvasRef.current!, context, leftRectangle, rightRectangle, ball, gameSettings);
+      draw(canvasRef.current!, context, leftPaddle, rightPaddle, ball, gameSettings);
   
   }, [keysPressed, canvasSize, ball, gameStarted, gameEnded]);
 
@@ -256,10 +268,47 @@ export default function GameFriendPage() {
     
     if (!gameStarted) return;
     if (gameStarted) {
+      // const canvasData: CanvasData = {
+      //   leftPaddle: {
+      //     x: (leftPaddle.x  * 100) / canvasSize.width,
+      //     y: (leftPaddle.y  * 100) / canvasSize.height,
+      //     width: (leftPaddle.width  * 100) / canvasSize.width,
+      //     height: (leftPaddle.height  * 100) / canvasSize.height,
+      //   },
+      //   rightPaddle: {
+      //     x: (rightPaddle.x  * 100) / canvasSize.width,
+      //     y: (rightPaddle.y  * 100) / canvasSize.height,
+      //     width: (rightPaddle.width  * 100) / canvasSize.width,
+      //     height: (rightPaddle.height  * 100) / canvasSize.height,
+      //   },
+      // };
+      // socket.emit("updatePaddles", {clientId, canvasData});
       socket.emit("sendGameData", {clientId});
     }
 
   }, [gameStarted]);
+
+   //---------------------------------------------------------------------------
+
+   useEffect(() => {
+
+    const canvasData: CanvasData = {
+      leftPaddle: {
+        x: (leftPaddle.x  * 100) / canvasSize.width,
+        y: (leftPaddle.y  * 100) / canvasSize.height,
+        width: (leftPaddle.width  * 100) / canvasSize.width,
+        height: (leftPaddle.height  * 100) / canvasSize.height,
+      },
+      rightPaddle: {
+        x: (rightPaddle.x  * 100) / canvasSize.width,
+        y: (rightPaddle.y  * 100) / canvasSize.height,
+        width: (rightPaddle.width  * 100) / canvasSize.width,
+        height: (rightPaddle.height  * 100) / canvasSize.height,
+      },
+    };
+    
+    socket.emit("updatePaddles", {clientId, canvasData});
+   }, [leftPaddle, rightPaddle]);
 
    //---------------------------------------------------------------------------
 

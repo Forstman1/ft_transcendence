@@ -1,7 +1,5 @@
-import { Body, Injectable } from '@nestjs/common';
-import { GameStatic } from './dto/create-game.dto';
-import { Game } from './entities/game.entity';
-import { type } from 'os';
+import { Injectable } from '@nestjs/common';
+import { Gamedata } from './dto/create-game.dto';
 
 type Ball = {
   x: number;
@@ -14,6 +12,13 @@ type Ball = {
 @Injectable()
 export class GameService {
   private ball = { x: 50, y: 50, speedX: 0.5, speedY: 0.7, radius: 1 };
+  private leftPaddle = { x: 0.666, y: 50, width: 1, height: 20 }; // x and y are the top left corner of the paddle rectangle in percentage of the canvas width and height the width and height are also in percentage of the canvas width and height
+  private rightPaddle = { x: 98.333, y: 50, width: 1, height: 20 }; // x and y are the top left corner of the paddle rectangle in percentage of the canvas width and height the width and height are also in percentage of the canvas width and height
+
+  public updatePaddles(data): void {
+    this.leftPaddle = data.leftPaddle;
+    this.rightPaddle = data.rightPaddle;
+  }
 
   // This function updates the ball's position and handles bouncing
   public updateBallPosition(): void {
@@ -29,38 +34,59 @@ export class GameService {
       this.ball.speedY = -this.ball.speedY;
     }
 
-    // // Check if the ball went out of bounds on the left or right sides
+    // Check if the ball went out of bounds on the left or right sides
     if (this.ball.x - this.ball.radius < 0) {
       // Ball went out on the left side
       this.ball = { x: 50, y: 50, speedX: 0.5, speedY: 0.7, radius: 1 };
-      // Reset paddle positions
-      // leftPaddleY = 50 - paddleHeight / 2;
-      // rightPaddleY = 50 - paddleHeight / 2;
     } else if (this.ball.x + this.ball.radius > 100) {
       // Ball went out on the right side
       this.ball = { x: 50, y: 50, speedX: -0.5, speedY: 0.7, radius: 1 };
-      // Reset paddle positions
-      // leftPaddleY = 50 - paddleHeight / 2;
-      // rightPaddleY = 50 - paddleHeight / 2;
     }
 
-    // // Check for collisions with the left paddle
-    // if (
-    //   this.ball.x - this.ball.radius <= leftPaddleX + paddleWidth &&
-    //   this.ball.y >= leftPaddleY &&
-    //   this.ball.y <= leftPaddleY + paddleHeight
-    // ) {
-    //   this.ball.speedX = Math.abs(this.ball.speedX); // Reverse the horizontal velocity
-    // }
+    // Check for collisions with the left paddle
+    if (
+      this.ball.x - this.ball.radius <=
+        this.leftPaddle.x + this.leftPaddle.width &&
+      this.ball.y + this.ball.radius >= this.leftPaddle.y &&
+      this.ball.y - this.ball.radius <=
+        this.leftPaddle.y + this.leftPaddle.height
+    ) {
+      // Calculate the angle of impact
+      const relativeIntersectY =
+        this.leftPaddle.y + this.leftPaddle.height / 2 - this.ball.y;
+      const normalizedRelativeIntersectY =
+        relativeIntersectY / (this.leftPaddle.height / 2);
+      const bounceAngle = normalizedRelativeIntersectY * (Math.PI / 4); // Adjust this angle as needed
 
-    // // Check for collisions with the right paddle
-    // if (
-    //   this.ball.x + this.ball.radius >= rightPaddleX &&
-    //   this.ball.y >= rightPaddleY &&
-    //   this.ball.y <= rightPaddleY + paddleHeight
-    // ) {
-    //   this.ball.speedX = -Math.abs(this.ball.speedX); // Reverse the horizontal velocity
-    // }
+      // Adjust the ball's velocities based on the angle of impact
+      const ballSpeed = Math.sqrt(
+        this.ball.speedX ** 2 + this.ball.speedY ** 2,
+      );
+      this.ball.speedX = ballSpeed * Math.cos(bounceAngle);
+      this.ball.speedY = ballSpeed * Math.sin(bounceAngle);
+    }
+
+    // Check for collisions with the right paddle
+    if (
+      this.ball.x + this.ball.radius >= this.rightPaddle.x &&
+      this.ball.y + this.ball.radius >= this.rightPaddle.y &&
+      this.ball.y - this.ball.radius <=
+        this.rightPaddle.y + this.rightPaddle.height
+    ) {
+      // Calculate the angle of impact
+      const relativeIntersectY =
+        this.rightPaddle.y + this.rightPaddle.height / 2 - this.ball.y;
+      const normalizedRelativeIntersectY =
+        relativeIntersectY / (this.rightPaddle.height / 2);
+      const bounceAngle = normalizedRelativeIntersectY * (Math.PI / 4); // Adjust this angle as needed
+
+      // Adjust the ball's velocities based on the angle of impact
+      const ballSpeed = Math.sqrt(
+        this.ball.speedX ** 2 + this.ball.speedY ** 2,
+      );
+      this.ball.speedX = -ballSpeed * Math.cos(bounceAngle); // Reverse horizontal velocity
+      this.ball.speedY = ballSpeed * Math.sin(bounceAngle);
+    }
   }
 
   // This function retrieves the current ball position
@@ -68,33 +94,3 @@ export class GameService {
     return this.ball;
   }
 }
-
-// constructor(private readonly server: Server) {}
-
-// // Function to update the ball's position
-// updateBallPosition(): void {
-//   this.ballPosition.x += this.ballVelocity.x;
-//   this.ballPosition.y += this.ballVelocity.y;
-
-//   // Implement collision detection and update ball velocity if needed
-//   this.handleCollision();
-
-//   // Emit the updated ball position to all connected clients
-//   this.server.emit('updateBallPosition', this.ballPosition);
-// }
-
-// // Function to handle collision with walls
-// private handleCollision(): void {
-//   if (this.ballPosition.x - this.ballRadius < 0 || this.ballPosition.x + this.ballRadius > this.canvasWidth) {
-//     this.ballVelocity.x = -this.ballVelocity.x;
-//   }
-
-//   if (this.ballPosition.y - this.ballRadius < 0 || this.ballPosition.y + this.ballRadius > this.canvasHeight) {
-//     this.ballVelocity.y = -this.ballVelocity.y;
-//   }
-// }
-
-// // Function to get the initial ball position
-// getInitialBallPosition(): { x: number; y: number } {
-//   return this.ballPosition;
-// }

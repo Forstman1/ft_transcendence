@@ -8,8 +8,7 @@ import {
 import { GameService } from './game.service';
 import { Server, Socket } from 'socket.io';
 import { Body } from '@nestjs/common';
-import { GameStatic } from './dto/create-game.dto';
-import { Game } from './entities/game.entity';
+import { Gamedata } from './dto/create-game.dto';
 
 @WebSocketGateway()
 export class GameGateway {
@@ -30,19 +29,24 @@ export class GameGateway {
     }, 10);
   }
 
+  @SubscribeMessage('updatePaddles')
+  updatePaddles(@ConnectedSocket() client: Socket, @Body() data: Gamedata) {
+    this.gameService.updatePaddles(data.canvasData);
+  }
+
   @SubscribeMessage('endGame')
   endGame(@ConnectedSocket() client: Socket) {
     clearInterval(this.interval);
     client.emit('GetGameData', 'end');
   }
 
-  @SubscribeMessage('join')
-  joinRoom(
-    @MessageBody('name') name: string,
-    @ConnectedSocket() client: Socket,
-  ) {
-    // return this.gameService.identifyPlayer(name, client.id);
-  }
+  // @SubscribeMessage('join')
+  // joinRoom(
+  //   @MessageBody('name') name: string,
+  //   @ConnectedSocket() client: Socket,
+  // ) {
+  //   // return this.gameService.identifyPlayer(name, client.id);
+  // }
 }
 
 // constructor(private readonly ballService: BallService) {}

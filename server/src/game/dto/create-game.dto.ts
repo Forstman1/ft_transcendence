@@ -10,8 +10,19 @@ import { Game } from '../entities/game.entity';
 //   rightRectangleY: number;
 // }
 
-export class GameStatic extends Game {
-  isgameStarted: boolean;
-  isgameEnded: boolean;
-  isgAmePause: boolean;
+export class Gamedata extends Game {
+  canvasData: {
+    leftPaddle: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    };
+    rightPaddle: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    };
+  };
 }
