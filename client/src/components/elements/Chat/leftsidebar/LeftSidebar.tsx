@@ -76,13 +76,14 @@ export default function LeftSidebar() {
 
   return (
     <>
-      <div className=' w-[465px]   flex flex-col items-center   '>
+      <div className=' w-[300px]   flex flex-col items-center xl:w-[465px]  '>
+      {/* <div className='w-[300px] flex  '> */}
         <Search
           channels={channels}
           users={users}
         />
 
-        <div className='w-[350px] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
+        <div className='w-[90%] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
           <div className='text-[40px] font-bold'>Channels</div>
           <div onClick={() => { onOpen(), setChannelOrUser(true) }} className='cursor-pointer' ><Icon boxSize={10} as={SmallAddIcon} /></div>
         </div>
@@ -96,7 +97,7 @@ export default function LeftSidebar() {
 
         </div>
 
-        <div className='w-[350px] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
+        <div className='w-[90%] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
           <div className='text-[40px] font-bold'>Direct Messages</div>
           <div onClick={() => { onOpen(), setChannelOrUser(false) }} className='cursor-pointer'><Icon boxSize={10} as={SmallAddIcon} /></div>
         </div>

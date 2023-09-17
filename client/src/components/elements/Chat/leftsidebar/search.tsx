@@ -102,9 +102,9 @@ export default function Search({ channels, users }: Props) {
         })
     }
 
-    const onSubmit = async (data: any) => {
+    const handleSearchClick = async () => {
 
-        console.log(data.search)
+        console.log(search)
 
         let allChannelsnames: any = channels.map((channel: ChannelValues) => {
             return channel.channelName
@@ -162,24 +162,24 @@ export default function Search({ channels, users }: Props) {
 
 
 
-    const handleChange = async (data: any) => {
 
+
+    const handleChange = async (data: any) => {
         setSearch(data.target.value)
     };
 
-    return (<>
-        <form onSubmit={handleSubmit(onSubmit)} className=' w-[350px] h-[65px] mt-5 border-2 border-black rounded-sm flex justify-between items-center shadow-md shadow-black'>
-            <Input
-                {...register("search")}
-                className='border-none w-full h-full text-black text-[30px]'
-                placeholder='Search...'
-                value={search}
-                onChange={handleChange}
-                type='text'
-            />
-            <Button type='submit' className='rounded-none w-[75px] h-[63px] bg-black active:bg-black  flex items-center justify-center cursor-pointer'><Icon boxSize={8} color="white" as={SearchIcon} /></Button>
-        </form>
+    // const handleSearchClick = () => {
+    //     console.log(search)
+    // }
 
+
+
+    return (<>
+        <div onClick={onOpen} className=' w-[90%] h-[65px] mt-5 border-2 border-black rounded-sm flex justify-between items-center custom-shadow cursor-pointer'>
+
+            <div className='border-none w-full h-full text-gray-400 text-[30px] items-center flex ml-[10px]'>Search...</div>
+            <div className='rounded-none w-[75px] h-[63px] bg-black active:bg-black  flex items-center justify-center cursor-pointer'><Icon boxSize={8} color="white" as={SearchIcon} /></div>
+        </div>
 
 
 
@@ -199,7 +199,7 @@ export default function Search({ channels, users }: Props) {
                                 variant="outline"
                                 h="2rem"
                                 size="sm"
-                                // onClick={handleSearchClick}
+                                onClick={handleSearchClick}
                             >
                                 Search
                             </Button>
@@ -209,17 +209,32 @@ export default function Search({ channels, users }: Props) {
                             placeholder="Search for a friend"
                             height={12}
                             borderEndEndRadius={0}
+                            value={search}
+                            onChange={handleChange}
                         />
                     </InputGroup>
                     <div className="flex w-full h-[300px]  flex-col  overflow-y-scroll">
-                        <Box className="flex w-[95%] p-2 flex-row justify-between items-center border-2 border-gray-300 rounded-lg  mt-5">
-                            <div className="flex flex-row items-center space-x-5">
-                                <Avatar size="md" />
-                                <h1 className="text-lg font-bold">UserName</h1>
+                        {allSearchChannels.map((channels: any) => {
+                            return <Box className="flex  w-[95%] p-2 flex-row justify-between items-center border-2 border-gray-300 rounded-lg  mt-5">
+                            <div className="flex h-[50px] " >
+                                <h1 className="text-[40px] h-[20px] mr-3">#</h1>
+                                <h1 className="text-[30px] h-[20px]"> {channels.channelName}</h1>
                             </div>
                             
                         </Box>
+                        })}
+                        {allSearchUsers.map((users: any) => {
+                            return <Box className="flex w-[95%] p-2 flex-row justify-between items-center border-2 border-gray-300 rounded-lg  mt-5">
+                            <div className="flex flex-row items-center space-x-5">
+                                <Avatar size="md" />
+                                <h1 className="text-lg font-bold">{users.userName}</h1>
+                            </div>
+                            
+                        </Box>
+                        })}
                     </div>
+
+
                     {/* <ModalHeader className="text-[30px] border-b-1 border-black ">Channels</ModalHeader>
 
 
@@ -250,7 +265,7 @@ export default function Search({ channels, users }: Props) {
                 </ModalBody>
 
                 <ModalFooter>
-                    <Button type='submit' variant='ghost' colorScheme='blue'>Create</Button>
+                    <Button onClick={onClose} variant='ghost' colorScheme='blue'>Close</Button>
                 </ModalFooter>
 
             </ModalContent>
