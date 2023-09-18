@@ -42,17 +42,17 @@ export const drawRoundedRectangle = (
 
 export const appliyGameMode = (gameSettings: gameSettingsProps) => {
   if (gameSettings.mode === "EASY") {
-    maxBallSpeed = 25;
+    maxBallSpeed = 20;
     initialBallSpeed = 10;
-    RecSpeed = 20;
+    RecSpeed = 15;
   } else if (gameSettings.mode === "MEDIUM") {
-    maxBallSpeed = 35;
-    initialBallSpeed = 20;
-    RecSpeed = 30;
+    maxBallSpeed = 25;
+    initialBallSpeed = 15;
+    RecSpeed = 20;
   } else {
-    maxBallSpeed = 40;
-    initialBallSpeed = 25;
-    RecSpeed = 35;
+    maxBallSpeed = 30;
+    initialBallSpeed = 20;
+    RecSpeed = 25;
   }
 };
 

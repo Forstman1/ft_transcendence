@@ -1,14 +1,13 @@
 import {
   WebSocketGateway,
   SubscribeMessage,
-  MessageBody,
   WebSocketServer,
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { GameService } from './game.service';
 import { Server, Socket } from 'socket.io';
 import { Body } from '@nestjs/common';
-import { Gamedata } from './dto/create-game.dto';
+import { Gamedata, InitGameData } from './dto/create-game.dto';
 
 @WebSocketGateway()
 export class GameGateway {
@@ -17,16 +16,16 @@ export class GameGateway {
 
   constructor(private readonly gameService: GameService) {}
 
-  count = 0;
   interval = null;
 
   @SubscribeMessage('sendGameData')
-  sendGameData(@ConnectedSocket() client: Socket) {
+  sendGameData(@ConnectedSocket() client: Socket, @Body() data: InitGameData) {
     console.log('client', client.id);
+    this.gameService.initGameData(data.initCanvasData);
     this.interval = setInterval(() => {
       this.gameService.updateBallPosition();
-      client.emit('GetGameData', this.gameService.getBall());
-    }, 10);
+      client.emit('GetGameData', this.gameService.getUpdateData());
+    }, 5);
   }
 
   @SubscribeMessage('updatePaddles')

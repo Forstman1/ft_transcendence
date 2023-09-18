@@ -1,14 +1,22 @@
 import { Game } from '../entities/game.entity';
 
-// export class CreateGameDto extends Game {
-//   ballX: number;
-//   ballY: number;
-//   ballRadius: number;
-//   ballSpeedX: number;
-//   ballSpeedY: number;
-//   leftRectangleY: number;
-//   rightRectangleY: number;
-// }
+export class InitGameData {
+  initCanvasData: {
+    ball: Ball;
+    leftPaddle: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    };
+    rightPaddle: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    };
+  };
+}
 
 export class Gamedata extends Game {
   canvasData: {
@@ -25,4 +33,13 @@ export class Gamedata extends Game {
       height: number;
     };
   };
+}
+
+export class Ball {
+  x: number;
+  y: number;
+  speedX: number;
+  speedY: number;
+  radius: number;
+  maxBallSpeed: number;
 }

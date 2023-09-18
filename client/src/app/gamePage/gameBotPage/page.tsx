@@ -35,14 +35,14 @@ const initialCanvasSize = {
   height: 600,
 };
 
-const initialLeftRectangle = {
+const initialLeftPaddle = {
   x: 10,
   y: initialCanvasSize.height / 2,
   width: 15,
   height: initialCanvasSize.height / 5,
 };
 
-const initialRightRectangle = {
+const initialRightPaddle = {
   x: initialCanvasSize.width - 25,
   y: initialCanvasSize.height / 2,
   width: 15,
@@ -60,8 +60,8 @@ export default function GameBotPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [keysPressed, setKeysPressed] = useState<Record<string, boolean>>({});
   const canvasSize = initialCanvasSize;
-  const leftRectangleRef = useRef<Rectangle>(initialLeftRectangle);
-  const rightRectangleRef = useRef<Rectangle>(initialRightRectangle);
+  const leftRectangleRef = useRef<Rectangle>(initialLeftPaddle);
+  const rightRectangleRef = useRef<Rectangle>(initialRightPaddle);
   const initialBallState: Ball = {
     x: initialCanvasSize.width / 2,
     y: initialCanvasSize.height / 2,

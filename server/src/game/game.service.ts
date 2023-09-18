@@ -1,21 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { Gamedata } from './dto/create-game.dto';
-
-type Ball = {
-  x: number;
-  y: number;
-  speedX: number;
-  speedY: number;
-  radius: number;
-};
+import { Ball } from './dto/create-game.dto';
 
 @Injectable()
 export class GameService {
-  private ball = { x: 50, y: 50, speedX: 0.5, speedY: 0.7, radius: 1 };
-  private leftPaddle = { x: 0.666, y: 50, width: 1, height: 20 }; // x and y are the top left corner of the paddle rectangle in percentage of the canvas width and height the width and height are also in percentage of the canvas width and height
-  private rightPaddle = { x: 98.333, y: 50, width: 1, height: 20 }; // x and y are the top left corner of the paddle rectangle in percentage of the canvas width and height the width and height are also in percentage of the canvas width and height
+  private BallInitData: Ball;
+  private ball: Ball = {
+    x: 0,
+    y: 0,
+    speedX: 0,
+    speedY: 0,
+    radius: 0,
+    maxBallSpeed: 0,
+  };
+  private leftPaddle = { x: 0, y: 0, width: 0, height: 0 };
+  private rightPaddle = { x: 0, y: 0, width: 0, height: 0 };
+  private leftScore = 0;
+  private rightScore = 0;
 
   public updatePaddles(data): void {
+    this.leftPaddle = data.leftPaddle;
+    this.rightPaddle = data.rightPaddle;
+  }
+
+  public initGameData(data): void {
+    this.BallInitData = data.ball;
+    this.ball = data.ball;
     this.leftPaddle = data.leftPaddle;
     this.rightPaddle = data.rightPaddle;
   }
@@ -37,10 +46,26 @@ export class GameService {
     // Check if the ball went out of bounds on the left or right sides
     if (this.ball.x - this.ball.radius < 0) {
       // Ball went out on the left side
-      this.ball = { x: 50, y: 50, speedX: 0.5, speedY: 0.7, radius: 1 };
+      this.ball = {
+        x: 50,
+        y: 50,
+        speedX: this.BallInitData.speedX,
+        speedY: this.BallInitData.speedY,
+        radius: this.BallInitData.radius,
+        maxBallSpeed: this.BallInitData.maxBallSpeed,
+      };
+      this.rightScore++;
     } else if (this.ball.x + this.ball.radius > 100) {
       // Ball went out on the right side
-      this.ball = { x: 50, y: 50, speedX: -0.5, speedY: 0.7, radius: 1 };
+      this.ball = {
+        x: 50,
+        y: 50,
+        speedX: -this.BallInitData.speedX,
+        speedY: this.BallInitData.speedY,
+        radius: this.BallInitData.radius,
+        maxBallSpeed: this.BallInitData.maxBallSpeed,
+      };
+      this.leftScore++;
     }
 
     // Check for collisions with the left paddle
@@ -90,7 +115,11 @@ export class GameService {
   }
 
   // This function retrieves the current ball position
-  public getBall(): Ball {
-    return this.ball;
+  public getUpdateData() {
+    return {
+      ball: this.ball,
+      leftScore: this.leftScore,
+      rightScore: this.rightScore,
+    };
   }
 }

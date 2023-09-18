@@ -20,6 +20,7 @@ import {
   initialBallSpeed,
   draw,
   handelGameStatic,
+  maxBallSpeed,
 } from "@/utils/functions/game/GameLogic";
 import {
   Ball,
@@ -67,11 +68,11 @@ type CanvasData = {
   },
 };
 
-type GameStatic = {
-  isGameStarted: boolean;
-  isGameEnded: boolean;
-  isGamePause: boolean;
-}
+type GameUpdateData = {
+  ball: Ball;
+  leftScore: number;
+  rightScore: number;
+};
 
 let socket: any = null;
 let clientId: string;
@@ -85,11 +86,13 @@ export default function GameFriendPage() {
   const leftPaddleRef = useRef<Rectangle>(initialLeftRectangle);
   const rightPaddleRef = useRef<Rectangle>(initialRightRectangle);
   const initialBallState: Ball = {
-    x: initialCanvasSize.width / 2,
-    y: initialCanvasSize.height / 2,
+    x: canvasSize.width / 2,
+    y: canvasSize.height / 2,
     speedX: initialBallSpeed,
     speedY: initialBallSpeed,
-    radius: 10,
+    radius: Math.floor(
+      (canvasSize.width + canvasSize.height) / 150
+    ),
   };
   const [ball, setBall] = useState<Ball>(initialBallState);
   const [leftScore, setLeftScore] = useState<number>(0);
@@ -123,15 +126,29 @@ export default function GameFriendPage() {
     clientId = socket.id;
 
     if (socket !== null) {
-      socket.on("GetGameData", (data: Ball) => {
+      let prevLeftScore = 0;
+      let prevRightScore = 0;
+      socket.on("GetGameData", (data:GameUpdateData) => {
         setBall({
-          x: (data.x * canvasSize.width) / 100,
-          y: (data.y * canvasSize.height) / 100,
-          speedX: data.speedX * initialBallSpeed,
-          speedY: data.speedY * initialBallSpeed,
-          radius: 10,
+          x: (data.ball.x * canvasSize.width) / 100,
+          y: (data.ball.y * canvasSize.height) / 100,
+          speedX: (data.ball.speedX * canvasSize.width) / 100,
+          speedY: (data.ball.speedY * canvasSize.height) / 100,
+          radius: (data.ball.radius * canvasSize.height) / 100,
         });
-        // console.log("ball: ", ball);
+        setLeftScore(data.leftScore);
+        setRightScore(data.rightScore);
+        if (prevLeftScore < data.leftScore){
+          setGameMatches((prev) => prev - 1);
+          setUserPoints((prev) => prev + 1);
+        }
+        else if (prevRightScore < data.rightScore){
+          setGameMatches((prev) => prev - 1);
+          setFriendScore((prev) => prev + 1);
+        }
+        prevLeftScore = data.leftScore;
+        prevRightScore = data.rightScore;
+        // console.log("data: ", data);
       });
     }
 
@@ -236,6 +253,14 @@ export default function GameFriendPage() {
 
   useEffect(() => {
     if (gamePause || !gameStarted || gameEnded) return;
+
+    handelGameStatic(
+      setFriendScore,
+      setUserScore,
+      leftScore,
+      rightScore,
+      gameMatches
+    );
   
     const speed = RecSpeed;
 
@@ -267,23 +292,31 @@ export default function GameFriendPage() {
   useEffect(() => {
     
     if (!gameStarted) return;
+
+    const initCanvasData = {
+      ball: {
+        x: 50,
+        y: 50,
+        speedX: (initialBallState.speedX * 100) / canvasSize.width, 
+        speedY: (initialBallState.speedY * 100) / canvasSize.height,
+        radius: (14 * 100) / canvasSize.height,
+        maxBallSpeed: (maxBallSpeed * 100) / canvasSize.width,
+      },
+      leftPaddle: {
+        x: (leftPaddle.x  * 100) / canvasSize.width,
+        y: (leftPaddle.y  * 100) / canvasSize.height,
+        width: (leftPaddle.width  * 100) / canvasSize.width,
+        height: (leftPaddle.height  * 100) / canvasSize.height,
+      },
+      rightPaddle: {
+        x: (rightPaddle.x  * 100) / canvasSize.width,
+        y: (rightPaddle.y  * 100) / canvasSize.height,
+        width: (rightPaddle.width  * 100) / canvasSize.width,
+        height: (rightPaddle.height  * 100) / canvasSize.height,
+      },
+    };
     if (gameStarted) {
-      // const canvasData: CanvasData = {
-      //   leftPaddle: {
-      //     x: (leftPaddle.x  * 100) / canvasSize.width,
-      //     y: (leftPaddle.y  * 100) / canvasSize.height,
-      //     width: (leftPaddle.width  * 100) / canvasSize.width,
-      //     height: (leftPaddle.height  * 100) / canvasSize.height,
-      //   },
-      //   rightPaddle: {
-      //     x: (rightPaddle.x  * 100) / canvasSize.width,
-      //     y: (rightPaddle.y  * 100) / canvasSize.height,
-      //     width: (rightPaddle.width  * 100) / canvasSize.width,
-      //     height: (rightPaddle.height  * 100) / canvasSize.height,
-      //   },
-      // };
-      // socket.emit("updatePaddles", {clientId, canvasData});
-      socket.emit("sendGameData", {clientId});
+      socket.emit("sendGameData", {clientId, initCanvasData});
     }
 
   }, [gameStarted]);
