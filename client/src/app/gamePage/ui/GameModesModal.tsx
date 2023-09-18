@@ -119,7 +119,7 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
         />
         <ModalHeader>Game Modes</ModalHeader>
         <ModalCloseButton />
-        <ModalBody className="flex justify-between items-center">
+        {/* <ModalBody className="flex justify-between items-center">
           <div className="flex flex-col space-y-5">
             <div className="flex flex-row justify-between items-center space-x-5">
               {Modes.map((mode: string) => (
@@ -213,7 +213,7 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
               </div>
             </div>
           </div>
-        </ModalBody>
+        </ModalBody> */}
 
         <ModalFooter>
           <Button

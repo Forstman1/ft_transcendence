@@ -24,6 +24,7 @@ type Props = {
     users: UserValues[]
 };
 
+
 type UserValues = {
     userName: string
     id: number
@@ -31,8 +32,8 @@ type UserValues = {
 }
 
 
-function Usercard(props: any) {
 
+function Usercard(props: any) {
 
     const { data, selectedOption, onOptionChange } = props;
 
@@ -78,14 +79,9 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
                                 {userName: "test2", id: 5, onlineStatus: "offline"},
                                 {userName: "test3", id: 5, onlineStatus: "offline"},
                                 {userName: "test4", id: 5, onlineStatus: "offline"},
-
                                 ]
 
-
     const [selectedOption, setSelectedOption]: any = useState('');
-
-
-
 
 
     const handleOptionChange = (newValue: any) => {
@@ -129,10 +125,7 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
                             onOptionChange={handleOptionChange}
                         />
                     })}
-
                 </div>
-
-
 
             </ModalBody>
 
