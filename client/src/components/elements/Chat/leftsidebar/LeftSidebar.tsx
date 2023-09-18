@@ -33,7 +33,7 @@ type UserValues = {
 
 function Usercard(props: any) {
 
-  return (<div className='flex justify-between items-center border-1 border-black shadow-lg shadow-gray-400 cursor-pointer m-2 ml-0 p-2  rounded-md'>
+  return (<div className='flex justify-between items-center custom-shadow  cursor-pointer m-2 ml-0 p-2  rounded-md'>
 
     <div>
       <Avatar boxSize={16}>
@@ -77,7 +77,6 @@ export default function LeftSidebar() {
   return (
     <>
       <div className=' w-[300px]   flex flex-col items-center xl:w-[465px]  '>
-      {/* <div className='w-[300px] flex  '> */}
         <Search
           channels={channels}
           users={users}
