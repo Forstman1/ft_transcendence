@@ -26,14 +26,14 @@ export default function ChatPage() {
         <ChatWindow />
         <RightSidebar />
       </Flex>
-      <Image src={FooterWaves} alt="FooterWave" className="w-full rotate-180 h-[17px]"  />
+      {/* <Image src={FooterWaves} alt="FooterWave" className="w-full rotate-180 h-[17px]"  />
       <Box className="w-full h-[60px] bg-neutral-950 sticky top-0 z-100 flex justify-between items-center">
         <Button className="h-14 w-24 rounded-3xl">
           <Image src={ChatList} alt="ChatList" className="fill-white"/>
         </Button>
         <Button className='bg-white h-14 w-24 rounded-3xl'></Button>
         <Button className="bg-white h-14 w-24 rounded-3xl"></Button>
-      </Box>
+      </Box> */}
     </PageWrapper>
 
   );
