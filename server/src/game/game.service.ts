@@ -30,8 +30,8 @@ export class GameService {
   }
 
   public updateBallPosition(): void {
-    this.ball.x += this.ball.speedX;
-    this.ball.y += this.ball.speedY;
+    this.ball.x += this.ball.speedX / 2;
+    this.ball.y += this.ball.speedY / 2;
 
     // Check for collisions with the top and bottom boundaries
     if (

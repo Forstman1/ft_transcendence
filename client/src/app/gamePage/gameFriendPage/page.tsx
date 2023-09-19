@@ -347,10 +347,12 @@ export default function GameFriendPage() {
 
 
   useEffect(() => {
-    if(gameEnded){
+    if (gameEnded){
       socket.emit("endGame", {clientId});
       socket.off("GetGameData");
       socket.disconnect();
+      socket.close();
+      console.log("endGame 1111" )
     }
     else if (!gameStarted && !gameEnded) {
       socket.emit("pauseGame", {clientId});
