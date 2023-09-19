@@ -2,7 +2,7 @@
 "use client";
 
 // import { Metadata } from "next";
-import React, { useRef, useEffect, useState, MutableRefObject, use } from "react";
+import React, { useRef, useEffect, useState} from "react";
 import { PageWrapper } from "../../animationWrapper/pageWrapper";
 import Countdown from "../ui/Countdown";
 import GameHeader from "../ui/GameFriendHeader";
@@ -112,7 +112,7 @@ export default function GameFriendPage() {
   const [UserScore, setUserScore] = useState<number>(0);
   const [gameMatches, setGameMatches] = useState<number>(gameSettings.matches);
   const [tableResults, setTableResults] = useState<tableResultProps[]>([]);
-  const [botPoints, setBotPoints] = useState<number>(0);
+  const [friendPoints, setFriendPoints] = useState<number>(0);
   const [userPoints, setUserPoints] = useState<number>(0);
   const [gamePause, setGamePause] = useState<boolean>(false);
 
@@ -126,8 +126,10 @@ export default function GameFriendPage() {
     clientId = socket.id;
 
     if (socket !== null) {
+
       let prevLeftScore = 0;
       let prevRightScore = 0;
+      
       socket.on("GetGameData", (data:GameUpdateData) => {
         setBall({
           x: (data.ball.x * canvasSize.width) / 100,
@@ -144,7 +146,7 @@ export default function GameFriendPage() {
         }
         else if (prevRightScore < data.rightScore){
           setGameMatches((prev) => prev - 1);
-          setFriendScore((prev) => prev + 1);
+          setFriendPoints((prev) => prev + 1);
         }
         prevLeftScore = data.leftScore;
         prevRightScore = data.rightScore;
@@ -189,7 +191,7 @@ export default function GameFriendPage() {
       setTableResults((prev) => [
         ...prev,
         {
-          botPoints: botPoints,
+          botPoints: friendPoints,
           userPoints: userPoints,
           RoundNamber: RoundNumber,
         },
@@ -197,7 +199,7 @@ export default function GameFriendPage() {
       setGameStarted(false);
       setGameMatches(gameSettings.matches);
       setRoundNumber((prev) => prev + 1);
-      setBotPoints(0);
+      setFriendPoints(0);
       setUserPoints(0);
     }
 
@@ -343,18 +345,22 @@ export default function GameFriendPage() {
     socket.emit("updatePaddles", {clientId, canvasData});
    }, [leftPaddle, rightPaddle]);
 
-   //---------------------------------------------------------------------------
 
   useEffect(() => {
     if(gameEnded){
-      socket.emit("endGame", {clientId}, (data: any) => {
-        console.log(data);
-      }
-      );
+      socket.emit("endGame", {clientId});
       socket.off("GetGameData");
+      socket.disconnect();
     }
-  }
-  , [gameEnded]);
+    else if (!gameStarted && !gameEnded) {
+      socket.emit("pauseGame", {clientId});
+      console.log("pauseGame 1111" )
+    }
+    else if (gameStarted && !gameEnded) {
+      socket.emit("resumeGame", {clientId});
+      console.log("resumeGame 1111" )
+    }
+  }, [gameEnded, gameStarted]);
 
   //---------------------------------------------------------------------------
 
@@ -376,6 +382,7 @@ export default function GameFriendPage() {
                   setGamePause={setGamePause}
                   gameEnded={gameEnded}
                   gameStarted={gameStarted}
+                  gameMode="FRIEND"
                 />
                 <div className="flex flex-col space-y-10 w-full mx-[10%] h-full justify-center items-center mt-[100px]">
                   <GameHeader leftScore={leftScore} rightScore={rightScore} />
@@ -405,7 +412,7 @@ export default function GameFriendPage() {
                         <>
                           <div className="w-full h-full">
                             <GameEndStatic
-                              bot={gameEndStatic.bot}
+                              opponent={gameEndStatic.bot}
                               user={gameEndStatic.user}
                             />
                           </div>

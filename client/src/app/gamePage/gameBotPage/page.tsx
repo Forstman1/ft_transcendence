@@ -270,6 +270,7 @@ export default function GameBotPage() {
                   setGamePause={setGamePause}
                   gameEnded={gameEnded}
                   gameStarted={gameStarted}
+                  gameMode="BOT"
                 />
                 <div className="flex flex-col space-y-10 w-full mx-[10%] h-full justify-center items-center mt-[100px]">
                   <GameHeader leftScore={leftScore} rightScore={rightScore} />
@@ -299,7 +300,7 @@ export default function GameBotPage() {
                         <>
                           <div className="w-full h-full">
                             <GameEndStatic
-                              bot={gameEndStatic.bot}
+                              opponent={gameEndStatic.bot}
                               user={gameEndStatic.user}
                             />
                           </div>

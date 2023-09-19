@@ -6,17 +6,20 @@ import { useAppSelector } from "@/redux/store/store";
 import { getTextColor2 } from "@/utils/functions/game/GetGameColor";
 import { motion } from "framer-motion";
 
+
+type Props = {
+  seconds: number;
+  onCountdownEnd: () => void;
+  RoundNumber: number;
+  gamePause: boolean;
+};
+
 const Countdown = ({
   seconds,
   onCountdownEnd,
   RoundNumber,
   gamePause,
-}: {
-  seconds: number;
-  onCountdownEnd: () => void;
-  RoundNumber: number;
-  gamePause: boolean;
-}) => {
+}: Props) => {
   const [timeLeft, setTimeLeft] = useState(seconds);
   const [isCountdownVisible, setIsCountdownVisible] = useState(true);
   const gameSettings = useAppSelector((state) => state.gameReducer);
@@ -24,9 +27,9 @@ const Countdown = ({
   useEffect(() => {
     if (gamePause) return;
     if (timeLeft <= 0) {
-      setIsCountdownVisible(false); // Hide the countdown
+      setIsCountdownVisible(false);
       setTimeout(() => {
-        onCountdownEnd(); // Execute onCountdownEnd after 1 second
+        onCountdownEnd();
       }, 1000);
       return;
     }

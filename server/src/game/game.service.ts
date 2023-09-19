@@ -29,9 +29,7 @@ export class GameService {
     this.rightPaddle = data.rightPaddle;
   }
 
-  // This function updates the ball's position and handles bouncing
   public updateBallPosition(): void {
-    // Calculate the new ball position based on velocity
     this.ball.x += this.ball.speedX;
     this.ball.y += this.ball.speedY;
 
@@ -49,7 +47,7 @@ export class GameService {
       this.ball = {
         x: 50,
         y: 50,
-        speedX: this.BallInitData.speedX,
+        speedX: -this.BallInitData.speedX,
         speedY: this.BallInitData.speedY,
         radius: this.BallInitData.radius,
         maxBallSpeed: this.BallInitData.maxBallSpeed,
@@ -81,14 +79,13 @@ export class GameService {
         this.leftPaddle.y + this.leftPaddle.height / 2 - this.ball.y;
       const normalizedRelativeIntersectY =
         relativeIntersectY / (this.leftPaddle.height / 2);
-      const bounceAngle = normalizedRelativeIntersectY * (Math.PI / 4); // Adjust this angle as needed
+      const bounceAngle = (normalizedRelativeIntersectY * Math.PI) / 4;
 
-      // Adjust the ball's velocities based on the angle of impact
       const ballSpeed = Math.sqrt(
         this.ball.speedX ** 2 + this.ball.speedY ** 2,
       );
       this.ball.speedX = ballSpeed * Math.cos(bounceAngle);
-      this.ball.speedY = ballSpeed * Math.sin(bounceAngle);
+      this.ball.speedY = ballSpeed * -Math.sin(bounceAngle);
     }
 
     // Check for collisions with the right paddle
@@ -98,23 +95,20 @@ export class GameService {
       this.ball.y - this.ball.radius <=
         this.rightPaddle.y + this.rightPaddle.height
     ) {
-      // Calculate the angle of impact
       const relativeIntersectY =
         this.rightPaddle.y + this.rightPaddle.height / 2 - this.ball.y;
       const normalizedRelativeIntersectY =
         relativeIntersectY / (this.rightPaddle.height / 2);
-      const bounceAngle = normalizedRelativeIntersectY * (Math.PI / 4); // Adjust this angle as needed
+      const bounceAngle = (normalizedRelativeIntersectY * Math.PI) / 4;
 
-      // Adjust the ball's velocities based on the angle of impact
       const ballSpeed = Math.sqrt(
         this.ball.speedX ** 2 + this.ball.speedY ** 2,
       );
-      this.ball.speedX = -ballSpeed * Math.cos(bounceAngle); // Reverse horizontal velocity
-      this.ball.speedY = ballSpeed * Math.sin(bounceAngle);
+      this.ball.speedX = ballSpeed * -Math.cos(bounceAngle);
+      this.ball.speedY = ballSpeed * -Math.sin(bounceAngle);
     }
   }
 
-  // This function retrieves the current ball position
   public getUpdateData() {
     return {
       ball: this.ball,

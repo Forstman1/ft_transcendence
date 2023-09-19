@@ -17,15 +17,21 @@ export class GameGateway {
   constructor(private readonly gameService: GameService) {}
 
   interval = null;
+  isPaused = false;
+  count = 0;
 
   @SubscribeMessage('sendGameData')
   sendGameData(@ConnectedSocket() client: Socket, @Body() data: InitGameData) {
     console.log('client', client.id);
     this.gameService.initGameData(data.initCanvasData);
     this.interval = setInterval(() => {
-      this.gameService.updateBallPosition();
-      client.emit('GetGameData', this.gameService.getUpdateData());
-    }, 5);
+      if (!this.isPaused) {
+        // console.log('setInterval:' + this.count);
+        // this.count++;
+        this.gameService.updateBallPosition();
+        client.emit('GetGameData', this.gameService.getUpdateData());
+      }
+    }, 15);
   }
 
   @SubscribeMessage('updatePaddles')
@@ -37,6 +43,16 @@ export class GameGateway {
   endGame(@ConnectedSocket() client: Socket) {
     clearInterval(this.interval);
     client.emit('GetGameData', 'end');
+  }
+
+  @SubscribeMessage('pauseGame')
+  pauseGame(@ConnectedSocket() client: Socket) {
+    this.isPaused = true;
+  }
+
+  @SubscribeMessage('resumeGame')
+  resumeGame(@ConnectedSocket() client: Socket) {
+    this.isPaused = false;
   }
 
   // @SubscribeMessage('join')

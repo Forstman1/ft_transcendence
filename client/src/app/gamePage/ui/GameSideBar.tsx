@@ -50,12 +50,14 @@ const GameSideBar = ({
   setGamePause,
   gameStarted,
   gameEnded,
+  gameMode,
 }: {
   tableResults: tableResultProps[];
   gamePause: boolean;
   setGamePause: React.Dispatch<React.SetStateAction<boolean>>;
   gameStarted: boolean;
   gameEnded: boolean;
+  gameMode: string;
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const gameSettings = useAppSelector((state) => state.gameReducer);
@@ -325,7 +327,7 @@ const GameSideBar = ({
                                       UserScore
                                     </Th>
                                     <Th color="white" className=" font-bold">
-                                      BotScore
+                                      {gameMode === "BOT" ? "BotScore" : "FriendScore"}
                                     </Th>
                                   </Tr>
                                 </Thead>
