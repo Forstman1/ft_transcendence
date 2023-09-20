@@ -16,42 +16,60 @@ export class GameGateway {
 
   constructor(private readonly gameService: GameService) {}
 
-  interval = null;
-  isPaused = false;
-  count = 0;
+  private interval: NodeJS.Timeout | null = null;
+  private isPaused = false;
+  private count = 0;
 
   @SubscribeMessage('sendGameData')
-  sendGameData(@ConnectedSocket() client: Socket, @Body() data: InitGameData) {
-    console.log('client', client.id);
-    this.gameService.initGameData(data.initCanvasData);
-    this.interval = setInterval(() => {
-      if (!this.isPaused) {
-        // console.log('setInterval:' + this.count);
-        // this.count++;
-        this.gameService.updateBallPosition();
-        client.emit('GetGameData', this.gameService.getUpdateData());
-      }
-    }, 15);
+  sendGameData(
+    @ConnectedSocket() client: Socket,
+    @Body() data: InitGameData,
+  ): void {
+    try {
+      console.log('client', client.id);
+      this.gameService.initGameData(data.initCanvasData);
+      this.interval = setInterval(() => {
+        if (!this.isPaused) {
+          // console.log('setInterval: ' + this.count);
+          // this.count++;
+          this.gameService.updateBallPosition();
+          client.emit('GetGameData', this.gameService.getUpdateData());
+        }
+      }, 15);
+    } catch (error) {
+      console.error('Error in sendGameData:', error);
+    }
   }
 
   @SubscribeMessage('updatePaddles')
-  updatePaddles(@ConnectedSocket() client: Socket, @Body() data: Gamedata) {
-    this.gameService.updatePaddles(data.canvasData);
+  updatePaddles(
+    @ConnectedSocket() client: Socket,
+    @Body() data: Gamedata,
+  ): void {
+    try {
+      this.gameService.updatePaddles(data.canvasData);
+    } catch (error) {
+      console.error('Error in updatePaddles:', error);
+    }
   }
 
   @SubscribeMessage('endGame')
-  endGame(@ConnectedSocket() client: Socket) {
-    clearInterval(this.interval);
-    client.emit('GetGameData', 'end');
+  endGame(@ConnectedSocket() client: Socket): void {
+    try {
+      this.isPaused = true;
+      clearInterval(this.interval as NodeJS.Timeout);
+    } catch (error) {
+      console.error('Error in endGame:', error);
+    }
   }
 
   @SubscribeMessage('pauseGame')
-  pauseGame(@ConnectedSocket() client: Socket) {
+  pauseGame(@ConnectedSocket() client: Socket): void {
     this.isPaused = true;
   }
 
   @SubscribeMessage('resumeGame')
-  resumeGame(@ConnectedSocket() client: Socket) {
+  resumeGame(@ConnectedSocket() client: Socket): void {
     this.isPaused = false;
   }
 
@@ -63,36 +81,3 @@ export class GameGateway {
   //   // return this.gameService.identifyPlayer(name, client.id);
   // }
 }
-
-// constructor(private readonly ballService: BallService) {}
-//   private players: Map<string, { x: number; y: number }> = new Map();
-
-//   @WebSocketServer() server: Server;
-
-//   // Handle player movement messages from clients
-//   @SubscribeMessage('playerMove')
-//   handlePlayerMove(client: Socket, data: { x: number; y: number }): void {
-//     // Update the player's position based on the received data
-//     // this.players.set(client.id, data);
-//   }
-
-//   // Initialize the game and start sending ball updates
-//   handleConnection(client: Socket): void {
-//     // Add the new player with an initial position
-//     this.players.set(client.id, { x: 0, y: 0 });
-
-//     // Start sending periodic ball updates to the connected client
-//     const intervalId = setInterval(() => {
-//       this.ballService.updateBallPosition();
-//       const ballPosition = this.ballService.getBallPosition();
-
-//       // Send both ball position and player positions to the connected client
-//       this.server.to(client.id).emit('updateGame', { ball: ballPosition, players: Array.from(this.players) });
-//     }, 1000 / 30); // Update the game approximately 30 times per second
-
-//     // Clean up the interval when the client disconnects
-//     client.on('disconnect', () => {
-//       this.players.delete(client.id);
-//       clearInterval(intervalId);
-//     });
-//   }

@@ -28,31 +28,13 @@ import {
   tableResultProps,
   Rectangle,
 } from "@/utils/types/game/GameTypes";
+import {
+  initialCanvasSize,
+  initialLeftPaddle,
+  initialRightPaddle,
+  initialGameEndStatic,
+} from "@/utils/constants/game/GameConstants";
 
-
-const initialCanvasSize = {
-  width: 1500,
-  height: 600,
-};
-
-const initialLeftPaddle = {
-  x: 10,
-  y: initialCanvasSize.height / 2,
-  width: 15,
-  height: initialCanvasSize.height / 5,
-};
-
-const initialRightPaddle = {
-  x: initialCanvasSize.width - 25,
-  y: initialCanvasSize.height / 2,
-  width: 15,
-  height: initialCanvasSize.height / 5,
-};
-
-const initialGameEndStatic = {
-  bot: "DRAW",
-  user: "DRAW",
-};
 
 export default function GameBotPage() {
   let gameSettings = useAppSelector((state) => state.gameReducer);

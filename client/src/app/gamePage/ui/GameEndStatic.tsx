@@ -19,9 +19,8 @@ const GameEndStatic = ({opponent, user}: GameStaticProps) => {
     const router = useRouter();
 
     const handleExitClick = () => {
-        router.push('/gamePage');
+        router.back();
     }
-
   
     return (
       <PageWrapper>
