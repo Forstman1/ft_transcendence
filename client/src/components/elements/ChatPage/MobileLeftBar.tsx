@@ -41,7 +41,6 @@ export default function MobileLeftBar({LeftIsOpen, setLeftIsOpen}: any) {
     animate={LeftIsOpen ? "open" : "closed"}
     variants={sidebar}
     >
-
     </Box>
   )
 }
