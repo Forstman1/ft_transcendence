@@ -15,6 +15,7 @@ export default function MobileLeftBar({LeftIsOpen, setLeftIsOpen}: any) {
 
     const sidebar = {
         open: (height = 1000) => ({
+          width: "300px",
           clipPath: `circle(${height * 2 + 200}px at 90% 90%)`,
           transition: {
             type: "spring",
