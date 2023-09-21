@@ -99,22 +99,6 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
     setCanvasBgImg(id);
   };
 
-  const modalVariants = {
-    hidden: {
-      y: "-100%",
-      opacity: 0,
-    },
-    visible: {
-      y: "0%",
-      opacity: 1,
-      transition: {
-        type: "spring",
-        damping: 20,
-        stiffness: 300,
-      },
-    },
-  };
-
   return (
     <Modal
       isOpen={isOpen}

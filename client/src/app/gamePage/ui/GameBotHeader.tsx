@@ -18,7 +18,7 @@ const GameBotHeader = ({
     const balColor = gameSettings.playgroundtheme.balColor;
     
     return (
-      <div className={`flex items-center justify-between h-[100px] mx-auto rounded-lg p-10 drop-shadow-2xl w-full max-w-[1200px] ${balColor}`}>
+      <div className={`flex items-center justify-between h-[100px] mx-auto rounded-lg p-10 drop-shadow-2xl w-full max-w-[1200px] ${balColor}`} >
         <div className="flex flex-row items-center space-x-5">
           <Avatar size="lg">
             <Image src={Robot} alt="Logo" />

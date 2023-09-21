@@ -19,7 +19,6 @@ import {
   RecSpeed,
   initialBallSpeed,
   draw,
-  handelGameStatic,
   maxBallSpeed,
 } from "@/utils/functions/game/GameLogic";
 import {
@@ -70,8 +69,6 @@ export default function GameFriendPage() {
   const [RoundNumber, setRoundNumber] = useState<number>(1);
   const [gameEnded, setGameEnded] = useState<boolean>(false);
   const [gameEndStatic, setGameEndStatic] = useState(initialGameEndStatic);
-  const [FriendScore, setFriendScore] = useState<number>(0);
-  const [UserScore, setUserScore] = useState<number>(0);
   const [gameMatches, setGameMatches] = useState<number>(gameSettings.matches);
   const [tableResults, setTableResults] = useState<tableResultProps[]>([]);
   const [friendPoints, setFriendPoints] = useState<number>(0);
@@ -80,32 +77,6 @@ export default function GameFriendPage() {
   const [hasInitialized, setHasInitialized] = useState(false);
 
   //--------------------------------Socket Code logic-------------------------------------------
-
-  useEffect(() => {
-    console.log("Game component mounted"); 
-    // appliyGameMode(gameSettings);
-    // return () => {
-    //   setKeysPressed({});
-    //   setBall(initialBallState);
-    //   setLeftScore(0);
-    //   setRightScore(0);
-    //   setGameStarted(false);
-    //   setLeftPaddle(leftPaddleRef.current);
-    //   setRightPaddle(rightPaddleRef.current);
-    //   setLoading(true);
-    //   setRoundNumber(1);
-    //   setGameEnded(false);
-    //   setGameEndStatic(initialGameEndStatic);
-    //   setFriendScore(0);
-    //   setUserScore(0);
-    //   setGameMatches(gameSettings.matches);
-    //   setTableResults([]);
-    //   setFriendPoints(0);
-    //   setUserPoints(0);
-    //   setGamePause(false);
-    //   setHasInitialized(false);
-    // };
-  }, []);
 
   useEffect(() => {
     socket = io('http://localhost:3001', {
@@ -156,7 +127,7 @@ export default function GameFriendPage() {
     if (socket) {
       socket.emit("endGame", { clientId });
       socket.off("GetGameData");
-      socket.disconnect();
+      socket.disconnect(true);
       socket.close();
     }
   };
@@ -227,14 +198,14 @@ export default function GameFriendPage() {
   //----------------------------------end Socket code Logic-----------------------------------------
 
   useEffect (() => {
-    if (RoundNumber == gameSettings.rounds && gameStarted) {
-      if (FriendScore > UserScore){
+    if (RoundNumber == gameSettings.rounds && gameMatches == 0) {
+      if (leftScore > rightScore){
         setGameEndStatic({
           bot: "WIN",
           user: "LOSE"
         });
       }
-      else if (FriendScore < UserScore){
+      else if (leftScore < rightScore){
         setGameEndStatic({
           bot: "LOSE",
           user: "WIN"
@@ -264,7 +235,7 @@ export default function GameFriendPage() {
       setUserPoints(0);
     }
 
-  }, [FriendScore, UserScore]);
+  }, [leftScore, rightScore]);
 
   //---------------------------------------------------------------------------
 
@@ -286,45 +257,38 @@ export default function GameFriendPage() {
 
   //---------------------------------------------------------------------------
 
-  useEffect(() => {
-    if(!gameStarted || gameEnded) return;
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === " ") {
+      event.preventDefault();
+      setGamePause((prevGamePause) => !prevGamePause);
+    } else {
+      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: true }));
+    }
+  };
+  
+  const handleKeyUp = (event: KeyboardEvent) => {
+    setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: false }));
+  };
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === " ") {
-        event.preventDefault();
-        setGamePause((prevGamePause) => !prevGamePause);
-      } else {
-        setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: true }));
-      }
-    };
-  
-    const handleKeyUp = (event: KeyboardEvent) => {
-      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: false }));
-    };
-  
-    document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("keyup", handleKeyUp);
-  
+  useEffect(() => {
+    if (!gameStarted) return;
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp)
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [gameStarted, gamePause, gameEnded]);
+  }, [gameStarted]);
+  
 
   //---------------------------------------------------------------------------
   
 
   useEffect(() => {
+    
     if (gamePause || !gameStarted || gameEnded) return;
-
-    handelGameStatic(
-      setFriendScore,
-      setUserScore,
-      leftScore,
-      rightScore,
-      gameMatches
-    );
-  
+    
+    
     const speed = RecSpeed;
 
     if (keysPressed["ArrowUp"]) {
@@ -348,7 +312,7 @@ export default function GameFriendPage() {
     if (context)
       draw(canvasRef.current!, context, leftPaddle, rightPaddle, ball, gameSettings);
   
-  }, [keysPressed, canvasSize, ball, gameStarted, gameEnded]);
+  }, [canvasSize, ball, gameStarted, gameEnded]);
 
   //---------------------------------------------------------------------------
 
@@ -372,20 +336,13 @@ export default function GameFriendPage() {
                   gameStarted={gameStarted}
                   gameMode="FRIEND"
                 />
-                <div className="flex flex-col space-y-10 w-full mx-[10%] h-full justify-center items-center mt-[100px]">
+                <div className="flex flex-col space-y-10 w-full mx-[10%] h-full justify-center items-center mt-[100px]" >
                   <GameHeader leftScore={leftScore} rightScore={rightScore} />
                   <div
                     id="canvas-container"
                     className="relative flex items-center bg-background-primary rounded-lg h-[55vh] w-full max-w-[1200px]"
                   >
                     <div className="absolute top-0 left-0 w-full h-full rounded-lg z-10">
-                      {gamePause && !gameEnded && (
-                        <div className="flex justify-center w-full h-full bg-black opacity-50 rounded-lg z-10">
-                          <Text className="text-white text-4xl font-semibold">
-                            Pause
-                          </Text>
-                        </div>
-                      )}
                       {!gameStarted && !gameEnded && (
                         <div className="w-full h-full">
                           <Countdown

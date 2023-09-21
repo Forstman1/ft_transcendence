@@ -27,6 +27,7 @@ export class GameGateway {
   ): void {
     try {
       console.log('client', client.id);
+      this.gameService.resetGameDate();
       this.gameService.initGameData(data.initCanvasData);
       this.interval = setInterval(() => {
         if (!this.isPaused) {

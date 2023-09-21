@@ -250,24 +250,24 @@ export const animate = (
   setBall((prevBall) => ({ ...prevBall, x: newBallX, y: newBallY }));
 };
 
-export const handelGameStatic = (
-  setRobotScore: React.Dispatch<React.SetStateAction<number>>,
-  setUserScore: React.Dispatch<React.SetStateAction<number>>,
-  leftScore: number,
-  rightScore: number,
-  gameMatches: number
-) => {
+// export const handelGameStatic = (
+//   setRobotScore: React.Dispatch<React.SetStateAction<number>>,
+//   setUserScore: React.Dispatch<React.SetStateAction<number>>,
+//   leftScore: number,
+//   rightScore: number,
+//   gameMatches: number
+// ) => {
 
-  if (gameMatches === 0){
-    if (leftScore > rightScore){
-      setRobotScore((prev) => prev + 1);
-    }
-    else if (leftScore < rightScore){
-      setUserScore((prev) => prev + 1);
-    }
-    else {
-      setRobotScore((prev) => prev + 1);
-      setUserScore((prev) => prev + 1);
-    }
-  }
-}
+//   if (gameMatches === 0){
+//     if (leftScore > rightScore){
+//       setRobotScore((prev) => prev + 1);
+//     }
+//     else if (leftScore < rightScore){
+//       setUserScore((prev) => prev + 1);
+//     }
+//     else {
+//       setRobotScore((prev) => prev + 1);
+//       setUserScore((prev) => prev + 1);
+//     }
+//   }
+// }

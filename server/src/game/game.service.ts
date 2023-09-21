@@ -17,10 +17,14 @@ export class GameService {
   private leftScore = 0;
   private rightScore = 0;
 
+  //------------------ update paddles ------------------
+
   public updatePaddles(data): void {
     this.leftPaddle = data.leftPaddle;
     this.rightPaddle = data.rightPaddle;
   }
+
+  //------------------ init game data ------------------
 
   public initGameData(data): void {
     this.BallInitData = data.ball;
@@ -28,6 +32,8 @@ export class GameService {
     this.leftPaddle = data.leftPaddle;
     this.rightPaddle = data.rightPaddle;
   }
+
+  //------------------ update ball position ------------------
 
   public updateBallPosition(): void {
     this.ball.x += this.ball.speedX / 2;
@@ -108,6 +114,33 @@ export class GameService {
       this.ball.speedY = ballSpeed * -Math.sin(bounceAngle);
     }
   }
+
+  //------------------ reset game date ------------------
+
+  public resetGameDate(): void {
+    this.ball = {
+      x: 0,
+      y: 0,
+      speedX: 0,
+      speedY: 0,
+      radius: 0,
+      maxBallSpeed: 0,
+    };
+    this.leftPaddle = { x: 0, y: 0, width: 0, height: 0 };
+    this.rightPaddle = { x: 0, y: 0, width: 0, height: 0 };
+    this.leftScore = 0;
+    this.rightScore = 0;
+    this.BallInitData = {
+      x: 0,
+      y: 0,
+      speedX: 0,
+      speedY: 0,
+      radius: 0,
+      maxBallSpeed: 0,
+    };
+  }
+
+  //------------------ get update data ------------------
 
   public getUpdateData() {
     return {
