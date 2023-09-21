@@ -1,7 +1,7 @@
 import React from 'react'
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Button, Toast, useToast } from '@chakra-ui/react';
+import { Button, useToast } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 
 
@@ -32,7 +32,6 @@ export default function SelectComponent() {
         size={"lg"}
         width={"300px"}
         justifyContent={"space-between"}
-        // whileTap={{ scale: 0.90 }}
         onClick={() => setIsOpen(!isOpen)}
         className='bg-[#e2e8f1]'
       >

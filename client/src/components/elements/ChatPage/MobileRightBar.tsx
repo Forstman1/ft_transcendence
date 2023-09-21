@@ -1,26 +1,56 @@
-"use client"
 
 import React from 'react'
-import { Text, Avatar, Box } from '@chakra-ui/react'
-import Image from 'next/image'
+import { Box, Text, Avatar, Link, useToast } from '@chakra-ui/react'
+import { motion, useInView } from 'framer-motion'
+import RightSidebar from './RightSidebar'
 import Profile from '../../../../assets/icons/Profile.svg'
 import InviteToaGame from '../../../../assets/icons/InviteToaGame.svg'
-import Link from 'next/link'
-import { useToast } from '@chakra-ui/react'
 import ChannelMemberActions from './ChannelMemberActions'
 import UserControls from './UserControls'
+import Image from 'next/image'
 
 
 
+export default function MobileRightBar({RightIsOpen, setRightIsOpen}: any) {
 
-export default function RightSidebar() {
+  const ref = React.useRef(null)
+  const inView = useInView(ref)
+  const toast = useToast()
+  
+if (!inView) {
+  setRightIsOpen(false)
+}
 
 
-  const toast = useToast();
+  const sidebar = {
+    open: (height = 1000) => ({
+      clipPath: `circle(${height * 2 + 200}px at 90% 90%)`,
+      transition: {
+        type: "spring",
+        stiffness: 20,
+        restDelta: 2
+      }
+    }),
+    closed: {
+      width: 0,
+      clipPath: `circle(30px at 90% 90%)`,
+      transition: {
+        // delay: 0.5,
+        type: "spring",
+        stiffness: 400,
+        damping: 40
+      }
+    }
+  };
 
   return (
-    <Box className='Main-Box hidden md:block h-full w-[300px] overflow-y-auto border-l-[3px] border-l-black gap-10 pt-6 xl:w-[465px]'>
-      <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7 '>
+    <Box ref={ref} className='h-screen bg-opacity-30 bg-black w-[300px] overflow-y-scroll border-l-[3px] border-l-black gap-10 pt-6 z-0 sm:[300] md:hidden'
+    as={motion.div}
+    initial={false}
+    animate={RightIsOpen ? "open" : "closed"}
+    variants={sidebar}
+    >
+       <Box className='w-full flex flex-1 flex-col items-center justify-center my-8 gap-7 '>
         <Text className='flex text-black text-4xl drop-shadow-[2px_2px_0_rgba(18,18,18,.0.50)]'>
           user_455013
         </Text>
@@ -31,16 +61,16 @@ export default function RightSidebar() {
         </Box>
       </Box>
       <hr className='bg-black h-[2px] mx-10' />
-      <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7'>
+      <Box className='w-full flex flex-1 flex-col items-center justify-center my-8 gap-7'>
         <Box className='flex items-center gap-6 w-[220px]'>
-          <Image src={Profile} width={30} height={30} alt="View Profile"/>
+          <Image src={Profile} width={30} height={30} alt="View Profile" />
           <Link href={'/gamePage'} className='text-2xl cursor-pointer'>
             View Profile
           </Link>
         </Box>
         <Box className='flex items-center gap-6 w-[220px]'>
           <Image src={InviteToaGame} width={30} height={30} alt="View Profile" />
-          <Text className='text-2xl cursor-pointe–r' onClick={() => toast({
+          <Text className='text-2xl cursor-pointer' onClick={() => toast({
             title: 'Invitation sent',
             position: 'bottom-right',
             status: 'success',
@@ -57,9 +87,10 @@ export default function RightSidebar() {
         <UserControls/>
       </Box>
       <hr className='bg-black h-[2px] mx-10' />
-      <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7'>
+      <Box className='w-full flex flex-1 flex-col items-center justify-center my-8 gap-7 pb-32'>
         <ChannelMemberActions/>
       </Box>
-    </Box>
+    <RightSidebar/>
+  </Box>
   )
 }
