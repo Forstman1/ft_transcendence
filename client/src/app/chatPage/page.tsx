@@ -41,7 +41,9 @@ export default function ChatPage() {
             <Image src={ChatList} alt="ChatList" width={35} height={35} />
             Chat List
           </Button>
-          <Button className='bg-white h-14 w-24 rounded-3xl gap-2'>
+          <Button className='bg-white h-14 w-24 rounded-3xl gap-2'
+          onClick={() => {setRightIsOpen(false), setLeftIsOpen(false)}}
+          >
             <Image src={Chat} alt="Chat" width={35} height={35} />
             Chat
           </Button>

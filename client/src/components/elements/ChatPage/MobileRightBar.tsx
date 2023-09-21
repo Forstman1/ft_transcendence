@@ -24,6 +24,7 @@ if (!inView) {
 
   const sidebar = {
     open: (height = 1000) => ({
+      width: '300px',
       clipPath: `circle(${height * 2 + 200}px at 90% 90%)`,
       transition: {
         type: "spring",
@@ -44,7 +45,7 @@ if (!inView) {
   };
 
   return (
-    <Box ref={ref} className='h-screen bg-opacity-30 bg-black w-[300px] overflow-y-scroll border-l-[3px] border-l-black gap-10 pt-6 z-0 sm:[300] md:hidden'
+    <Box ref={ref} className='h-screen bg-opacity-30 bg-black overflow-y-scroll w-[300px] border-l-[3px] border-l-black gap-10 pt-6 z-0 sm:[300] md:hidden '
     as={motion.div}
     initial={false}
     animate={RightIsOpen ? "open" : "closed"}
