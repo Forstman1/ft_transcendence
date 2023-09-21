@@ -89,7 +89,6 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
     };
 
 
-
     const handleSubmit = () => {
         
         let user: UserValues = { 
@@ -97,14 +96,14 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
             id: 1,
             onlineStatus: "available" 
         }
-        
 
-        setNewUsers([user, ...users ])
+        setNewUsers([user, ...users])
         onClose()
     }
 
 
     return (<div>
+
         <ModalOverlay />
         <ModalContent>
             <ModalHeader>Find Friend</ModalHeader>
@@ -131,8 +130,8 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
 
             <ModalFooter>
                 <Button onClick={handleSubmit} variant='ghost' colorScheme='blue'>GO TO DM</Button>
-
             </ModalFooter>
         </ModalContent>
+
     </div>)
 }

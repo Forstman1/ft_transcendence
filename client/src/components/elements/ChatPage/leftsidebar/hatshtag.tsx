@@ -52,7 +52,6 @@ export default function Hashtag(props: any) {
         }
         data.password = "";
         setWrongpassowrd(true)
-        console.log("data")
 
     };
 

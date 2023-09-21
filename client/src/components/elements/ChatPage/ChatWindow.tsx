@@ -1,9 +1,12 @@
 "use client";
 
-import { Avatar } from '@chakra-ui/react';
-import React from 'react'
+import { Avatar, Input } from '@chakra-ui/react';
+import React, { useEffect, useRef, useState } from 'react'
 import Lottie from 'lottie-react';
 import animationData from '../../../../../client/assets/animations/animation_typing.json';
+import arrow from "../../../../../client/assets/icons/arrow.svg";
+import Image from 'next/image';
+import { useForm } from "react-hook-form";
 
 
 type Messages = {
@@ -16,7 +19,7 @@ type Messages = {
 
 function Message_other({ message, sender, time }: Messages) {
 
-  return (<div className='w-full flex gap-[5px]  items-baseline  pl-[15px]'>
+  return (<div className='w-full flex gap-[5px]  items-baseline  pl-[15px] z-0'>
     <Avatar className='custom-shadow' boxSize={12} />
 
     <div className='bg-white border-2 border-black rounded-2xl custom-shadow  rounded-tl-none pl-[10px] w-[35%]'>
@@ -30,7 +33,7 @@ function Message_other({ message, sender, time }: Messages) {
 
 function Own_Message({ message, sender, time }: Messages) {
 
-  return (<div className='w-full flex gap-[5px]   justify-end pr-[15px] items-baseline '>
+  return (<div className='w-full flex gap-[5px]   justify-end pr-[15px] items-baseline z-0'>
     <div className='bg-black border-2 border-black rounded-2xl custom-shadow text-white rounded-tr-none justify-start pl-[10px] w-[35%]'>
       <div className='text-[#B4B4B4]'>{sender}</div>
       <div>{message}</div>
@@ -45,44 +48,109 @@ export default function ChatWindow() {
 
   let yerstday = new Date("2023-09-16")
   let today = new Date()
+  const { handleSubmit, register, reset } = useForm<any>();
+
+  const [messages, setMessages]: any = useState([])
+
+  let fakemessages: Messages[] = [{ message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
+  { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "haitkadi", time: today },
+  { message: "ana hna o lheh hihihi", sender: "rel-fagr", time: yerstday },
+  { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
+  { message: "ana hna o lheh", sender: "rel-fagr", time: today }, { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
+  { message: "ana hna :)", sender: "houazzan", time: today },
+  { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
+  { message: "ana hna o lheh", sender: "rel-fagr", time: today }, { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
+  { message: "ana hna :)", sender: "houazzan", time: today },
+  { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
+  { message: "ana hna o lheh", sender: "rel-fagr", time: today }, { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
+  { message: "ana hna :)", sender: "houazzan", time: today }]
+
+  
+  useEffect(() => {
+    setMessages(fakemessages, ...messages)
+
+  }, [])
 
 
-  let messages: Messages[] = [{ message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
-                              { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "haitkadi", time: today },
-                              { message: "ana hna o lheh hihihi", sender: "rel-fagr", time: yerstday },
-                              { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
-                              { message: "ana hna o lheh", sender: "rel-fagr", time: today }, { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
-                              { message: "ana hna :)", sender: "houazzan", time: today }]
-
-  messages.sort((a, b) => a.time.getTime() - b.time.getTime());
+  const chatContainer = useRef<any>(null)
 
 
+  const scrollToBottom = () => {
+    if (chatContainer.current) {
+      chatContainer.current.scrollTop = chatContainer.current.scrollHeight;
+      console.log(chatContainer.current.scrollTop)
+    }
+  };
+
+
+
+
+  messages.sort((a: Messages, b: Messages) => a.time.getTime() - b.time.getTime());
+
+  const handelNewMessage = (data: any) => {
+
+    if (!data.newmessage)
+      return;
+    const date = new Date()
+
+    let message: Messages = {
+      message: data.newmessage,
+      sender: "sahafid",
+      time: date,
+    }
+    setMessages([message, ...messages])
+    reset({ newmessage: '' });
+
+    scrollToBottom();
+  }
+
+
+  useEffect(() => {
+    scrollToBottom();
+  }, []);
+
+
+
+  
   return (
-    <div className='flex-grow flex  border-l-4 border-black flex-col gap-[10px] overflow-y-scroll '>
-      {messages.map((message: Messages) => {
-        console.log(message.time)
-        if (message.sender === "sahafid") {
-          return <Own_Message message={message.message} sender={message.sender} time={message.time} />
-        }
-        return <Message_other message={message.message} sender={message.sender} time={message.time} />
-      })}
+    <div className='flex-grow flex  border-l-4 border-black flex-col gap-[10px] z-0'>
+      <div className=' flex  flex-col gap-[10px] overflow-y-scroll z-0 h-[97%] ' ref={chatContainer}>
 
 
-      <div className='w-full flex   items-baseline gap-[5px]  pl-[15px] h-[100px]'>
-        <Avatar className='custom-shadow' boxSize={12} />
+        {messages.map((message: Messages, index: number) => {
+          if (message.sender === "sahafid") {
+            return <Own_Message key={index} message={message.message} sender={message.sender} time={message.time}  />
+          }
+          return <Message_other key={index} message={message.message} sender={message.sender} time={message.time} />
+        })}
 
 
-        <div className='bg-white border-2 border-black rounded-2xl custom-shadow flex rounded-tl-none p-[5px] ' >
-        <div className='h-[15px]'></div> 
-        <Lottie
-          className=' w-[50px] h-[30px]'
-          animationData={animationData}
-          loop={true}
-          autoplay={true}
-        />
-        
+        <div className='w-full flex   items-baseline gap-[5px]  pl-[15px] h-[100px] mb-[5px]'  > 
+          <Avatar className='custom-shadow' boxSize={12} />
+
+
+          <div className='bg-white border-2 border-black rounded-2xl custom-shadow flex rounded-tl-none p-[5px] ' >
+            <div className='h-[15px]'></div>
+            <Lottie
+              className=' w-[50px] h-[30px]'
+              animationData={animationData}
+              loop={true}
+              autoplay={true}
+            />
+
+          </div>
         </div>
+
+
+
+
       </div>
+      <form onSubmit={handleSubmit(handelNewMessage)} className='h-[3%] mb-[10px] flex w-[100%] justify-around items-center '>
+        <Input {...register("newmessage")} className='bg-[#D9D9D9] border-2 w-[90%] border-black ' placeholder='Type your message here ...' />
+        <button type='submit' className='bg-black h-[40px] w-[40px] rounded-md cursor-pointer flex justify-start items-center'>
+          <Image className=' w-[35px] ' src={arrow} alt='arrow' />
+        </button>
+      </form>
     </div>
   )
 }
