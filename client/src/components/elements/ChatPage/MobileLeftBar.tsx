@@ -15,7 +15,7 @@ export default function MobileLeftBar({LeftIsOpen, setLeftIsOpen}: any) {
 
     const sidebar = {
         open: (height = 1000) => ({
-          width: '300px',
+          width: "300px",
           clipPath: `circle(${height * 2 + 200}px at 90% 90%)`,
           transition: {
             type: "spring",
@@ -35,13 +35,12 @@ export default function MobileLeftBar({LeftIsOpen, setLeftIsOpen}: any) {
       };
 
   return (
-    <Box ref={ref} className='h-screen bg-opacity-30 bg-black w-[300px] overflow-y-scroll border-r-[3px] border-r-black gap-10 pt-6 z-0 sm:[300] md:hidden '
+    <Box ref={ref} className='h-screen w-[300px] overflow-y-scroll border-r-[3px] border-r-black gap-10 pt-6 z-0 sm:[300] md:hidden'
     as={motion.div}
     initial={false}
     animate={LeftIsOpen ? "open" : "closed"}
     variants={sidebar}
     >
-
     </Box>
   )
 }
