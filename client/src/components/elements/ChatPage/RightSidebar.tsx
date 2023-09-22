@@ -40,7 +40,7 @@ export default function RightSidebar() {
         </Box>
         <Box className='flex items-center gap-6 w-[220px]'>
           <Image src={InviteToaGame} width={30} height={30} alt="View Profile" />
-          <Text className='text-2xl cursor-pointe–r' onClick={() => toast({
+          <Text className='text-2xl cursor-pointer' onClick={() => toast({
             title: 'Invitation sent',
             position: 'bottom-right',
             status: 'success',

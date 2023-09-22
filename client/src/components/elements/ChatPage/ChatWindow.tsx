@@ -113,7 +113,7 @@ export default function ChatWindow() {
 
 
   return (
-    <div className='flex-grow flex  border-l-4 border-black flex-col gap-[10px] z-0'>
+    <div className='flex-grow flex border-l-[3px] border-black flex-col gap-[10px] z-0'>
       <div className=' flex flex-col gap-[10px] overflow-y-scroll z-0 h-[97%] ' ref={chatContainer}>
 
 
@@ -125,7 +125,7 @@ export default function ChatWindow() {
         })}
 
 
-        {/* <div className='w-full flex   items-baseline gap-[5px]  pl-[15px] h-[100px] mb-[5px]'  > 
+        <div className='w-full flex   items-baseline gap-[5px]  pl-[15px] h-[100px] mb-[5px]'  > 
           <Avatar className='custom-shadow' boxSize={12} />
 
 
@@ -139,7 +139,7 @@ export default function ChatWindow() {
             />
 
           </div>
-        </div> */}
+        </div>
 
 
 
@@ -157,42 +157,3 @@ export default function ChatWindow() {
 
 
 
-
-// <div className=' flex  flex-col gap-[10px] overflow-y-scroll z-0 h-[97%] ' ref={chatContainer}>
-
-
-// {messages.map((message: Messages, index: number) => {
-//   if (message.sender === "sahafid") {
-//     return <Own_Message key={index} message={message.message} sender={message.sender} time={message.time}  />
-//   }
-//   return <Message_other key={index} message={message.message} sender={message.sender} time={message.time} />
-// })}
-
-
-// <div className='w-full flex   items-baseline gap-[5px]  pl-[15px] h-[100px] mb-[5px]'  > 
-//   <Avatar className='custom-shadow' boxSize={12} />
-
-
-//   <div className='bg-white border-2 border-black rounded-2xl custom-shadow flex rounded-tl-none p-[5px] ' >
-//     <div className='h-[15px]'></div>
-//     <Lottie
-//       className=' w-[50px] h-[30px]'
-//       animationData={animationData}
-//       loop={true}
-//       autoplay={true}
-//     />
-
-//   </div>
-// </div>
-
-
-
-
-// </div>
-// <form onSubmit={handleSubmit(handelNewMessage)} className='h-[3%] mb-[10px] flex w-[100%] justify-around items-center '>
-// <Input {...register("newmessage")} className='bg-[#D9D9D9] border-2 w-[90%] border-black ' placeholder='Type your message here ...' />
-// <button type='submit' className='bg-black h-[40px] w-[40px] rounded-md cursor-pointer flex justify-start items-center'>
-//   <Image className=' w-[35px] ' src={arrow} alt='arrow' />
-// </button>
-// </form>
-// </div>

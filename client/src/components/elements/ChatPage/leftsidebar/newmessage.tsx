@@ -1,7 +1,7 @@
 "use client";
 
-import { SearchIcon, SmallAddIcon } from '@chakra-ui/icons';
-import { Avatar, AvatarBadge, Box, Button, FormControl, FormLabel, Icon, Input, InputGroup, InputRightElement, Select } from '@chakra-ui/react';
+import { Search2Icon, SearchIcon, SmallAddIcon } from '@chakra-ui/icons';
+import { Avatar, AvatarBadge, Box, Button, FormControl, FormLabel, Icon, Input, InputGroup, InputLeftElement, InputRightElement, Select } from '@chakra-ui/react';
 import React, { Dispatch, SetStateAction, useState } from 'react'
 import {
     Modal,
@@ -42,7 +42,7 @@ function Usercard(props: any) {
     };
 
 
-    return (<div onClick={handleChange} className='flex justify-around items-center border-1 border-black  cursor-pointer m-2 ml-0 p-2  rounded-md  '>
+    return (<div onClick={handleChange} className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md  '>
 
         <div>
             <Avatar boxSize={12}>
@@ -51,11 +51,11 @@ function Usercard(props: any) {
         </div>
 
         <div className='flex flex-col items-center justify-around'>
-            <div className='text-[30px]'>{data.userName}</div>
+            <div className='text-[20px] md:text-[30px]'>{data.userName}</div>
         </div>
 
         <Radio
-            className='w-[30px] h-[30px]  rounded-sm'
+            className='md:w-[30px] md:h-[30px] w-[20px] h-[20px] rounded-sm'
             value={data.userName}
             onChange={handleChange}
             isChecked={selectedOption === data.userName}
@@ -70,16 +70,16 @@ function Usercard(props: any) {
 export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Props) {
 
 
-    let users1: UserValues[] = [ {userName: "sahafid", id: 1, onlineStatus: "active"},
-                                {userName: "houazzan", id: 2, onlineStatus: "active"},
-                                {userName: "rel-fagr", id: 3, onlineStatus: "active"},
-                                {userName: "haitkadir", id: 4, onlineStatus: "busy"},
-                                {userName: "mnaimi", id: 5, onlineStatus: "offline"},
-                                {userName: "test1", id: 5, onlineStatus: "offline"},
-                                {userName: "test2", id: 5, onlineStatus: "offline"},
-                                {userName: "test3", id: 5, onlineStatus: "offline"},
-                                {userName: "test4", id: 5, onlineStatus: "offline"},
-                                ]
+    let users1: UserValues[] = [{ userName: "sahafid", id: 1, onlineStatus: "active" },
+    { userName: "houazzan", id: 2, onlineStatus: "active" },
+    { userName: "rel-fagr", id: 3, onlineStatus: "active" },
+    { userName: "haitkadir", id: 4, onlineStatus: "busy" },
+    { userName: "mnaimi", id: 5, onlineStatus: "offline" },
+    { userName: "test1", id: 5, onlineStatus: "offline" },
+    { userName: "test2", id: 5, onlineStatus: "offline" },
+    { userName: "test3", id: 5, onlineStatus: "offline" },
+    { userName: "test4", id: 5, onlineStatus: "offline" },
+    ]
 
     const [selectedOption, setSelectedOption]: any = useState('');
 
@@ -90,11 +90,11 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
 
 
     const handleSubmit = () => {
-        
-        let user: UserValues = { 
+
+        let user: UserValues = {
             userName: selectedOption,
             id: 1,
-            onlineStatus: "available" 
+            onlineStatus: "available"
         }
 
         setNewUsers([user, ...users])
@@ -110,12 +110,31 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
             <ModalCloseButton />
 
             <ModalBody>
-                <div className=' h-[65px] mt-5 border-2 border-black rounded-sm flex justify-between items-center shadow-md shadow-black'>
-                    <div className='ml-5 text-gray-200 text-[30px]'>Search...</div>
-                    <div className='w-[75px] h-[63px] bg-black flex items-center justify-center cursor-pointer'><Icon boxSize={8} color="white" as={SearchIcon} /></div>
-                </div>
+                <InputGroup>
+                    <InputLeftElement pointerEvents="none">
+                        <Search2Icon color="gray.300" />
+                    </InputLeftElement>
+                    <InputRightElement width="4.5rem" height={12}>
+                        <Button
+                            variant="outline"
+                            h="2rem"
+                            size="sm"
+                        // onClick={handleSearchClick}
+                        >
+                            Search
+                        </Button>
+                    </InputRightElement>
+                    <Input
+                        type="tel"
+                        placeholder="Search for a friend"
+                        height={12}
+                        borderEndEndRadius={0}
+                    // value={search}
+                    // onChange={handleChange}
+                    />
+                </InputGroup>
 
-                <div className=' mt-[20px] flex  justify-between h-[500px] flex-col w-full   gap-6 overflow-y-scroll'>
+                <div className=' mt-[20px] flex  justify-between md:h-[400px] h-[200px] flex-col    overflow-y-scroll'>
 
                     {users1.map((data: any) => {
                         return <Usercard

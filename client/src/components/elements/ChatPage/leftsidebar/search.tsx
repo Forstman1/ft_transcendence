@@ -1,7 +1,7 @@
 import { Search2Icon, SearchIcon } from "@chakra-ui/icons";
 import { Box, Button, Icon, Input, InputLeftElement, Modal, Radio, useDisclosure } from "@chakra-ui/react";
 import { Modak } from "next/font/google";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
     ModalOverlay,
@@ -90,7 +90,10 @@ export default function Search({ channels, users }: Props) {
     const { isOpen, onOpen, onClose } = useDisclosure()
 
 
-
+    useEffect(() => {
+        setAllSearchChannels([])
+        setAllSearchUsers([])
+    }, [])
 
     const findMatches = (wordToMatch: string, ChannelsOrUsers: string[]) => {
 
@@ -124,8 +127,6 @@ export default function Search({ channels, users }: Props) {
             return (channel !== undefined)
         })
 
-        // --------
-
 
         let allUsersnames: any = users.map((user: UserValues) => {
             return user.userName
@@ -142,8 +143,6 @@ export default function Search({ channels, users }: Props) {
             }
         })
 
-
-        // -------
 
 
 
@@ -175,10 +174,10 @@ export default function Search({ channels, users }: Props) {
 
 
     return (<>
-        <div onClick={onOpen} className=' w-[90%] h-[65px] mt-5 border-2 border-black rounded-sm flex justify-between items-center custom-shadow cursor-pointer'>
+        <div onClick={onOpen} className=' w-[90%]  md:h-[65px] h-[40px] mt-5 border-2 border-black rounded-sm flex justify-between items-center custom-shadow cursor-pointer'>
 
             <div className='border-none w-full h-full text-gray-400 text-[30px] items-center flex ml-[10px]'>Search...</div>
-            <div className='rounded-none w-[75px] h-[63px] bg-black active:bg-black  flex items-center justify-center cursor-pointer'><Icon boxSize={8} color="white" as={SearchIcon} /></div>
+            <div className='rounded-none w-[75px] md:h-[63px] h-[40px] bg-black active:bg-black  flex items-center justify-center cursor-pointer'><Icon boxSize={5} color="white" as={SearchIcon} /></div>
         </div>
 
 
