@@ -76,7 +76,7 @@ export default function LeftSidebar() {
 
   return (
     <>
-      <div className='hidden  md:block  w-[300px]  flex flex-col items-center xl:w-[465px]  '>
+      <div className='hidden  md:block justify-center w-[300px] flex-col items-center xl:w-[465px] '>
         <Search
           channels={channels}
           users={users}

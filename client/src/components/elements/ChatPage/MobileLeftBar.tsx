@@ -85,7 +85,7 @@ export default function MobileLeftBar({LeftIsOpen, setLeftIsOpen}: any) {
 
 
   return (
-    <Box ref={ref} className='h-screen bg-opacity-30 bg-black w-[300px]  overflow-y-scroll   gap-10 pt-6 z-0 sm:[300] md:hidden '
+    <Box ref={ref} className='h-screen w-[300px] overflow-y-scroll border-r-[3px] border-r-black gap-10 pt-6 z-0 sm:[300] md:hidden'
     as={motion.div}
     initial={false}
     animate={LeftIsOpen ? "open" : "closed"}

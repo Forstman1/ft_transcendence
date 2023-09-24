@@ -23,10 +23,10 @@ export default function ChatPage() {
   return (
 
     <PageWrapper>
-      <Flex className="w-[100%] justify-center flex-grow h-[calc(100vh_-_170px)] md:h-[calc(100vh_-_90px)]">
+      <Flex className="w-[100%] justify-between flex-grow h-[calc(100vh_-_170px)] md:h-[calc(100vh_-_90px)]">
         <LeftSidebar />
         <MobileLeftBar LeftIsOpen={LeftIsOpen} setLeftIsOpen={setLeftIsOpen}/> 
-        <ChatWindow />
+        {!LeftIsOpen && !RightIsOpen  && <ChatWindow />}
         <RightSidebar />
         <MobileRightBar RightIsOpen={RightIsOpen} setRightIsOpen={setRightIsOpen}/>
       </Flex>

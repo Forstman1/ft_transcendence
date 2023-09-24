@@ -45,7 +45,7 @@ if (!inView) {
   };
 
   return (
-    <Box ref={ref} className='h-screen bg-opacity-30 bg-black w-[300px] overflow-y-scroll border-l-[3px] border-l-black gap-10 pt-6 z-0 sm:[300] flex-shrink md:hidden'
+    <Box ref={ref} className='h-screen w-[300px] overflow-y-scroll border-l-[3px] border-l-black gap-10 pt-6 z-0 sm:[300] md:hidden'
     as={motion.div}
     initial={false}
     animate={RightIsOpen ? "open" : "closed"}
