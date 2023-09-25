@@ -17,7 +17,7 @@ export default function MobileFooter({LeftIsOpen, setLeftIsOpen, RightIsOpen, se
 
     <Box className="Footer bottom-0 text-xl">
         <Image src={FooterWaves} alt="FooterWave" className="w-full rotate-180 h-[17px]" />
-        <Box className="w-full h-[75px] bg-neutral-950 sticky top-0 z-100 flex justify-between items-center px-3">
+        <Box className="w-full h-[75px] bg-neutral-950 sticky top-0 z-100 flex justify-between items-center px-3 pb-4">
           <Button className="h-14 w-32 gap-1  flex rounded-3xl text-lg" variant={'unstyled'}
           onClick={() => {setLeftIsOpen(!LeftIsOpen), setRightIsOpen(false), setMidleButton(false)}}
           textColor={LeftIsOpen ? "black": "white"}
