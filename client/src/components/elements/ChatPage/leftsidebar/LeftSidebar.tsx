@@ -75,19 +75,19 @@ export default function LeftSidebar() {
 
 
   return (
-    <>
-      <div className='hidden  md:block justify-center w-[300px] flex-col items-center xl:w-[465px] '>
+
+      <div className='hidden  md:flex justify-center w-[300px]  flex-col items-center xl:w-[465px] '>
         <Search
           channels={channels}
           users={users}
         />
 
-        <div className='w-[90%] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
+        <div className='w-[80%] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
           <div className='text-[40px] font-bold'>Channels</div>
           <div onClick={() => { onOpen(), setChannelOrUser(true) }} className='cursor-pointer' ><Icon boxSize={10} as={SmallAddIcon} /></div>
         </div>
 
-        <div className='flex h-[500px] flex-col w-[90%] mt-[30px]  gap-6 overflow-y-scroll'>
+        <div className='flex h-[500px] flex-col w-[80%] mt-[30px]  gap-6 overflow-y-scroll'>
 
           {channels.map((data: ChannelValues) => {
             if (data.channelName)
@@ -96,24 +96,19 @@ export default function LeftSidebar() {
 
         </div>
 
-        <div className='w-[90%] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
+        <div className='w-[80%] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
           <div className='text-[40px] font-bold'>Direct Messages</div>
           <div onClick={() => { onOpen(), setChannelOrUser(false) }} className='cursor-pointer'><Icon boxSize={10} as={SmallAddIcon} /></div>
         </div>
 
-        <div className=' mt-[50px] flex  h-[500px] flex-col w-[90%]  gap-6 overflow-y-scroll'>
+        <div className=' mt-[50px] flex  h-[500px] flex-col w-[80%]  gap-6 overflow-y-scroll'>
 
           {users.map((data: UserValues) => {
             return <Usercard data={data} />
           })}
 
         </div>
-      </div>
-
-
-
-
-      {ChannelOrUser === true ? <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        {ChannelOrUser === true ? <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <Newchannel isOpen={isOpen}
           onClose={onClose}
           setNewChannels={setNewChannels}
@@ -127,10 +122,14 @@ export default function LeftSidebar() {
           users={users}
         />
       </Modal>}
+      </div>
 
 
 
 
-    </>
+      
+
+
+
   )
 }
