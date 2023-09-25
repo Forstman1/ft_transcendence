@@ -97,12 +97,12 @@ export default function MobileLeftBar({LeftIsOpen, setLeftIsOpen}: any) {
           users={users}
         />
 
-        <div className='w-[90%] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
+        <div className=' ml-[5px] w-[90%] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
           <div className='text-[30px] font-bold w-full'>Channels</div>
           <div onClick={() => { onOpen(), setChannelOrUser(true) }} className='cursor-pointer' ><Icon boxSize={10} as={SmallAddIcon} /></div>
         </div>
 
-        <div className='flex h-[200px] flex-col mt-[30px]  gap-6 overflow-y-scroll'>
+        <div className='flex ml-[5px] h-[200px] flex-col mt-[30px]  gap-6 overflow-y-scroll'>
 
           {channels.map((data: ChannelValues) => {
             if (data.channelName)
@@ -111,7 +111,7 @@ export default function MobileLeftBar({LeftIsOpen, setLeftIsOpen}: any) {
 
         </div>
 
-        <div className='w-[90%] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
+        <div className='w-[90%] ml-[5px] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
           <div className='text-[30px] font-bold w-full'>Direct Messages</div>
           <div onClick={() => { onOpen(), setChannelOrUser(false) }} className='cursor-pointer'><Icon boxSize={10} as={SmallAddIcon} /></div>
         </div>
