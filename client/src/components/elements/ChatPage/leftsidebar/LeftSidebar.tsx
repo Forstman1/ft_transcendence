@@ -87,7 +87,7 @@ export default function LeftSidebar() {
           <div onClick={() => { onOpen(), setChannelOrUser(true) }} className='cursor-pointer' ><Icon boxSize={10} as={SmallAddIcon} /></div>
         </div>
 
-        <div className='flex h-[500px] flex-col w-[350px] mt-[30px]  gap-6 overflow-y-scroll'>
+        <div className='flex h-[500px] flex-col w-[90%] mt-[30px]  gap-6 overflow-y-scroll'>
 
           {channels.map((data: ChannelValues) => {
             if (data.channelName)
@@ -101,7 +101,7 @@ export default function LeftSidebar() {
           <div onClick={() => { onOpen(), setChannelOrUser(false) }} className='cursor-pointer'><Icon boxSize={10} as={SmallAddIcon} /></div>
         </div>
 
-        <div className=' mt-[50px] flex  h-[500px] flex-col w-[350px]  gap-6 overflow-y-scroll'>
+        <div className=' mt-[50px] flex  h-[500px] flex-col w-[90%]  gap-6 overflow-y-scroll'>
 
           {users.map((data: UserValues) => {
             return <Usercard data={data} />
