@@ -33,23 +33,23 @@ type UserValues = {
 
 function Usercard(props: any) {
 
-  return (<div className='flex justify-between items-center custom-shadow  cursor-pointer m-2 ml-0 p-2  rounded-md'>
+  return (<div className='flex justify-between items-center  cursor-pointer m-2 ml-0 p-2  rounded-md'>
 
-    <div>
-      <Avatar boxSize={16}>
-        <AvatarBadge boxSize={6} bg='green' />
+    <div> 
+      <Avatar className='custom-shadow border-[1px] border-black' boxSize={14}>
+        <AvatarBadge className='custom-shadow border-[1px] border-black' boxSize={4} bg='green.500' />
       </Avatar>
 
     </div>
 
-    <div className='flex flex-col items-center justify-around'>
-      <div className='text-[30px]'>{props.data.userName}</div>
-      <div className='text-gray-400'>ok, see you tomorrow</div>
+    <div className='ml-[7px] flex flex-col  text-left w-[60%] justify-around'>
+      <div className='text-[22px] font-bold'>{props.data.userName}</div>
+      <div className='text-gray-400 text-[12px] font-medium	'>ok, see you tomorrow</div>
     </div>
 
-    <div className='flex flex-col items-center'>
-      <div>06:49 pm</div>
-      <div className='rounded-full bg-black w-7 h-7 flex items-center justify-center text-[25px] text-white'>3</div>
+    <div className='flex flex-col items-center text-center '>
+      <div className='text-[13px] text-gray-400'>06:49 pm</div>
+      <div className='rounded-full bg-black w-5 h-5 flex items-center justify-center text-[20px] text-white'>3</div>
     </div>
 
   </div>)
@@ -76,7 +76,7 @@ export default function LeftSidebar() {
 
   return (
 
-      <div className='hidden  md:flex justify-center w-[300px]  flex-col items-center xl:w-[465px] '>
+      <div className='hidden  md:flex justify-center w-[350px]  flex-col items-center xl:w-[465px] '>
         <Search
           channels={channels}
           users={users}
@@ -87,7 +87,7 @@ export default function LeftSidebar() {
           <div onClick={() => { onOpen(), setChannelOrUser(true) }} className='cursor-pointer' ><Icon boxSize={10} as={SmallAddIcon} /></div>
         </div>
 
-        <div className='flex h-[500px] flex-col w-[80%] mt-[30px]  gap-6 overflow-y-scroll'>
+        <div className='flex h-[400px] flex-col w-full mt-[30px] items-center gap-6 overflow-y-scroll'>
 
           {channels.map((data: ChannelValues) => {
             if (data.channelName)
@@ -96,12 +96,12 @@ export default function LeftSidebar() {
 
         </div>
 
-        <div className='w-[80%] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
+        <div className='w-[90%] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
           <div className='text-[40px] font-bold'>Direct Messages</div>
           <div onClick={() => { onOpen(), setChannelOrUser(false) }} className='cursor-pointer'><Icon boxSize={10} as={SmallAddIcon} /></div>
         </div>
 
-        <div className=' mt-[50px] flex  h-[500px] flex-col w-[80%]  gap-6 overflow-y-scroll'>
+        <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
 
           {users.map((data: UserValues) => {
             return <Usercard data={data} />

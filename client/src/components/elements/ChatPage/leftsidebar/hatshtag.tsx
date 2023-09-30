@@ -29,7 +29,7 @@ type ChannelValues = {
 export default function Hashtag(props: any) {
 
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const { handleSubmit, register } = useForm<any>();
+    const { handleSubmit, register, reset } = useForm<any>();
     const [wrongpassowrd, setWrongpassowrd] = useState(false);
     const [show, setShow] = React.useState(false)
     const handleShow = () => setShow(!show)
@@ -48,6 +48,7 @@ export default function Hashtag(props: any) {
         if (data.password === password)
         {
             data.password = "";
+            reset({password: ""})
             onClose();
         }
         data.password = "";
@@ -57,7 +58,7 @@ export default function Hashtag(props: any) {
 
 
     return (<>
-        <div className='flex items-center cursor-pointer justify-between' onClick={handleClick}>
+        <div className='flex items-center cursor-pointer justify-between w-[70%]' onClick={handleClick}>
             <div className="flex h-[40px]">
                 <div className='h-[20px] text-[40px] mr-3'>#</div>
                 <div className='h-[20px] text-[30px]'>{channelName}</div>

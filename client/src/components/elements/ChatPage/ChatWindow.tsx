@@ -22,7 +22,7 @@ function Message_other({ message, sender, time }: Messages) {
   return (<div className='w-full flex gap-[5px]  items-baseline  pl-[15px] z-0'>
     <Avatar className='custom-shadow' boxSize={12} />
 
-    <div className='bg-white border-2 border-black rounded-2xl custom-shadow  rounded-tl-none pl-[10px] w-[35%]'>
+    <div className='bg-white border-2 border-black rounded-2xl custom-shadow  rounded-tl-none pl-[10px] w-[50%]'>
       <div className='text-[#B4B4B4]'>{sender}</div>
       <div>{message}</div>
     </div>
@@ -34,7 +34,7 @@ function Message_other({ message, sender, time }: Messages) {
 function Own_Message({ message, sender, time }: Messages) {
 
   return (<div className='w-full flex gap-[5px]   justify-end pr-[15px] items-baseline z-0'>
-    <div className='bg-black border-2 border-black rounded-2xl custom-shadow text-white rounded-tr-none justify-start pl-[10px] w-[35%]'>
+    <div className='bg-black border-2 border-black rounded-2xl custom-shadow text-white rounded-tr-none justify-start pl-[10px] w-[50%]'>
       <div className='text-[#B4B4B4]'>{sender}</div>
       <div>{message}</div>
     </div>
@@ -145,10 +145,10 @@ export default function ChatWindow() {
 
 
       </div>
-      <form onSubmit={handleSubmit(handelNewMessage)} className='h-[3%] mb-[10px] flex w-[100%] justify-around items-center '>
-        <Input {...register("newmessage")} className='bg-[#D9D9D9] border-2 w-[90%] border-black ' placeholder='Type your message here ...' />
-        <button type='submit' className='bg-black h-[40px] w-[40px] rounded-md cursor-pointer flex justify-start items-center'>
-          <Image className=' w-[35px] ' src={arrow} alt='arrow' />
+      <form onSubmit={handleSubmit(handelNewMessage)} className='h-[55px] mb-[15px] flex w-[100%] justify-around items-center  '>
+        <Input {...register("newmessage")} className='bg-[#D9D9D9] border-2 rounded-ld w-[90%] border-black h-[100%]' placeholder='Type your message here ...' />
+        <button type='submit' className='bg-black w-[50px] rounded-md cursor-pointer flex justify-start items-center h-[100%]'>
+          <Image className=' w-[40px] ' src={arrow} alt='arrow' />
         </button>
       </form>
     </div>
