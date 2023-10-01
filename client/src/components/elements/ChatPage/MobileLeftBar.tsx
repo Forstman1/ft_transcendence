@@ -112,7 +112,7 @@ export default function MobileLeftBar({LeftIsOpen, setLeftIsOpen}: any) {
         </div>
 
         <div className='w-[80%] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
-          <div className='text-[30px] font-bold w-full'>Direct Messages</div>
+          <div className='text-[28px] font-bold w-full'>Direct Messages</div>
           <div onClick={() => { onOpen(), setChannelOrUser(false) }} className='cursor-pointer'><Icon boxSize={10} as={SmallAddIcon} /></div>
         </div>
 
