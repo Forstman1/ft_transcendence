@@ -10,7 +10,7 @@ import {
   Button,
   useToast
 } from '@chakra-ui/react'
-import SelectComponent from './SelectComponent'
+import SelectComponent from './rightSideBar/SelectComponent'
 
 
 
