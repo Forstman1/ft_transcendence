@@ -1,7 +1,7 @@
 import { Box, Button } from '@chakra-ui/react'
 import Image from 'next/image'
 import React, {useState} from 'react'
-import FooterWaves from "../../../../assets/icons/wavesOpacity.svg";
+import FooterWaves from '../../../../../assets/icons/wavesOpacity.svg';
 import {HiOutlineChatBubbleLeftEllipsis} from 'react-icons/hi2'
 import {HiOutlineChatBubbleLeftRight} from 'react-icons/hi2'
 import {IoSettingsOutline} from 'react-icons/io5'

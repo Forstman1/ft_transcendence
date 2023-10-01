@@ -2,24 +2,24 @@
 import React from 'react'
 import { Box, Text, Avatar, Link, useToast } from '@chakra-ui/react'
 import { motion, useInView } from 'framer-motion'
-import RightSidebar from './RightSidebar'
-import Profile from '../../../../assets/icons/Profile.svg'
-import InviteToaGame from '../../../../assets/icons/InviteToaGame.svg'
-import ChannelMemberActions from './ChannelMemberActions'
-import UserControls from './UserControls'
+import RightSidebar from '../rightSideBar/RightSidebar'
+import Profile from '../../../../../assets/icons/Profile.svg'
+import InviteToaGame from '../../../../../assets/icons/InviteToaGame.svg'
+import ChannelMemberActions from '../rightSideBar/ChannelMemberActions'
+import UserControls from '../rightSideBar/UserControls'
 import Image from 'next/image'
 
 
 
-export default function MobileRightBar({RightIsOpen, setRightIsOpen}: any) {
+export default function MobileRightBar({ RightIsOpen, setRightIsOpen }: any) {
 
   const ref = React.useRef(null)
   const inView = useInView(ref)
   const toast = useToast()
-  
-if (!inView) {
-  setRightIsOpen(false)
-}
+
+  if (!inView) {
+    setRightIsOpen(false)
+  }
 
 
   const sidebar = {
@@ -46,12 +46,12 @@ if (!inView) {
 
   return (
     <Box ref={ref} className='h-screen w-[300px] overflow-y-scroll border-l-[3px] border-l-black gap-10 pt-6 z-0 sm:[300] md:hidden'
-    as={motion.div}
-    initial={false}
-    animate={RightIsOpen ? "open" : "closed"}
-    variants={sidebar}
+      as={motion.div}
+      initial={false}
+      animate={RightIsOpen ? "open" : "closed"}
+      variants={sidebar}
     >
-       <Box className='w-full flex flex-1 flex-col items-center justify-center my-8 gap-7 '>
+      <Box className='w-full flex flex-1 flex-col items-center justify-center my-8 gap-7 '>
         <Text className='flex text-black text-4xl drop-shadow-[2px_2px_0_rgba(18,18,18,.0.50)]'>
           user_455013
         </Text>
@@ -85,13 +85,13 @@ if (!inView) {
             Invite to a game
           </Text>
         </Box>
-        <UserControls/>
+        <UserControls />
       </Box>
       <hr className='bg-black h-[2px] mx-10' />
       <Box className='w-full flex flex-1 flex-col items-center justify-center my-8 gap-7 pb-32'>
-        <ChannelMemberActions/>
+        <ChannelMemberActions />
       </Box>
-    <RightSidebar/>
-  </Box>
+      <RightSidebar />
+    </Box>
   )
 }
