@@ -55,10 +55,10 @@ export default function Newchannel({ isOpen, onClose, setNewChannels, channels }
 
 
         if (exists.includes(data.channelName)) {
-          useToast({
+          toast({
             title: "Channel name Already Exists",
             position: `bottom-right`,
-            // status: 'warning',
+            status: 'error',
             duration: 1000,
             containerStyle: {
               width: 300,
@@ -70,10 +70,8 @@ export default function Newchannel({ isOpen, onClose, setNewChannels, channels }
         }
 
 
-        setNewChannels([...channels, data]);
-        onClose();
-        useToast({
-          title: "Channel name Already Exists",
+        toast({
+          title: "Channel Created",
           position: `bottom-right`,
           status: 'success',
           duration: 1000,
@@ -82,6 +80,8 @@ export default function Newchannel({ isOpen, onClose, setNewChannels, channels }
             height: 100,
           }
         })
+        setNewChannels([...channels, data]);
+        onClose();
 
     };
 

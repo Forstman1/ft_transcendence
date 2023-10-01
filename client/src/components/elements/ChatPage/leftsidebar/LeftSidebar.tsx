@@ -1,8 +1,8 @@
 "use client";
 
 import { SmallAddIcon } from '@chakra-ui/icons';
-import { Avatar, AvatarBadge, Button, Icon, Input, useDisclosure, Modal } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react'
+import { Avatar, AvatarBadge,  Icon,  useDisclosure, Modal } from '@chakra-ui/react';
+import React, {  useState } from 'react'
 import Newchannel from './newchannel';
 
 

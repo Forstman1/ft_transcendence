@@ -1,7 +1,7 @@
 "use client";
 
 import { Search2Icon, SearchIcon, SmallAddIcon } from '@chakra-ui/icons';
-import { Avatar, AvatarBadge, Box, Button, FormControl, FormLabel, Icon, Input, InputGroup, InputLeftElement, InputRightElement, Select } from '@chakra-ui/react';
+import { Avatar, AvatarBadge, Box, Button, FormControl, FormLabel, Icon, Input, InputGroup, InputLeftElement, InputRightElement, Select, useToast } from '@chakra-ui/react';
 import React, { Dispatch, SetStateAction, useState } from 'react'
 import {
     Modal,
@@ -82,6 +82,7 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
     ]
 
     const [selectedOption, setSelectedOption]: any = useState('');
+    const toast = useToast()
 
 
     const handleOptionChange = (newValue: any) => {
@@ -101,14 +102,22 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
         onClose()
     }
 
-
     return (<div>
 
         <ModalOverlay />
-        <ModalContent>
-            <ModalHeader>Find Friend</ModalHeader>
-            <ModalCloseButton />
 
+        <ModalOverlay
+            style={{
+                backgroundColor: "rgba(0, 0, 0, 0.1)",
+                backdropFilter: "blur(5px)",
+            }}
+        />
+        <ModalContent
+            bg={`rgba(255, 255, 255, 0.95)`}
+            className="relative  duration-500 ease-in-out rounded-2xl shadow-2xl border-1 border-black flex justify-between  items-center bg-gray-100"
+        >
+
+            <ModalHeader>Find Friend</ModalHeader>
             <ModalBody>
                 <InputGroup>
                     <InputLeftElement pointerEvents="none">
@@ -144,13 +153,39 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
                         />
                     })}
                 </div>
-
             </ModalBody>
-
+            <ModalCloseButton />
             <ModalFooter>
-                <Button onClick={handleSubmit} variant='ghost' colorScheme='blue'>GO TO DM</Button>
+                <Button
+                    colorScheme="red"
+                    variant="outline"
+                    mr={10}
+                    onClick={onClose}
+                >
+                    Close
+                </Button>
+                <Button
+                    colorScheme="green"
+                    variant="outline"
+                    ml={10}
+
+                    onClick={() => {
+                        onClose(); toast({
+                            title: "DM added",
+                            position: `bottom-right`,
+                            status: 'success',
+                            duration: 1000,
+                            containerStyle: {
+                                width: 300,
+                                height: 100,
+                            }
+                        }); handleSubmit()
+                    }}
+                >
+
+                    Confirm
+                </Button>
             </ModalFooter>
         </ModalContent>
-
     </div>)
 }

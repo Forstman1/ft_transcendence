@@ -3,8 +3,8 @@
 import React from 'react'
 import { Text, Avatar, Box } from '@chakra-ui/react'
 import Image from 'next/image'
-import Profile from '../../../../assets/icons/Profile.svg'
-import InviteToaGame from '../../../../assets/icons/InviteToaGame.svg'
+import Profile from '../../../../../assets/icons/Profile.svg'
+import InviteToaGame from '../../../../../assets/icons/InviteToaGame.svg'
 import Link from 'next/link'
 import { useToast } from '@chakra-ui/react'
 import ChannelMemberActions from './ChannelMemberActions'
@@ -33,7 +33,7 @@ export default function RightSidebar() {
       <hr className='bg-black h-[2px] mx-10' />
       <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7'>
         <Box className='flex items-center gap-6 w-[220px]'>
-          <Image src={Profile} width={30} height={30} alt="View Profile"/>
+          <Image src={Profile} width={30} height={30} alt="View Profile" />
           <Link href={'/gamePage'} className='text-2xl cursor-pointer'>
             View Profile
           </Link>
@@ -54,11 +54,11 @@ export default function RightSidebar() {
             Invite to a game
           </Text>
         </Box>
-        <UserControls/>
+        <UserControls />
       </Box>
       <hr className='bg-black h-[2px] mx-10' />
       <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7'>
-        <ChannelMemberActions/>
+        <ChannelMemberActions />
       </Box>
     </Box>
   )
