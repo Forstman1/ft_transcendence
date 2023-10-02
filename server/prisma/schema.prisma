@@ -11,11 +11,17 @@ datasource db {
 }
 
 model User {
-  id              String       @id @default(uuid())
-  username        String       @unique
-  email           String       @unique
-  password        String
-  isEmailVerified Boolean      @default(false)
+  id                String       @id @default(uuid())
+  username          String       @unique
+  email             String       @unique
+  fullname          String
+  avatar            String?
+  coalitionUrl      String?
+  coalitionColor    String?
+  accessToken       String
+  refreshToken      String
+  isOnline          Boolean     @default(false)
+  hasTwoFA          Boolean     @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
