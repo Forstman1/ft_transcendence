@@ -1,10 +1,10 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsString } from "class-validator";
 
 
 
 export class CreateChannelDto {
 
-    @IsString()
+    @IsEmail()
     @IsNotEmpty()
     readonly channelName: string;
 
@@ -18,3 +18,4 @@ export class CreateChannelDto {
 
 
 }
+
