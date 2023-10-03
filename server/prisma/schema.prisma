@@ -19,6 +19,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   message Message[]
+  channelMember ChannelMember[]
 }
 
 model Channel {
@@ -26,12 +27,16 @@ model Channel {
   name     String
   type     Type @default(PUBLIC)
   message Message[]
+  channelMember ChannelMember[]
 }
 
 model ChannelMember {
   id        String   @id @default(uuid())
   channelId String
+  userId    String
   role     Role @default(MEMBER)
+  user User @relation(fields: [userId], references: [id])
+  channel Channel @relation(fields: [channelId], references: [id])
 }
 
 model Message {
