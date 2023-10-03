@@ -13,7 +13,6 @@ import LoadingScreen from "@/components/elements/loadingScreen/LoadingScreen";
 import { motion } from "framer-motion";
 import GameEndStatic from "../ui/GameEndStatic";
 import { BackgroundsImg } from "@/utils/constants/game/GameConstants";
-import { Text} from "@chakra-ui/react";
 import {
   appliyGameMode,
   RecSpeed,

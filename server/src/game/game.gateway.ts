@@ -29,6 +29,7 @@ export class GameGateway {
       console.log('client', client.id);
       this.gameService.resetGameDate();
       this.gameService.initGameData(data.initCanvasData);
+      // console.log('initGameData', this.gameService.getUpdateData());
       this.interval = setInterval(() => {
         if (!this.isPaused) {
           // console.log('setInterval: ' + this.count);
@@ -58,6 +59,7 @@ export class GameGateway {
   endGame(@ConnectedSocket() client: Socket): void {
     try {
       this.isPaused = true;
+      this.gameService.resetGameDate();
       clearInterval(this.interval as NodeJS.Timeout);
     } catch (error) {
       console.error('Error in endGame:', error);

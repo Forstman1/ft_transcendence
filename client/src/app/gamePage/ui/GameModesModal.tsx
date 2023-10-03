@@ -43,11 +43,11 @@ type Props = {
 
 const getIcon = (mode: string) => {
   switch (mode) {
-    case "Easy":
+    case "EASY":
       return levelEasy;
-    case "Medium":
+    case "MEDIUM":
       return levelMedium;
-    case "Hard":
+    case "HARD":
       return levelHard;
     default:
       return levelEasy;
