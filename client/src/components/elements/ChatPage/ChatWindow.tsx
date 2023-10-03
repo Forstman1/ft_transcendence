@@ -49,7 +49,7 @@ export default function ChatWindow() {
   let yerstday = new Date("2023-09-16")
   let today = new Date()
   const { handleSubmit, register, reset } = useForm<any>();
-
+  const chatContainer = useRef<any>(null);
   const [messages, setMessages]: any = useState([])
 
   let fakemessages: Messages[] = [{ message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
@@ -65,14 +65,12 @@ export default function ChatWindow() {
   { message: "ana hna o lheh", sender: "rel-fagr", time: today }, { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
   { message: "ana hna :)", sender: "houazzan", time: today }]
 
-  
+
   useEffect(() => {
     setMessages(fakemessages, ...messages)
 
   }, [])
 
-
-  const chatContainer = useRef<any>(null)
 
 
   const scrollToBottom = () => {
@@ -83,7 +81,9 @@ export default function ChatWindow() {
   };
 
 
-
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   messages.sort((a: Messages, b: Messages) => a.time.getTime() - b.time.getTime());
 
@@ -113,19 +113,19 @@ export default function ChatWindow() {
 
 
   return (
-    <div className='flex-grow flex border-l-[3px] border-black flex-col gap-[10px] z-0'>
-      <div className=' flex flex-col gap-[10px] overflow-y-scroll z-0 h-[97%] ' ref={chatContainer}>
+    <div className='flex-grow flex justify-between border-l-[3px] border-black flex-col gap-[10px] z-0'>
+      <div className=' flex flex-col gap-[10px] overflow-y-scroll z-0 h-[90%] ' ref={chatContainer}>
 
 
         {messages.map((message: Messages, index: number) => {
           if (message.sender === "sahafid") {
-            return <Own_Message key={index} message={message.message} sender={message.sender} time={message.time}  />
+            return <Own_Message key={index} message={message.message} sender={message.sender} time={message.time} />
           }
           return <Message_other key={index} message={message.message} sender={message.sender} time={message.time} />
         })}
 
 
-        <div className='w-full flex   items-baseline gap-[5px]  pl-[15px] h-[100px] mb-[5px]'  > 
+        <div className='w-full flex   items-baseline gap-[5px]  pl-[15px] h-[100px] mb-[5px]'  >
           <Avatar className='custom-shadow' boxSize={12} />
 
 

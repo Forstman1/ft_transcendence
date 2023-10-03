@@ -1,5 +1,5 @@
 import { Search2Icon, SearchIcon } from "@chakra-ui/icons";
-import { Box, Button, Icon, Input, InputLeftElement, Modal, Radio, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, Icon, Input, InputLeftElement, Modal, Radio, useDisclosure, useToast } from "@chakra-ui/react";
 import { Modak } from "next/font/google";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -12,11 +12,9 @@ import {
     ModalCloseButton,
 } from '@chakra-ui/react';
 
-import { Avatar, AvatarBadge, FormControl, FormLabel, InputGroup, InputRightElement, Select } from '@chakra-ui/react';
+import { Avatar, AvatarBadge, InputGroup, InputRightElement, Select } from '@chakra-ui/react';
 import Hashtag from "./hatshtag";
 import Image from "next/image";
-
-
 
 
 
@@ -167,11 +165,9 @@ export default function Search({ channels, users }: Props) {
         setSearch(data.target.value)
     };
 
-    // const handleSearchClick = () => {
-    //     console.log(search)
-    // }
 
 
+    const toast = useToast()
 
     return (<>
         <div onClick={onOpen} className='w-[80%]  md:h-[65px] h-[40px] mt-5 border-2 border-black rounded-sm flex justify-between items-center custom-shadow cursor-pointer'>
@@ -183,11 +179,19 @@ export default function Search({ channels, users }: Props) {
 
 
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
-            <ModalOverlay />
-            <ModalContent>
-                <ModalHeader>Search</ModalHeader>
-                <ModalCloseButton />
 
+            <ModalOverlay
+                style={{
+                    backgroundColor: "rgba(0, 0, 0, 0.1)",
+                    backdropFilter: "blur(5px)",
+                }}
+            />
+            <ModalContent
+                bg={`rgba(255, 255, 255, 0.95)`}
+                className="relative  duration-500 ease-in-out rounded-2xl shadow-2xl border-1 border-black flex justify-between items-center bg-gray-100"
+            >
+
+                <ModalHeader>Search</ModalHeader>
                 <ModalBody>
                     <InputGroup>
                         <InputLeftElement pointerEvents="none">
@@ -215,58 +219,54 @@ export default function Search({ channels, users }: Props) {
                     <div className="flex w-full h-[300px]  flex-col  overflow-y-scroll">
                         {allSearchChannels.map((channels: any) => {
                             return <Box className="flex  w-[95%] p-2 flex-row justify-between items-center border-2 border-gray-300 rounded-lg  mt-5">
-                            <div className="flex h-[50px] " >
-                                <h1 className="text-[40px] h-[20px] mr-3">#</h1>
-                                <h1 className="text-[30px] h-[20px]"> {channels.channelName}</h1>
-                            </div>
-                            
-                        </Box>
+                                <div className="flex h-[50px] " >
+                                    <h1 className="text-[40px] h-[20px] mr-3">#</h1>
+                                    <h1 className="text-[30px] h-[20px]"> {channels.channelName}</h1>
+                                </div>
+
+                            </Box>
                         })}
                         {allSearchUsers.map((users: any) => {
                             return <Box className="flex w-[95%] p-2 flex-row justify-between items-center border-2 border-gray-300 rounded-lg  mt-5">
-                            <div className="flex flex-row items-center space-x-5">
-                                <Avatar size="md" />
-                                <h1 className="text-lg font-bold">{users.userName}</h1>
-                            </div>
-                            
-                        </Box>
+                                <div className="flex flex-row items-center space-x-5">
+                                    <Avatar size="md" />
+                                    <h1 className="text-lg font-bold">{users.userName}</h1>
+                                </div>
+
+                            </Box>
                         })}
                     </div>
-
-
-                    {/* <ModalHeader className="text-[30px] border-b-1 border-black ">Channels</ModalHeader>
-
-
-                    <div className='flex h-[250px] flex-col  border-2  gap-6 overflow-y-scroll'>
-
-                        {allSearchChannels.map((data: ChannelValues, index: number) => {
-
-                            return <Hashtag key={index} data={data} />
-
-                        })}
-
-                    </div>
-
-
-                    <ModalHeader className="text-[30px] border-b-1 border-black ">Users</ModalHeader>
-                    <div className=' mt-[20px] flex  justify-between h-[500px] flex-col w-full   gap-6 overflow-y-scroll'>
-
-                        {allSearchUsers.map((data: UserValues) => {
-                            return <UserCard
-                            data={data}
-                            // selectedOption={selectedOption}
-                            // onOptionChange={handleOptionChange}
-                        />
-                        })}
-
-                    </div> */}
-
                 </ModalBody>
-
+                <ModalCloseButton />
                 <ModalFooter>
-                    <Button onClick={onClose} variant='ghost' colorScheme='blue'>Close</Button>
+                    <Button
+                        colorScheme="red"
+                        variant="outline"
+                        mr={10}
+                        onClick={onClose}
+                    >
+                        Close
+                    </Button>
+                    <Button
+                        colorScheme="green"
+                        variant="outline"
+                        ml={10}
+                        onClick={() => {
+                            onClose(); toast({
+                                title: "Searched",
+                                position: `bottom-right`,
+                                status: 'success',
+                                duration: 1000,
+                                containerStyle: {
+                                    width: 300,
+                                    height: 100,
+                                }
+                            })
+                        }}
+                    >
+                        Confirm
+                    </Button>
                 </ModalFooter>
-
             </ModalContent>
         </Modal>
     </>)
@@ -274,83 +274,3 @@ export default function Search({ channels, users }: Props) {
 
 
 
-
-
-// import Image from "next/image";
-// import { Search2Icon } from "@chakra-ui/icons";
-// import animationData from "../../../../assets/animations/animation3.json";
-// import Lottie from "lottie-react";
-
-
-
-// export default function GameSearchFriend({ onClose, handelStartGame }: Props) {
-//   const handleSearchClick = () => {
-//     console.log("searching for a friend");
-//   };
-
-//   return (
-//     <ModalContent className="relative">
-//       <Lottie
-//         animationData={animationData}
-//         className="absolute inset-0 border-2 border-white rounded-[100%] w-full h-full z-[-1] opacity-10 bg-white"
-//       />
-//       <ModalHeader>Search for a Friend</ModalHeader>
-//       <ModalCloseButton />
-//       <ModalBody>
-//         <InputGroup>
-//           <InputLeftElement pointerEvents="none">
-//             <Search2Icon color="gray.300" />
-//           </InputLeftElement>
-//           <InputRightElement width="4.5rem" height={12}>
-//             <Button
-//               variant="outline"
-//               h="2rem"
-//               size="sm"
-//               onClick={handleSearchClick}
-//             >
-//               Search
-//             </Button>
-//           </InputRightElement>
-//           <Input
-//             type="tel"
-//             placeholder="Search for a friend"
-//             height={12}
-//             borderEndEndRadius={0}
-//           />
-//         </InputGroup>
-//         <div className="flex w-full h-[300px]  flex-col  overflow-y-scroll">
-//           <Box className="flex w-[95%] p-2 flex-row justify-between items-center border-2 border-gray-300 rounded-lg  mt-5">
-//             <div className="flex flex-row items-center space-x-5">
-//               <Avatar size="md" />
-//               <h1 className="text-lg font-bold">UserName</h1>
-//             </div>
-//             <Button
-//               colorScheme="teal"
-//               variant="outline"
-//               leftIcon={
-//                 <Image src={StartGame} alt="StartGame" width={20} height={20} />
-//               }
-//               onClick={handelStartGame}
-//             >
-//               Invite
-//             </Button>
-//           </Box>
-//         </div>
-//       </ModalBody>
-
-//       <ModalFooter>
-//         <Button
-//           colorScheme="teal"
-//           variant="outline"
-//           mr={3}
-//           onClick={onClose}
-//           leftIcon={
-//             <Image src={closeIcon} alt="closeIcon" width={25} height={25} />
-//           }
-//         >
-//           Close
-//         </Button>
-//       </ModalFooter>
-//     </ModalContent>
-//   );
-// }

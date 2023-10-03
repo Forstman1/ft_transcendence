@@ -1,8 +1,8 @@
 "use client";
 
 import { SmallAddIcon } from '@chakra-ui/icons';
-import { Avatar, AvatarBadge, Button, Icon, Input, useDisclosure, Modal } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react'
+import { Avatar, AvatarBadge,  Icon,  useDisclosure, Modal } from '@chakra-ui/react';
+import React, {  useState } from 'react'
 import Newchannel from './newchannel';
 
 
@@ -83,7 +83,7 @@ export default function LeftSidebar() {
         />
 
         <div className='w-[80%] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
-          <div className='text-[40px] font-bold'>Channels</div>
+          <div className='text-[30px] font-bold'>Channels</div>
           <div onClick={() => { onOpen(), setChannelOrUser(true) }} className='cursor-pointer' ><Icon boxSize={10} as={SmallAddIcon} /></div>
         </div>
 
@@ -97,7 +97,7 @@ export default function LeftSidebar() {
         </div>
 
         <div className='w-[90%] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
-          <div className='text-[40px] font-bold'>Direct Messages</div>
+          <div className='text-[30px] font-bold'>Direct Messages</div>
           <div onClick={() => { onOpen(), setChannelOrUser(false) }} className='cursor-pointer'><Icon boxSize={10} as={SmallAddIcon} /></div>
         </div>
 
