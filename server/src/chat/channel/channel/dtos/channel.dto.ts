@@ -4,8 +4,8 @@ import { IsEmail, IsNotEmpty, IsString } from "class-validator";
 
 export class CreateChannelDto {
 
-    @IsEmail()
     @IsNotEmpty()
+    @IsString()
     readonly channelName: string;
 
     @IsString()
@@ -16,6 +16,8 @@ export class CreateChannelDto {
     @IsNotEmpty()
     readonly password: string;
 
-
+    @IsString()
+    @IsNotEmpty()
+    readonly userId: string;
 }
 

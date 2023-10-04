@@ -5,17 +5,16 @@ const prisma = new PrismaClient();
 async function Chat() {
 
   for (let userNum = 0; userNum < 10; userNum++) {
-    
         await prisma.user.create({
             data: {
                 username: faker.person.fullName(),
                 email: faker.internet.email(),
                 password: faker.internet.password(),
-                message: {
-                  create: {
-                      content: faker.lorem.sentence(),
-                  }
-              }
+              //   message: {
+              //     create: {
+              //         content: faker.lorem.sentence(),
+              //     }
+              // }
             },
         });
     }

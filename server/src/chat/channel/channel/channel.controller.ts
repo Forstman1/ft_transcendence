@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { CreateChannelDto } from './dtos';
 
@@ -9,13 +9,18 @@ export class ChannelController {
 
     @Post('/createchannel')
     createchannel(@Body() body: CreateChannelDto) {
-
         return this.channelservice.createchannel(body)
     }
 
 
-    @Get('getchannels')
-    getchannel() {
+    @Get('/getchannelinfo/:id')
+    getchannel(@Param('id') id: string) {
+        return this.channelservice.getchannelinfo(id)
+    }
 
+
+    @Get('/getallchannels/:id')
+    getallchannels(@Param('id') userId: string) {
+        return this.channelservice.getallchannels(userId)
     }
 }

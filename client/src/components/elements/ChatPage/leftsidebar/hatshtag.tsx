@@ -37,7 +37,7 @@ export default function Hashtag(props: any) {
 
     
     const handleClick = () => {
-        if (props.data.type === "Protected") {
+        if (props.data.type === 'PROTECTED') {
 
             setWrongpassowrd(false)
             onOpen()
@@ -63,7 +63,7 @@ export default function Hashtag(props: any) {
                 <div className='h-[20px] text-[40px] mr-3'>#</div>
                 <div className='h-[20px] text-[30px]'>{channelName}</div>
             </div>
-            {type === "Protected" ? <div className='cursor-pointer flex items-center justify-center mr-2'><Icon boxSize={5} as={LockIcon} /></div> : <div></div>}
+            {type === 'PROTECTED' ? <div className='cursor-pointer flex items-center justify-center mr-2'><Icon boxSize={5} as={LockIcon} /></div> : <div></div>}
         </div>
 
         <Modal isCentered

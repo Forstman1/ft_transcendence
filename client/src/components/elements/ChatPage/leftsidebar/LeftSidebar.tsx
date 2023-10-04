@@ -2,7 +2,7 @@
 
 import { SmallAddIcon } from '@chakra-ui/icons';
 import { Avatar, AvatarBadge,  Icon,  useDisclosure, Modal } from '@chakra-ui/react';
-import React, {  useState } from 'react'
+import React, {  useEffect, useState } from 'react'
 import Newchannel from './newchannel';
 
 
@@ -14,6 +14,7 @@ import Search from './search';
 
 
 type ChannelValues = {
+  id:  string
   channelName: string
   password: string
   type: string
@@ -33,7 +34,8 @@ type UserValues = {
 
 function Usercard(props: any) {
 
-  return (<div className='flex justify-between items-center  cursor-pointer m-2 ml-0 p-2  rounded-md'>
+  return (<div className='flex justify-between items-center  cursor-pointer m-2 ml-0 p-2  rounded-md'
+  onClick={() => console.log("ana hna")}>
 
     <div> 
       <Avatar className='custom-shadow border-[1px] border-black' boxSize={14}>
@@ -68,10 +70,28 @@ export default function LeftSidebar() {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [ChannelOrUser, setChannelOrUser] = useState(false)
 
+  const userId = "2c7606fc-ac43-4df7-87e4-91ae82e8863e";
 
 
+  useEffect(() => {
+    console.log("ana hna")
+    const fetchData = async () => {
+      const fetchChannels = await fetch('http://127.0.0.1:3001/channel/getallchannels/' + userId)
+      const response = await fetchChannels.json()
+      const allchannels: ChannelValues[] = response.map((data: any) => ({
+        id: data.id,
+        channelName:data.name,
+        password: data.password,
+        type: data.type
+      })
 
-
+      )
+      console.log(allchannels)
+      setNewChannels(allchannels)
+      return allchannels;
+    }
+    fetchData()
+  }, [])
 
 
   return (
@@ -123,13 +143,6 @@ export default function LeftSidebar() {
         />
       </Modal>}
       </div>
-
-
-
-
-      
-
-
 
   )
 }

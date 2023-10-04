@@ -10,6 +10,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+
+
 model User {
   id              String       @id @default(uuid())
   username        String       @unique
@@ -19,19 +22,25 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   message Message[]
+  channelMember ChannelMember[]
 }
 
 model Channel {
   id       String   @id @default(uuid())
-  name     String
+  name     String @unique
   type     Type @default(PUBLIC)
   message Message[]
+  password  String?
+  channelMember ChannelMember[]
 }
 
 model ChannelMember {
   id        String   @id @default(uuid())
   channelId String
   role     Role @default(MEMBER)
+  channel Channel @relation(fields: [channelId], references: [id])
+  userId    String
+  user    User @relation(fields: [userId], references: [id])
 }
 
 model Message {
