@@ -1,152 +1,250 @@
 import { Injectable } from '@nestjs/common';
-import { Ball } from './dto/create-game.dto';
+import { GameServiceData } from './dto/create-game.dto';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class GameService {
-  private BallInitData: Ball;
-  private ball: Ball = {
-    x: 0,
-    y: 0,
-    speedX: 0,
-    speedY: 0,
-    radius: 0,
-    maxBallSpeed: 0,
-  };
-  private leftPaddle = { x: 0, y: 0, width: 0, height: 0 };
-  private rightPaddle = { x: 0, y: 0, width: 0, height: 0 };
-  private leftScore = 0;
-  private rightScore = 0;
+  private rooms: Map<
+    string,
+    {
+      owner: string;
+      players: string[];
+      gameData?: GameServiceData;
+      isPoused?: boolean;
+    }
+  > = new Map();
 
   //------------------ update paddles ------------------
 
-  public updatePaddles(data): void {
-    this.leftPaddle = data.leftPaddle;
-    this.rightPaddle = data.rightPaddle;
+  public updatePaddles(data, roomId: string): void {
+    const getRoomData = this.rooms.get(roomId);
+    if (!getRoomData) return;
+    getRoomData.gameData.leftPaddle = data.leftPaddle;
+    getRoomData.gameData.rightPaddle = data.rightPaddle;
   }
 
   //------------------ init game data ------------------
 
-  public initGameData(data): void {
-    this.BallInitData = data.ball;
-    this.ball = data.ball;
-    this.leftPaddle = data.leftPaddle;
-    this.rightPaddle = data.rightPaddle;
+  public initGameData(data, roomId: string): void {
+    const getRoomData = this.rooms.get(roomId);
+    if (!getRoomData) return;
+    getRoomData.gameData.BallInitData = data.ball;
+    getRoomData.gameData.ball = data.ball;
+    getRoomData.gameData.leftPaddle = data.leftPaddle;
+    getRoomData.gameData.rightPaddle = data.rightPaddle;
   }
 
   //------------------ update ball position ------------------
 
-  public updateBallPosition(): void {
-    this.ball.x += this.ball.speedX / 2;
-    this.ball.y += this.ball.speedY / 2;
+  public updateBallPosition(roomId: string): void {
+    const getRoomData = this.rooms.get(roomId);
+    if (!getRoomData) return;
+
+    getRoomData.gameData.ball.x += getRoomData.gameData.ball.speedX / 2;
+    getRoomData.gameData.ball.y += getRoomData.gameData.ball.speedY / 2;
 
     // Check for collisions with the top and bottom boundaries
     if (
-      this.ball.y - this.ball.radius <= 0 ||
-      this.ball.y + this.ball.radius > 100
+      getRoomData.gameData.ball.y - getRoomData.gameData.ball.radius <= 0 ||
+      getRoomData.gameData.ball.y + getRoomData.gameData.ball.radius > 100
     ) {
-      this.ball.speedY = -this.ball.speedY;
+      getRoomData.gameData.ball.speedY = -getRoomData.gameData.ball.speedY;
     }
 
     // Check if the ball went out of bounds on the left or right sides
-    if (this.ball.x - this.ball.radius < 0) {
+    if (getRoomData.gameData.ball.x - getRoomData.gameData.ball.radius < 0) {
       // Ball went out on the left side
-      this.ball = {
+      getRoomData.gameData.ball = {
         x: 50,
         y: 50,
-        speedX: -this.BallInitData.speedX,
-        speedY: this.BallInitData.speedY,
-        radius: this.BallInitData.radius,
-        maxBallSpeed: this.BallInitData.maxBallSpeed,
+        speedX: -getRoomData.gameData.BallInitData.speedX,
+        speedY: getRoomData.gameData.BallInitData.speedY,
+        radius: getRoomData.gameData.BallInitData.radius,
+        maxBallSpeed: getRoomData.gameData.BallInitData.maxBallSpeed,
       };
-      this.rightScore++;
-    } else if (this.ball.x + this.ball.radius > 100) {
+      getRoomData.gameData.rightScore++;
+    } else if (
+      getRoomData.gameData.ball.x + getRoomData.gameData.ball.radius >
+      100
+    ) {
       // Ball went out on the right side
-      this.ball = {
+      getRoomData.gameData.ball = {
         x: 50,
         y: 50,
-        speedX: -this.BallInitData.speedX,
-        speedY: this.BallInitData.speedY,
-        radius: this.BallInitData.radius,
-        maxBallSpeed: this.BallInitData.maxBallSpeed,
+        speedX: -getRoomData.gameData.BallInitData.speedX,
+        speedY: getRoomData.gameData.BallInitData.speedY,
+        radius: getRoomData.gameData.BallInitData.radius,
+        maxBallSpeed: getRoomData.gameData.BallInitData.maxBallSpeed,
       };
-      this.leftScore++;
+      getRoomData.gameData.leftScore++;
     }
 
     // Check for collisions with the left paddle
     if (
-      this.ball.x - this.ball.radius <=
-        this.leftPaddle.x + this.leftPaddle.width &&
-      this.ball.y + this.ball.radius >= this.leftPaddle.y &&
-      this.ball.y - this.ball.radius <=
-        this.leftPaddle.y + this.leftPaddle.height
+      getRoomData.gameData.ball.x - getRoomData.gameData.ball.radius <=
+        getRoomData.gameData.leftPaddle.x +
+          getRoomData.gameData.leftPaddle.width &&
+      getRoomData.gameData.ball.y + getRoomData.gameData.ball.radius >=
+        getRoomData.gameData.leftPaddle.y &&
+      getRoomData.gameData.ball.y - getRoomData.gameData.ball.radius <=
+        getRoomData.gameData.leftPaddle.y +
+          getRoomData.gameData.leftPaddle.height
     ) {
       // Calculate the angle of impact
       const relativeIntersectY =
-        this.leftPaddle.y + this.leftPaddle.height / 2 - this.ball.y;
+        getRoomData.gameData.leftPaddle.y +
+        getRoomData.gameData.leftPaddle.height / 2 -
+        getRoomData.gameData.ball.y;
       const normalizedRelativeIntersectY =
-        relativeIntersectY / (this.leftPaddle.height / 2);
+        relativeIntersectY / (getRoomData.gameData.leftPaddle.height / 2);
       const bounceAngle = (normalizedRelativeIntersectY * Math.PI) / 4;
 
       const ballSpeed = Math.sqrt(
-        this.ball.speedX ** 2 + this.ball.speedY ** 2,
+        getRoomData.gameData.ball.speedX ** 2 +
+          getRoomData.gameData.ball.speedY ** 2,
       );
-      this.ball.speedX = ballSpeed * Math.cos(bounceAngle);
-      this.ball.speedY = ballSpeed * -Math.sin(bounceAngle);
+      getRoomData.gameData.ball.speedX = ballSpeed * Math.cos(bounceAngle);
+      getRoomData.gameData.ball.speedY = ballSpeed * -Math.sin(bounceAngle);
     }
 
     // Check for collisions with the right paddle
     if (
-      this.ball.x + this.ball.radius >= this.rightPaddle.x &&
-      this.ball.y + this.ball.radius >= this.rightPaddle.y &&
-      this.ball.y - this.ball.radius <=
-        this.rightPaddle.y + this.rightPaddle.height
+      getRoomData.gameData.ball.x + getRoomData.gameData.ball.radius >=
+        getRoomData.gameData.rightPaddle.x &&
+      getRoomData.gameData.ball.y + getRoomData.gameData.ball.radius >=
+        getRoomData.gameData.rightPaddle.y &&
+      getRoomData.gameData.ball.y - getRoomData.gameData.ball.radius <=
+        getRoomData.gameData.rightPaddle.y +
+          getRoomData.gameData.rightPaddle.height
     ) {
       const relativeIntersectY =
-        this.rightPaddle.y + this.rightPaddle.height / 2 - this.ball.y;
+        getRoomData.gameData.rightPaddle.y +
+        getRoomData.gameData.rightPaddle.height / 2 -
+        getRoomData.gameData.ball.y;
       const normalizedRelativeIntersectY =
-        relativeIntersectY / (this.rightPaddle.height / 2);
+        relativeIntersectY / (getRoomData.gameData.rightPaddle.height / 2);
       const bounceAngle = (normalizedRelativeIntersectY * Math.PI) / 4;
 
       const ballSpeed = Math.sqrt(
-        this.ball.speedX ** 2 + this.ball.speedY ** 2,
+        getRoomData.gameData.ball.speedX ** 2 +
+          getRoomData.gameData.ball.speedY ** 2,
       );
-      this.ball.speedX = ballSpeed * -Math.cos(bounceAngle);
-      this.ball.speedY = ballSpeed * -Math.sin(bounceAngle);
+      getRoomData.gameData.ball.speedX = ballSpeed * -Math.cos(bounceAngle);
+      getRoomData.gameData.ball.speedY = ballSpeed * -Math.sin(bounceAngle);
     }
   }
 
   //------------------ reset game date ------------------
 
-  public resetGameDate(): void {
-    this.ball = {
-      x: 0,
-      y: 0,
-      speedX: 0,
-      speedY: 0,
-      radius: 0,
-      maxBallSpeed: 0,
-    };
-    this.leftPaddle = { x: 0, y: 0, width: 0, height: 0 };
-    this.rightPaddle = { x: 0, y: 0, width: 0, height: 0 };
-    this.leftScore = 0;
-    this.rightScore = 0;
-    this.BallInitData = {
-      x: 0,
-      y: 0,
-      speedX: 0,
-      speedY: 0,
-      radius: 0,
-      maxBallSpeed: 0,
-    };
-  }
+  // public resetGameDate(roomId: string): void {
+  //   const getRoomData = this.rooms.get(roomId);
+  //   if (!getRoomData) return;
+  //   getRoomData.gameData.ball = {
+  //     x: 0,
+  //     y: 0,
+  //     speedX: 0,
+  //     speedY: 0,
+  //     radius: 0,
+  //     maxBallSpeed: 0,
+  //   };
+  //   getRoomData.gameData.leftPaddle = { x: 0, y: 0, width: 0, height: 0 };
+  //   getRoomData.gameData.rightPaddle = { x: 0, y: 0, width: 0, height: 0 };
+  //   getRoomData.gameData.leftScore = 0;
+  //   getRoomData.gameData.rightScore = 0;
+  //   getRoomData.gameData.BallInitData = {
+  //     x: 0,
+  //     y: 0,
+  //     speedX: 0,
+  //     speedY: 0,
+  //     radius: 0,
+  //     maxBallSpeed: 0,
+  //   };
+  // }
 
   //------------------ get update data ------------------
 
-  public getUpdateData() {
+  public getUpdateData(roomId: string) {
+    const getRoomData = this.rooms.get(roomId);
+    if (!getRoomData) return;
     return {
-      ball: this.ball,
-      leftScore: this.leftScore,
-      rightScore: this.rightScore,
+      ball: getRoomData.gameData.ball,
+      leftScore: getRoomData.gameData.leftScore,
+      rightScore: getRoomData.gameData.rightScore,
     };
   }
+
+  //------------------ rooms ------------------
+
+  createRoom(ownerId: string): string {
+    const roomId = uuidv4();
+    const gameData: GameServiceData = {
+      id: roomId,
+      BallInitData: {
+        x: 0,
+        y: 0,
+        speedX: 0,
+        speedY: 0,
+        radius: 0,
+        maxBallSpeed: 0,
+      },
+      ball: {
+        x: 0,
+        y: 0,
+        speedX: 0,
+        speedY: 0,
+        radius: 0,
+        maxBallSpeed: 0,
+      },
+      leftPaddle: { x: 0, y: 0, width: 0, height: 0 },
+      rightPaddle: { x: 0, y: 0, width: 0, height: 0 },
+      leftScore: 0,
+      rightScore: 0,
+    };
+    this.rooms.set(roomId, {
+      owner: ownerId,
+      players: [ownerId],
+      gameData,
+      isPoused: false,
+    });
+    return roomId;
+  }
+
+  isRoomOwner(userId: string, roomId: string): boolean {
+    const room = this.rooms.get(roomId);
+    return room && room.owner === userId;
+  }
+
+  canAddPlayerToRoom(roomId: string): boolean {
+    const room = this.rooms.get(roomId);
+    return room && room.players.length < 2;
+  }
+
+  addPlayerToRoom(roomId: string, userId: string): void {
+    const room = this.rooms.get(roomId);
+    if (room && room.players.length < 2) {
+      room.players.push(userId);
+    }
+  }
+
+  deleteRoom(roomId: string): void {
+    this.rooms.delete(roomId);
+  }
+
+  getRoom(roomId: string): {
+    owner: string;
+    players: string[];
+    gameData?: GameServiceData;
+    isPoused?: boolean;
+  } {
+    return this.rooms.get(roomId);
+  }
+
+  setRoomPause(roomId: string, isPoused: boolean): void {
+    const room = this.rooms.get(roomId);
+    if (room) {
+      room.isPoused = isPoused;
+    }
+  }
+
+  //----------------------------------------------------
 }

@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-// import { Metadata } from "next";
 import React, { useRef, useEffect, useState} from "react";
 import { PageWrapper } from "../../animationWrapper/pageWrapper";
 import Countdown from "../ui/Countdown";
@@ -27,20 +26,27 @@ import {
   CanvasData,
   GameUpdateData,
 } from "@/utils/types/game/GameTypes";
-import { io } from "socket.io-client";
 import {
   initialCanvasSize,
   initialLeftPaddle,
   initialRightPaddle,
   initialGameEndStatic,
 } from "@/utils/constants/game/GameConstants";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store/store";
+import {setSocketState} from "@/redux/slices/socket/globalSocketSlice";
 
-
-let socket: any = null;
-let clientId: string;
+// let clientId: string;
 
 export default function GameFriendPage() {
   let gameSettings = useAppSelector((state) => state.gameReducer);
+  //-----------------socket data -----------------------------
+  const socketState = useAppSelector((state) => state.globalSocketReducer);
+  const dispatch = useDispatch<AppDispatch>();
+  const socket = socketState.socket;
+  const clientId = socketState.socketId;
+  const roomId = socketState.roomId;
+  //----------------------------------------------------------
   appliyGameMode(gameSettings);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [keysPressed, setKeysPressed] = useState<Record<string, boolean>>({});
@@ -78,14 +84,9 @@ export default function GameFriendPage() {
   //--------------------------------Socket Code logic-------------------------------------------
 
   useEffect(() => {
-    socket = io('http://localhost:3001', {
-      transports: ['websocket'],
-      upgrade: false,
-    });
-    clientId = socket.id;
 
-    if (socket !== null) {
-
+    if (socket !== null && roomId !== "") {
+      console.log("socket is not null");
       let prevLeftScore = 0;
       let prevRightScore = 0;
       
@@ -95,7 +96,7 @@ export default function GameFriendPage() {
           y: (data.ball.y * canvasSize.height) / 100,
           speedX: (data.ball.speedX * canvasSize.width) / 100,
           speedY: (data.ball.speedY * canvasSize.height) / 100,
-          radius: (data.ball.radius * canvasSize.height) / 100,
+          radius: (data.ball.radius * Math.max(canvasSize.width, canvasSize.height)) / 100,
         });
         if (!gameEnded) {
           setLeftScore(data.leftScore);
@@ -114,32 +115,34 @@ export default function GameFriendPage() {
     }
 
     return () => {
-      if (socket) {
+      if (socket && roomId !== "") {
         socket.off("GetGameData");
-        socket.disconnect();
       }
     };
-
-  }, []);
+  }, [socketState]);
 
   const closeSocketConnection = () => {
     if (socket) {
+      dispatch(setSocketState({
+        socket : socket,
+        socketId : clientId,
+        isOwner : false,
+        roomId : "",
+      }));
       socket.emit("endGame", { clientId });
       socket.off("GetGameData");
-      socket.disconnect(true);
-      socket.close();
     }
   };
 
   useEffect(() => {
-    if (gameStarted && !hasInitialized) {
+    if (gameStarted && !hasInitialized && roomId !== "") {
       const initCanvasData = {
         ball: {
           x: 50,
           y: 50,
           speedX: (initialBallState.speedX * 100) / canvasSize.width,
           speedY: (initialBallState.speedY * 100) / canvasSize.height,
-          radius: (14 * 100) / canvasSize.height,
+          radius: (Math.floor((canvasSize.width + canvasSize.height) / 150) / Math.max(canvasSize.width, canvasSize.height)) * 100,
           maxBallSpeed: (maxBallSpeed * 100) / canvasSize.width,
         },
         leftPaddle: {
@@ -155,14 +158,13 @@ export default function GameFriendPage() {
           height: (rightPaddle.height * 100) / canvasSize.height,
         },
       };
-
-      socket.emit("sendGameData", { clientId, initCanvasData });
+      socket?.emit("sendGameData", { initCanvasData, roomId });
       setHasInitialized(true);
     }
-  }, [gameStarted, hasInitialized]);
+  }, [gameStarted, hasInitialized, socketState]);
 
   useEffect(() => {
-
+    if (roomId !== "") {
     const canvasData: CanvasData = {
       leftPaddle: {
         x: (leftPaddle.x  * 100) / canvasSize.width,
@@ -178,21 +180,22 @@ export default function GameFriendPage() {
       },
     };
     
-    socket.emit("updatePaddles", {clientId, canvasData});
-   }, [leftPaddle, rightPaddle]);
-
+    socket?.emit("updatePaddles", {canvasData, roomId});
+    }
+   }, [leftPaddle, rightPaddle, socketState]);
 
   useEffect(() => {
+    if (roomId == "") return;
     if (gameEnded){
       closeSocketConnection();
     }
-    else if (!gameStarted && !gameEnded) {
-      socket.emit("pauseGame", {clientId});
+    if (!gameStarted && !gameEnded) {
+      socket?.emit("pauseGame", {roomId});
     }
     else if (gameStarted && !gameEnded) {
-      socket.emit("resumeGame", {clientId});
+      socket?.emit("resumeGame", {roomId});
     }
-  }, [gameEnded, gameStarted]);
+  }, [gameEnded, gameStarted, socketState]);
 
   //----------------------------------end Socket code Logic-----------------------------------------
 
@@ -278,7 +281,6 @@ export default function GameFriendPage() {
       window.removeEventListener("keyup", handleKeyUp);
     };
   }, [gameStarted]);
-  
 
   //---------------------------------------------------------------------------
   
@@ -290,20 +292,32 @@ export default function GameFriendPage() {
     
     const speed = RecSpeed;
 
-    if (keysPressed["ArrowUp"]) {
-      setRightPaddle((prev) => ({
-        ...prev,
-        y: Math.max(0, prev.y - speed),
-      }));
-    }
-    if (keysPressed["ArrowDown"]) {
-      setRightPaddle((prev) => ({
-        ...prev,
-        y: Math.min(
-          canvasSize.height - prev.height,
-          prev.y + speed
-        ),
-      }));
+    if (socketState.isOwner) {
+      if (keysPressed["ArrowUp"]) {
+        setRightPaddle((prev) => ({
+          ...prev,
+          y: Math.max(0, prev.y - speed),
+        }));
+      }
+      if (keysPressed["ArrowDown"]) {
+        setRightPaddle((prev) => ({
+          ...prev,
+          y: Math.min(canvasSize.height - prev.height, prev.y + speed),
+        }));
+      }
+    } else {
+      if (keysPressed["ArrowUp"]) {
+        setLeftPaddle((prev) => ({
+          ...prev,
+          y: Math.max(0, prev.y - speed),
+        }));
+      }
+      if (keysPressed["ArrowDown"]) {
+        setLeftPaddle((prev) => ({
+          ...prev,
+          y: Math.min(canvasSize.height - prev.height, prev.y + speed),
+        }));
+      }
     }
 
     // Redraw the canvas

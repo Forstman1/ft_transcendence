@@ -1,11 +1,12 @@
 import {configureStore} from '@reduxjs/toolkit'
 import { TypedUseSelectorHook, useSelector } from "react-redux";
-import  gameReducer  from '../slices/game/gameModalSlice';
-
+import  gameReducer  from '../slices/game/gameModalSlice';  
+import  globalSocketReducer  from '../slices/socket/globalSocketSlice';
 
 export const store = configureStore({
     reducer: {
         gameReducer,
+        globalSocketReducer,
     },
 })
 

@@ -10,6 +10,7 @@ import Navbar from "../components/elements/Navbar/Navbar";
 import ReduxProvider from "../redux/provider";
 import SplashScreen from "@/components/elements/spalshScreen/SplashScreen";
 import { usePathname } from "next/navigation";
+import GameNotification from "./gamePage/gameNotification/page";
 
 const geo = Geo({
   subsets: ['latin'],
@@ -37,6 +38,7 @@ export default function RootLayout({
               <ChakraProvider>
                 {isloading ? <SplashScreen  finishLoading={() => setIsLoading(false)}/> :
                 <>
+                  <GameNotification />
                   <Navbar />
                   {children}
                 </>

@@ -19,6 +19,14 @@ import { Search2Icon } from "@chakra-ui/icons";
 import animationData from "../../../../assets/animations/animation3.json";
 import Lottie from "lottie-react";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store/store";
+import {setSocketState, GlobalSocketState} from "@/redux/slices/socket/globalSocketSlice";
+import { useAppSelector } from "@/redux/store/store";
+import { useState } from "react";
+
+
+
 
 type Props = {
   onClose: () => void;
@@ -26,14 +34,49 @@ type Props = {
 
 export default function GameSearchFriend({ onClose }: Props) {
   const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+  const socket = useAppSelector((state) => state.globalSocketReducer);
+  const [socketData, setSocketData] = useState<GlobalSocketState>(socket);
 
   const handleSearchClick = () => {
     console.log("searching for a friend");
   };
 
-  const handleInviteClick = () => {
-    router.push("/gamePage/gameFriendPage");
-  };
+    const createRoom = async () => {
+      await socket.socket?.emit("createRoom", { client: socket.socketId }, (res: any) => {
+        dispatch(setSocketState({
+          socket : socket.socket,
+          socketId : socket.socketId,
+          isOwner : true,
+          roomId : res,
+        }));
+        setSocketData({
+          socket : socket.socket,
+          socketId : socket.socketId,
+          isOwner : true,
+          roomId : res,
+        });
+      }
+      );
+    };
+
+    
+    const friendId = socket.playerId === 1 ? 2 : 1;
+    const inviteFriend = async () => {
+      await socket.socket?.emit("inviteFriend", {
+        client: socketData.socketId, 
+        roomId: socketData.roomId,
+        friendId: friendId,
+      });
+    };
+
+    const handleInviteClick = () => {
+      createRoom().then(() => {
+        inviteFriend();
+      }).then(() => {
+        router.push("/gamePage/gameFriendPage");
+      });
+    };
 
   return (
     <ModalContent className="relative rounded-2xl">
