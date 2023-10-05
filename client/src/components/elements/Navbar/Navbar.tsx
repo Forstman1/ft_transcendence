@@ -26,19 +26,10 @@ import {
   ModalBody,
   ModalCloseButton,
   Stack,
-  FormControl,
-  FormLabel,
-  Input,
-  InputGroup,
-  HStack,
-  InputRightElement,
-  Heading,
 } from '@chakra-ui/react';
-import { Link as Llink } from '@chakra-ui/react';
 /* ------------------------------------------------------ Hooks ----------------------------------------------------- */
 import { usePathname } from 'next/navigation';
 import { useDisclosure } from '@chakra-ui/react';
-import { useState } from 'react';
 /* ------------------------------------------------------ Types ----------------------------------------------------- */
 import { IconType } from "react-icons";
 
@@ -47,7 +38,6 @@ import { HamburgerIcon } from '@chakra-ui/icons';
 import { FcGoogle } from 'react-icons/fc';
 import { FaGithub } from 'react-icons/fa6';
 import { FaTwitter } from 'react-icons/fa6';
-import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
 
 /* -------------------------------------------------- Local Assets -------------------------------------------------- */
 import WavesDivider from 'assets/icons/wavesOpacity.svg';

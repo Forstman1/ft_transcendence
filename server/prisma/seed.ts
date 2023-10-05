@@ -11,8 +11,8 @@ async function seed() {
         email: faker.internet.email(),
         username: faker.internet.userName(),
         fullname: faker.internet.displayName(),
-        avatar: faker.internet.avatar(),
-        coalitionUrl: faker.internet.avatar(),
+        avatarURL: faker.internet.avatar(),
+        coalitionURL: faker.internet.avatar(),
         coalitionColor: faker.internet.userName(),
         accessToken: faker.internet.password(),
         refreshToken: faker.internet.password(),
@@ -22,12 +22,12 @@ async function seed() {
   console.log('seeded successfully');
   console.log(`generated users`);
 }
-// seed()
-//   .then(async () => {
-//     await prisma.$disconnect();
-//   })
-//   .catch(async (e) => {
-//     console.error(e);
-//     await prisma.$disconnect();
-//     process.exit(1);
-//   });
+seed()
+  .then(async () => {
+    await prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });

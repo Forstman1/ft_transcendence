@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Prisma } from '@prisma/client';
 import { Profile, Strategy } from 'passport-42';
+import { authenticator } from 'otplib';
 import axios from 'axios';
 
 @Injectable()
@@ -34,16 +35,18 @@ export class IntraStrategy extends PassportStrategy(Strategy) {
     profile: Profile,
   ): Promise<Prisma.UserCreateInput> {
     const coalition = await this.getCoalition(profile._json.id, accessToken);
+    const secret = authenticator.generateSecret();
     return {
-      id: profile._json.id.toString(),
+      intraID: profile._json.id.toString(),
       username: profile._json.login,
       email: profile._json.email,
       fullname: profile._json.displayname,
-      avatar: profile._json.image.versions.large,
-      coalitionUrl: coalition.image_url,
+      avatarURL: profile._json.image.versions.large,
+      coalitionURL: coalition.image_url,
       coalitionColor: coalition.color,
       accessToken: accessToken,
       refreshToken: refreshToken,
+      twoFaSecret: secret,
     };
   }
 }

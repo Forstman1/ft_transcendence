@@ -4,18 +4,18 @@ import { User, Prisma } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prismaService: PrismaService) {}
 
   async findUser(
     userWhereUniqueInput: Prisma.UserWhereUniqueInput,
   ): Promise<User | null> {
-    return this.prisma.user.findUnique({
+    return this.prismaService.user.findUnique({
       where: userWhereUniqueInput,
     });
   }
 
   async createUser(userCreateInput: Prisma.UserCreateInput): Promise<User> {
-    return this.prisma.user.create({
+    return this.prismaService.user.create({
       data: userCreateInput,
     });
   }
@@ -25,17 +25,49 @@ export class UsersService {
     userUpdateInput: Prisma.UserUpdateInput;
   }): Promise<User> {
     const { userWhereUniqueInput, userUpdateInput } = params;
-    return this.prisma.user.update({
+    return this.prismaService.user.update({
+      where: {
+        username: userWhereUniqueInput.username,
+      },
       data: userUpdateInput,
-      where: userWhereUniqueInput,
     });
   }
 
   async deleteUser(
     userWhereUniqueInput: Prisma.UserWhereUniqueInput,
   ): Promise<User> {
-    return this.prisma.user.delete({
-      where: userWhereUniqueInput,
+    return this.prismaService.user.delete({
+      where: {
+        username: userWhereUniqueInput.username,
+      },
+    });
+  }
+
+  async updateUserTwoFaSecret(
+    userWhereUniqueInput: Prisma.UserWhereUniqueInput,
+    twoFaSecretInput: string,
+  ): Promise<User> {
+    return this.prismaService.user.update({
+      where: {
+        username: userWhereUniqueInput.username,
+      },
+      data: {
+        twoFaSecret: twoFaSecretInput,
+      },
+    });
+  }
+
+  async updateUserTwoFaEnabled(
+    userWhereUniqueInput: Prisma.UserWhereUniqueInput,
+    twoFaEnabledInput: boolean,
+  ): Promise<User> {
+    return this.prismaService.user.update({
+      where: {
+        username: userWhereUniqueInput.username,
+      },
+      data: {
+        twoFaEnabled: twoFaEnabledInput,
+      },
     });
   }
 }
