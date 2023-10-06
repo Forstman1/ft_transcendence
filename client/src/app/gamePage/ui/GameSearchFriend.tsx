@@ -21,12 +21,11 @@ import Lottie from "lottie-react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store/store";
-import {setSocketState, GlobalSocketState} from "@/redux/slices/socket/globalSocketSlice";
+import {
+  setSocketState,
+} from "@/redux/slices/socket/globalSocketSlice";
 import { useAppSelector } from "@/redux/store/store";
-import { useState } from "react";
-
-
-
+import { useState, useEffect } from "react";
 
 type Props = {
   onClose: () => void;
@@ -36,47 +35,68 @@ export default function GameSearchFriend({ onClose }: Props) {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const socket = useAppSelector((state) => state.globalSocketReducer);
-  const [socketData, setSocketData] = useState<GlobalSocketState>(socket);
+  const [socketRoomId, setSocketRoomId] = useState<string>("");
+  const friendId = socket.playerId === 1 ? 2 : 1;
+
+  //-------------------playGame------------------------
+
+  socket.socket?.on("playGame", () => {
+    router.push("/gamePage/gameFriendPage");
+  }
+  );
+
+  //---------------------------------------------------
+
+  useEffect(() => {
+    if(socketRoomId !== ""){
+      inviteFriend();
+      // router.push("/gamePage/gameFriendPage");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socketRoomId]);
+
+  //-----------------------------------------------
 
   const handleSearchClick = () => {
     console.log("searching for a friend");
   };
 
-    const createRoom = async () => {
-      await socket.socket?.emit("createRoom", { client: socket.socketId }, (res: any) => {
-        dispatch(setSocketState({
-          socket : socket.socket,
-          socketId : socket.socketId,
-          isOwner : true,
-          roomId : res,
-        }));
-        setSocketData({
-          socket : socket.socket,
-          socketId : socket.socketId,
-          isOwner : true,
-          roomId : res,
-        });
-      }
-      );
-    };
+  //-----------------------------------------------
 
-    
-    const friendId = socket.playerId === 1 ? 2 : 1;
-    const inviteFriend = async () => {
-      await socket.socket?.emit("inviteFriend", {
-        client: socketData.socketId, 
-        roomId: socketData.roomId,
-        friendId: friendId,
-      });
-    };
+  const createRoom = async () => {
+    await socket.socket?.emit("createRoom", (RoomId: any) => {
+      dispatchData(RoomId);
+    });
+  };
 
-    const handleInviteClick = () => {
-      createRoom().then(() => {
-        inviteFriend();
-      }).then(() => {
-        router.push("/gamePage/gameFriendPage");
-      });
-    };
+  //-----------------------------------------------
+
+  const inviteFriend = async () => {
+    await socket.socket?.emit("inviteFriend", {
+      roomId: socketRoomId,
+      friendId: friendId,
+    });
+  };
+
+  //-----------------------------------------------
+
+  const dispatchData = (RoomId: string) => {
+    dispatch(
+      setSocketState({
+        socket: socket.socket,
+        socketId: socket.socketId,
+        isOwner: true,
+        roomId: RoomId,
+      })
+    );
+    setSocketRoomId(RoomId);
+  };
+
+  //-----------------------------------------------
+
+  const handleInviteClick = async () => {
+    await createRoom();
+  };
 
   return (
     <ModalContent className="relative rounded-2xl">

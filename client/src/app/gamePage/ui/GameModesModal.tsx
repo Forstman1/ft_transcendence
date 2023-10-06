@@ -140,7 +140,6 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
                         src={getIcon(mode)}
                         alt="levelIcon"
                         width={25}
-                        height={25}
                       />
                     }
                   >
@@ -230,7 +229,7 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
               mr={3}
               onClick={onClose}
               leftIcon={
-                <Image src={closeIcon} alt="closeIcon" width={25} height={25} />
+                <Image src={closeIcon} alt="closeIcon" width={25}  />
               }
             >
               Close
@@ -244,7 +243,6 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
                     src={StartGame}
                     alt="StartGame"
                     width={25}
-                    height={25}
                   />
                 }
                 onClick={handelStartGame}
@@ -260,7 +258,6 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
                     src={inviteFriend}
                     alt="StartGame"
                     width={25}
-                    height={25}
                   />
                 }
                 onClick={handelStartGame}

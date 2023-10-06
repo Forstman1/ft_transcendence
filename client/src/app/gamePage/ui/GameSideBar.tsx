@@ -139,7 +139,6 @@ const GameSideBar = ({
                 src={openBarIcon}
                 alt="openBar"
                 width={41}
-                height={41}
                 className="cursor-pointer"
               />
             </button>
@@ -186,7 +185,6 @@ const GameSideBar = ({
                           }
                           alt={mode}
                           width={50}
-                          height={50}
                         />
                       </div>
                     ))}
@@ -287,7 +285,6 @@ const GameSideBar = ({
                                 src={checkIcon}
                                 alt="check"
                                 width={20}
-                                height={20}
                               />
                             </div>
                           )}

@@ -20,6 +20,10 @@ export class GameGateway {
   private count = 0;
   private readonly connectedUsers: { [userId: string]: Socket } = {};
 
+  // handelConnection(client: Socket): void {
+  //   console.log('client connected', client);
+  // }
+
   // ---------------- sendGameData
 
   @SubscribeMessage('sendGameData')
@@ -79,20 +83,21 @@ export class GameGateway {
     this.gameService.setRoomPause(roomId, false);
   }
 
-  // ---------------- addClient
+  // ---------------- createRoomNotifacaion
 
-  @SubscribeMessage('addClient')
-  addClient(
+  @SubscribeMessage('createRoomNotification')
+  createRoomNotifacation(
     @ConnectedSocket() client: Socket,
     @Body() data: { userId: string },
-  ): void {
+  ): string {
     try {
-      console.log('addClient', client.id);
-      console.log('addClient', JSON.stringify(data));
+      console.log('-----------------createRoomNotifacation-----------------');
       const userId = data.userId;
+      client.join(userId);
       this.connectedUsers[userId] = client;
+      return 'your Notification room is ready';
     } catch (error) {
-      console.error('Error in addClient:', error);
+      console.error('Error in createRoomNotifacation:', error);
     }
   }
 
@@ -101,10 +106,9 @@ export class GameGateway {
   @SubscribeMessage('createRoom')
   createRoom(@ConnectedSocket() client: Socket): string {
     try {
+      console.log('-----------------createRoom-----------------');
       const clientUserId = client.id;
-      // console.log('clientUserId1', clientUserId);
       const roomId = this.gameService.createRoom(clientUserId);
-      // console.log('getRoom1', this.gameService.getRoom(roomId));
       client.join(roomId);
       return roomId;
     } catch (error) {
@@ -121,25 +125,23 @@ export class GameGateway {
     @Body() data: { roomId: string; friendId: string },
   ): Promise<void> {
     try {
+      console.log('-----------------inviteFriend-----------------');
       const clientUserId = client.id;
-      console.log('clientUserId2', clientUserId);
       const roomId = data.roomId;
-      console.log('inviteFriendroomId', roomId);
-      console.log('getRoom2', this.gameService.getRoom(roomId));
       const friendUserId = data.friendId;
+      const room = this.server.sockets.adapter.rooms.get(roomId);
+      // console.log('hello from inviteFriend');
+      // console.log('inviteFriend clientUserId', clientUserId);
+      // console.log('inviteFriend roomId', roomId);
+      // console.log('inviteFriend friendUserId', friendUserId);
+      // console.log('inviteFriend room size', room?.size);
+      // console.log('----------------------------------------------');
 
-      // Check if the client is the owner of the room
       if (this.gameService.isRoomOwner(clientUserId, roomId)) {
-        if (this.gameService.canAddPlayerToRoom(roomId)) {
-          // Notify the friend about the room invitation
+        if (room && room.size < 2) {
           const friendSocket = this.connectedUsers[friendUserId];
           if (friendSocket) {
-            friendSocket.emit('room-invitation', { roomId }, (response) => {
-              if (response.status === 'ok') {
-                this.gameService.addPlayerToRoom(roomId, friendUserId);
-                friendSocket.join(roomId);
-              }
-            });
+            this.server.to(friendUserId).emit('room-invitation', roomId);
           }
         } else {
           console.error('Room is full. Cannot invite more players.');
@@ -151,4 +153,42 @@ export class GameGateway {
       console.error('Error in inviteFriend:', error);
     }
   }
+
+  //-------------acceptInvitation
+  @SubscribeMessage('acceptInvitation')
+  acceptInvitation(
+    @ConnectedSocket() client: Socket,
+    @Body() data: { roomId: string },
+  ): void {
+    try {
+      console.log('-----------------acceptInvitation-----------------');
+      console.log('roomId', data.roomId);
+      const roomId = data.roomId;
+      const room = this.server.sockets.adapter.rooms.get(roomId);
+      console.log('room', room);
+      if (room && room.size < 2) {
+        client.join(roomId);
+        this.gameService.addPlayerToRoom(roomId, client.id);
+        this.server.to(roomId).emit('playGame');
+      } else if (room && room.size >= 2) {
+        console.error('Room is full. Cannot invite more players.');
+      } else {
+        console.error('Room is not exist.');
+      }
+    } catch (error) {
+      console.error('Error in acceptInvitation:', error);
+    }
+  }
+
+  //-------------denyInvitation
+  // @SubscribeMessage('denyInvitation')
+  // denyInvitation(
+  //   @ConnectedSocket() client: Socket,
+  //   @Body() data: { roomId: string },
+  // ): void {
+  //   try {
+  //   } catch (error) {
+  //     console.error('Error in denyInvitation:', error);
+  //   }
+  // }
 }
