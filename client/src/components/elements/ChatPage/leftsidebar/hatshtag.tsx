@@ -16,12 +16,12 @@ import {
 import {  Button, FormControl, FormLabel, Icon, Input, Select } from '@chakra-ui/react';
 import { useForm } from "react-hook-form";
 import { LockIcon, SmallAddIcon } from "@chakra-ui/icons";
+import { useMutation } from "react-query";
 
 
 
 type ChannelValues = {
     channelName: string
-    password: string
     type: string
 }
 
@@ -33,35 +33,59 @@ export default function Hashtag(props: any) {
     const [wrongpassowrd, setWrongpassowrd] = useState(false);
     const [show, setShow] = React.useState(false)
     const handleShow = () => setShow(!show)
-    let {channelName, password, type}: ChannelValues = props?.data;
+    let {channelName, type}: ChannelValues = props.data;
 
+    const checkpassword = useMutation<any, Error, any>((variables) => 
+    fetch('http://127.0.0.1:3001/channel/checkpassword', {
+        method: "POST",
+        body: JSON.stringify(variables),
+        headers: {
+          "content-type": "application/json",
+        }
+    }).then((response) => {
+        return response.json()
+
+      }).catch((error) => {
+        return error
+      }))
     
+
     const handleClick = () => {
         if (props.data.type === 'PROTECTED') {
-
             setWrongpassowrd(false)
             onOpen()
         }
     }
 
+
     const onSubmit = async (data: any) => {
-        if (data.password === password)
+
+        const check = await checkpassword.mutateAsync({
+            channelName: channelName,
+            password: data.password
+        })
+        console.log(check)
+        if (check.status === "wrong password")
         {
-            data.password = "";
-            reset({password: ""})
-            onClose();
+            setWrongpassowrd(true)
+            return ;
         }
+        console.log(check)
         data.password = "";
-        setWrongpassowrd(true)
+        reset({password: ""})
+        onClose();
 
     };
 
+    let channelname = channelName.substring(0, 8)
+    if (channelName.length > 8)
+        channelname += ".."
 
     return (<>
         <div className='flex items-center cursor-pointer justify-between w-[70%]' onClick={handleClick}>
             <div className="flex h-[40px]">
                 <div className='h-[20px] text-[40px] mr-3'>#</div>
-                <div className='h-[20px] text-[30px]'>{channelName}</div>
+                <div className='h-[20px] text-[30px]'>{channelname}</div>
             </div>
             {type === 'PROTECTED' ? <div className='cursor-pointer flex items-center justify-center mr-2'><Icon boxSize={5} as={LockIcon} /></div> : <div></div>}
         </div>
@@ -73,7 +97,9 @@ export default function Hashtag(props: any) {
             <ModalOverlay />
             <ModalContent>
                 <form onSubmit={handleSubmit(onSubmit)}>
+                    <ModalHeader>Channel Name [{channelName}]</ModalHeader>
                     <ModalHeader>Enter Password</ModalHeader>
+
                     <ModalCloseButton />
                     <ModalBody pb={6}>
                         <FormControl>

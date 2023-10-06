@@ -6,18 +6,18 @@ export class CreateChannelDto {
 
     @IsNotEmpty()
     @IsString()
-    readonly channelName: string;
+    channelName: string;
 
     @IsString()
     @IsNotEmpty()
-    readonly type: string;
+    type: string;
 
     @IsString()
     @IsNotEmpty()
-    readonly password: string;
+    password: string;
 
     @IsString()
     @IsNotEmpty()
-    readonly userId: string;
+    userId: string;
 }
 

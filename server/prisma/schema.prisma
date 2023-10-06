@@ -39,8 +39,9 @@ model ChannelMember {
   channelId String
   role     Role @default(MEMBER)
   channel Channel @relation(fields: [channelId], references: [id])
-  userId    String
-  user    User @relation(fields: [userId], references: [id])
+  userId    String 
+  user    User  @relation(fields: [userId], references: [id]) 
+  createdAt DateTime @default(now())
 }
 
 model Message {
@@ -50,6 +51,7 @@ model Message {
 	reciver Channel @relation(fields: [reciverID], references: [id])
 	reciverID String
 	authorID String
+  createdAt DateTime @default(now())
 }
 
 enum Role {

@@ -50,16 +50,20 @@ export default function Newchannel({ isOpen, onClose, setNewChannels, channels }
 
 
 
-    // const createchannel = useMutation<any, Error, ChannelValues>((variables) => 
-    //   fetch('http://127.0.0.1:3001/channel/createchannel', {
-    //     method: "POST",
-    //     body: JSON.stringify(variables)
-    //   }).then((res) => {
-    //     return res.json()
-    //   }).catch((error) => {
-    //     return error
-    //   })
-    // )
+    const createchannel = useMutation<any, Error, ChannelValues>((variables) => 
+      fetch('http://127.0.0.1:3001/channel/createchannel', {
+        method: "POST",
+        body: JSON.stringify(variables),
+        headers: {
+          "content-type": "application/json",
+        }
+      }).then((response) => {
+        return response.json()
+
+      }).catch((error) => {
+        return error
+      })
+    )
 
     const onSubmit = async (data: ChannelValues) => {
 
@@ -82,18 +86,29 @@ export default function Newchannel({ isOpen, onClose, setNewChannels, channels }
         //     setDup(true)
         //     return 0;
         // }
+        
         data.userId = "2c7606fc-ac43-4df7-87e4-91ae82e8863e";
+        console.log(data)
+        
+        if (data.type === "Public")
+          data.password = "123"
 
-        // const newchannel = await createchannel.mutateAsync({
-        //   channelName: data.channelName,
-        //   password: data.password,
-        //   type: data.type,
-        //   userId: data.userId
-        // })
+        try {
+          const newchannel = await createchannel.mutateAsync({
+            channelName: data.channelName,
+            type: data.type,
+            password: data.password,
+            userId: data.userId
+          })
+          data.type = data.type.toUpperCase()
+
+        } catch(error) {
+          console.log(error)
+
+        }
+        
 
 
-
-        // console.log(newchannel)
 
 
         toast({

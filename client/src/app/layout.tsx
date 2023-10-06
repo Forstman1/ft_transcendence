@@ -10,6 +10,7 @@ import Navbar from "../components/elements/Navbar/Navbar";
 import ReduxProvider from "../redux/provider";
 import SplashScreen from "@/components/elements/spalshScreen/SplashScreen";
 import { usePathname } from "next/navigation";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 const geo = Geo({
   subsets: ['latin'],
@@ -17,6 +18,7 @@ const geo = Geo({
   weight: "400"
 });
 
+const queryClient = new QueryClient();
 
 
 export default function RootLayout({
@@ -34,6 +36,7 @@ export default function RootLayout({
       <body className={geo.className}>
         <ReduxProvider>
             <CacheProvider>
+              <QueryClientProvider client={queryClient}>
               <ChakraProvider>
                 {isloading ? <SplashScreen  finishLoading={() => setIsLoading(false)}/> :
                 <>
@@ -42,6 +45,7 @@ export default function RootLayout({
                 </>
                 }
               </ChakraProvider>
+              </QueryClientProvider>
             </CacheProvider>
         </ReduxProvider>
       </body>

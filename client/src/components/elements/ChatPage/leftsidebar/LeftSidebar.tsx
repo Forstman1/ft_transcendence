@@ -16,7 +16,6 @@ import Search from './search';
 type ChannelValues = {
   id:  string
   channelName: string
-  password: string
   type: string
 }
 
@@ -78,17 +77,20 @@ export default function LeftSidebar() {
     const fetchData = async () => {
       const fetchChannels = await fetch('http://127.0.0.1:3001/channel/getallchannels/' + userId)
       const response = await fetchChannels.json()
-      const allchannels: ChannelValues[] = response.map((data: any) => ({
-        id: data.id,
-        channelName:data.name,
-        password: data.password,
-        type: data.type
-      })
+      if (response.length > 0)
+      {
+        const allchannels: ChannelValues[] = response.map((data: any) => ({
+          id: data.id,
+          channelName:data.name,
+          type: data.type
+        })
+  
+        )
+        console.log(allchannels)
+        setNewChannels(allchannels)
+        return allchannels;
+      }
 
-      )
-      console.log(allchannels)
-      setNewChannels(allchannels)
-      return allchannels;
     }
     fetchData()
   }, [])
