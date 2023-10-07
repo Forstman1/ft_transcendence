@@ -32,9 +32,6 @@ import {
   initialRightPaddle,
   initialGameEndStatic,
 } from "@/utils/constants/game/GameConstants";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/redux/store/store";
-import {setSocketState} from "@/redux/slices/socket/globalSocketSlice";
 
 // let clientId: string;
 
@@ -42,9 +39,7 @@ export default function GameFriendPage() {
   let gameSettings = useAppSelector((state) => state.gameReducer);
   //-----------------socket data -----------------------------
   const socketState = useAppSelector((state) => state.globalSocketReducer);
-  const dispatch = useDispatch<AppDispatch>();
   const socket = socketState.socket;
-  const clientId = socketState.socketId;
   const roomId = socketState.roomId;
   //----------------------------------------------------------
   appliyGameMode(gameSettings);
@@ -123,13 +118,7 @@ export default function GameFriendPage() {
 
   const closeSocketConnection = () => {
     if (socket) {
-      dispatch(setSocketState({
-        socket : socket,
-        socketId : clientId,
-        isOwner : false,
-        roomId : "",
-      }));
-      socket.emit("endGame", { clientId });
+      socket.emit("endGame", {roomId});
       socket.off("GetGameData");
     }
   };
@@ -161,7 +150,7 @@ export default function GameFriendPage() {
       socket?.emit("sendGameData", { initCanvasData, roomId });
       setHasInitialized(true);
     }
-  }, [gameStarted, hasInitialized, socketState]);
+  }, [gameStarted, hasInitialized]);
 
   useEffect(() => {
     if (roomId !== "") {
@@ -182,7 +171,7 @@ export default function GameFriendPage() {
     
     socket?.emit("updatePaddles", {canvasData, roomId});
     }
-   }, [leftPaddle, rightPaddle, socketState]);
+   }, [leftPaddle, rightPaddle]);
 
   useEffect(() => {
     if (roomId == "") return;
@@ -195,7 +184,7 @@ export default function GameFriendPage() {
     else if (gameStarted && !gameEnded) {
       socket?.emit("resumeGame", {roomId});
     }
-  }, [gameEnded, gameStarted, socketState]);
+  }, [gameEnded, gameStarted]);
 
   //----------------------------------end Socket code Logic-----------------------------------------
 

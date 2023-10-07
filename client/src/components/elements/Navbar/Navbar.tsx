@@ -216,7 +216,7 @@ const Navbar: React.FC = () => {
             </Center>
           </Box>
         </Flex>
-        <Image src={WavesDivider} alt="WavesDivider" className="w-full h-5" />
+        <Image src={WavesDivider} alt="WavesDivider" className="w-full " />
       </Box>
     )
   }

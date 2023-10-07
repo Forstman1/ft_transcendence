@@ -1,42 +1,3 @@
-// import { Game } from '../entities/game.entity';
-
-// export class InitGameData {
-//   roomId: string;
-//   initCanvasData: {
-//     ball: Ball;
-//     leftPaddle: {
-//       x: number;
-//       y: number;
-//       width: number;
-//       height: number;
-//     };
-//     rightPaddle: {
-//       x: number;
-//       y: number;
-//       width: number;
-//       height: number;
-//     };
-//   };
-// }
-
-// export class Gamedata extends Game {
-//   roomId: string;
-//   canvasData: {
-//     leftPaddle: {
-//       x: number;
-//       y: number;
-//       width: number;
-//       height: number;
-//     };
-//     rightPaddle: {
-//       x: number;
-//       y: number;
-//       width: number;
-//       height: number;
-//     };
-//   };
-// }
-
 export class Ball {
   x: number;
   y: number;
@@ -64,4 +25,16 @@ export class GameServiceData {
   };
   leftScore: number;
   rightScore: number;
+}
+
+export class GameModalState {
+  mode: string;
+  playgroundtheme: {
+    id: number;
+    playgroundColor: string;
+    balColor: string;
+  };
+  rounds: number;
+  matches: number;
+  backgroundImg: number;
 }

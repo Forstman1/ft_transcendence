@@ -61,6 +61,7 @@ const GameSideBar = ({
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const gameSettings = useAppSelector((state) => state.gameReducer);
+  const socketState = useAppSelector((state) => state.globalSocketReducer);
   const [Playground, setPlayground] = useState(gameSettings.playgroundtheme);
   const [canvasBgImg, setCanvasBgImg] = useState<number>(
     gameSettings.backgroundImg
@@ -321,7 +322,7 @@ const GameSideBar = ({
                                       Round
                                     </Th>
                                     <Th color="white" className=" font-bold">
-                                      UserScore
+                                      MyScore
                                     </Th>
                                     <Th color="white" className=" font-bold">
                                       {gameMode === "BOT" ? "BotScore" : "FriendScore"}
@@ -335,10 +336,10 @@ const GameSideBar = ({
                                         {result.RoundNamber}
                                       </Td>
                                       <Td className="text-red-700 text-xl font-bold">
-                                        {result.userPoints}
+                                        {socketState.isOwner ? result.botPoints : result.userPoints}
                                       </Td>
                                       <Td className="text-red-700 text-xl font-bold">
-                                        {result.botPoints}
+                                        {socketState.isOwner ? result.userPoints : result.botPoints}
                                       </Td>
                                     </Tr>
                                   ))}

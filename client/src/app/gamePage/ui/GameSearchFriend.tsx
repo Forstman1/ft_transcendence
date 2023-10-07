@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import StartGame from "../../../../assets/icons/startIcon.svg";
 import closeIcon from "../../../../assets/icons/closeIcon.svg";
 import {
@@ -13,6 +14,7 @@ import {
   InputRightElement,
   Box,
   Avatar,
+  Spinner
 } from "@chakra-ui/react";
 import Image from "next/image";
 import { Search2Icon } from "@chakra-ui/icons";
@@ -25,7 +27,7 @@ import {
   setSocketState,
 } from "@/redux/slices/socket/globalSocketSlice";
 import { useAppSelector } from "@/redux/store/store";
-import { useState, useEffect } from "react";
+import { useState, useEffect} from "react";
 
 type Props = {
   onClose: () => void;
@@ -37,6 +39,8 @@ export default function GameSearchFriend({ onClose }: Props) {
   const socket = useAppSelector((state) => state.globalSocketReducer);
   const [socketRoomId, setSocketRoomId] = useState<string>("");
   const friendId = socket.playerId === 1 ? 2 : 1;
+  const modalData = useAppSelector((state) => state.gameReducer);
+  const [isInvited, setIsInvited] = useState<boolean>(false);
 
   //-------------------playGame------------------------
 
@@ -50,10 +54,18 @@ export default function GameSearchFriend({ onClose }: Props) {
   useEffect(() => {
     if(socketRoomId !== ""){
       inviteFriend();
-      // router.push("/gamePage/gameFriendPage");
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socketRoomId]);
+
+  useEffect(() => {
+    if(isInvited)
+    {
+      setTimeout(() => {
+        setIsInvited(false);
+        socket.socket?.emit("leaveRoom", socketRoomId);
+      }, 9000);
+    }
+  }, [isInvited]);
 
   //-----------------------------------------------
 
@@ -75,6 +87,7 @@ export default function GameSearchFriend({ onClose }: Props) {
     await socket.socket?.emit("inviteFriend", {
       roomId: socketRoomId,
       friendId: friendId,
+      modalData: modalData,
     });
   };
 
@@ -96,6 +109,7 @@ export default function GameSearchFriend({ onClose }: Props) {
 
   const handleInviteClick = async () => {
     await createRoom();
+    setIsInvited(true);
   };
 
   return (
@@ -134,6 +148,7 @@ export default function GameSearchFriend({ onClose }: Props) {
               <Avatar size="md" />
               <h1 className="text-lg font-bold">UserName</h1>
             </div>
+            {!isInvited ? (
             <Button
               colorScheme="teal"
               variant="outline"
@@ -144,6 +159,10 @@ export default function GameSearchFriend({ onClose }: Props) {
             >
               Invite
             </Button>
+            ) : (
+              <Spinner color='green' emptyColor='gray.200' />
+            )
+            }
           </Box>
         </div>
       </ModalBody>

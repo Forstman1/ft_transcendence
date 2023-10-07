@@ -134,33 +134,6 @@ export class GameService {
     }
   }
 
-  //------------------ reset game date ------------------
-
-  // public resetGameDate(roomId: string): void {
-  //   const getRoomData = this.rooms.get(roomId);
-  //   if (!getRoomData) return;
-  //   getRoomData.gameData.ball = {
-  //     x: 0,
-  //     y: 0,
-  //     speedX: 0,
-  //     speedY: 0,
-  //     radius: 0,
-  //     maxBallSpeed: 0,
-  //   };
-  //   getRoomData.gameData.leftPaddle = { x: 0, y: 0, width: 0, height: 0 };
-  //   getRoomData.gameData.rightPaddle = { x: 0, y: 0, width: 0, height: 0 };
-  //   getRoomData.gameData.leftScore = 0;
-  //   getRoomData.gameData.rightScore = 0;
-  //   getRoomData.gameData.BallInitData = {
-  //     x: 0,
-  //     y: 0,
-  //     speedX: 0,
-  //     speedY: 0,
-  //     radius: 0,
-  //     maxBallSpeed: 0,
-  //   };
-  // }
-
   //------------------ get update data ------------------
 
   public getUpdateData(roomId: string) {
@@ -206,6 +179,7 @@ export class GameService {
       gameData,
       isPoused: false,
     });
+    console.log('createRoom all rooms: ', this.rooms);
     return roomId;
   }
 
@@ -222,12 +196,16 @@ export class GameService {
   addPlayerToRoom(roomId: string, userId: string): void {
     const room = this.rooms.get(roomId);
     if (room && room.players.length < 2) {
-      room.players.push(userId);
+      this.rooms.set(roomId, {
+        ...room,
+        players: [...room.players, userId],
+      });
     }
   }
 
   deleteRoom(roomId: string): void {
-    this.rooms.delete(roomId);
+    this.rooms = new Map([...this.rooms].filter(([key]) => key !== roomId));
+    console.log('deleteRoom all rooms: ', this.rooms);
   }
 
   getRoom(roomId: string): {
@@ -241,10 +219,29 @@ export class GameService {
 
   setRoomPause(roomId: string, isPoused: boolean): void {
     const room = this.rooms.get(roomId);
+    // console.log('setRoomPause roomId: ', roomId);
+    // console.log('setRoomPause isPoused: ', isPoused);
+    // console.log('setRoomPause all rooms: ', this.rooms);
+    // console.log('setRoomPause room: ', room);
     if (room) {
-      room.isPoused = isPoused;
+      this.rooms.set(roomId, {
+        ...room,
+        isPoused,
+      });
     }
   }
+
+  getAllRooms = (): Map<
+    string,
+    {
+      owner: string;
+      players: string[];
+      gameData?: GameServiceData;
+      isPoused?: boolean;
+    }
+  > => {
+    return this.rooms;
+  };
 
   //----------------------------------------------------
 }
