@@ -17,9 +17,67 @@ export default function GameNotification() {
   const toast = useToast();
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  
 
   useEffect(() => {
+    const handelfrinedIsInGame = () => {
+      toast({
+        position: "top-right",
+        duration: 2000,
+        isClosable: true,
+        render: ({ onClose }) => (
+          <Alert
+            status="success"
+            variant="solid"
+            className=" space-x-2 border-2 border-white"
+          >
+            <AlertIcon />
+            <Box flex="1">
+              <strong>Game Notification</strong>
+              <p>Your friend is in game</p>
+            </Box>
+            <Button
+              variant="outline"
+              colorScheme="blue"
+              onClick={() => {
+                onClose();
+              }}
+            >
+              OK
+            </Button>
+          </Alert>
+        ),
+      });
+    }
+    const handelDenyInvitation = () => {
+      toast({
+        position: "top-right",
+        duration: 2000,
+        isClosable: true,
+        render: ({ onClose }) => (
+          <Alert
+            status="success"
+            variant="solid"
+            className=" space-x-2 border-2 border-white"
+          >
+            <AlertIcon />
+            <Box flex="1">
+              <strong>Game Notification</strong>
+              <p>Your friend deny your invitation</p>
+            </Box>
+            <Button
+              variant="outline"
+              colorScheme="blue"
+              onClick={() => {
+                onClose();
+              }}
+            >
+              OK
+            </Button>
+          </Alert>
+        ),
+      });
+    }
+    
     const handleRoomInvitation = (data: {roomId: string, modalData: GameModalState}) => {
       toast({
         position: "top-right",
@@ -64,9 +122,13 @@ export default function GameNotification() {
     };
 
     socket.socket?.on("room-invitation", handleRoomInvitation);
+    socket.socket?.on("friendDenyInvitation", handelDenyInvitation);
+    socket.socket?.on("frinedIsInGame", handelfrinedIsInGame);
 
     return () => {
       socket.socket?.off("room-invitation", handleRoomInvitation);
+      socket.socket?.off("friendDenyInvitation", handelDenyInvitation);
+      socket.socket?.off("frinedIsInGame", handelfrinedIsInGame);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket.socket, toast]);

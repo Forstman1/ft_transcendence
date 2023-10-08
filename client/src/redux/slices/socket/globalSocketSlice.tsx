@@ -2,13 +2,6 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { io, Socket } from "socket.io-client";
 
 let playerId: number | null = null;
-const socket = io('http://localhost:3001', {
-  transports: ['websocket'],
-  upgrade: false,
-  auth: {
-    id: playerId,
-  },
-});
 
 function assignPlayerId() {
   if (playerId === null) {
@@ -18,6 +11,14 @@ function assignPlayerId() {
 }
 
 assignPlayerId();
+
+const socket = io('http://localhost:3001', {
+  transports: ['websocket'],
+  upgrade: false,
+  auth: {
+    id: playerId,
+  },
+});
 
 export interface GlobalSocketState {
   socket: Socket | null;

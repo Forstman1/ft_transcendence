@@ -51,6 +51,13 @@ export default function GameSearchFriend({ onClose }: Props) {
 
   //---------------------------------------------------
 
+  socket.socket?.on("friendDenyInvitation", () => {
+    setIsInvited(false);
+  }
+  );
+
+  //---------------------------------------------------
+
   useEffect(() => {
     if(socketRoomId !== ""){
       inviteFriend();

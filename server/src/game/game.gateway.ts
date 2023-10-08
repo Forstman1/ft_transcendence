@@ -8,6 +8,7 @@ import { GameService } from './game.service';
 import { Server, Socket } from 'socket.io';
 import { Body } from '@nestjs/common';
 import { GameModalState } from './dto/create-game.dto';
+import { ro } from '@faker-js/faker';
 
 @WebSocketGateway()
 export class GameGateway {
@@ -26,10 +27,10 @@ export class GameGateway {
   // }
 
   // ---------------- sendGameData
-
   @SubscribeMessage('sendGameData')
   sendGameData(@Body() data): void {
     try {
+      this.gameService.resetGameDate(data.roomId);
       this.gameService.initGameData(data.initCanvasData, data.roomId);
       this.interval = setInterval(() => {
         const getRoom = this.gameService.getRoom(data.roomId);
@@ -46,7 +47,6 @@ export class GameGateway {
   }
 
   // ---------------- updatePaddles
-
   @SubscribeMessage('updatePaddles')
   updatePaddles(@Body() data): void {
     try {
@@ -57,14 +57,13 @@ export class GameGateway {
   }
 
   // ---------------- endGame
-
   @SubscribeMessage('endGame')
   endGame(@ConnectedSocket() client: Socket, @Body() roomId: string): void {
     try {
       console.log('-----------------endGame-----------------');
+      this.gameService.resetGameDate(roomId);
       this.gameService.setRoomPause(roomId, true);
       this.gameService.deleteRoom(roomId);
-      clearInterval(this.interval as NodeJS.Timeout);
       this.server.in(roomId).socketsLeave(roomId);
     } catch (error) {
       console.error('Error in endGame:', error);
@@ -72,24 +71,19 @@ export class GameGateway {
   }
 
   // ---------------- pauseGame
-
   @SubscribeMessage('pauseGame')
   pauseGame(@Body() roomId: string): void {
-    // console.log('-----------------pauseGame-----------------');
-    // console.log('pauseGame roomId', roomId);
-    // console.log('pauseGame all rooms: ', this.gameService.getAllRooms());
+    console.log('-----------------pauseGame-----------------');
     this.gameService.setRoomPause(roomId, true);
   }
 
   // ---------------- resumeGame
-
   @SubscribeMessage('resumeGame')
   resumeGame(@Body() roomId: string): void {
     this.gameService.setRoomPause(roomId, false);
   }
 
   // ---------------- createRoomNotifacaion
-
   @SubscribeMessage('createRoomNotification')
   createRoomNotifacation(
     @ConnectedSocket() client: Socket,
@@ -107,7 +101,6 @@ export class GameGateway {
   }
 
   // ---------------- createRoom
-  //async
   @SubscribeMessage('createRoom')
   createRoom(@ConnectedSocket() client: Socket): string {
     try {
@@ -115,11 +108,6 @@ export class GameGateway {
       const clientUserId = client.id;
       const roomId = this.gameService.createRoom(clientUserId);
       client.join(roomId);
-      // console.log('createRoom all rooms: ', this.gameService.getAllRooms());
-      // console.log(
-      //   'createRoom get one room : ',
-      //   this.gameService.getRoom(roomId),
-      // );
       return roomId;
     } catch (error) {
       console.error('Error in createRoom:', error);
@@ -133,7 +121,11 @@ export class GameGateway {
   async inviteFriend(
     @ConnectedSocket() client: Socket,
     @Body()
-    data: { roomId: string; friendId: string; modalData: GameModalState },
+    data: {
+      roomId: string;
+      friendId: string;
+      modalData: GameModalState;
+    },
   ): Promise<void> {
     try {
       console.log('-----------------inviteFriend-----------------');
@@ -146,7 +138,10 @@ export class GameGateway {
       if (this.gameService.isRoomOwner(clientUserId, roomId)) {
         if (room && room.size < 2) {
           const friendSocket = this.connectedUsers[friendUserId];
-          if (friendSocket) {
+          if (this.gameService.checkFriendIsInOtherRoom(friendUserId)) {
+            client.emit('friendIsInRoom');
+            return;
+          } else if (friendSocket) {
             this.server
               .to(friendUserId)
               .emit('room-invitation', { roomId, modalData });
@@ -170,16 +165,14 @@ export class GameGateway {
   ): void {
     try {
       console.log('-----------------acceptInvitation-----------------');
-      // console.log('roomId', data.roomId);
       const roomId = data.roomId;
       const room = this.server.sockets.adapter.rooms.get(roomId);
-      // console.log('room', room);
       if (room && room.size < 2) {
         client.join(roomId);
         this.gameService.addPlayerToRoom(roomId, client.id);
         this.server.to(roomId).emit('playGame');
       } else if (room && room.size >= 2) {
-        console.error('Room is full. Cannot invite more players.');
+        client.emit('frinedIsInGame');
       } else {
         console.error('Room is not exist.');
       }
@@ -189,17 +182,22 @@ export class GameGateway {
   }
 
   //-------------denyInvitation
-  // @SubscribeMessage('denyInvitation')
-  // denyInvitation(
-  //   @ConnectedSocket() client: Socket,
-  //   @Body() data: { roomId: string },
-  // ): void {
-  //   try {
-  //   } catch (error) {
-  //     console.error('Error in denyInvitation:', error);
-  //   }
-  // }
+  @SubscribeMessage('denyInvitation')
+  denyInvitation(
+    @ConnectedSocket() client: Socket,
+    @Body() data: { roomId: string },
+  ): void {
+    try {
+      this.server.sockets.in(data.roomId).emit('friendDenyInvitation');
+      this.gameService.resetGameDate(data.roomId);
+      this.gameService.deleteRoom(data.roomId);
+      this.server.in(data.roomId).socketsLeave(data.roomId);
+    } catch (error) {
+      console.error('Error in denyInvitation:', error);
+    }
+  }
 
+  //-------------leaveRoom
   @SubscribeMessage('leaveRoom')
   leaveRoom(@ConnectedSocket() client: Socket, @Body() roomId: string): void {
     try {

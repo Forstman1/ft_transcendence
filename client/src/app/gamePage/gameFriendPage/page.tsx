@@ -118,7 +118,7 @@ export default function GameFriendPage() {
 
   const closeSocketConnection = () => {
     if (socket) {
-      socket.emit("endGame", {roomId});
+      socket.emit("endGame", roomId);
       socket.off("GetGameData");
     }
   };
@@ -179,10 +179,10 @@ export default function GameFriendPage() {
       closeSocketConnection();
     }
     if (!gameStarted && !gameEnded) {
-      socket?.emit("pauseGame", {roomId});
+      socket?.emit("pauseGame", roomId);
     }
     else if (gameStarted && !gameEnded) {
-      socket?.emit("resumeGame", {roomId});
+      socket?.emit("resumeGame", roomId);
     }
   }, [gameEnded, gameStarted]);
 

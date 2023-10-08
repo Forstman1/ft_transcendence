@@ -19,8 +19,14 @@ export class GameService {
   public updatePaddles(data, roomId: string): void {
     const getRoomData = this.rooms.get(roomId);
     if (!getRoomData) return;
-    getRoomData.gameData.leftPaddle = data.leftPaddle;
-    getRoomData.gameData.rightPaddle = data.rightPaddle;
+    this.rooms.set(roomId, {
+      ...getRoomData,
+      gameData: {
+        ...getRoomData.gameData,
+        leftPaddle: data.leftPaddle,
+        rightPaddle: data.rightPaddle,
+      },
+    });
   }
 
   //------------------ init game data ------------------
@@ -148,6 +154,35 @@ export class GameService {
 
   //------------------ rooms ------------------
 
+  //------------------ reset game date ------------------
+
+  public resetGameDate(roomId: string): void {
+    const getRoomData = this.rooms.get(roomId);
+    if (!getRoomData) return;
+    getRoomData.gameData.ball = {
+      x: 0,
+      y: 0,
+      speedX: 0,
+      speedY: 0,
+      radius: 0,
+      maxBallSpeed: 0,
+    };
+    getRoomData.gameData.leftPaddle = { x: 0, y: 0, width: 0, height: 0 };
+    getRoomData.gameData.rightPaddle = { x: 0, y: 0, width: 0, height: 0 };
+    getRoomData.gameData.leftScore = 0;
+    getRoomData.gameData.rightScore = 0;
+    getRoomData.gameData.BallInitData = {
+      x: 0,
+      y: 0,
+      speedX: 0,
+      speedY: 0,
+      radius: 0,
+      maxBallSpeed: 0,
+    };
+  }
+
+  //------------------ create room ------------------
+
   createRoom(ownerId: string): string {
     const roomId = uuidv4();
     const gameData: GameServiceData = {
@@ -179,7 +214,7 @@ export class GameService {
       gameData,
       isPoused: false,
     });
-    console.log('createRoom all rooms: ', this.rooms);
+    // console.log('createRoom all rooms: ', this.rooms);
     return roomId;
   }
 
@@ -204,8 +239,9 @@ export class GameService {
   }
 
   deleteRoom(roomId: string): void {
-    this.rooms = new Map([...this.rooms].filter(([key]) => key !== roomId));
-    console.log('deleteRoom all rooms: ', this.rooms);
+    this.rooms.delete(roomId);
+    // console.log('deleteRoom roomId: ', roomId);
+    // console.log('deleteRoom all rooms: ', this.rooms);
   }
 
   getRoom(roomId: string): {
@@ -219,16 +255,23 @@ export class GameService {
 
   setRoomPause(roomId: string, isPoused: boolean): void {
     const room = this.rooms.get(roomId);
-    // console.log('setRoomPause roomId: ', roomId);
-    // console.log('setRoomPause isPoused: ', isPoused);
-    // console.log('setRoomPause all rooms: ', this.rooms);
-    // console.log('setRoomPause room: ', room);
     if (room) {
       this.rooms.set(roomId, {
         ...room,
         isPoused,
       });
     }
+    // console.log('setRoomPause room: ', room);
+  }
+
+  checkFriendIsInOtherRoom(friendId: string): boolean {
+    let isFriendInOtherRoom = false;
+    this.rooms.forEach((room) => {
+      if (room.players.includes(friendId)) {
+        isFriendInOtherRoom = true;
+      }
+    });
+    return isFriendInOtherRoom;
   }
 
   getAllRooms = (): Map<
