@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Avatar, AvatarBadge, Box, Icon, Modal, useDisclosure } from '@chakra-ui/react'
 import { motion, useInView } from 'framer-motion'
 import Search from '../leftsidebar/search'
@@ -6,12 +6,11 @@ import Hashtag from '../leftsidebar/hatshtag'
 import Newchannel from '../leftsidebar/newchannel'
 import Newmessage from '../leftsidebar/newmessage'
 import { SmallAddIcon } from '@chakra-ui/icons'
+import { useDispatch, useSelector } from 'react-redux'
+import { setChannels } from '@/redux/slices/channel/channelSlice'
+import { Channel } from '@/utils/types/chat/ChatTypes'
 
-type ChannelValues = {
-  channelName: string
-  password: string
-  type: string
-}
+
 
 type UserValues = {
   userName: string
@@ -49,13 +48,35 @@ export default function MobileLeftBar({ LeftIsOpen, setLeftIsOpen }: any) {
   const ref = React.useRef(null)
   const inView = useInView(ref)
 
-  let [channels, setNewChannels]: any = useState([])
+  // let [channels, setNewChannels]: any = useState([])
 
   let [users, setNewUsers]: any = useState([])
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [ChannelOrUser, setChannelOrUser] = useState(false)
+  const dispatch = useDispatch()
+  const channels = useSelector((state: any) => state.channel.channels)
 
+  const userId = useSelector((state:any) => state.channel.userId);
+
+  useEffect(() => {
+    console.log("ana hna")
+    
+    const fetchData = async () => {
+      const fetchChannels = await fetch('http://127.0.0.1:3001/channel/getallchannels/' + userId)
+      const response = await fetchChannels.json()
+      if (response.length > 0)
+      {
+        const allchannels: Channel[] = response
+        console.log(allchannels)
+        dispatch(setChannels(allchannels))
+        // setNewChannels(allchannels)
+        return allchannels;
+      }
+
+    }
+    fetchData()
+  }, [])
 
 
   if (!inView) {
@@ -103,8 +124,8 @@ export default function MobileLeftBar({ LeftIsOpen, setLeftIsOpen }: any) {
       </div>
 
 
-        {channels.map((data: ChannelValues) => {
-          if (data.channelName)
+        {channels.map((data: Channel) => {
+          if (data.name)
             return <Hashtag data={data} />
         })}
 
@@ -126,9 +147,7 @@ export default function MobileLeftBar({ LeftIsOpen, setLeftIsOpen }: any) {
       {ChannelOrUser === true ? <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <Newchannel isOpen={isOpen}
           onClose={onClose}
-          setNewChannels={setNewChannels}
           channels={channels}
-
         />
       </Modal> : <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <Newmessage isOpen={isOpen}

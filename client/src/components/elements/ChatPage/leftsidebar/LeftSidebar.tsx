@@ -10,16 +10,10 @@ import Hashtag from './hatshtag';
 import Newmessage from './newmessage';
 import Search from './search';
 import { Channel } from '@/utils/types/chat/ChatTypes';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setChannels } from '@/redux/slices/channel/channelSlice';
 
 
-
-
-// type ChannelValues = {
-//   id:  string
-//   channelName: string
-//   type: string
-// }
 
 
 type UserValues = {
@@ -64,13 +58,13 @@ export default function LeftSidebar() {
 
 
 
-  let [channels, setNewChannels]: any = useState([])
+  // let [channels, setNewChannels]: any = useState([])
 
   let [users, setNewUsers]: any = useState([])
-
+  const dispatch = useDispatch()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [ChannelOrUser, setChannelOrUser] = useState(false)
-
+  const channels = useSelector((state: any) => state.channel.channels)
 
   const userId = useSelector((state:any) => state.channel.userId);
 
@@ -84,7 +78,7 @@ export default function LeftSidebar() {
       {
         const allchannels: Channel[] = response
         console.log(allchannels)
-        setNewChannels(allchannels)
+        dispatch(setChannels(allchannels))
         return allchannels;
       }
 
@@ -130,7 +124,7 @@ export default function LeftSidebar() {
         {ChannelOrUser === true ? <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <Newchannel isOpen={isOpen}
           onClose={onClose}
-          setNewChannels={setNewChannels}
+          // setNewChannels={setNewChannels}
           channels={channels}
 
         />

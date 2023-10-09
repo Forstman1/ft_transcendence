@@ -16,7 +16,8 @@ import { useForm } from "react-hook-form"
 import { useMutation } from 'react-query';
 import { error } from 'console';
 import { Channel } from '@/utils/types/chat/ChatTypes';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setNewChannel } from '@/redux/slices/channel/channelSlice';
 
 
 
@@ -25,7 +26,6 @@ type Props = {
 
     isOpen: boolean;
     onClose: () => void;
-    setNewChannels: Dispatch<SetStateAction<Channel[]>>;
     channels: Channel[];
 };
 
@@ -37,7 +37,7 @@ type ChannelValues = {
 }
 
 
-export default function Newchannel({ isOpen, onClose, setNewChannels, channels }: Props) {
+export default function Newchannel({ isOpen, onClose, channels }: Props) {
 
 
     const { handleSubmit, register, watch } = useForm<ChannelValues>();
@@ -46,7 +46,7 @@ export default function Newchannel({ isOpen, onClose, setNewChannels, channels }
 
     const [show, setShow] = React.useState(false)
     const handleClick = () => setShow(!show)
-
+    const dispatch = useDispatch()
 
 
 
@@ -134,7 +134,7 @@ export default function Newchannel({ isOpen, onClose, setNewChannels, channels }
             height: 100,
           }
         })
-        setNewChannels([...channels, channel]);
+        dispatch(setNewChannel(channel))
         onClose();
 
     };
