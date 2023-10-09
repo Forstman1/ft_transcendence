@@ -33,4 +33,10 @@ export class ChannelController {
     changepassword(@Body() body: any){
         return this.channelservice.changepassword(body.channelName, body.userId, body.currentpassword, body.newpassword)
     }
+
+    @Put('/setadministrator')
+    setAdministrator(@Body() body: any){
+        return this.channelservice.setAdministrator(body.channelName, body.userIdOwner, body.userIdadministrateur)
+    }
+
 }

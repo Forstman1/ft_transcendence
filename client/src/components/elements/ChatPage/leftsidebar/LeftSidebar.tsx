@@ -69,7 +69,7 @@ export default function LeftSidebar() {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [ChannelOrUser, setChannelOrUser] = useState(false)
 
-  const userId = "2c7606fc-ac43-4df7-87e4-91ae82e8863e";
+  const userId = "01e645f2-ee72-4748-b019-3c784eb0693a";
 
 
   useEffect(() => {

@@ -13,18 +13,27 @@ import {
     InputGroup,
     InputRightElement,
 } from '@chakra-ui/react'
-import {  Button, FormControl, FormLabel, Icon, Input, Select } from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, Icon, Input, Select } from '@chakra-ui/react';
 import { useForm } from "react-hook-form";
 import { LockIcon, SmallAddIcon } from "@chakra-ui/icons";
 import { useMutation } from "react-query";
+import { setChannel, setMessages } from "@/redux/slices/channel/channelSlice";
+import { useDispatch } from "react-redux";
 
 
 
 type ChannelValues = {
+    id: string
     channelName: string
     type: string
 }
 
+type Messages = {
+    id: string
+    message: string;
+    sender: string;
+    time: Date;
+  };
 
 export default function Hashtag(props: any) {
 
@@ -33,27 +42,48 @@ export default function Hashtag(props: any) {
     const [wrongpassowrd, setWrongpassowrd] = useState(false);
     const [show, setShow] = React.useState(false)
     const handleShow = () => setShow(!show)
-    let {channelName, type}: ChannelValues = props.data;
+    let { id, channelName, type }: ChannelValues = props.data;
+    let data: ChannelValues = props.data;
 
-    const checkpassword = useMutation<any, Error, any>((variables) => 
-    fetch('http://127.0.0.1:3001/channel/checkpassword', {
-        method: "POST",
-        body: JSON.stringify(variables),
-        headers: {
-          "content-type": "application/json",
-        }
-    }).then((response) => {
-        return response.json()
+    const dispatch = useDispatch()
 
-      }).catch((error) => {
-        return error
-      }))
-    
+    const checkpassword = useMutation<any, Error, any>((variables) =>
+        fetch('http://127.0.0.1:3001/channel/checkpassword', {
+            method: "POST",
+            body: JSON.stringify(variables),
+            headers: {
+                "content-type": "application/json",
+            }
+        }).then((response) => {
+            return response.json()
 
-    const handleClick = () => {
+        }).catch((error) => {
+            return error
+        }))
+
+    const getMessages = useMutation<any, Error, any>((variables) =>
+        fetch('http://127.0.0.1:3001/message/getmessages/' + variables.channelId).then((response) => {
+            return response.json()
+
+        }).catch((error) => {
+            return error
+        }))
+
+
+    const handleClick = async () => {
         if (props.data.type === 'PROTECTED') {
             setWrongpassowrd(false)
             onOpen()
+        }
+        else {
+            const messages = await getMessages.mutateAsync({
+                channelId: id,
+            })
+            const allmessages: Messages[] = messages.map((message: any) => {
+                
+            })
+            dispatch(setChannel(data))
+            dispatch(setMessages(messages))
         }
     }
 
@@ -65,14 +95,13 @@ export default function Hashtag(props: any) {
             password: data.password
         })
         console.log(check)
-        if (check.status === "wrong password")
-        {
+        if (check.status === "wrong password") {
             setWrongpassowrd(true)
-            return ;
+            return;
         }
         console.log(check)
         data.password = "";
-        reset({password: ""})
+        reset({ password: "" })
         onClose();
 
     };
@@ -118,7 +147,7 @@ export default function Hashtag(props: any) {
                                     </Button>
                                 </InputRightElement>
                             </InputGroup>
-                            {wrongpassowrd && <div>Wrong passowrd</div> }
+                            {wrongpassowrd && <div>Wrong passowrd</div>}
                         </FormControl>
 
 

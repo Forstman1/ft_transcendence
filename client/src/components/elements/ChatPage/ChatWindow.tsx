@@ -7,6 +7,8 @@ import animationData from '../../../../../client/assets/animations/animation_typ
 import arrow from "../../../../../client/assets/icons/arrow.svg";
 import Image from 'next/image';
 import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from 'react-redux';
+import { addMessage } from '@/redux/slices/channel/channelSlice';
 
 
 type Messages = {
@@ -50,25 +52,27 @@ export default function ChatWindow() {
   let today = new Date()
   const { handleSubmit, register, reset } = useForm<any>();
   const chatContainer = useRef<any>(null);
-  const [messages, setMessages]: any = useState([])
+  // const [messages, setMessages]: any = useState([])
 
-  let fakemessages: Messages[] = [{ message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
-  { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "haitkadi", time: today },
-  { message: "ana hna o lheh hihihi", sender: "rel-fagr", time: yerstday },
-  { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
-  { message: "ana hna o lheh", sender: "rel-fagr", time: today }, { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
-  { message: "ana hna :)", sender: "houazzan", time: today },
-  { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
-  { message: "ana hna o lheh", sender: "rel-fagr", time: today }, { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
-  { message: "ana hna :)", sender: "houazzan", time: today },
-  { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
-  { message: "ana hna o lheh", sender: "rel-fagr", time: today }, { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
-  { message: "ana hna :)", sender: "houazzan", time: today }]
+  // let fakemessages: Messages[] = [{ message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
+  // { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "haitkadi", time: today },
+  // { message: "ana hna o lheh hihihi", sender: "rel-fagr", time: yerstday },
+  // { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
+  // { message: "ana hna o lheh", sender: "rel-fagr", time: today }, { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
+  // { message: "ana hna :)", sender: "houazzan", time: today },
+  // { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
+  // { message: "ana hna o lheh", sender: "rel-fagr", time: today }, { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
+  // { message: "ana hna :)", sender: "houazzan", time: today },
+  // { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
+  // { message: "ana hna o lheh", sender: "rel-fagr", time: today }, { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
+  // { message: "ana hna :)", sender: "houazzan", time: today }]
 
+  const selectedChannel = useSelector((state:any) => state.channel.selectedChannel);
+  const messages: Messages[] = useSelector((state:any) => state.channel.messages);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    setMessages(fakemessages, ...messages)
-
+    // setMessages(messages1, ...messages)
   }, [])
 
 
@@ -85,7 +89,7 @@ export default function ChatWindow() {
     scrollToBottom();
   }, [messages]);
 
-  messages.sort((a: Messages, b: Messages) => a.time.getTime() - b.time.getTime());
+  // messages.sort((a: Messages, b: Messages) => a.time.getTime() - b.time.getTime());
 
   const handelNewMessage = (data: any) => {
 
@@ -97,17 +101,16 @@ export default function ChatWindow() {
       message: data.newmessage,
       sender: "sahafid",
       time: date,
-    }
-    setMessages([message, ...messages])
+    } 
+
+    dispatch(addMessage(message));
+    // setMessages([message, ...messages])
     reset({ newmessage: '' });
 
     scrollToBottom();
   }
 
 
-  useEffect(() => {
-    scrollToBottom();
-  }, []);
 
 
 

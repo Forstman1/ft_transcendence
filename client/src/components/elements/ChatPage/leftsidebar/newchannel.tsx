@@ -87,7 +87,7 @@ export default function Newchannel({ isOpen, onClose, setNewChannels, channels }
         //     return 0;
         // }
         
-        data.userId = "2c7606fc-ac43-4df7-87e4-91ae82e8863e";
+        data.userId = "01e645f2-ee72-4748-b019-3c784eb0693a";
         console.log(data)
         
         if (data.type === "Public")
@@ -101,13 +101,24 @@ export default function Newchannel({ isOpen, onClose, setNewChannels, channels }
             userId: data.userId
           })
           data.type = data.type.toUpperCase()
+          if (newchannel.status === "already exists")
+            throw "channel name already exists";
 
         } catch(error) {
           console.log(error)
-
+          toast({
+            title: error,
+            position: `bottom-right`,
+            status: 'error',
+            duration: 1000,
+            containerStyle: {
+              width: 300,
+              height: 100,
+            }
+          })
+          return ;
         }
         
-
 
 
 

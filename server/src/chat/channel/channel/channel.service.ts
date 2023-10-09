@@ -134,4 +134,45 @@ export class ChannelService {
         console.log(channelmember)
         return channelmember
     }
+
+
+    async setAdministrator(channelName: string, userIdOwner: string, userIdadministrateur: string)
+    {
+        const channel = await this.prisma.channel.findUnique({
+            where: {
+                name: channelName,
+            }
+        })
+
+        let channelmembers = await this.prisma.channelMember.findMany({
+            where: {
+                userId: userIdOwner,
+                channel: channel,
+            }
+        })
+        const channelowner = channelmembers[0]
+        channelmembers = await this.prisma.channelMember.findMany({
+            where: {
+                userId: userIdadministrateur,
+                channel: channel,
+            }
+        })
+        const channeladministrator = channelmembers[0]
+        if (channelowner.role === 'OWNER' && channeladministrator.role === 'MEMBER')
+        {
+            await this.prisma.channelMember.update({
+                where: {
+                    id: channeladministrator.id,
+                },
+                data: {
+                    role: 'ADMIN',
+                }
+            })
+        }
+        else
+            return {status: "this member can't set member to administrator"}
+    }
+
+
+    
 }
