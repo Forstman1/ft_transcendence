@@ -43,9 +43,9 @@ model Channel {
 model ChannelMember {
   id        String   @id @default(uuid())
   channelId String
+  userId    String
   role     Role @default(MEMBER)
   channel Channel @relation(fields: [channelId], references: [id])
-  userId    String 
   user    User  @relation(fields: [userId], references: [id], onDelete: Cascade) 
   createdAt DateTime @default(now())
 }
