@@ -46,9 +46,25 @@ export type Rectangle = {
       height: number;
     },
   };
+
+  type leftPaddle = {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+
+  type rightPaddle = {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
   
   export type GameUpdateData = {
     ball: Ball;
     leftScore: number;
     rightScore: number;
+    leftPaddle: leftPaddle;
+    rightPaddle: rightPaddle;
   };

@@ -65,7 +65,6 @@ export default function GameFriendPage() {
   const [rightPaddle, setRightPaddle] = useState<Rectangle>(
     rightPaddleRef.current
   );
-  const [loading, setLoading] = useState<boolean>(true);
   const [RoundNumber, setRoundNumber] = useState<number>(1);
   const [gameEnded, setGameEnded] = useState<boolean>(false);
   const [gameEndStatic, setGameEndStatic] = useState(initialGameEndStatic);
@@ -92,6 +91,18 @@ export default function GameFriendPage() {
           speedX: (data.ball.speedX * canvasSize.width) / 100,
           speedY: (data.ball.speedY * canvasSize.height) / 100,
           radius: (data.ball.radius * Math.max(canvasSize.width, canvasSize.height)) / 100,
+        });
+        setLeftPaddle({
+          x: (data.leftPaddle.x * canvasSize.width) / 100,
+          y: (data.leftPaddle.y * canvasSize.height) / 100,
+          width: (data.leftPaddle.width * canvasSize.width) / 100,
+          height: (data.leftPaddle.height * canvasSize.height) / 100,
+        });
+        setRightPaddle({
+          x: (data.rightPaddle.x * canvasSize.width) / 100,
+          y: (data.rightPaddle.y * canvasSize.height) / 100,
+          width: (data.rightPaddle.width * canvasSize.width) / 100,
+          height: (data.rightPaddle.height * canvasSize.height) / 100,
         });
         if (!gameEnded) {
           setLeftScore(data.leftScore);
@@ -240,7 +251,7 @@ export default function GameFriendPage() {
     if (!context) return;
 
     draw(canvas, context, leftPaddle, rightPaddle, ball, gameSettings);
-  }, [canvasSize, ball, loading]);
+  }, [canvasSize, ball]);
 
   const handleCountdownEnd = () => {
     setGameStarted(true);
@@ -321,8 +332,6 @@ export default function GameFriendPage() {
 
   return (
     <PageWrapper>
-      <LoadingScreen loading={loading} setLoading={setLoading} />
-      {!loading && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -390,7 +399,6 @@ export default function GameFriendPage() {
               </div>
             </div>
         </motion.div>
-      )}
     </PageWrapper>
   );
 }

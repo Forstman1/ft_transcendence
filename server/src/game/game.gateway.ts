@@ -8,7 +8,6 @@ import { GameService } from './game.service';
 import { Server, Socket } from 'socket.io';
 import { Body } from '@nestjs/common';
 import { GameModalState } from './dto/create-game.dto';
-import { ro } from '@faker-js/faker';
 
 @WebSocketGateway()
 export class GameGateway {
@@ -21,6 +20,7 @@ export class GameGateway {
   private isPaused = false;
   private count = 0;
   private readonly connectedUsers: { [userId: string]: Socket } = {};
+  private readonly gameQueue: { [userId: string]: Socket } = {};
 
   // handelConnection(client: Socket): void {
   //   console.log('client connected', client);
@@ -40,7 +40,7 @@ export class GameGateway {
             .to(data.roomId)
             .emit('GetGameData', this.gameService.getUpdateData(data.roomId));
         }
-      }, 15);
+      }, 20);
     } catch (error) {
       console.error('Error in sendGameData:', error);
     }
@@ -201,10 +201,39 @@ export class GameGateway {
   @SubscribeMessage('leaveRoom')
   leaveRoom(@ConnectedSocket() client: Socket, @Body() roomId: string): void {
     try {
+      console.log('-----------------leaveRoom-----------------');
       client.leave(roomId);
       this.gameService.deleteRoom(roomId);
     } catch (error) {
       console.error('Error in leaveRoom:', error);
+    }
+  }
+
+  //-------------addPlayerToQueue
+  @SubscribeMessage('addPlayerToQueue')
+  addPlayerToQueue(@ConnectedSocket() client: Socket): void {
+    try {
+      console.log('-----------------addPlayerToQueue-----------------');
+      console.log('addPlayerToQueue userId:', client.handshake.auth.id);
+      const userId = client.handshake.auth.id;
+      this.gameQueue[userId] = client;
+      const queue = Object.keys(this.gameQueue);
+      if (queue.length >= 2) {
+        const player1 = this.gameQueue[queue[0]];
+        const player2 = this.gameQueue[queue[1]];
+        const roomId = this.gameService.createRoom(player1.id);
+        player1.join(roomId);
+        player2.join(roomId);
+        player1.emit('setIsOwner', { isOwner: true, roomId });
+        player2.emit('setIsOwner', { isOwner: false, roomId });
+        this.gameService.addPlayerToRoom(roomId, player1.id);
+        this.gameService.addPlayerToRoom(roomId, player2.id);
+        this.server.to(roomId).emit('playGame');
+        delete this.gameQueue[queue[0]];
+        delete this.gameQueue[queue[1]];
+      }
+    } catch (error) {
+      console.error('Error in addPlayerToQueue:', error);
     }
   }
 }

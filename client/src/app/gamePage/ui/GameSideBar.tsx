@@ -269,7 +269,7 @@ const GameSideBar = ({
                         <button
                           key={bg.id}
                           onClick={() => handleBackgroundSelect(bg.id)}
-                          className={`relative w-16 h-10 rounded-lg border-2 ${
+                          className={`relative w-16 h-10 rounded-lg border-2 mb-2 ${
                             canvasBgImg === bg.id
                               ? "bg-green-500 border-green-500"
                               : "border-white"

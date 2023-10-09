@@ -149,6 +149,8 @@ export class GameService {
       ball: getRoomData.gameData.ball,
       leftScore: getRoomData.gameData.leftScore,
       rightScore: getRoomData.gameData.rightScore,
+      leftPaddle: getRoomData.gameData.leftPaddle,
+      rightPaddle: getRoomData.gameData.rightPaddle,
     };
   }
 

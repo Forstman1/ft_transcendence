@@ -70,7 +70,7 @@ export default function GameSearchFriend({ onClose }: Props) {
       setTimeout(() => {
         setIsInvited(false);
         socket.socket?.emit("leaveRoom", socketRoomId);
-      }, 9000);
+      }, 10000);
     }
   }, [isInvited]);
 

@@ -4,13 +4,12 @@ import { useAppSelector } from "@/redux/store/store";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store/store";
-import {
-  setSocketState,
-} from "@/redux/slices/socket/globalSocketSlice";
+import { setSocketState } from "@/redux/slices/socket/globalSocketSlice";
 import acceptIcon from "../../../../assets/icons/accept.svg";
 import denyIcon from "../../../../assets/icons/deny.svg";
 import Image from "next/image";
 import { setModal, GameModalState } from "@/redux/slices/game/gameModalSlice";
+import { motion } from "framer-motion";
 
 export default function GameNotification() {
   const socket = useAppSelector((state) => state.globalSocketReducer);
@@ -18,105 +17,112 @@ export default function GameNotification() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
 
+  socket.socket?.on("playGame", () => {
+    router.push("/gamePage/gameFriendPage");
+  });
+
   useEffect(() => {
     const handelfrinedIsInGame = () => {
       toast({
         position: "top-right",
-        duration: 2000,
+        duration: 5000,
         isClosable: true,
-        render: ({ onClose }) => (
-          <Alert
-            status="success"
-            variant="solid"
-            className=" space-x-2 border-2 border-white"
+        render: () => (
+          <motion.div
+            initial={{ opacity: 0, x: "50%" }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
           >
-            <AlertIcon />
-            <Box flex="1">
-              <strong>Game Notification</strong>
-              <p>Your friend is in game</p>
-            </Box>
-            <Button
-              variant="outline"
-              colorScheme="blue"
-              onClick={() => {
-                onClose();
-              }}
+            <Alert
+              status="success"
+              variant="top-accent"
+              className=" space-x-2 border-white"
             >
-              OK
-            </Button>
-          </Alert>
+              <AlertIcon />
+              <Box flex="1">
+                <strong>Game Notification</strong>
+                <p>Your friend is in game</p>
+              </Box>
+            </Alert>
+          </motion.div>
         ),
       });
-    }
+    };
     const handelDenyInvitation = () => {
       toast({
         position: "top-right",
-        duration: 2000,
+        duration: 5000,
         isClosable: true,
-        render: ({ onClose }) => (
-          <Alert
-            status="success"
-            variant="solid"
-            className=" space-x-2 border-2 border-white"
+        render: () => (
+          <motion.div
+            initial={{ opacity: 0, x: "50%" }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
           >
-            <AlertIcon />
-            <Box flex="1">
-              <strong>Game Notification</strong>
-              <p>Your friend deny your invitation</p>
-            </Box>
-            <Button
-              variant="outline"
-              colorScheme="blue"
-              onClick={() => {
-                onClose();
-              }}
+            <Alert
+              status="success"
+              variant="top-accent"
+              className=" space-x-2 border-white"
             >
-              OK
-            </Button>
-          </Alert>
+              <AlertIcon />
+              <Box flex="1">
+                <strong>Game Notification</strong>
+                <p>Your friend deny your invitation</p>
+              </Box>
+            </Alert>
+          </motion.div>
         ),
       });
-    }
-    
-    const handleRoomInvitation = (data: {roomId: string, modalData: GameModalState}) => {
+    };
+
+    const handleRoomInvitation = (data: {
+      roomId: string;
+      modalData: GameModalState;
+    }) => {
       toast({
         position: "top-right",
         duration: 9000,
         isClosable: true,
         render: ({ onClose }) => (
-          <Alert
-            status="success"
-            variant="solid"
-            className=" space-x-2 border-2 border-white"
+          <motion.div
+            initial={{ opacity: 0, x: "50%" }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
           >
-            <AlertIcon />
-            <Box flex="1">
-              <strong>Game Notification</strong>
-              <p>Do you want to play with your friend?</p>
-            </Box>
-            <Button
-              variant="outline"
-              colorScheme="blue"
-              onClick={() => {
-                acceptInvitation(data.roomId, data.modalData);
-                onClose();
-              }}
-              leftIcon={<Image src={acceptIcon} alt="accept" width={20}/>}
+            <Alert
+              status="success"
+              variant="top-accent"
+              className=" space-x-2 border-white"
             >
-              ACCEPT
-            </Button>
-            <Button
-              variant="outline"
-              colorScheme="red"
-              onClick={() => {
-                denyInvitation(data.roomId);
-                onClose();
-              }}
-              leftIcon={<Image src={denyIcon} alt="deny" width={20}/>}
-            >
-              DENY
-            </Button>
-          </Alert>
+              <AlertIcon />
+              <Box flex="1">
+                <strong>Game Notification</strong>
+                <p>Do you want to play with your friend?</p>
+              </Box>
+              <Button
+                variant="outline"
+                colorScheme="blue"
+                onClick={() => {
+                  acceptInvitation(data.roomId, data.modalData);
+                  onClose();
+                }}
+                leftIcon={<Image src={acceptIcon} alt="accept" width={20} />}
+              >
+                ACCEPT
+              </Button>
+              <Button
+                variant="outline"
+                colorScheme="red"
+                onClick={() => {
+                  denyInvitation(data.roomId);
+                  onClose();
+                }}
+                leftIcon={<Image src={denyIcon} alt="deny" width={20} />}
+              >
+                DENY
+              </Button>
+            </Alert>
+          </motion.div>
         ),
       });
     };
@@ -143,17 +149,12 @@ export default function GameNotification() {
         roomId: roomId,
       })
     );
-    socket.socket?.emit("acceptInvitation", {roomId: roomId});
+    socket.socket?.emit("acceptInvitation", { roomId: roomId });
   };
 
   const denyInvitation = (roomId: string) => {
-    socket.socket?.emit("denyInvitation", {roomId: roomId});
+    socket.socket?.emit("denyInvitation", { roomId: roomId });
   };
-
-  socket.socket?.on("playGame", () => {
-
-    router.push("/gamePage/gameFriendPage");
-  });
 
   return null;
 }

@@ -191,12 +191,12 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
               </div>
               <div className="flex flex-col justify-between space-y-2">
                 <Text>Playground Background</Text>
-                <div className="flex flex-wrap flex-row w-full justify-between items-center max-w-[320px] mx-auto ">
+                <div className="flex flex-wrap flex-row w-full items-center justify-center max-w-[320px] mx-auto ">
                   {BackgroundsImg.map((bg) => (
                     <button
                       key={bg.id}
                       onClick={() => handleBackgroundSelect(bg.id)}
-                      className={`relative w-16 h-10 rounded-lg border-2 ${
+                      className={`relative w-16 h-10 rounded-lg border-2 mb-2 mr-2 ${
                         canvasBgImg === bg.id
                           ? "bg-green-500 border-green-500"
                           : "border-white"
