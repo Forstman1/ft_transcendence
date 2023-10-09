@@ -11,38 +11,54 @@ export class ChannelService {
     constructor(private prisma: PrismaService){}
 
     async createchannel(channelData: CreateChannelDto) {
-
-        const find = await this.prisma.channel.findUnique({
-            where: {
-                name: channelData.channelName,
-            }
-        })
-        if (find)
-            return {status: "already exists"}
-    
-        const hash = await argon2.hash(channelData.password);
-
-        const channel = await this.prisma.channel.create({
-            data: {
-                name: channelData.channelName,
-                type: channelData.type === "Public" ? 'PUBLIC' : channelData.type === "Private" ? 'PRIVATE' : 'PROTECTED',
-                password: channelData.type === "Protected" ? hash : '',
-            }
-        })
-        delete channel.password
-        const channelMember = await this.prisma.channelMember.create({
-            data: {
-                role: 'OWNER',
-                channel: {
-                    connect: {id: channel.id}
-                },
-                user: {
-                    connect: {id: channelData.userId}
+        try {
+            const find = await this.prisma.channel.findUnique({
+                where: {
+                    name: channelData.channelName,
                 }
+            })
+            if (find)
+                return {status: "channel already exists"}
+            
+            const hash = await argon2.hash(channelData.password);
+    
+            const channel = await this.prisma.channel.create({
+                data: {
+                    name: channelData.channelName,
+                    type: channelData.type === "Public" ? 'PUBLIC' : channelData.type === "Private" ? 'PRIVATE' : 'PROTECTED',
+                    password: channelData.type === "Protected" ? hash : '',
+                }
+            })
+            delete channel.password
+            const channelMember = await this.prisma.channelMember.create({
+                data: {
+                    role: 'OWNER',
+                    channel: {
+                        connect: {id: channel.id}
+                    },
+                    user: {
+                        connect: {id: channelData.userId}
+                    }
+                }
+            })
+            if (!channelMember)
+            {
+                await this.prisma.channel.delete({
+                    where: {
+                        id: channel.id,
+                    }
+                })
+                console.log("no user to own the channel")
+                return {status: "this user couldn't be found"}
+    
+    
             }
-        })
-        console.log("creating new channel")
-        return channel
+            console.log("creating new channel")
+            return channel
+        } catch (error) {
+            return "couldn' create channel"
+        }
+        
 
     }
 

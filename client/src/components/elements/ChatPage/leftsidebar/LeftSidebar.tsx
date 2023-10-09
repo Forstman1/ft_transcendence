@@ -9,15 +9,17 @@ import Newchannel from './newchannel';
 import Hashtag from './hatshtag';
 import Newmessage from './newmessage';
 import Search from './search';
+import { Channel } from '@/utils/types/chat/ChatTypes';
+import { useSelector } from 'react-redux';
 
 
 
 
-type ChannelValues = {
-  id:  string
-  channelName: string
-  type: string
-}
+// type ChannelValues = {
+//   id:  string
+//   channelName: string
+//   type: string
+// }
 
 
 type UserValues = {
@@ -69,23 +71,18 @@ export default function LeftSidebar() {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [ChannelOrUser, setChannelOrUser] = useState(false)
 
-  const userId = "01e645f2-ee72-4748-b019-3c784eb0693a";
 
+  const userId = useSelector((state:any) => state.channel.userId);
 
   useEffect(() => {
     console.log("ana hna")
+    
     const fetchData = async () => {
       const fetchChannels = await fetch('http://127.0.0.1:3001/channel/getallchannels/' + userId)
       const response = await fetchChannels.json()
       if (response.length > 0)
       {
-        const allchannels: ChannelValues[] = response.map((data: any) => ({
-          id: data.id,
-          channelName:data.name,
-          type: data.type
-        })
-  
-        )
+        const allchannels: Channel[] = response
         console.log(allchannels)
         setNewChannels(allchannels)
         return allchannels;
@@ -111,8 +108,8 @@ export default function LeftSidebar() {
 
         <div className='flex h-[400px] flex-col w-full mt-[30px] items-center gap-6 overflow-y-scroll'>
 
-          {channels.map((data: ChannelValues) => {
-            if (data.channelName)
+          {channels.map((data: Channel) => {
+            if (data.name)
               return <Hashtag data={data} />
           })}
 

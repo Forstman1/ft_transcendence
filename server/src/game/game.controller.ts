@@ -1,12 +1,11 @@
-import { Controller, Get } from "@nestjs/common";
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 
-
-@Controller("game")
+@UseGuards(AuthGuard('jwt'))
+@Controller('game')
 export class GameController {
-
-    @Get()
-    getGame() {
-        return "Game";
-    }
-
+  @Get()
+  getGame() {
+    return 'Game';
+  }
 }

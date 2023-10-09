@@ -12,6 +12,7 @@ import {
     useDisclosure,
     InputGroup,
     InputRightElement,
+    useToast,
 } from '@chakra-ui/react'
 import { Button, FormControl, FormLabel, Icon, Input, Select } from '@chakra-ui/react';
 import { useForm } from "react-hook-form";
@@ -19,21 +20,11 @@ import { LockIcon, SmallAddIcon } from "@chakra-ui/icons";
 import { useMutation } from "react-query";
 import { setChannel, setMessages } from "@/redux/slices/channel/channelSlice";
 import { useDispatch } from "react-redux";
+import { Channel, Message } from "@/utils/types/chat/ChatTypes";
 
 
 
-type ChannelValues = {
-    id: string
-    channelName: string
-    type: string
-}
 
-type Messages = {
-    id: string
-    message: string;
-    sender: string;
-    time: Date;
-  };
 
 export default function Hashtag(props: any) {
 
@@ -42,32 +33,36 @@ export default function Hashtag(props: any) {
     const [wrongpassowrd, setWrongpassowrd] = useState(false);
     const [show, setShow] = React.useState(false)
     const handleShow = () => setShow(!show)
-    let { id, channelName, type }: ChannelValues = props.data;
-    let data: ChannelValues = props.data;
+    let { id, name, type }: Channel = props.data;
+    let data: Channel = props.data;
+    const toast = useToast()
 
     const dispatch = useDispatch()
 
+
     const checkpassword = useMutation<any, Error, any>((variables) =>
-        fetch('http://127.0.0.1:3001/channel/checkpassword', {
-            method: "POST",
-            body: JSON.stringify(variables),
-            headers: {
-                "content-type": "application/json",
-            }
-        }).then((response) => {
-            return response.json()
+    fetch('http://127.0.0.1:3001/channel/checkpassword', {
+        method: "POST",
+        body: JSON.stringify(variables),
+        headers: {
+            "content-type": "application/json",
+        }
+    }).then((response) => {
+        return response.json()
 
-        }).catch((error) => {
-            return error
-        }))
+    }).catch((error) => {
+        return error
+    }))
 
-    const getMessages = useMutation<any, Error, any>((variables) =>
-        fetch('http://127.0.0.1:3001/message/getmessages/' + variables.channelId).then((response) => {
-            return response.json()
 
-        }).catch((error) => {
-            return error
-        }))
+    
+const getMessages = useMutation<any, Error, any>((variables) =>
+    fetch('http://127.0.0.1:3001/message/getmessages/' + variables.channelId).then((response) => {
+        return response.json()
+
+    }).catch((error) => {
+        return error
+    }))
 
 
     const handleClick = async () => {
@@ -76,14 +71,24 @@ export default function Hashtag(props: any) {
             onOpen()
         }
         else {
+
+            dispatch(setChannel(data))
             const messages = await getMessages.mutateAsync({
                 channelId: id,
             })
-            const allmessages: Messages[] = messages.map((message: any) => {
-                
+            if (messages) {
+                dispatch(setMessages(messages))
+            }
+            toast({
+                title: name,
+                position: `bottom-right`,
+                status: 'success',
+                duration: 1000,
+                containerStyle: {
+                    width: 300,
+                    height: 100,
+                }
             })
-            dispatch(setChannel(data))
-            dispatch(setMessages(messages))
         }
     }
 
@@ -91,7 +96,7 @@ export default function Hashtag(props: any) {
     const onSubmit = async (data: any) => {
 
         const check = await checkpassword.mutateAsync({
-            channelName: channelName,
+            channelName: name,
             password: data.password
         })
         console.log(check)
@@ -106,8 +111,8 @@ export default function Hashtag(props: any) {
 
     };
 
-    let channelname = channelName.substring(0, 8)
-    if (channelName.length > 8)
+    let channelname = name.substring(0, 8)
+    if (name.length > 8)
         channelname += ".."
 
     return (<>
@@ -126,7 +131,7 @@ export default function Hashtag(props: any) {
             <ModalOverlay />
             <ModalContent>
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <ModalHeader>Channel Name [{channelName}]</ModalHeader>
+                    <ModalHeader>Channel Name [{name}]</ModalHeader>
                     <ModalHeader>Enter Password</ModalHeader>
 
                     <ModalCloseButton />

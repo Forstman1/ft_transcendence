@@ -17,4 +17,9 @@ export class MessageController {
         return this.messageService.getMessages(id)
     }
 
+    @Get('/getuserinfo/:id')
+    getuserinfo(@Param('id') id:string) {
+        this.messageService.getuserinfo(id)
+    }
+
 }

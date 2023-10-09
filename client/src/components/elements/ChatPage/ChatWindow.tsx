@@ -9,17 +9,14 @@ import Image from 'next/image';
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { addMessage } from '@/redux/slices/channel/channelSlice';
-
-
-type Messages = {
-  message: string
-  sender: string
-  time: Date
-};
+import { Message } from '@/utils/types/chat/ChatTypes';
+import { useMutation } from 'react-query';
 
 
 
-function Message_other({ message, sender, time }: Messages) {
+
+
+function Message_other({ message, sender, time }: any) {
 
   return (<div className='w-full flex gap-[5px]  items-baseline  pl-[15px] z-0'>
     <Avatar className='custom-shadow' boxSize={12} />
@@ -33,7 +30,7 @@ function Message_other({ message, sender, time }: Messages) {
 
 
 
-function Own_Message({ message, sender, time }: Messages) {
+function Own_Message({ message, sender, time }: any) {
 
   return (<div className='w-full flex gap-[5px]   justify-end pr-[15px] items-baseline z-0'>
     <div className='bg-black border-2 border-black rounded-2xl custom-shadow text-white rounded-tr-none justify-start pl-[10px] w-[50%]'>
@@ -52,28 +49,13 @@ export default function ChatWindow() {
   let today = new Date()
   const { handleSubmit, register, reset } = useForm<any>();
   const chatContainer = useRef<any>(null);
-  // const [messages, setMessages]: any = useState([])
 
-  // let fakemessages: Messages[] = [{ message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
-  // { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "haitkadi", time: today },
-  // { message: "ana hna o lheh hihihi", sender: "rel-fagr", time: yerstday },
-  // { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
-  // { message: "ana hna o lheh", sender: "rel-fagr", time: today }, { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
-  // { message: "ana hna :)", sender: "houazzan", time: today },
-  // { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
-  // { message: "ana hna o lheh", sender: "rel-fagr", time: today }, { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
-  // { message: "ana hna :)", sender: "houazzan", time: today },
-  // { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
-  // { message: "ana hna o lheh", sender: "rel-fagr", time: today }, { message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", sender: "sahafid", time: today },
-  // { message: "ana hna :)", sender: "houazzan", time: today }]
 
   const selectedChannel = useSelector((state:any) => state.channel.selectedChannel);
-  const messages: Messages[] = useSelector((state:any) => state.channel.messages);
+  const messages: Message[] = useSelector((state:any) => state.channel.messages);
+  const userId = useSelector((state:any) => state.channel.userId)
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    // setMessages(messages1, ...messages)
-  }, [])
 
 
 
@@ -89,21 +71,36 @@ export default function ChatWindow() {
     scrollToBottom();
   }, [messages]);
 
-  // messages.sort((a: Messages, b: Messages) => a.time.getTime() - b.time.getTime());
+  // messages.sort((a: Message, b: Message) => a.createdAt.getTime() - b.createdAt.getTime());
 
-  const handelNewMessage = (data: any) => {
+
+  const createMessage = useMutation<any, Error, any>((variables) => 
+  fetch('http://127.0.0.1:3001/message/createmessage', {
+    method: "POST",
+    body: JSON.stringify(variables),
+    headers: {
+      "content-type": "application/json",
+    }
+  }).then((res) => {
+    return res.json()
+  }).catch((error) => {
+    return error
+  }))
+
+  const handelNewMessage = async (data: any) => {
 
     if (!data.newmessage)
       return;
-    const date = new Date()
 
-    let message: Messages = {
-      message: data.newmessage,
-      sender: "sahafid",
-      time: date,
-    } 
+    const message = await createMessage.mutateAsync({
+      content: data.newmessage,
+      userId: userId,
+      reciverId: selectedChannel.id
+    })
 
+    
     dispatch(addMessage(message));
+
     // setMessages([message, ...messages])
     reset({ newmessage: '' });
 
@@ -120,11 +117,12 @@ export default function ChatWindow() {
       <div className=' flex flex-col gap-[10px] overflow-y-scroll z-0 h-[90%] ' ref={chatContainer}>
 
 
-        {messages.map((message: Messages, index: number) => {
-          if (message.sender === "sahafid") {
-            return <Own_Message key={index} message={message.message} sender={message.sender} time={message.time} />
+        {messages.map((message: Message, index: number) => {
+          
+          if (message.authorName === "sahafid") {
+            return <Own_Message key={index} message={message.content} sender={message.authorName} time={message.createdAt} />
           }
-          return <Message_other key={index} message={message.message} sender={message.sender} time={message.time} />
+          return <Message_other key={index} message={message.content} sender={message.authorName} time={message.createdAt} />
         })}
 
 

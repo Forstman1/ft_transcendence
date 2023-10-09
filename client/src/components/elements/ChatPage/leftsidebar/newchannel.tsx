@@ -15,6 +15,8 @@ import {
 import { useForm } from "react-hook-form"
 import { useMutation } from 'react-query';
 import { error } from 'console';
+import { Channel } from '@/utils/types/chat/ChatTypes';
+import { useSelector } from 'react-redux';
 
 
 
@@ -23,10 +25,8 @@ type Props = {
 
     isOpen: boolean;
     onClose: () => void;
-    setNewChannels: Dispatch<SetStateAction<ChannelValues[]>>;
-
-    channels: ChannelValues[];
-
+    setNewChannels: Dispatch<SetStateAction<Channel[]>>;
+    channels: Channel[];
 };
 
 type ChannelValues = {
@@ -87,12 +87,12 @@ export default function Newchannel({ isOpen, onClose, setNewChannels, channels }
         //     return 0;
         // }
         
-        data.userId = "01e645f2-ee72-4748-b019-3c784eb0693a";
+        data.userId = useSelector((state:any) => state.channel.userId);
         console.log(data)
         
         if (data.type === "Public")
           data.password = "123"
-
+        let channel: Channel;
         try {
           const newchannel = await createchannel.mutateAsync({
             channelName: data.channelName,
@@ -100,14 +100,16 @@ export default function Newchannel({ isOpen, onClose, setNewChannels, channels }
             password: data.password,
             userId: data.userId
           })
+
           data.type = data.type.toUpperCase()
-          if (newchannel.status === "already exists")
-            throw "channel name already exists";
+          if (newchannel.status)
+            throw newchannel.status;
+          channel = newchannel
 
         } catch(error) {
           console.log(error)
           toast({
-            title: error,
+            title: "couldn't create channel",
             position: `bottom-right`,
             status: 'error',
             duration: 1000,
@@ -120,7 +122,7 @@ export default function Newchannel({ isOpen, onClose, setNewChannels, channels }
         }
         
 
-
+        
 
         toast({
           title: "Channel Created",
@@ -132,7 +134,7 @@ export default function Newchannel({ isOpen, onClose, setNewChannels, channels }
             height: 100,
           }
         })
-        setNewChannels([...channels, data]);
+        setNewChannels([...channels, channel]);
         onClose();
 
     };
@@ -223,58 +225,3 @@ export default function Newchannel({ isOpen, onClose, setNewChannels, channels }
 
 
 
-
-        {/* <ModalOverlay />
-        <ModalContent>
-            <ModalHeader>Create Channel</ModalHeader>
-            <ModalCloseButton />
-
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <ModalBody>
-                    <FormControl>
-
-                        <FormLabel>Channel Name</FormLabel>
-                        <Input required {...register("channelName")} placeholder='Channel Name' />
-                        {dup && <div>Already exists this channel name</div>}
-
-                    </FormControl>
-
-
-                    <FormControl mt={6}>
-                        <FormLabel >Channel Type</FormLabel>
-                        <Select required {...register("type")} placeholder="Select type">
-                            <option value="Public">Public</option>
-                            <option value="Protected">Protected</option>
-                            <option value="Private">Private</option>
-                        </Select>
-                    </FormControl>
-
-                    {selectedType === "Protected" ?
-
-                        <FormControl mt={6}>
-                            <FormLabel>Password</FormLabel>
-                            <InputGroup size='md'>
-                                <Input
-                                    required
-                                    {...register("password")}
-                                    pr='4.5rem'
-                                    type={show ? 'text' : 'password'}
-                                    placeholder='Enter password'
-                                />
-                                <InputRightElement width='4.5rem'>
-                                    <Button h='1.75rem' size='sm' onClick={handleClick}>
-                                        {show ? 'Hide' : 'Show'}
-                                    </Button>
-                                </InputRightElement>
-                            </InputGroup>
-                        </FormControl> :
-                        <div></div>}
-
-                </ModalBody>
-
-                <ModalFooter>
-                    <Button type='submit' variant='ghost' colorScheme='blue'>Create</Button>
-
-                </ModalFooter>
-            </form>
-        </ModalContent> */}

@@ -1,33 +1,48 @@
 "use client"
 
 import React from "react";
-import GamePreview from "../../assets/icons/previewImageHorizontal.svg";
+import DesktopGamePreview from "../../assets/icons/pongDesktopImage.svg";
+import MobileGamePreview from "../../assets/icons/pongMobileImage.svg";
 import Image from "next/image";
-import { Flex, Box, Center } from "@chakra-ui/react";
-
-/* ------------------------------------------------------------------------------------------------------------------ */
+import { Flex, Box } from "@chakra-ui/react";
+import { PageWrapper } from "./animationWrapper/pageWrapper";
+import { Text } from "@chakra-ui/react";
+import PageDivider from "../../assets/icons/wavesOpacityInversed.svg"
+import BlackBackground from "../../assets/icons/blackBackground.svg"
 
 export default function Home() {
   return (
-    <Box className="w-screen h-screen">
-      {/* <Flex className="w-screen flex-row justify-center content-center justify-items-center items-center grid-cols-2">
-        <Box className="col-span-1 w-1/2 ">
-          <Image className="m-auto p-auto" width={680} src={GamePreview} alt="Game Preview" />
-        </Box>
-        <Box className="col-span-1 w-1/2">
-          <Flex className="flex-col justify-evenly content-center justify-items-center items-center">
-            <h1 className="text-neutral-950 text-8xl text-center">The Legacy PONG Game</h1>
-            <h3 className="text-neutral-600 text-6xl text-center">as never seen before</h3>
-            <br />
-            <p className="text-neutral-500 text-4xl text-center w-1/2">
+    <PageWrapper>
+      <Box className='h-screen w-screen mt-24'>
+        <Flex className="flex-col lg:flex-row grid-rows-2 lg:grid-cols-2 justify-center items-center content-center justify-items-center gap-y-10">
+          <Flex className="row-span-1 lg:col-span-1 order-1 lg:order-2 flex-col justify-evenly content-center justify-items-center items-center gap-y-8 basis-1/2">
+            <Box className="mt-5">
+              <Text className="text-neutral-950 text-4xl md:text-5xl text-center mx-8 ">The Legacy PONG Game</Text>
+              <Text className="text-neutral-600 text-3xl md:text-4xl text-center mx-8 ">as never seen before</Text>
+            </Box>
+            <Box className="block lg:hidden mx-10">
+              <Image src={DesktopGamePreview} alt="Game Preview" />
+            </Box>
+            <Text className="text-neutral-500 text-lg md:text-2xl text-center mx-8 ">
               Pong is a vintage arcade game that revolutionized the world of video gaming.
               Released in 1972, it emulates a virtual table tennis match. Players control
               rectangular paddles situated on opposite sides of the screen, tasked with
               deflecting a small ball and preventing it from breaching their territory.
-            </p>
+            </Text>
+            <Box>
+
+            </Box>
           </Flex>
-        </Box>
-      </Flex> */}
-    </Box>
+          <Box className="row-span-1 lg:col-span-1 order-2 lg:order-1 basis-1/2 hidden lg:block ">
+            <Image className="m-auto p-auto" src={DesktopGamePreview} alt="Game Preview" />
+          </Box>
+        </Flex>
+      </Box>
+      <Box className='h-screen w-screen'>
+        <Image className="w-screen h-5 z-10" src={PageDivider} alt="Page Decor" />
+        <Image className="h-screen w-screen object-cover relative -top-5 z-0" src={BlackBackground} alt="Page Decor" />
+        
+      </Box>
+    </PageWrapper>
   );
 }

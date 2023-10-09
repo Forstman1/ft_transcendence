@@ -1,15 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
 @Injectable()
-export class PrismaService extends PrismaClient {
-    constructor() {
-        super({
-            datasources: {
-                db: {
-                    url: 'postgres://user:13371337@localhost:5432/transcendance'
-                }
-            }
-        })
-    }
+export class PrismaService extends PrismaClient implements OnModuleInit {
+  async onModuleInit() {
+    await this.$connect();
+  }
 }
