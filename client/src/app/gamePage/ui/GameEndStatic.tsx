@@ -9,19 +9,18 @@ import Lottie from "lottie-react";
 import ggAnimation from "../../../../assets/animations/ggAnimation.json";
 
 type GameStaticProps = {
-    bot: string;
+    opponent: string;
     user: string;
 }
 
-const GameEndStatic = ({bot, user}: GameStaticProps) => {
-    const botColor = bot === 'LOSE' ? 'red' : 'green';
+const GameEndStatic = ({opponent, user}: GameStaticProps) => {
+    const botColor = opponent === 'LOSE' ? 'red' : 'green';
     const userColor = user === 'LOSE' ? 'red' : 'green';
     const router = useRouter();
 
     const handleExitClick = () => {
-        router.push('/gamePage');
+        router.back();
     }
-
   
     return (
       <PageWrapper>
@@ -34,7 +33,7 @@ const GameEndStatic = ({bot, user}: GameStaticProps) => {
                 color={botColor}
                 className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]"
               >
-                {bot}
+                {opponent}
               </Text>
             </div>
             <div className="flex flex-col items-center justify-center">

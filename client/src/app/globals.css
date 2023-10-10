@@ -7,7 +7,7 @@
     --background-primary: #0a0a0a;
   }
 
-body {
+html,body {
   background-image: url('../../assets/icons/background.svg');
   background-size: cover;
   background-repeat: no-repeat;

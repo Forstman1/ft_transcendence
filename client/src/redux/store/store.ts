@@ -2,6 +2,7 @@ import {configureStore} from '@reduxjs/toolkit'
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import  gameReducer  from '../slices/game/gameModalSlice';
 import channelReducer from '../slices/channel/channelSlice';
+import  globalSocketReducer  from '../slices/socket/globalSocketSlice';
 
 
 export const store = configureStore({
@@ -9,7 +10,11 @@ export const store = configureStore({
         gameReducer,
         channel: channelReducer,
 
+        globalSocketReducer,
     },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+        serializableCheck: false,
+    }),
 })
 
 export type RootState = ReturnType<typeof store.getState>
