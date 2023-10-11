@@ -1,7 +1,6 @@
 import { MessageBody, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Body, Logger } from '@nestjs/common';
 import { Server } from 'socket.io';
-import { emit } from 'process';
 
 @WebSocketGateway()
 export class ChatGateway implements OnGatewayInit {
@@ -17,6 +16,7 @@ export class ChatGateway implements OnGatewayInit {
 
   @SubscribeMessage('message')
   handleMessage(@MessageBody() data): void {
+    console.log("here")
     this.wss.emit('message', data)
   }
 }

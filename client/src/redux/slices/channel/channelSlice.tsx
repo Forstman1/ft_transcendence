@@ -2,14 +2,6 @@ import { Channel, Message } from "@/utils/types/chat/ChatTypes";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 
-
-
-  
-
-
-
-
-
 type ChannelState = {
     selectedChannel: Channel | null
     userId: string

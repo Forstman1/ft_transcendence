@@ -44,16 +44,16 @@ export class MessageService {
 
     async getMessages(channelId: string) {
 
-        const channel = await this.prisma.channel.findUnique({
-            where: {
-                id: channelId
-            },
-            include: {
-                message: true,
-            }
-        })
+        // const channel = await this.prisma.channel.findUnique({
+        //     where: {
+        //         id: channelId
+        //     },
+        //     include: {
+        //         message: true,
+        //     }
+        // })
 
-        return channel.message
+        // return channel.message
     }
 
     async getuserinfo(userId: string) {

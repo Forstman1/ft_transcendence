@@ -11,10 +11,7 @@ import Newmessage from './newmessage';
 import Search from './search';
 import { Channel } from '@/utils/types/chat/ChatTypes';
 import { useSelector } from 'react-redux';
-
-
-
-
+import { PrismaClient } from '@prisma/client';
 // type ChannelValues = {
 //   id:  string
 //   channelName: string
@@ -28,10 +25,9 @@ type UserValues = {
   onlineStatus: string
 }
 
-
-
-
-
+async function getUsers() {
+  // const res = await fetch()
+}
 
 function Usercard(props: any) {
 
@@ -75,18 +71,17 @@ export default function LeftSidebar() {
   const userId = useSelector((state:any) => state.channel.userId);
 
   useEffect(() => {
-    console.log("ana hna")
     
     const fetchData = async () => {
-      const fetchChannels = await fetch('http://127.0.0.1:3001/channel/getallchannels/' + userId)
-      const response = await fetchChannels.json()
-      if (response.length > 0)
-      {
-        const allchannels: Channel[] = response
-        console.log(allchannels)
-        setNewChannels(allchannels)
-        return allchannels;
-      }
+      // const fetchChannels = await fetch('http://127.0.0.1:3001/channel/getallchannels/' + userId)
+      // const response = await fetchChannels.json()
+      // if (response.length > 0)
+      // {
+      //   const allchannels: Channel[] = response
+      //   console.log(allchannels)
+      //   setNewChannels(allchannels)
+      //   return allchannels;
+      // }
 
     }
     fetchData()

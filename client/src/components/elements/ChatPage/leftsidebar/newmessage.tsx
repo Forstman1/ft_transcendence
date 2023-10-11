@@ -13,6 +13,7 @@ import {
     ModalCloseButton,
     Radio
 } from '@chakra-ui/react'
+import { error } from 'console';
 
 
 
@@ -36,6 +37,7 @@ type UserValues = {
 function Usercard(props: any) {
 
     const { data, selectedOption, onOptionChange } = props;
+    console.log(data)
 
     const handleChange = () => {
         onOptionChange(data.userName);
@@ -68,8 +70,16 @@ function Usercard(props: any) {
 
 
 export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Props) {
+    
 
+    const Users: any = []
+    const url = 'http://localhost:3001/users';
+    fetch(url).then(respond => respond.json()).then(users => {Users.push(...users)})
+    .catch(error => {
+        console.error(error);
+    })
 
+    
     let users1: UserValues[] = [{ userName: "sahafid", id: 1, onlineStatus: "active" },
     { userName: "houazzan", id: 2, onlineStatus: "active" },
     { userName: "rel-fagr", id: 3, onlineStatus: "active" },
@@ -144,8 +154,7 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
                 </InputGroup>
 
                 <div className=' mt-[20px] flex  justify-between md:h-[400px] h-[200px] flex-col    overflow-y-scroll'>
-
-                    {users1.map((data: any) => {
+                    {Users.map((data: any) => {
                         return <Usercard
                             data={data}
                             selectedOption={selectedOption}

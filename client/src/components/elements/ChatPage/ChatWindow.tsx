@@ -13,9 +13,6 @@ import { Message } from '@/utils/types/chat/ChatTypes';
 import { useMutation } from 'react-query';
 
 
-
-
-
 function Message_other({ message, sender, time }: any) {
 
   return (<div className='w-full flex gap-[5px]  items-baseline  pl-[15px] z-0'>
@@ -44,6 +41,10 @@ function Own_Message({ message, sender, time }: any) {
 
 
 export default function ChatWindow() {
+
+
+
+
 
   let yerstday = new Date("2023-09-16")
   let today = new Date()
@@ -74,30 +75,30 @@ export default function ChatWindow() {
   // messages.sort((a: Message, b: Message) => a.createdAt.getTime() - b.createdAt.getTime());
 
 
-  const createMessage = useMutation<any, Error, any>((variables) => 
-  fetch('http://127.0.0.1:3001/message/createmessage', {
-    method: "POST",
-    body: JSON.stringify(variables),
-    headers: {
-      "content-type": "application/json",
-    }
-  }).then((res) => {
-    return res.json()
-  }).catch((error) => {
-    return error
-  }))
+  // const createMessage = useMutation<any, Error, any>((variables) => 
+  // fetch('http://127.0.0.1:3001/message/createmessage', {
+  //   method: "POST",
+  //   body: JSON.stringify(variables),
+  //   headers: {
+  //     "content-type": "application/json",
+  //   }
+  // }).then((res) => {
+  //   return res.json()
+  // }).catch((error) => {
+  //   return error
+  // }))
 
   const handelNewMessage = async (data: any) => {
 
     if (!data.newmessage)
       return;
 
-    const message = await createMessage.mutateAsync({
-      content: data.newmessage,
-      userId: userId,
-      reciverId: selectedChannel.id
-    })
-
+    // const message = await createMessage.mutateAsync({
+    //   content: data.newmessage,
+    //   userId: userId,
+    //   reciverId: selectedChannel.id
+    // })
+    const message = "fake massage"
     
     dispatch(addMessage(message));
 

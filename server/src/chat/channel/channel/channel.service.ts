@@ -101,9 +101,9 @@ export class ChannelService {
             where: {
                 name: channelName,
             },
-            include: {
-                message: true
-            }
+            // include: {
+            //     message: true
+            // }
         })
         if (await argon2.verify(channel.password, password))
         {
