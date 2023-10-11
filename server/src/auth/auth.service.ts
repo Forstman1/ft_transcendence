@@ -1,25 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { authenticator } from 'otplib';
 import { toDataURL } from 'qrcode';
+import { UsersFindDto } from 'src/users/users-find.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    private prismaService: PrismaService,
   ) {}
+  /* ------------------------------------------------------------------------------------------------------------------ */
 
-  async validateUser(
-    userInput: Prisma.UserCreateInput,
-  ): Promise<Prisma.UserCreateInput> {
-    const userFound = await this.usersService.findUser({
-      username: userInput.username,
-    });
+  cookieOptions = {
+    httpOnly: true,
+    secure: false, // TODO Later set to true when deploying to production
+    sameSite: 'Strict',
+    domain: 'localhost', // TODO Later set to process.env.DOMAIN_NAME when deploying to production
+    path: '/',
+    expires: new Date(Date.now() + 3600000),
+    maxAge: 3600000,
+  };
+
+  /* ------------------------------------------------------------------------------------------------------------------ */
+
+  async validateUser(userInput: UsersFindDto): Promise<Prisma.UserCreateInput> {
+    const userFound = await this.usersService.findUser(userInput);
     if (userFound === null) {
       const userCreated = await this.usersService.createUser(userInput);
       return userCreated;
@@ -27,34 +35,36 @@ export class AuthService {
     return userFound;
   }
 
-  async login(
-    user: Prisma.UserCreateInput,
-    twoFaSuccess: boolean,
-  ): Promise<{ access_token: string }> {
-    const userFound = await this.validateUser(user);
+  /* ------------------------------------------------------------------------------------------------------------------ */
+
+  async login(userInput: UsersFindDto): Promise<string> {
+    const user = await this.validateUser(userInput);
     const payload = {
-      id: userFound.id,
-      username: userFound.username,
-      twoFaAuthEnabled: !!userFound.twoFaEnabled,
-      twoFaAuthSuccess: twoFaSuccess,
+      id: user.id,
     };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+    return this.jwtService.sign(payload);
   }
 
-  async generateTwoFaOtpAuthUrl(user: Prisma.UserCreateInput): Promise<string> {
+  /* ------------------------------------------------------------------------------------------------------------------ */
+
+  async generateTwoFactorOtpAuthUrl(
+    user: Prisma.UserCreateInput,
+  ): Promise<string> {
     const otpAuthUrl: string = authenticator.keyuri(
       user.email,
       'Pong',
-      user.twoFaSecret,
+      user.twoFactorSecret,
     );
     return otpAuthUrl;
   }
 
+  /* ------------------------------------------------------------------------------------------------------------------ */
+
   async generateQrCodeDataURL(otpAuthUrl: string): Promise<string> {
     return toDataURL(otpAuthUrl);
   }
+
+  /* ------------------------------------------------------------------------------------------------------------------ */
 
   async isTwoFaAuthCodeValid(
     twoFaCode: string,

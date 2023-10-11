@@ -11,11 +11,6 @@ async function seed() {
         email: faker.internet.email(),
         username: faker.internet.userName(),
         fullname: faker.internet.displayName(),
-        avatarURL: faker.internet.avatar(),
-        coalitionURL: faker.internet.avatar(),
-        coalitionColor: faker.internet.userName(),
-        accessToken: faker.internet.password(),
-        refreshToken: faker.internet.password(),
       },
     });
   }

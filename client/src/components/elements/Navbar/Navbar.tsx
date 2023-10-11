@@ -130,7 +130,7 @@ const AuthButtons: React.FC = () => {
         return (
           <Button
             key={index}
-            className='text-lg w-full'
+            className='text-xl w-full max-w-[18rem]'
             as='a' href={button.href}
             size='lg'
             backgroundColor={button.bgClr} color={button.clr}
@@ -194,7 +194,6 @@ export function SignupForm() {
   )
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [overlay, setOverlay] = React.useState(<OverlayOne />)
-  // const [showPassword, setShowPassword] = useState(false)
   return (
     <>
       <motion.div>
@@ -221,63 +220,16 @@ export function SignupForm() {
 
             <ModalBody >
               <Stack spacing={3}>
-                {/* <HStack>
-                  <Box>
-                    <FormControl id="firstName" isRequired>
-                      <FormLabel>First Name</FormLabel>
-                      <Input type="text" />
-                    </FormControl>
-                  </Box>
-                  <Box>
-                    <FormControl id="lastName">
-                      <FormLabel>Last Name</FormLabel>
-                      <Input type="text" />
-                    </FormControl>
-                  </Box>
-                </HStack>
-                <FormControl id="email" isRequired>
-                  <FormLabel>Email address</FormLabel>
-                  <Input type="email" />
-                </FormControl>
-                <FormControl id="password" isRequired>
-                  <FormLabel>Password</FormLabel>
-                  <InputGroup>
-                    <Input type={showPassword ? 'text' : 'password'} />
-                    <InputRightElement h={'full'}>
-                      <Button
-                        variant={'ghost'}
-                        onClick={() => setShowPassword((showPassword) => !showPassword)}>
-                        {showPassword ? <ViewIcon /> : <ViewOffIcon />}
-                      </Button>
-                    </InputRightElement>
-                  </InputGroup>
-                </FormControl>
-                <Stack spacing={10} pt={2}>
-                  <Button
-                    className='bg-neutral-950 text-neutral-50'
-                    loadingText="Submitting"
-                    size="lg"
-                    _hover={{
-                      bg: 'gray.700',
-                    }}>
-                    Sign up
-                  </Button>
-                </Stack>
-                <Flex
-                  className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t-2 before:border-neutral-950 after:mt-0.5 after:flex-1 after:border-t-2 after:border-neutral-950">
-                  <p
-                    className="mx-4 mb-0 text-center font-semibold text-neutral-950 ">
-                    Or you can try
-                  </p>
-                </Flex> */}
                 <AuthButtons />
               </Stack>
             </ModalBody>
 
             <ModalFooter>
-              {/* <Text m='auto' align='center'>
-                Already a user? <Link href='#0' className='text-blue-500'>Log In</Link>
-              </Text> */}
+              <Text m='auto' align='center'>
+                BTW, we&apos;re about 2 steal all ur infos
+                <br />
+                Happy Gaming 😊
+              </Text>
             </ModalFooter>
 
           </ModalContent>
@@ -286,8 +238,6 @@ export function SignupForm() {
     </>
   )
 }
-
-
 
 /* ------------------------------------------------------------------------------------------------------------------ */
 

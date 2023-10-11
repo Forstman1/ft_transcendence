@@ -1,73 +1,66 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User, Prisma } from '@prisma/client';
+import { authenticator } from 'otplib';
+import { UsersFindDto } from './users-find.dto';
+import { UsersCreateDto } from './users.dto';
 
 @Injectable()
 export class UsersService {
   constructor(private prismaService: PrismaService) {}
 
-  async findUser(
-    userWhereUniqueInput: Prisma.UserWhereUniqueInput,
-  ): Promise<User | null> {
-    return this.prismaService.user.findUnique({
-      where: userWhereUniqueInput,
+  /* ------------------------------------------------------------------------------------------------------------------ */
+
+  async findUser(userInput: UsersFindDto): Promise<User | null> {
+    const user: User | null = await this.prismaService.user.findUnique({
+      where: { email: userInput.email },
     });
+    return user;
   }
 
-  async createUser(userCreateInput: Prisma.UserCreateInput): Promise<User> {
-    return this.prismaService.user.create({
-      data: userCreateInput,
+  /* ------------------------------------------------------------------------------------------------------------------ */
+
+  async createUser(userInput: UsersCreateDto): Promise<User | null> {
+    const userData: Prisma.UserCreateInput = {
+      email: userInput.email,
+      username: userInput.username,
+      fullname: userInput.fullname,
+      avatarURL: userInput.avatarURL ?? null,
+      coalitionURL: userInput.coalitionURL ?? null,
+      coalitionColor: userInput.coalitionColor ?? null,
+    };
+    const user: User | null = await this.prismaService.user.create({
+      data: userData,
     });
+    return user;
   }
 
-  async updateUser(params: {
-    userWhereUniqueInput: Prisma.UserWhereUniqueInput;
-    userUpdateInput: Prisma.UserUpdateInput;
-  }): Promise<User> {
-    const { userWhereUniqueInput, userUpdateInput } = params;
+  /* ------------------------------------------------------------------------------------------------------------------ */
+
+  async updateUserTwoFactorEnabled(
+    userInput: UsersFindDto,
+    twoFactorEnabledInput: boolean,
+  ): Promise<User> {
+    const twoFactorSecret = twoFactorEnabledInput
+      ? authenticator.generateSecret()
+      : null;
     return this.prismaService.user.update({
       where: {
-        username: userWhereUniqueInput.username,
-      },
-      data: userUpdateInput,
-    });
-  }
-
-  async deleteUser(
-    userWhereUniqueInput: Prisma.UserWhereUniqueInput,
-  ): Promise<User> {
-    return this.prismaService.user.delete({
-      where: {
-        username: userWhereUniqueInput.username,
-      },
-    });
-  }
-
-  async updateUserTwoFaSecret(
-    userWhereUniqueInput: Prisma.UserWhereUniqueInput,
-    twoFaSecretInput: string,
-  ): Promise<User> {
-    return this.prismaService.user.update({
-      where: {
-        username: userWhereUniqueInput.username,
+        email: userInput.username,
       },
       data: {
-        twoFaSecret: twoFaSecretInput,
+        twoFactorEnabled: twoFactorEnabledInput,
+        twoFactorSecret: twoFactorSecret,
       },
     });
   }
 
-  async updateUserTwoFaEnabled(
-    userWhereUniqueInput: Prisma.UserWhereUniqueInput,
-    twoFaEnabledInput: boolean,
-  ): Promise<User> {
-    return this.prismaService.user.update({
+  async isTwoFactorEnabled(userInput: UsersFindDto): Promise<boolean> {
+    const user = await this.prismaService.user.findUnique({
       where: {
-        username: userWhereUniqueInput.username,
-      },
-      data: {
-        twoFaEnabled: twoFaEnabledInput,
+        email: userInput.email,
       },
     });
+    return user.twoFactorEnabled;
   }
 }

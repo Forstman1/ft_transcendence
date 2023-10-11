@@ -10,23 +10,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// TODO make sure the username is unique by adding a constraint in the database (see https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#unique-fields)
-// TODO don't forget to migrate the database after adding the constraint (see https://www.prisma.io/docs/concepts/components/prisma-migrate)
-
 model User {
   id                String        @id @default(uuid())
-  intraID           String?       @unique
   username          String        @unique
   email             String        @unique
   fullname          String
   avatarURL         String?
   coalitionURL      String?
   coalitionColor    String?
-  accessToken       String
-  refreshToken      String
   isOnline          Boolean       @default(false)
-  twoFaEnabled      Boolean       @default(false)
-  twoFaSecret       String?
+  twoFactorEnabled  Boolean       @default(false)
+  twoFactorSecret   String?
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 }

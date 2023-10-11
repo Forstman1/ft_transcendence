@@ -10,31 +10,13 @@ import { Text } from "@chakra-ui/react";
 import PageDivider from "../../assets/icons/wavesOpacityInversed.svg"
 import BlackBackground from "../../assets/icons/blackBackground.svg"
 
-const HomepageBlackText = () => {
-  return (
-    <Flex className="">
-      <Box>
-        <Text className="text-neutral-950 text-4xl md:text-5xl lg:text-8xl text-center">The Legacy PONG Game</Text>
-        <Text className="text-neutral-600 text-3xl md:text-4xl lg:text-7xl text-center">as never seen before</Text>
-      </Box>
-      <Text className="text-neutral-500 text-lg md:text-2xl lg:text-4xl text-justify md:text-center">
-        Pong is a vintage arcade game that revolutionized the world of video gaming.
-        Released in 1972, it emulates a virtual table tennis match. Players control
-        rectangular paddles situated on opposite sides of the screen, tasked with
-        deflecting a small ball and preventing it from breaching their territory.
-      </Text>
-    </Flex>
-  )
-}
 
-const MyButton = (props: any, children: any) => {
+export function CustomButton(props: any) {
   return (
-    <Button
-      className='text-lg w-full'
+    <Button 
+      className={`text-2xl w-44 h-14 max-w-xs border-2 border-${props.borderColor} text-${props.color} bg-${props.backgroundColor}`}
       as='a' href={props.href}
-      size='lg'
-      backgroundColor={props.backgroundColor} color={props.color}
-      border='2px' borderColor={props.borderColor} rounded='md'
+      size='lg' rounded='sm'
       boxShadow='0.2rem 0.2rem 0rem 0rem rgb(150,150,150)'
       fontWeight='semibold'
       _hover={{}}
@@ -42,51 +24,59 @@ const MyButton = (props: any, children: any) => {
         transform: 'translate(0.2rem, 0.2rem)',
         boxShadow: '0rem 0rem 0rem 0rem rgb(20,20,20)',
       }}
-      leftIcon={<props.icon />}
     >
       <Center>
-        <Text>{children.text}</Text>
+        {props.children}
       </Center>
     </Button>
   )
 }
 
-const HomepageWhiteText = () => {
+export function PlaySignupButtons(props: any) {
+  const primaryColor = props.inverseColor ? "neutral-950" : "neutral-50";
+  const secondaryColor = props.inverseColor ? "neutral-50" : "neutral-950";
   return (
-    <Flex className="row-span-1 lg:col-span-1 order-1 lg:order-2 flex-col justify-evenly content-center justify-items-center items-center gap-y-8 basis-1/2">
-      <Box>
-        <Text className="text-neutral-950 text-4xl md:text-5xl lg:text-8xl text-center mx-8 ">Just like the Original</Text>
-        <Text className="text-neutral-600 text-3xl md:text-4xl lg:text-7xl text-center mx-8 ">even with the same theme</Text>
+    <Flex className="flex-row justify-evenly gap-6">
+      <CustomButton href="#0" backgroundColor={primaryColor} color={secondaryColor} borderColor={primaryColor}>
+        Play!
+      </CustomButton>
+      <CustomButton href="#0" backgroundColor={secondaryColor} color={primaryColor} borderColor={primaryColor}>
+        Sign Up
+      </CustomButton>
+    </Flex>
+  )
+}
+
+export function HomepageBlackText() {
+  return (
+    <Flex className="flex-col justify-evenly content-center justify-items-center items-center max-w-6xl gap-6">
+      <Box className="pb-10">
+        <Text className="text-neutral-950 text-4xl md:text-5xl lg:text-9xl text-center">The Legacy PONG Game</Text>
+        <Text className="text-neutral-600 text-3xl md:text-4xl lg:text-7xl text-center">as never seen before</Text>
       </Box>
-      <Text className="text-neutral-500 text-lg md:text-2xl lg:text-4xl text-justify md:text-center mx-12 ">
+      <Text className="text-neutral-500 text-lg md:text-2xl lg:text-3xl text-justify md:text-center max-w-2xl">
         Pong is a vintage arcade game that revolutionized the world of video gaming.
         Released in 1972, it emulates a virtual table tennis match. Players control
         rectangular paddles situated on opposite sides of the screen, tasked with
         deflecting a small ball and preventing it from breaching their territory.
       </Text>
+      <Box className="pt-10">
+        <PlaySignupButtons inverseColor={true} />
+      </Box>
     </Flex>
-  )
-}
-
-const PlaySignupHomepageButtons = (inverseColor: Boolean) => {
-  const primaryColor = inverseColor ? "bg-neutral-950" : "bg-neutral-50";
-  const secondaryColor = inverseColor ? "bg-neutral-50" : "bg-neutral-950";
-  return (
-    <Box>
-      <MyButton href="/game" backgroundColor={secondaryColor} color={primaryColor} borderColor={secondaryColor} hoverColor="">
-        Play!
-      </MyButton>
-    </Box>
   )
 }
 
 export default function Home() {
   return (
     <PageWrapper>
-      <Box className='h-screen w-screen pt-24'>
-        <Flex className="md:py-72 flex-col lg:flex-row grid-rows-2 lg:grid-cols-2 justify-center items-center content-center justify-items-center gap-y-10">
-          <Box className="row-span-1 lg:col-span-1 order-2 lg:order-1 basis-1/2 hidden lg:block ">
-            <Image className="m-auto p-auto" src={DesktopGamePreview} alt="Game Preview" />
+      <Box className='border h-full w-screen pt-24'>
+        <Flex className='h-full w-3/4 justify-center items-center m-auto'>
+          <Box className='h-full w-full lg:w-1/2 flex justify-center items-center'>
+            <Image className='h-full w-full lg:max-w-4xl' src={DesktopGamePreview} alt="Pong Desktop Preview" />
+          </Box>
+          <Box className='h-full w-full lg:w-1/2 flex justify-center items-center'>
+            <HomepageBlackText />
           </Box>
         </Flex>
       </Box>
