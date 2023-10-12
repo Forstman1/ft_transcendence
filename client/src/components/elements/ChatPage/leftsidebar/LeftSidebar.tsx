@@ -9,7 +9,7 @@ import Newchannel from './newchannel';
 import Hashtag from './hatshtag';
 import Newmessage from './newmessage';
 import Search from './search';
-import { Channel } from '@/utils/types/chat/ChatTypes';
+import { Channel, User } from '@/utils/types/chat/ChatTypes';
 import { useSelector } from 'react-redux';
 import { PrismaClient } from '@prisma/client';
 // type ChannelValues = {
@@ -18,12 +18,6 @@ import { PrismaClient } from '@prisma/client';
 //   type: string
 // }
 
-
-type UserValues = {
-  userName: string
-  id: string
-  onlineStatus: string
-}
 
 async function getUsers() {
   // const res = await fetch()
@@ -42,7 +36,7 @@ function Usercard(props: any) {
     </div>
 
     <div className='ml-[7px] flex flex-col  text-left w-[60%] justify-around'>
-      <div className='text-[22px] font-bold'>{props.data.userName}</div>
+      <div className='text-[22px] font-bold'>{props.data.username}</div>
       <div className='text-gray-400 text-[12px] font-medium	'>ok, see you tomorrow</div>
     </div>
 
@@ -57,8 +51,6 @@ function Usercard(props: any) {
 
 
 export default function LeftSidebar() {
-
-
 
   let [channels, setNewChannels]: any = useState([])
 
@@ -117,7 +109,7 @@ export default function LeftSidebar() {
 
         <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
 
-          {users.map((data: UserValues) => {
+          {users.map((data: User) => {
             return <Usercard data={data} />
           })}
 
