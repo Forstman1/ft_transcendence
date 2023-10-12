@@ -19,7 +19,9 @@ export default function UserControls() {
   return (
     OptImages.map((image) =>
 
-      <Box className='flex items-center gap-6 w-[220px]'>
+      <Box className='flex items-center gap-6 w-[220px]'
+      key={image.alt}
+      >
         <Image src={image.src} width={30} height={30} alt={image.alt} />
         <Text className='text-2xl cursor-pointer'>
           {image.alt}
