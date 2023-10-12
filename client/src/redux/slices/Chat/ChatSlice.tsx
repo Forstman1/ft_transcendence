@@ -1,4 +1,6 @@
 import { Channel, Message } from "@/utils/types/chat/ChatTypes";
+import { User } from "@/utils/types/user/UserTypes";
+
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 
@@ -9,27 +11,30 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 
 
-
-type ChannelState = {
-    selectedChannel: Channel | null
+type ChatState = {
+    selectedChannelorUser: Channel  | User |null
     channels: Channel[]
     userId: string
     messages: Message[]
   };
   
-  const initialState: ChannelState = {
-    selectedChannel: null,
+  const initialState: ChatState = {
+    selectedChannelorUser: null,
     channels: [],
     userId: "0e40b5fd-5a06-4b05-bc21-63c796f6832e",
     messages: [],
   };
   
-  const channelSlice = createSlice({
-    name: 'channel',
+  const chatSlice = createSlice({
+    name: 'chat',
     initialState,
     reducers: {
       setChannel: (state, action) => {
-        state.selectedChannel = action.payload
+        state.selectedChannelorUser = action.payload
+        state.messages = []
+      },
+      setUser: (state, action) => {
+        state.selectedChannelorUser = action.payload
         state.messages = []
       },
       setNewChannel: (state, action) => {
@@ -49,5 +54,5 @@ type ChannelState = {
   });
 
   
-export const { setChannel, addMessage, setMessages, setChannels, setNewChannel } = channelSlice.actions
-export default channelSlice.reducer
+export const { setChannel, addMessage, setMessages, setChannels, setNewChannel } = chatSlice.actions
+export default chatSlice.reducer

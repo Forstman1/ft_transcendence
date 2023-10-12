@@ -7,7 +7,7 @@ import Newchannel from '../leftsidebar/newchannel'
 import Newmessage from '../leftsidebar/newmessage'
 import { SmallAddIcon } from '@chakra-ui/icons'
 import { useDispatch, useSelector } from 'react-redux'
-import { setChannels } from '@/redux/slices/channel/channelSlice'
+import { setChannels } from '@/redux/slices/Chat/ChatSlice'
 import { Channel } from '@/utils/types/chat/ChatTypes'
 
 
@@ -48,16 +48,15 @@ export default function MobileLeftBar({ LeftIsOpen, setLeftIsOpen }: any) {
   const ref = React.useRef(null)
   const inView = useInView(ref)
 
-  // let [channels, setNewChannels]: any = useState([])
 
   let [users, setNewUsers]: any = useState([])
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [ChannelOrUser, setChannelOrUser] = useState(false)
   const dispatch = useDispatch()
-  const channels = useSelector((state: any) => state.channel.channels)
+  const channels = useSelector((state: any) => state.chat.channels)
 
-  const userId = useSelector((state:any) => state.channel.userId);
+  const userId = useSelector((state:any) => state.chat.userId);
 
   useEffect(() => {
     console.log("ana hna")
@@ -70,7 +69,6 @@ export default function MobileLeftBar({ LeftIsOpen, setLeftIsOpen }: any) {
         const allchannels: Channel[] = response
         console.log(allchannels)
         dispatch(setChannels(allchannels))
-        // setNewChannels(allchannels)
         return allchannels;
       }
 

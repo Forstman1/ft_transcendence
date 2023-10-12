@@ -1,13 +1,13 @@
 import {configureStore} from '@reduxjs/toolkit'
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import  gameReducer  from '../slices/game/gameModalSlice';
-import channelReducer from '../slices/channel/channelSlice';
+import chatSlice from '../slices/Chat/ChatSlice';
 
 
 export const store = configureStore({
     reducer: {
         gameReducer,
-        channel: channelReducer,
+        chat: chatSlice,
 
     },
 })

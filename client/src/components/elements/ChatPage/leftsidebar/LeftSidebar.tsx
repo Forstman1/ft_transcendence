@@ -11,7 +11,7 @@ import Newmessage from './newmessage';
 import Search from './search';
 import { Channel } from '@/utils/types/chat/ChatTypes';
 import { useDispatch, useSelector } from 'react-redux';
-import { setChannels } from '@/redux/slices/channel/channelSlice';
+import { setChannels } from '@/redux/slices/Chat/ChatSlice';
 
 
 
@@ -58,15 +58,14 @@ export default function LeftSidebar() {
 
 
 
-  // let [channels, setNewChannels]: any = useState([])
 
   let [users, setNewUsers]: any = useState([])
   const dispatch = useDispatch()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [ChannelOrUser, setChannelOrUser] = useState(false)
-  const channels = useSelector((state: any) => state.channel.channels)
+  const channels = useSelector((state: any) => state.chat.channels)
 
-  const userId = useSelector((state:any) => state.channel.userId);
+  const userId = useSelector((state:any) => state.chat.userId);
 
   useEffect(() => {
     console.log("ana hna")

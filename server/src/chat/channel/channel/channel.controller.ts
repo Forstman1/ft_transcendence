@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ChannelService } from './channel.service';
-import { CreateChannelDto } from './dtos';
+import { ChangePassword, CreateChannelDto } from './dtos';
 
 @Controller('/channel')
 export class ChannelController {
@@ -30,8 +30,19 @@ export class ChannelController {
     }
 
     @Put('/changepassword')
-    changepassword(@Body() body: any){
+    changepassword(@Body() body: ChangePassword){
         return this.channelservice.changepassword(body.channelName, body.userId, body.currentpassword, body.newpassword)
+    }
+
+
+    @Post('/setpassword')
+    setpassword(@Body() body:any) {
+        return 
+    }
+
+    @Delete('/removepassword')
+    removepassword(@Body() body: any) {
+        return this.channelservice.removepassword(body.channelName, body.userId)
     }
 
     @Put('/setadministrator')
