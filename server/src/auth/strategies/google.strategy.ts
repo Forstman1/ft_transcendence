@@ -5,12 +5,17 @@ import {
 } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-google-oauth20';
-import { generateUsername } from 'unique-username-generator';
-import { UsersCreateDto } from 'src/users/users.dto';
+import { UserDto } from 'src/user/user.dto';
+import {
+  uniqueUsernameGenerator,
+  adjectives,
+  nouns,
+} from 'unique-username-generator';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private readonly userService: UserService) {
     super({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -23,23 +28,38 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     accessToken: string,
     refreshToken: string,
     profile: Profile,
-  ): Promise<UsersCreateDto> {
+  ): Promise<UserDto> {
     if (!profile) {
       throw new ServiceUnavailableException("Couldn't retrieve data from API");
     }
     try {
-      const randomUsername = generateUsername('_', 5);
-      const user: UsersCreateDto = {
-        username: randomUsername,
+      let generatedUsername: string;
+      let usernameExists: boolean = true;
+      while (usernameExists) {
+        generatedUsername = uniqueUsernameGenerator({
+          dictionaries: [adjectives, nouns],
+          separator: '',
+          style: 'lowerCase',
+          randomDigits: 3,
+        });
+        const userFound = await this.userService.findUser({
+          username: generatedUsername,
+        });
+        if (!userFound) {
+          usernameExists = false;
+        }
+      }
+      const user: UserDto = {
+        username: generatedUsername,
         email: profile._json.email,
-        fullname: profile._json.displayname,
-        avatarURL: profile._json.picture ?? null,
-        coalitionURL: null,
-        coalitionColor: null,
+        fullname: profile._json.name,
+        avatarURL: profile?._json?.picture,
+        coalitionURL: undefined,
+        coalitionColor: undefined,
       };
       return user;
     } catch (error) {
-      console.error(error);
+      console.error(error.message);
       throw new InternalServerErrorException('Internal Server Error');
     }
   }

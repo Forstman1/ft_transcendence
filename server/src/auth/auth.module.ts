@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { IntraStrategy } from './strategies/intra.strategy';
-import { UsersModule } from 'src/users/users.module';
+import { UserModule } from 'src/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { PrismaModule } from 'src/prisma/prisma.module';
@@ -15,7 +15,7 @@ import { GoogleAuthGuard } from './guards/google.guard';
 
 @Module({
   imports: [
-    UsersModule,
+    UserModule,
     PrismaModule,
     JwtModule.register({
       global: true,

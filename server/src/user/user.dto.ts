@@ -7,13 +7,15 @@ import {
   IsUrl,
   IsAlpha,
   IsHexColor,
+  IsOptional,
 } from 'class-validator';
 
 @Injectable()
-export class UsersDto {
+export class UserDto {
   @IsString()
   @IsNotEmpty()
   @IsAlphanumeric()
+  @IsOptional()
   readonly username: string;
 
   @IsString()
@@ -28,14 +30,16 @@ export class UsersDto {
 
   @IsString()
   @IsUrl()
+  @IsOptional()
   readonly avatarURL: string;
 
   @IsString()
   @IsUrl()
-  readonly coalitionURL: string =
-    'https://profile.intra.42.fr/assets/coalitions/factionless-05b8cd65bda8f5eaf56ecf1d16493f41908801cfd66aa97fb27c9611064f4f36.svg';
+  @IsOptional()
+  readonly coalitionURL: string;
 
   @IsString()
   @IsHexColor()
-  readonly coalitionColor: string = '#292d39';
+  @IsOptional()
+  readonly coalitionColor: string;
 }

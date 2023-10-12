@@ -5,11 +5,12 @@ import {
 } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-github2';
-import { UsersCreateDto } from 'src/users/users.dto';
+import { UserDto } from 'src/user/user.dto';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class GithubStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private readonly userService: UserService) {
     super({
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
@@ -22,18 +23,31 @@ export class GithubStrategy extends PassportStrategy(Strategy) {
     accessToken: string,
     refreshToken: string,
     profile: Profile,
-  ): Promise<UsersCreateDto> {
+  ): Promise<UserDto> {
     if (!profile) {
       throw new ServiceUnavailableException("Couldn't retrieve data from API");
     }
     try {
-      const user: UsersCreateDto = {
-        username: profile._json.login,
+      let generatedUsername: string = profile._json.login;
+      let usernameExists: boolean = true;
+      while (usernameExists) {
+        const userFound = await this.userService.findUser({
+          username: generatedUsername,
+        });
+        if (!userFound) {
+          usernameExists = false;
+          break;
+        }
+        generatedUsername += Math.random().toString(36)[2];
+      }
+
+      const user: UserDto = {
+        username: generatedUsername,
         email: profile._json.email,
         fullname: profile.displayName,
-        avatarURL: profile._json.avatar_url ?? null,
-        coalitionURL: null,
-        coalitionColor: null,
+        avatarURL: profile?._json?.avatar_url,
+        coalitionURL: undefined,
+        coalitionColor: undefined,
       };
       return user;
     } catch (error) {

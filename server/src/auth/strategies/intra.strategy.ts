@@ -6,11 +6,12 @@ import {
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-42';
 import axios from 'axios';
-import { UsersCreateDto } from 'src/users/users.dto';
+import { UserDto } from 'src/user/user.dto';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class IntraStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private readonly userService: UserService) {
     super({
       clientID: process.env.INTRA_CLIENT_ID,
       clientSecret: process.env.INTRA_CLIENT_SECRET,
@@ -18,37 +19,60 @@ export class IntraStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async getCoalition(userid: string, accessToken): Promise<any> {
-    const url = `https://api.intra.42.fr/v2/users/${userid}/coalitions`;
+  async getCoalition(
+    userid: string,
+    accessToken: string,
+  ): Promise<{ image_url: string; color: string }> {
+    const url = `https://api.intra.42.fr/v2/user/${userid}/coalitions`;
     const response = await axios.get(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
+      timeout: 5000,
     });
-    return response.data[0] ?? null;
+    const coalition = response.data[0];
+    return {
+      image_url: coalition.image_url,
+      color: coalition.color,
+    };
   }
 
   async validate(
     accessToken: string,
     refreshToken: string,
     profile: Profile,
-  ): Promise<UsersCreateDto> {
+  ): Promise<UserDto> {
     if (!profile) {
       throw new ServiceUnavailableException("Couldn't retrieve data from API");
     }
     try {
-      const coalition = await this.getCoalition(profile._json.id, accessToken);
-      const user: UsersCreateDto = {
-        username: profile._json.login,
+      const coalitionData = await this.getCoalition(
+        profile._json.id,
+        accessToken,
+      );
+      let generatedUsername: string = profile._json.login;
+      let usernameExists: boolean = true;
+      while (usernameExists) {
+        const userFound = await this.userService.findUser({
+          username: generatedUsername,
+        });
+        if (!userFound) {
+          usernameExists = false;
+          break;
+        }
+        generatedUsername += Math.random().toString(36)[2];
+      }
+      const user: UserDto = {
+        username: generatedUsername,
         email: profile._json.email,
         fullname: profile._json.displayname,
-        avatarURL: profile._json.image.versions.large,
-        coalitionURL: coalition.image_url,
-        coalitionColor: coalition.color,
+        avatarURL: profile?._json?.login,
+        coalitionURL: profile?._json?.image?.versions?.large,
+        coalitionColor: coalitionData?.color,
       };
       return user;
     } catch (error) {
-      console.error(error);
+      console.error(error.message);
       throw new InternalServerErrorException('Internal Server Error');
     }
   }

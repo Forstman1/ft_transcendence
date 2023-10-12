@@ -3,9 +3,9 @@ const prisma = new PrismaClient();
 import { faker } from '@faker-js/faker';
 
 async function seed() {
-  const numberOfUsers = 5;
-  // create users
-  for (let numUser = 0; numUser < numberOfUsers; numUser++) {
+  const numberOfUser = 5;
+  // create user
+  for (let numUser = 0; numUser < numberOfUser; numUser++) {
     await prisma.user.create({
       data: {
         email: faker.internet.email(),
@@ -15,7 +15,7 @@ async function seed() {
     });
   }
   console.log('seeded successfully');
-  console.log(`generated users`);
+  console.log(`generated user`);
 }
 seed()
   .then(async () => {

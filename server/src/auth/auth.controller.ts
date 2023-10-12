@@ -1,135 +1,143 @@
 import {
   Controller,
   Get,
+  InternalServerErrorException,
   Post,
   Req,
   Res,
-  Body,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UsersService } from '../users/users.service';
-import { HttpCode } from '@nestjs/common';
+import { UserService } from '../user/user.service';
 import { IntraAuthGuard } from './guards/intra.guard';
 import { GoogleAuthGuard } from './guards/google.guard';
 import { GithubAuthGuard } from './guards/github.guard';
 import { JwtAuthGuard } from './guards/jwt.guard';
-import {
-  UnauthorizedException,
-  BadRequestException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { User } from '@prisma/client';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly usersService: UsersService,
+    private readonly userService: UserService,
   ) {}
 
   /* ------------------------------------------------------------------------------------------------------------------ */
 
-  // TODO Check if the authenticated user has an identical username but different email to an existing user
-  // TODO If so, append a random string to the username and update the user's username
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  handleLogout(@Res() res) {
+    res.clearCookie('access_token', this.authService.cookieOptions);
+  }
 
   // TODO Check if the authenticated user has an identical email but different username to an existing user
-  // TODO If so, return an error message to the user stating that the email is already in use
+  // If so, return an error message to the user stating that the email is already in use
 
   @Get('intra/login')
   @UseGuards(IntraAuthGuard)
   handleIntraLogin() {
-    return { message: 'Login initiated successfully' };
+    return { message: 'Login initiated' };
   }
 
   @Get('intra/callback')
   @UseGuards(IntraAuthGuard)
-  handleIntraCallback(@Req() req, @Res() res) {
-    const access_token = this.authService.login(req.user, false);
+  async handleIntraCallback(@Req() req, @Res({ passthrough: true }) res) {
+    const access_token = await this.authService.login(req.user);
     if (access_token === undefined) {
-      throw new UnauthorizedException();
+      throw new InternalServerErrorException("Couldn't generate access token");
     }
-    res.cookie('access_token', access_token, this.authService.cookieOptions);
+    await res.cookie(
+      'access_token',
+      access_token,
+      this.authService.cookieOptions,
+    );
+    return { message: 'Login successful' };
   }
 
   @Get('google/login')
   @UseGuards(GoogleAuthGuard)
   handleGoogleLogin() {
-    return { message: 'Login initiated successfully' };
+    return { message: 'Login initiated' };
   }
 
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
-  handleGoogleCallback(@Req() req) {
-    return this.authService.login(req.user, false);
+  async handleGoogleCallback(@Req() req, @Res({ passthrough: true }) res) {
+    const access_token = await this.authService.login(req.user);
+    if (access_token === undefined) {
+      throw new InternalServerErrorException("Couldn't generate access token");
+    }
+    await res.cookie(
+      'access_token',
+      access_token,
+      this.authService.cookieOptions,
+    );
+    return { message: 'Login successful' };
   }
 
   @Get('github/login')
   @UseGuards(GithubAuthGuard)
   handleGithubleLogin() {
-    return { message: 'Login initiated successfully' };
+    return { message: 'Login initiated' };
   }
 
   @Get('github/callback')
   @UseGuards(GithubAuthGuard)
-  handleGithubCallback(@Req() req) {
-    return this.authService.login(req.user, false);
+  async handleGithubCallback(@Req() req, @Res({ passthrough: true }) res) {
+    const access_token = await this.authService.login(req.user);
+    if (access_token === undefined) {
+      throw new InternalServerErrorException("Couldn't generate access token");
+    }
+    await res.cookie(
+      'access_token',
+      access_token,
+      this.authService.cookieOptions,
+    );
+    return { message: 'Login successful' };
   }
 
   /* ------------------------------------------------------------------------------------------------------------------ */
 
-  // @Post('2fa/enable')
-  // @UseGuards(JwtAuthGuard)
-  // async enableTwoFaAuth(@Req() req) {
-  //   const user = await this.usersService.findUser({
-  //     id: req.user.id,
-  //   });
-  //   if (user.twoFaEnabled === true) {
-  //     throw new BadRequestException(
-  //       'Two-factor authentication already enabled',
-  //     );
-  //   }
-  //   await this.usersService.updateUserTwoFaEnabled({ id: user.id }, true);
-  //   const twoFaOtpAuthUrl = await this.authService.generateTwoFaOtpAuthUrl(
-  //     user,
-  //   );
-  //   return { twoFaOtpAuthUrl };
-  // }
+  @Post('2fa/enable')
+  @UseGuards(JwtAuthGuard)
+  async enableTwoFaAuth(@Req() req) {
+    const user: User | null = await this.userService.findUser({
+      id: req.user.id,
+    });
+    if (user.twoFactorEnabled === true) {
+      throw new BadRequestException(
+        'Two-factor authentication already enabled',
+      );
+    }
+    await this.userService.updateUserTwoFactorStatus({ id: user.id }, true);
+    const twoFactorOtpAuthUrl =
+      await this.authService.generateTwoFactorOtpAuthUrl(user);
+    return { twoFactorOtpAuthUrl };
+  }
 
-  // @Post('2fa/disable')
-  // @UseGuards(JwtAuthGuard)
-  // async disableTwoFaAuth(@Req() req) {
-  //   const user = await this.usersService.findUser({
-  //     id: req.user.id,
-  //   });
-  //   if (user.twoFaEnabled === false) {
-  //     throw new BadRequestException(
-  //       'Two-factor authentication already disabled',
-  //     );
-  //   }
-  //   await this.usersService.updateUserTwoFaEnabled({ id: user.id }, true);
-  //   const twoFaOtpAuthUrl = await this.authService.generateTwoFaOtpAuthUrl(
-  //     user,
-  //   );
-  //   return { twoFaOtpAuthUrl };
-  // }
+  /* ------------------------------------------------------------------------------------------------------------------ */
 
-  // @Post('2fa/verify')
-  // async checkTwoFaAuth(@Req() req, @Body() body: { twoFaAuthCode: string }) {
-  //   const user = await this.usersService.findUser({
-  //     id: req.user.id,
-  //   });
-  //   if (user.twoFaEnabled === false) {
-  //     throw new BadRequestException('Two-factor authentication disabled');
-  //   } else if (body.twoFaAuthCode === undefined) {
-  //     throw new BadRequestException('Missing authentication code');
-  //   }
-  //   const isCodeValid = await this.authService.isTwoFaAuthCodeValid(
-  //     body.twoFaAuthCode,
-  //     user,
-  //   );
-  //   if (!isCodeValid) {
-  //     throw new UnprocessableEntityException('Wrong authentication code');
-  //   }
-  //   return this.authService.login(req.user, true);
+  @Post('2fa/disable')
+  @UseGuards(JwtAuthGuard)
+  async disableTwoFaAuth(@Req() req, @Res() res) {
+    const user: User | null = await this.userService.findUser({
+      id: req.user.id,
+    });
+    if (user.twoFactorEnabled === false) {
+      throw new BadRequestException(
+        'Two-factor authentication already disabled',
+      );
+    }
+    await this.userService.updateUserTwoFactorStatus({ id: user.id }, false);
+    const access_token = this.authService.login(user);
+    res.cookie('access_token', access_token, this.authService.cookieOptions);
+    return { message: 'Two-factor authentication disabled' };
+  }
+
+  // @Get('fuck')
+  // @UseGuards(JwtAuthGuard)
+  // async verifyTwoFaAuth(@Req() req, @Res() res) {
+  //   return 'fuck you';
   // }
 }
