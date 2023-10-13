@@ -276,6 +276,16 @@ export class GameService {
     return isFriendInOtherRoom;
   }
 
+  getRoomIdByUserId(userId: string): string | undefined {
+    let roomId;
+    this.rooms.forEach((room, key) => {
+      if (room.players.includes(userId)) {
+        roomId = key;
+      }
+    });
+    return roomId;
+  }
+
   getAllRooms = (): Map<
     string,
     {

@@ -18,13 +18,23 @@ export class GameGateway {
 
   private interval: NodeJS.Timeout | null = null;
   private isPaused = false;
-  private count = 0;
   private readonly connectedUsers: { [userId: string]: Socket } = {};
   private readonly gameQueue: { [userId: string]: Socket } = {};
+  private readonly isAllReady: { [roomId: string]: number } = {};
 
-  // handelConnection(client: Socket): void {
-  //   console.log('client connected', client);
-  // }
+  handleConnection(@ConnectedSocket() client: Socket) {
+    client.on('disconnect', () => {
+      console.log('-----------------disconnect-----------------');
+      console.log('disconnect userId:', client.handshake.auth.id);
+      const roomId = this.gameService.getRoomIdByUserId(client.id);
+      if (roomId) {
+        this.server.sockets.in(roomId).emit('friendExitGame');
+        this.gameService.resetGameDate(roomId);
+        this.gameService.deleteRoom(roomId);
+        this.server.in(roomId).socketsLeave(roomId);
+      }
+    });
+  }
 
   // ---------------- sendGameData
   @SubscribeMessage('sendGameData')
@@ -108,6 +118,7 @@ export class GameGateway {
       const clientUserId = client.id;
       const roomId = this.gameService.createRoom(clientUserId);
       client.join(roomId);
+      this.isAllReady[roomId] = 0;
       return roomId;
     } catch (error) {
       console.error('Error in createRoom:', error);
@@ -192,6 +203,7 @@ export class GameGateway {
       this.gameService.resetGameDate(data.roomId);
       this.gameService.deleteRoom(data.roomId);
       this.server.in(data.roomId).socketsLeave(data.roomId);
+      delete this.isAllReady[data.roomId];
     } catch (error) {
       console.error('Error in denyInvitation:', error);
     }
@@ -214,7 +226,6 @@ export class GameGateway {
   addPlayerToQueue(@ConnectedSocket() client: Socket): void {
     try {
       console.log('-----------------addPlayerToQueue-----------------');
-      console.log('addPlayerToQueue userId:', client.handshake.auth.id);
       const userId = client.handshake.auth.id;
       this.gameQueue[userId] = client;
       const queue = Object.keys(this.gameQueue);
@@ -222,18 +233,32 @@ export class GameGateway {
         const player1 = this.gameQueue[queue[0]];
         const player2 = this.gameQueue[queue[1]];
         const roomId = this.gameService.createRoom(player1.id);
+        this.isAllReady[roomId] = 0;
         player1.join(roomId);
         player2.join(roomId);
+        this.gameService.addPlayerToRoom(roomId, player2.id);
         player1.emit('setIsOwner', { isOwner: true, roomId });
         player2.emit('setIsOwner', { isOwner: false, roomId });
-        this.gameService.addPlayerToRoom(roomId, player1.id);
-        this.gameService.addPlayerToRoom(roomId, player2.id);
         this.server.to(roomId).emit('playGame');
         delete this.gameQueue[queue[0]];
         delete this.gameQueue[queue[1]];
       }
     } catch (error) {
       console.error('Error in addPlayerToQueue:', error);
+    }
+  }
+
+  @SubscribeMessage('ImReady')
+  ImReady(@ConnectedSocket() client: Socket, @Body() roomId: string): void {
+    try {
+      console.log('-----------------ImReady-----------------');
+      this.isAllReady[roomId] += 1;
+      if (this.isAllReady[roomId] === 2) {
+        this.server.to(roomId).emit('allready');
+        delete this.isAllReady[roomId];
+      }
+    } catch (error) {
+      console.error('Error in ImReady:', error);
     }
   }
 }
