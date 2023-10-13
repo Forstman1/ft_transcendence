@@ -14,6 +14,9 @@ import {
     Radio
 } from '@chakra-ui/react'
 import { User } from '@/utils/types/chat/ChatTypes';
+// import { setToTrue, setToFalse } from '@/redux/slices/chat/chatSlice';
+import { setUser, clearuser } from '@/redux/slices/chat/chatSlice';
+import { useSelector, useDispatch } from 'react-redux';
 
 
 type Props = {
@@ -25,8 +28,15 @@ type Props = {
 };
 
 
+const getUsers = async() => {
+
+    const res = await fetch('http://localhost:3001/users')
+    return res.json()
+}
+
 
 function Usercard(props: any) {
+
 
     const { data, selectedOption, onOptionChange } = props;
 
@@ -38,7 +48,7 @@ function Usercard(props: any) {
 
     return (
         
-    <div onClick={handleChange} className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md  '>
+    <div onClick={handleChange} className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md'>
         <div>
             <Avatar boxSize={12}>
                 <AvatarBadge boxSize={6} bg='green' />
@@ -63,13 +73,15 @@ function Usercard(props: any) {
 
 export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Props) {
 
+
     const users1: User[] = []
     const url = 'http://localhost:3001/users';
     const [Users, setUsers]: any = useState([])
     const [selectedOption, setSelectedOption]: any = useState('');
     const toast = useToast()
-
+    
     useEffect(() => {
+        
         async function fetchData () {
             const api = await fetch(url)
             const response = await api.json()
@@ -87,6 +99,9 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
 
     };
 
+    const dispatch = useDispatch()
+
+    const { user } = useSelector((state : any) => state.userID)
 
     const handleSubmit = () => {
 
@@ -98,6 +113,9 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
                 
             }
             setNewUsers([user, ...users])
+        }
+        else {
+            dispatch(setUser(selectedOption.id))
         }
         onClose()
     }

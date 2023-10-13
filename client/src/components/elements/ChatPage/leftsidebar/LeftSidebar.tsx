@@ -1,8 +1,8 @@
 "use client";
 
 import { SmallAddIcon } from '@chakra-ui/icons';
-import { Avatar, AvatarBadge,  Icon,  useDisclosure, Modal } from '@chakra-ui/react';
-import React, {  useEffect, useState } from 'react'
+import { Avatar, AvatarBadge,  Icon,  useDisclosure, Modal, background } from '@chakra-ui/react';
+import React, {  useEffect, useState, useRef, use } from 'react'
 import Newchannel from './newchannel';
 
 
@@ -12,21 +12,24 @@ import Search from './search';
 import { Channel, User } from '@/utils/types/chat/ChatTypes';
 import { useSelector } from 'react-redux';
 import { PrismaClient } from '@prisma/client';
-// type ChannelValues = {
-//   id:  string
-//   channelName: string
-//   type: string
-// }
+import { inView } from 'framer-motion';
 
 
-async function getUsers() {
-  // const res = await fetch()
-}
+
 
 function Usercard(props: any) {
 
-  return (<div className='flex justify-between items-center  cursor-pointer m-2 ml-0 p-2  rounded-md'
-  onClick={() => console.log("ana hna")}>
+  // const { inView: boolean } = useSelector((state: any) => state.counter)
+  const { user } = useSelector((state : any) => state.userID)
+  
+  const scroolToRef = useRef<HTMLDivElement>(null)
+
+  return (
+  
+  <div ref={scroolToRef} className='flex justify-between items-center cursor-pointer m-2 ml-0 p-2 rounded-md'
+  onClick={() => { scroolToRef.current?.scrollIntoView({ block: 'nearest', inline: 'start' }); }}
+  {...(user === props.data.id ? scroolToRef.current?.scrollIntoView({ block: 'nearest', inline: 'start' }) && {bg: 'bg-zinc-300'} : {})}
+  >
 
     <div> 
       <Avatar className='custom-shadow border-[1px] border-black' boxSize={14}>
@@ -82,7 +85,7 @@ export default function LeftSidebar() {
 
   return (
 
-      <div className='hidden  md:flex justify-center w-[350px]  flex-col items-center xl:w-[465px] '>
+      <div className='hidden  md:flex justify-center w-[350px] flex-col items-center xl:w-[465px]'>
         <Search
           channels={channels}
           users={users}
@@ -110,7 +113,10 @@ export default function LeftSidebar() {
         <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
 
           {users.map((data: User) => {
-            return <Usercard data={data} />
+            return <Usercard 
+            key={data.username}
+            data={data} 
+            />
           })}
 
         </div>

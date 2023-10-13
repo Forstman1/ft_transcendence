@@ -6,18 +6,8 @@ import Hashtag from '../leftsidebar/hatshtag'
 import Newchannel from '../leftsidebar/newchannel'
 import Newmessage from '../leftsidebar/newmessage'
 import { SmallAddIcon } from '@chakra-ui/icons'
+import { Channel, User } from '@/utils/types/chat/ChatTypes';
 
-type ChannelValues = {
-  channelName: string
-  password: string
-  type: string
-}
-
-type UserValues = {
-  userName: string
-  id: string
-  onlineStatus: string
-}
 
 
 function Usercard(props: any) {
@@ -58,9 +48,9 @@ export default function MobileLeftBar({LeftIsOpen, setLeftIsOpen}: any) {
   
   
     
-  if (!inView) {
-    setLeftIsOpen(false)
-  }
+  // if (!inView) {
+  //   setLeftIsOpen(false)
+  // }
 
     const sidebar = {
         open: (height = 1000) => ({
@@ -104,8 +94,8 @@ export default function MobileLeftBar({LeftIsOpen, setLeftIsOpen}: any) {
 
         <div className='flex w-[80%]  h-[200px] flex-col mt-[30px]  gap-6 overflow-y-scroll'>
 
-          {channels.map((data: ChannelValues) => {
-            if (data.channelName)
+          {channels.map((data: Channel) => {
+            if (data.name)
               return <Hashtag data={data} />
           })}
 
@@ -118,8 +108,10 @@ export default function MobileLeftBar({LeftIsOpen, setLeftIsOpen}: any) {
 
         {/* <div className=' mt-[50px] flex  h-[300px] flex-col gap-6 overflow-y-scroll'> */}
 
-          {users.map((data: UserValues) => {
-            return <Usercard data={data} />
+          {users.map((data: User) => {
+            return <Usercard 
+            key={data.username}
+            data={data} />
           })}
 
         {/* </div> */}

@@ -17,9 +17,9 @@ export default function MobileRightBar({ RightIsOpen, setRightIsOpen }: any) {
   const inView = useInView(ref)
   const toast = useToast()
 
-  if (!inView) {
-    setRightIsOpen(false)
-  }
+  // if (!inView) {
+  //   setRightIsOpen(false)
+  // }
 
 
   const sidebar = {
