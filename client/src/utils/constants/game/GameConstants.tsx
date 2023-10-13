@@ -71,20 +71,20 @@ export const BackgroundsImg = [
 ];
 
 export const initialCanvasSize = {
-  width: 1500,
-  height: 600,
+  width: 1400,
+  height: 500,
 };
 
 export const initialLeftPaddle = {
   x: 10,
-  y: initialCanvasSize.height / 2,
+  y: initialCanvasSize.height / 2 - 50,
   width: 15,
-  height: initialCanvasSize.height / 5,
+  height: initialCanvasSize.height / 5 ,
 };
 
 export const initialRightPaddle = {
   x: initialCanvasSize.width - 25,
-  y: initialCanvasSize.height / 2,
+  y: initialCanvasSize.height / 2 - 50,
   width: 15,
   height: initialCanvasSize.height / 5,
 };

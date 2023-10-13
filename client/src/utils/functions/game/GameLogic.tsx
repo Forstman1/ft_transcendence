@@ -80,10 +80,13 @@ export const draw = (
   context.stroke();
   context.setLineDash([]);
 
+  const aspectRatio = canvas.width / canvas.height;
+  const scaledRadius = ball.radius * Math.sqrt(aspectRatio);
+
   // Draw the ball
   context.fillStyle = balColor;
   context.beginPath();
-  context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+  context.ellipse(ball.x, ball.y, scaledRadius, ball.radius, 0, 0, Math.PI * 2);
   context.fill();
 
   // Draw the rounded rectangles

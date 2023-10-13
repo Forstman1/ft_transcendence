@@ -34,13 +34,30 @@ import {
   initialGameEndStatic,
 } from "@/utils/constants/game/GameConstants";
 
+type throttleProps = {
+  // eslint-disable-next-line no-unused-vars
+  func: (...args: any) => void;
+  delay: number;
+};
+
+function throttle({ func, delay }: throttleProps) {
+  let lastCall = 0;
+  return function (...args: any) {
+    const now = new Date().getTime();
+    if (now - lastCall >= delay) {
+      lastCall = now;
+      func(...args);
+    }
+  };
+}
+
 
 export default function GameBotPage() {
   let gameSettings = useAppSelector((state) => state.gameReducer);
   appliyGameMode(gameSettings);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [keysPressed, setKeysPressed] = useState<Record<string, boolean>>({});
-  const canvasSize = initialCanvasSize;
+  const [canvasSize, setCanvasSize] = useState(initialCanvasSize);
   const leftRectangleRef = useRef<Rectangle>(initialLeftPaddle);
   const rightRectangleRef = useRef<Rectangle>(initialRightPaddle);
   const initialBallState: Ball = {
@@ -48,9 +65,7 @@ export default function GameBotPage() {
     y: initialCanvasSize.height / 2,
     speedX: initialBallSpeed,
     speedY: initialBallSpeed,
-    radius: Math.floor(
-      (initialCanvasSize.width + initialCanvasSize.height) / 150
-    ),
+    radius: Math.floor((canvasSize.width + canvasSize.height) / 160),
   };
   const [ball, setBall] = useState<Ball>(initialBallState);
   const [leftScore, setLeftScore] = useState<number>(0);
@@ -72,6 +87,64 @@ export default function GameBotPage() {
   const [botPoints, setBotPoints] = useState<number>(0);
   const [userPoints, setUserPoints] = useState<number>(0);
   const [gamePause, setGamePause] = useState<boolean>(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const aspectRatioWidth = 16;
+      const aspectRatioHeight = 9;
+      const newCanvasWidth = window.innerWidth;
+      const newCanvasHeight = (newCanvasWidth / aspectRatioWidth) * aspectRatioHeight;
+
+      setCanvasSize({
+        width: newCanvasWidth,
+        height: newCanvasHeight,
+      });
+
+      setLeftRectangle((prev) => ({
+        ...prev,
+        x: 10,
+        y: newCanvasHeight / 2 - newCanvasHeight / 10,
+        height: newCanvasHeight / 5,
+      }));
+
+      setRightRectangle((prev) => ({
+        ...prev,
+        x: newCanvasWidth - 25,
+        y: newCanvasHeight / 2 - newCanvasHeight / 10,
+        height: newCanvasHeight / 5,
+      }));
+
+      setBall({
+        x: newCanvasWidth / 2,
+        y: newCanvasHeight / 2,
+        speedX: initialBallSpeed,
+        speedY: initialBallSpeed,
+        radius: Math.floor((newCanvasWidth + newCanvasHeight) / 160),
+      });
+
+      // Redraw the canvas with updated positions
+      const context = canvasRef.current?.getContext("2d");
+      if (context)
+        draw(
+          canvasRef.current!,
+          context,
+          leftRectangle,
+          rightRectangle,
+          ball,
+          gameSettings
+        );
+    };
+
+    handleResize();
+
+    const handleResizeThrottled = throttle({ func: handleResize, delay: 200 });
+
+    window.addEventListener("resize", handleResizeThrottled);
+
+    return () => {
+      window.removeEventListener("resize", handleResizeThrottled);
+    };
+  }, []);
 
   //---------------------------------------------------------------------------
 
@@ -215,7 +288,7 @@ export default function GameBotPage() {
   
       const botInterval = setInterval(() => {
         botMove(ball, leftRectangle, canvasSize.height, prevErrorRef, setLeftRectangle);
-      }, 200); // Adjust the interval as needed
+      }, 200);
   
       return () => {
         cancelAnimationFrame(animationFrameId);
@@ -275,6 +348,7 @@ export default function GameBotPage() {
                             <GameEndStatic
                               opponent={gameEndStatic.bot}
                               user={gameEndStatic.user}
+                              isFriendMode={false}
                             />
                           </div>
                         </>

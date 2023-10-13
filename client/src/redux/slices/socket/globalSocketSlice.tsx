@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { io, Socket } from "socket.io-client";
 
 let playerId: number | null = null;
+// let isOnline: boolean = true;
 
 function assignPlayerId() {
   if (playerId === null) {
@@ -9,6 +10,16 @@ function assignPlayerId() {
     console.log(`Player ID assigned: ${playerId}`);
   }
 }
+
+// window.addEventListener("online",() => {
+//   isOnline = true;
+// }
+// );
+
+// window.addEventListener("offline",() => {
+//   isOnline = false;
+// }
+// );
 
 assignPlayerId();
 
@@ -18,7 +29,8 @@ const socket = io('http://localhost:3001', {
   auth: {
     id: playerId,
   },
-});
+}
+)
 
 export interface GlobalSocketState {
   socket: Socket | null;

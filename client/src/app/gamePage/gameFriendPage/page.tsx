@@ -8,7 +8,6 @@ import GameHeader from "../ui/GameFriendHeader";
 import Image from "next/image";
 import { useAppSelector } from "@/redux/store/store";
 import GameSideBar from "../ui/GameSideBar";
-import LoadingScreen from "@/components/elements/loadingScreen/LoadingScreen";
 import { motion } from "framer-motion";
 import GameEndStatic from "../ui/GameEndStatic";
 import { BackgroundsImg } from "@/utils/constants/game/GameConstants";
@@ -33,7 +32,6 @@ import {
   initialGameEndStatic,
 } from "@/utils/constants/game/GameConstants";
 
-// let clientId: string;
 
 export default function GameFriendPage() {
   let gameSettings = useAppSelector((state) => state.gameReducer);
@@ -45,13 +43,13 @@ export default function GameFriendPage() {
   appliyGameMode(gameSettings);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [keysPressed, setKeysPressed] = useState<Record<string, boolean>>({});
-  const canvasSize = initialCanvasSize;
+  const [canvasSize, setCanvasSize] = useState(initialCanvasSize);
   const initialBallState: Ball = {
     x: canvasSize.width / 2,
     y: canvasSize.height / 2,
     speedX: initialBallSpeed,
     speedY: initialBallSpeed,
-    radius: Math.floor((canvasSize.width + canvasSize.height) / 150),
+    radius: Math.floor(canvasSize.height / 50),
   };
   const leftPaddleRef = useRef<Rectangle>(initialLeftPaddle);
   const rightPaddleRef = useRef<Rectangle>(initialRightPaddle);
@@ -75,12 +73,23 @@ export default function GameFriendPage() {
   const [gamePause, setGamePause] = useState<boolean>(false);
   const [hasInitialized, setHasInitialized] = useState(false);
 
+  window.addEventListener('offline', () => {
+    if (
+      socket &&
+      socket.io &&
+      socket.io.engine &&
+      socket.io.engine.transport
+    ) {
+      socket.io.engine.transport.close()
+    }
+  })
+
   //--------------------------------Socket Code logic-------------------------------------------
+
 
   useEffect(() => {
 
     if (socket !== null && roomId !== "") {
-      console.log("socket is not null");
       let prevLeftScore = 0;
       let prevRightScore = 0;
       
@@ -90,7 +99,7 @@ export default function GameFriendPage() {
           y: (data.ball.y * canvasSize.height) / 100,
           speedX: (data.ball.speedX * canvasSize.width) / 100,
           speedY: (data.ball.speedY * canvasSize.height) / 100,
-          radius: (data.ball.radius * Math.max(canvasSize.width, canvasSize.height)) / 100,
+          radius: (data.ball.radius * canvasSize.height) / 100,
         });
         setLeftPaddle({
           x: (data.leftPaddle.x * canvasSize.width) / 100,
@@ -129,12 +138,14 @@ export default function GameFriendPage() {
 
   const closeSocketConnection = () => {
     if (socket) {
-      socket.emit("endGame", roomId);
-      socket.off("GetGameData");
+      if (socketState.isOwner) {
+        socket.emit("endGame", roomId);
+      }
     }
   };
 
   useEffect(() => {
+    if (!socketState.isOwner) return;
     if (gameStarted && !hasInitialized && roomId !== "") {
       const initCanvasData = {
         ball: {
@@ -142,7 +153,7 @@ export default function GameFriendPage() {
           y: 50,
           speedX: (initialBallState.speedX * 100) / canvasSize.width,
           speedY: (initialBallState.speedY * 100) / canvasSize.height,
-          radius: (Math.floor((canvasSize.width + canvasSize.height) / 150) / Math.max(canvasSize.width, canvasSize.height)) * 100,
+          radius: (Math.floor(canvasSize.height / 50) * 100) / canvasSize.height,
           maxBallSpeed: (maxBallSpeed * 100) / canvasSize.width,
         },
         leftPaddle: {
@@ -179,17 +190,16 @@ export default function GameFriendPage() {
         height: (rightPaddle.height  * 100) / canvasSize.height,
       },
     };
-    
-    socket?.emit("updatePaddles", {canvasData, roomId});
+      socket?.emit("updatePaddles", {canvasData, roomId});
     }
    }, [leftPaddle, rightPaddle]);
 
   useEffect(() => {
-    if (roomId == "") return;
-    if (gameEnded){
+    if (roomId == "" || !socketState.isOwner) return;
+    if (gameEnded) {
       closeSocketConnection();
     }
-    if (!gameStarted && !gameEnded) {
+    if (!gameStarted && !gameEnded ) {
       socket?.emit("pauseGame", roomId);
     }
     else if (gameStarted && !gameEnded) {
@@ -197,6 +207,23 @@ export default function GameFriendPage() {
     }
   }, [gameEnded, gameStarted]);
 
+  socket?.on("friendExitGame", () => {
+    setGameEnded(true);
+    if (socketState.isOwner) {
+      setGameEndStatic({
+        bot: "LOSE",
+        user: "WIN"
+      });
+    }
+    else {
+      setGameEndStatic({
+        bot: "WIN",
+        user: "LOSE"
+      })
+    }
+  }
+  );
+  
   //----------------------------------end Socket code Logic-----------------------------------------
 
   useEffect (() => {
@@ -354,7 +381,7 @@ export default function GameFriendPage() {
                     className="relative flex items-center bg-background-primary rounded-lg h-[55vh] w-full max-w-[1200px]"
                   >
                     <div className="absolute top-0 left-0 w-full h-full rounded-lg z-10">
-                      {!gameStarted && !gameEnded && (
+                      {!gameStarted && !gameEnded  && (
                         <div className="w-full h-full">
                           <Countdown
                             seconds={3}
@@ -370,6 +397,7 @@ export default function GameFriendPage() {
                             <GameEndStatic
                               opponent={gameEndStatic.bot}
                               user={gameEndStatic.user}
+                              isFriendMode={true}
                             />
                           </div>
                         </>
