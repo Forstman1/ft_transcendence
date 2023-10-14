@@ -11,6 +11,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addMessage } from '@/redux/slices/channel/channelSlice';
 import { Message } from '@/utils/types/chat/ChatTypes';
 import { useMutation } from 'react-query';
+import MobileFooter from './Mobile/MobileFooter';
+
 
 
 function Message_other({ message, sender, time }: any) {
@@ -114,13 +116,13 @@ export default function ChatWindow() {
 
 
   return (
-    <div className='flex-grow flex justify-between border-l-[3px] border-black flex-col gap-[10px] z-0'>
+    <div className='flex justify-between flex-col gap-[10px] z-0 w-full'>
       <div className=' flex flex-col gap-[10px] overflow-y-scroll z-0 h-[90%] ' ref={chatContainer}>
 
 
         {messages.map((message: Message, index: number) => {
           
-          if (message.authorName === "sahafid") {
+          if (message.authorName === "sahafid") { 
             return <Own_Message key={index} message={message.content} sender={message.authorName} time={message.createdAt} />
           }
           return <Message_other key={index} message={message.content} sender={message.authorName} time={message.createdAt} />
@@ -139,15 +141,10 @@ export default function ChatWindow() {
               loop={true}
               autoplay={true}
             />
-
           </div>
         </div>
-
-
-
-
       </div>
-      <form onSubmit={handleSubmit(handelNewMessage)} className='h-[55px] mb-[15px] flex w-[100%] justify-around items-center  '>
+      <form onSubmit={handleSubmit(handelNewMessage)} className='h-[55px] mb-[15px] flex justify-around items-center'>
         <Input {...register("newmessage")} className='bg-[#D9D9D9] border-2 rounded-ld w-[90%] border-black h-[100%]' placeholder='Type your message here ...' />
         <button type='submit' className='bg-black w-[50px] rounded-md cursor-pointer flex justify-start items-center h-[100%]'>
           <Image className=' w-[40px] ' src={arrow} alt='arrow' />

@@ -12,9 +12,8 @@ import Search from './search';
 import { Channel, User } from '@/utils/types/chat/ChatTypes';
 import { useSelector } from 'react-redux';
 import { PrismaClient } from '@prisma/client';
+import { Box, Flex } from '@chakra-ui/layout';
 import { inView } from 'framer-motion';
-
-
 
 
 function Usercard(props: any) {
@@ -24,10 +23,15 @@ function Usercard(props: any) {
   
   const scroolToRef = useRef<HTMLDivElement>(null)
 
+  let pathname : string = '';
+  
   return (
   
-  <div ref={scroolToRef} className='flex justify-between items-center cursor-pointer m-2 ml-0 p-2 rounded-md'
-  onClick={() => { scroolToRef.current?.scrollIntoView({ block: 'nearest', inline: 'start' }); }}
+  <Box ref={scroolToRef} className='flex justify-between items-center cursor-pointer m-2 ml-0 p-2 rounded-md active:bg-zinc-300'
+
+  
+  id={pathname === props.id ? 'active' : ''}
+  onClick={() => pathname = props.data.id}
   {...(user === props.data.id ? scroolToRef.current?.scrollIntoView({ block: 'nearest', inline: 'start' }) && {bg: 'bg-zinc-300'} : {})}
   >
 
@@ -48,7 +52,7 @@ function Usercard(props: any) {
       <div className='rounded-full bg-black w-5 h-5 flex items-center justify-center text-[20px] text-white'>3</div>
     </div>
 
-  </div>)
+  </Box>)
 }
 
 
@@ -85,7 +89,12 @@ export default function LeftSidebar() {
 
   return (
 
-      <div className='hidden  md:flex justify-center w-[350px] flex-col items-center xl:w-[465px]'>
+    <Box className='LeftSideBar grid border-r-[3px] border-r-black w-[70%] overflow-y-scroll place-items-center sm:w-[300px] md:w-[465px]'
+      // as={motion.div}
+      // initial={false}
+      // animate={LeftClice.LeftValue ? "open" : "closed"}
+      // variants={sidebar}
+    >
         <Search
           channels={channels}
           users={users}
@@ -134,7 +143,7 @@ export default function LeftSidebar() {
           users={users}
         />
       </Modal>}
-      </div>
+      </Box>
 
   )
 }

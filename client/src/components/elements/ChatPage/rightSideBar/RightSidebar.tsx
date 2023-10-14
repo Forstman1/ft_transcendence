@@ -9,17 +9,21 @@ import Link from 'next/link'
 import { useToast } from '@chakra-ui/react'
 import ChannelMemberActions from './ChannelMemberActions'
 import UserControls from './UserControls'
+import { useSelector, useDispatch } from 'react-redux'
 
 
 
 
 export default function RightSidebar() {
-
+  
+  const { MidleClice } = useSelector((state: any) => state.mobile)
+  const { LeftClice } = useSelector((state: any) => state.mobile)
+  const { RightClice } = useSelector((state: any) => state.mobile)
 
   const toast = useToast();
 
   return (
-    <Box className='Main-Box hidden md:block h-full w-[300px] overflow-y-auto border-l-[3px] border-l-black gap-10 pt-6 xl:w-[465px]'>
+    <Box className='LeftSideBar grid border-l-[3px] border-l-black w-[70%] overflow-y-scroll place-items-center sm:w-[300px] md:w-[565px]'>
       <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7 '>
         <Text className='flex text-black text-4xl drop-shadow-[2px_2px_0_rgba(18,18,18,.0.50)]'>
           user_455013

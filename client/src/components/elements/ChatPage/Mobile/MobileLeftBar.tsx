@@ -7,10 +7,12 @@ import Newchannel from '../leftsidebar/newchannel'
 import Newmessage from '../leftsidebar/newmessage'
 import { SmallAddIcon } from '@chakra-ui/icons'
 import { Channel, User } from '@/utils/types/chat/ChatTypes';
+import { useSelector, useDispatch } from 'react-redux'
 
 
 
 function Usercard(props: any) {
+
 
   return (<div className='flex justify-between items-center  cursor-pointer m-2 ml-0 p-2  rounded-md'>
 
@@ -34,8 +36,13 @@ function Usercard(props: any) {
   </div>)
 }
 
-export default function MobileLeftBar({LeftIsOpen, setLeftIsOpen}: any) {
+export default function MobileLeftBar({ LeftIsOpen, setLeftIsOpen }: any) {
+  
 
+  const { MidleClice } = useSelector((state: any) => state.mobile)
+  const { LeftClice } = useSelector((state: any) => state.mobile)
+  const { RightClice } = useSelector((state: any) => state.mobile)
+  console.log(LeftClice)
     const ref = React.useRef(null)
     const inView = useInView(ref)
 
@@ -45,14 +52,10 @@ export default function MobileLeftBar({LeftIsOpen, setLeftIsOpen}: any) {
   
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [ChannelOrUser, setChannelOrUser] = useState(false)
-  
-  
-    
-  // if (!inView) {
-  //   setLeftIsOpen(false)
-  // }
 
-    const sidebar = {
+
+  const sidebar = {
+     
         open: (height = 1000) => ({
           width: "300px",
           clipPath: `circle(${height * 2 + 200}px at 90% 90%)`,
@@ -75,10 +78,10 @@ export default function MobileLeftBar({LeftIsOpen, setLeftIsOpen}: any) {
 
 
   return (
-    <Box ref={ref} className='h-screen w-[300px] overflow-y-scroll border-r-[3px] flex flex-col items-center  border-r-black gap-10 pt-6 z-0 sm:[300] md:hidden'
+    <Box ref={ref} className='h-screen overflow-y-scroll border-r-[3px] border-r-black  items-center  gap-10 pt-6 z-0 md:hidden'
     as={motion.div}
     initial={false}
-    animate={LeftIsOpen ? "open" : "closed"}
+      animate={LeftClice.LeftValue ? "open" : "closed"}
     variants={sidebar}
     >
       
