@@ -29,7 +29,7 @@ export default function MobileFooter({LeftIsOpen, setLeftIsOpen, RightIsOpen, se
           onClick={() => {
             dispatch(setLeft(!LeftClice.LeftValue))
             dispatch(setRight(false))
-            dispatch(setMidle(!MidleClice.MidleValue))
+            // dispatch(setMidle(!MidleClice.MidleValue))
           }}
           textColor={LeftIsOpen ? "black": "white"}
           style={{backgroundColor: LeftIsOpen ? "white": "black"}}
@@ -42,7 +42,7 @@ export default function MobileFooter({LeftIsOpen, setLeftIsOpen, RightIsOpen, se
           onClick={() => {
             dispatch(setLeft(false))
             dispatch(setRight(false))
-            dispatch(setMidle(!MidleClice.MidleValue))
+            // dispatch(setMidle(!MidleClice.MidleValue))
           }}
           textColor={MidleButton ? "black": "white"}
           style={{backgroundColor: MidleButton ? "white": "black"}}
@@ -55,10 +55,10 @@ export default function MobileFooter({LeftIsOpen, setLeftIsOpen, RightIsOpen, se
           onClick={() => {
             dispatch(setLeft(false))
             dispatch(setRight(!RightClice.RightValue))
-            dispatch(setMidle(false))
-          }} 
-            textColor={RightIsOpen ? "black": "white"}
-            style={{backgroundColor: RightIsOpen ? "white": "black"}}
+            // dispatch(setMidle(!MidleClice.MidleValue))
+          }}
+          textColor={RightIsOpen ? "black": "white"}
+          style={{backgroundColor: RightIsOpen ? "white": "black"}}
           >
             <IoSettingsOutline />
             Settings

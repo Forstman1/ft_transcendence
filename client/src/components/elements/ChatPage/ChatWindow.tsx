@@ -12,6 +12,7 @@ import { addMessage } from '@/redux/slices/channel/channelSlice';
 import { Message } from '@/utils/types/chat/ChatTypes';
 import { useMutation } from 'react-query';
 import MobileFooter from './Mobile/MobileFooter';
+import { setLeft, setRight, setMidle } from '@/redux/slices/chat/MobileSlice';
 
 
 
@@ -58,6 +59,8 @@ export default function ChatWindow() {
   const messages: Message[] = useSelector((state:any) => state.channel.messages);
   const userId = useSelector((state:any) => state.channel.userId)
   const dispatch = useDispatch();
+  const { LeftClice } = useSelector((state: any) => state.mobile)
+  const { RightClice } = useSelector((state: any) => state.mobile)
 
 
 
@@ -112,12 +115,9 @@ export default function ChatWindow() {
 
 
 
-
-
-
   return (
-    <div className='flex justify-between flex-col gap-[10px] z-0 w-full'>
-      <div className=' flex flex-col gap-[10px] overflow-y-scroll z-0 h-[90%] ' ref={chatContainer}>
+    <div className='justify-between flex-col gap-[10px] w-full h-full'>
+      <div className=' flex flex-col gap-[10px] overflow-y-scroll z-0 h-[91%] ' ref={chatContainer}>
 
 
         {messages.map((message: Message, index: number) => {
@@ -145,7 +145,9 @@ export default function ChatWindow() {
         </div>
       </div>
       <form onSubmit={handleSubmit(handelNewMessage)} className='h-[55px] mb-[15px] flex justify-around items-center'>
-        <Input {...register("newmessage")} className='bg-[#D9D9D9] border-2 rounded-ld w-[90%] border-black h-[100%]' placeholder='Type your message here ...' />
+        <Input {...register("newmessage")} className='bg-[#D9D9D9] border-2 rounded-ld w-[90%] border-black h-[100%]' placeholder='Type your message here ...' 
+        onClick={() => {dispatch(setRight(false)); dispatch(setLeft(false))}}
+        />
         <button type='submit' className='bg-black w-[50px] rounded-md cursor-pointer flex justify-start items-center h-[100%]'>
           <Image className=' w-[40px] ' src={arrow} alt='arrow' />
         </button>

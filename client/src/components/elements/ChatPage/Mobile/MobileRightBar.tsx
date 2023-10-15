@@ -13,14 +13,7 @@ import Image from 'next/image'
 
 export default function MobileRightBar({ RightIsOpen, setRightIsOpen }: any) {
 
-  const ref = React.useRef(null)
-  const inView = useInView(ref)
   const toast = useToast()
-
-  // if (!inView) {
-  //   setRightIsOpen(false)
-  // }
-
 
   const sidebar = {
     open: (height = 1000) => ({
@@ -45,7 +38,7 @@ export default function MobileRightBar({ RightIsOpen, setRightIsOpen }: any) {
   };
 
   return (
-    <Box ref={ref} className='h-screen w-[300px] overflow-y-scroll border-l-[3px] border-l-black gap-10 pt-6 z-0 sm:[300] md:hidden'
+    <Box  className='h-screen w-[300px] overflow-y-scroll border-l-[3px] border-l-black gap-10 pt-6 z-0 sm:[300] md:hidden'
       as={motion.div}
       initial={false}
       animate={RightIsOpen ? "open" : "closed"}

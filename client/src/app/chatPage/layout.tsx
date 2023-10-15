@@ -15,9 +15,8 @@ export interface LayoutProps{
 export const Layout: FC<LayoutProps> = ({children}) => {
     return(
         <>
-            <Flex className="Chat_Parent h-[calc(100vh_-_170px)] md:h-[calc(100vh_-_90px)]">
-                {/* <LeftSidebar /> */}
-                {/* <MobileLeftBar /> */}
+            <Flex className="Chat_Parent h-[calc(100vh_-_170px)] md:h-[calc(100vh_-_90px)] ">
+                <LeftSidebar />
                 <div className="Chat_sub_div1 flex-grow flex">
                     {children}
                 </div>

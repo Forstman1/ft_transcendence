@@ -3,7 +3,7 @@ import { combineReducers } from "@reduxjs/toolkit";
 
  const LeftClice = createSlice({
     name: "LeftIsOpen",
-    initialState: { LeftValue: false},
+    initialState: { LeftValue: true},
     reducers: {
         setLeft: (state, action) => {
             state.LeftValue = action.payload;
@@ -13,7 +13,7 @@ import { combineReducers } from "@reduxjs/toolkit";
 
  const RightClice = createSlice({
      name: "RightClice",
-    initialState: { RightValue: false },
+    initialState: { RightValue: true },
     reducers: {
         setRight: (state, action) => {
             state.RightValue = action.payload;

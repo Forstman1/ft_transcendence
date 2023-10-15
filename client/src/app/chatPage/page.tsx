@@ -23,13 +23,14 @@ export default function ChatPage() {
 
   const { LeftClice } = useSelector((state: any) => state.mobile)
   const { RightClice } = useSelector((state: any) => state.mobile)
-  console.log(LeftClice, RightClice)
+  const { MidleClice } = useSelector((state: any) => state.mobile)
+  
   return (
-    <div className="Chat_sub_div2 flex flex-grow w-full">
-        {/* <MobileLeftBar LeftIsOpen={LeftIsOpen} setLeftIsOpen={setLeftIsOpen} /> */}
-        {/* {!LeftClice.LeftValue && !RightClice.RightValue && <ChatWindow />} */}
+    <div className="Chat_sub_div2 flex flex-grow w-full ">
+        <ChatWindow />
         <RightSidebar />
-         {/* <MobileRightBar RightIsOpen={RightIsOpen} setRightIsOpen={setRightIsOpen} /> */}
     </div>
+
+    
   );
 }

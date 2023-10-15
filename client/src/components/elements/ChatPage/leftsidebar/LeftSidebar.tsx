@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux';
 import { PrismaClient } from '@prisma/client';
 import { Box, Flex } from '@chakra-ui/layout';
 import { inView } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 
 function Usercard(props: any) {
@@ -86,14 +87,40 @@ export default function LeftSidebar() {
     fetchData()
   }, [])
 
+  const { MidleClice } = useSelector((state: any) => state.mobile)
+  const { LeftClice } = useSelector((state: any) => state.mobile)
+  const { RightClice } = useSelector((state: any) => state.mobile)
+
+  const sidebar = {
+    open: (height = 1000) => ({
+      clipPath: `circle(${height * 2 + 200}px at 90% 90%)`,
+      transition: {
+        type: "spring",
+        stiffness: 20,
+        restDelta: 2
+      }
+    }),
+    closed: {
+
+      width: 0,
+      clipPath: `circle(0px at 10% 90%)`,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 40
+      }
+    }
+  };
+
 
   return (
 
-    <Box className='LeftSideBar grid border-r-[3px] border-r-black w-[70%] overflow-y-scroll place-items-center sm:w-[300px] md:w-[465px]'
-      // as={motion.div}
-      // initial={false}
-      // animate={LeftClice.LeftValue ? "open" : "closed"}
-      // variants={sidebar}
+    // <Box className='LeftSideBar hidden md:grid border-r-[3px] border-r-black overflow-y-scroll place-items-center '
+    <Box className='LeftSideBar place-items-center grid w-[375px] absolute  h-full overflow-y-auto border-r-[3px] border-r-black  md:static md:w-[400px] '
+      as={motion.div}
+      initial={false}
+      animate={LeftClice.LeftValue ? "open" : "closed"}
+      variants={sidebar}
     >
         <Search
           channels={channels}
@@ -114,7 +141,7 @@ export default function LeftSidebar() {
 
         </div>
 
-        <div className='w-[90%] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
+        <div className='w-[80%] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
           <div className='text-[30px] font-bold'>Direct Messages</div>
           <div onClick={() => { onOpen(), setChannelOrUser(false) }} className='cursor-pointer'><Icon boxSize={10} as={SmallAddIcon} /></div>
         </div>
