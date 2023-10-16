@@ -7,6 +7,7 @@ import ChartPie from '@/components/userPage/ChartPie';
 import Collection from '@/components/userPage/Collection';
 import ChartLine from '@/components/userPage/CartLine';
 import FriendList from '@/components/userPage/FriendList';
+import Achievements from '@/components/userPage/Achievements'
 
 
 
@@ -57,15 +58,20 @@ export default function userPage() {
         </Flex>
 
 
-        <Flex className='flex-wrap xl:flex-nowrap md:space-x-4'>
+        <Flex className='flex-wrap xl:flex-nowrap xl:space-x-4'>
             <div className='w-full basis-full xl:basis-1/2 border-2 border-black rounded custom-shadow'>
                 <FriendList />
             </div>
 
-            <div className='w-full basis-full xl:basis-1/2 bg-slate-100'>
-                <div className='w-full'>
-
-                </div>
+            <div className='w-full basis-full xl:basis-1/2'>
+                <Flex className='w-full h-full flex-col justify-between md:space-y-4'>
+                    <div className='h-full border-black border-2 rounded custom-shadow'>
+                        <Achievements />
+                    </div>
+                    <div className='h-full border-black border-2 rounded custom-shadow'>
+                        two
+                    </div>
+                </Flex>
             </div>
         </Flex>
 

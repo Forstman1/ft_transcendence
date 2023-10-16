@@ -25,8 +25,8 @@ export default function FriendList() {
     <>
         <div className='w-full'>
             <Flex className='justify-between border-b-2 border-black'>
-                <h2 className='bg-black text-white py-1 px-4 text-xl'>Friend List</h2>
-                <button className="py-1 px-4 text-xl border-l-2 border-solid border-black">
+                <h2 className='bg-black text-white py-1 px-4 text-lg font-bold'>Friend List</h2>
+                <button className="py-1 px-4 text-lg font-bold border-l-2 border-solid border-black">
                     <Icon as={TriangleDownIcon} boxSize={4} /> Blocked
                 </button>
             </Flex>
