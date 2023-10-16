@@ -63,7 +63,7 @@ export default function RightSidebar() {
 
   return (
    
-    <Box  className='RightSideBar w-[375px] absolute md:block md:static md:w-[465px] h-full overflow-y-auto border-l-[3px] border-l-black pb-28 right-0'
+    <Box  className='RightSideBar w-[375px] absolute md:block backdrop-blur-xl md:static md:w-[465px] h-full overflow-y-auto border-l-[3px] border-l-black pb-28 right-0'
   
       as={motion.div}
       initial={false}

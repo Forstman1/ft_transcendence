@@ -32,8 +32,9 @@ function Usercard(props: any) {
 
   
   id={pathname === props.id ? 'active' : ''}
-  onClick={() => pathname = props.data.id}
+  onClick={() => {console.log(pathname)}}
   {...(user === props.data.id ? scroolToRef.current?.scrollIntoView({ block: 'nearest', inline: 'start' }) && {bg: 'bg-zinc-300'} : {})}
+
   >
 
     <div> 
@@ -116,7 +117,7 @@ export default function LeftSidebar() {
   return (
 
     // <Box className='LeftSideBar hidden md:grid border-r-[3px] border-r-black overflow-y-scroll place-items-center '
-    <Box className='LeftSideBar place-items-center grid w-[375px] absolute  h-full overflow-y-auto border-r-[3px] border-r-black  md:static md:w-[400px] z-10'
+    <Box className='LeftSideBar place-items-center grid w-[375px] absolute  h-full overflow-y-auto border-r-[3px] border-r-black  md:static md:w-[400px] backdrop-blur-xl z-10'
       as={motion.div}
       initial={false}
       animate={LeftClice.LeftValue ? "open" : "closed"}
