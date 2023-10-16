@@ -116,7 +116,7 @@ export default function ChatWindow() {
 
 
   return (
-    <div className='justify-between flex-col gap-[10px] w-full h-full'>
+    <div className='justify-between flex-col gap-[10px] w-full h-full blur-lg md:blur-0'>
       <div className=' flex flex-col gap-[10px] overflow-y-scroll z-0 h-[91%] ' ref={chatContainer}>
 
 
