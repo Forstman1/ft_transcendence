@@ -3,10 +3,10 @@
 import { Flex, Box, Avatar, Container } from '@chakra-ui/react'
 import Image from 'next/image'
 import active  from '@/../public/Icons/online.svg'
-import ChartPie from '@/components/elements/userPage/ChartPie';
-import Collection from '@/components/elements/userPage/Collection';
-import ChartLine from '@/components/elements/userPage/CartLine';
-import FriendList from '@/components/elements/userPage/FriendList';
+import ChartPie from '@/components/userPage/ChartPie';
+import Collection from '@/components/userPage/Collection';
+import ChartLine from '@/components/userPage/CartLine';
+import FriendList from '@/components/userPage/FriendList';
 
 
 
@@ -57,12 +57,12 @@ export default function userPage() {
         </Flex>
 
 
-        <Flex className='md:space-x-4'>
-            <div className='w-full basis-1/2 border-2 border-black rounded custom-shadow'>
+        <Flex className='flex-wrap xl:flex-nowrap md:space-x-4'>
+            <div className='w-full basis-full xl:basis-1/2 border-2 border-black rounded custom-shadow'>
                 <FriendList />
             </div>
 
-            <div className='w-full basis-1/2 bg-slate-100'>
+            <div className='w-full basis-full xl:basis-1/2 bg-slate-100'>
                 <div className='w-full'>
 
                 </div>
