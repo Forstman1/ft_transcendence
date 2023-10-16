@@ -3,19 +3,19 @@
 import { Flex, Box, Avatar, Container } from '@chakra-ui/react'
 import Image from 'next/image'
 import active  from '@/../public/Icons/online.svg'
-import frex from '@/../public/stats/frex2.svg'
-import ChartPie from '@/components/elements/global/ChartPie';
-import Collection from '@/components/elements/global/Collection';
-import ChartLine from '@/components/elements/global/CartLine';
+import ChartPie from '@/components/elements/userPage/ChartPie';
+import Collection from '@/components/elements/userPage/Collection';
+import ChartLine from '@/components/elements/userPage/CartLine';
+import FriendList from '@/components/elements/userPage/FriendList';
 
 
 
 export default function userPage() {
   return (
     <div className="pt-10 container m-auto">
-        <Flex className='flex-wrap lg:flex-nowrap'>
+        <Flex className='flex-wrap lg:flex-nowrap lg:space-x-4'>
             {/* Profile */}
-            <Box className='mb-4 p-0 mr-0 border-solid border-2 border-gray-900 custom-shadow rounded w-full lg:w-1/3 lg:mr-4' p={4} color="black">
+            <Box className='mb-4 p-0 mr-0 border-solid border-2 border-gray-900 custom-shadow rounded w-full lg:w-1/3' p={4} color="black">
                 <div className='w-1/2 bg-black text-white p-1 text-xl rounded-br-lg'>
                     <Image src={active} alt='online' width={30} height={30} className='inline-block mr-4'/>
                     Available
@@ -36,7 +36,9 @@ export default function userPage() {
                 <Flex className='flex-wrap md:flex-nowrap'>
                     <div className='bg-gray-200 border-r-2 border-black w-[100%] md:basis-1/12'>
                         <h4 className='font-bold text-center bg-black text-white text-xl border-r border-white md:h-[15%]'>Team</h4>
-                         <Collection type={'pandora'} />
+                         <div className='md:h-[85%]'>
+                            <Collection type={'pandora'} />
+                         </div>
                     </div>
                     <div className=' border-r-2 border-black w-[100%] md:basis-7/12'>
                         <h4 className='font-bold text-center bg-black text-white text-xl border-r border-white'>Activity</h4>
@@ -53,6 +55,22 @@ export default function userPage() {
                 </Flex>
             </Box>
         </Flex>
+
+
+        <Flex className='md:space-x-4'>
+            <div className='w-full basis-1/2 border-2 border-black rounded custom-shadow'>
+                <FriendList />
+            </div>
+
+            <div className='w-full basis-1/2 bg-slate-100'>
+                <div className='w-full'>
+
+                </div>
+            </div>
+        </Flex>
+
+
+
     </div>
   )
 }

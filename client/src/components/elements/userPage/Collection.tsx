@@ -19,7 +19,7 @@ type CollectionType = {
   
 export default function Collection({ type }: { type: string }) {
     return (
-      <div className={`${Collections[type][1]} w-[100%] md:h-[85%] flex justify-center`}>
+      <div className={`${Collections[type][1]} w-full h-full flex justify-center`}>
         <Image src={Collections[type][0]} alt={type} className='w-16' />
       </div>
     );
