@@ -8,13 +8,13 @@ import {
   UseGuards,
   BadRequestException,
 } from '@nestjs/common';
+import { User } from '@prisma/client';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
 import { IntraAuthGuard } from './guards/intra.guard';
 import { GoogleAuthGuard } from './guards/google.guard';
 import { GithubAuthGuard } from './guards/github.guard';
 import { JwtAuthGuard } from './guards/jwt.guard';
-import { User } from '@prisma/client';
 
 @Controller('auth')
 export class AuthController {
@@ -29,10 +29,10 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   handleLogout(@Res() res) {
     res.clearCookie('access_token', this.authService.cookieOptions);
+    return { message: 'Logout successful' };
   }
 
-  // TODO Check if the authenticated user has an identical email but different username to an existing user
-  // If so, return an error message to the user stating that the email is already in use
+  /* ------------------------------------------------------------------------------------------------------------------ */
 
   @Get('intra/login')
   @UseGuards(IntraAuthGuard)
@@ -55,6 +55,8 @@ export class AuthController {
     return { message: 'Login successful' };
   }
 
+  /* ------------------------------------------------------------------------------------------------------------------ */
+
   @Get('google/login')
   @UseGuards(GoogleAuthGuard)
   handleGoogleLogin() {
@@ -75,6 +77,8 @@ export class AuthController {
     );
     return { message: 'Login successful' };
   }
+
+  /* ------------------------------------------------------------------------------------------------------------------ */
 
   @Get('github/login')
   @UseGuards(GithubAuthGuard)
@@ -116,8 +120,6 @@ export class AuthController {
     return { twoFactorOtpAuthUrl };
   }
 
-  /* ------------------------------------------------------------------------------------------------------------------ */
-
   @Post('2fa/disable')
   @UseGuards(JwtAuthGuard)
   async disableTwoFaAuth(@Req() req, @Res() res) {
@@ -134,10 +136,4 @@ export class AuthController {
     res.cookie('access_token', access_token, this.authService.cookieOptions);
     return { message: 'Two-factor authentication disabled' };
   }
-
-  // @Get('fuck')
-  // @UseGuards(JwtAuthGuard)
-  // async verifyTwoFaAuth(@Req() req, @Res() res) {
-  //   return 'fuck you';
-  // }
 }

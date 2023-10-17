@@ -11,7 +11,13 @@ module.exports = {
       colors: {
         'background-primary':'#121212',
         'text-primary':'#E4E4E4',
-      }
+      },
+      screens: {
+        '3xl': '1600px',
+        '4xl': '1920px',
+        '5xl': '2400px',
+        '6xl': '2880px',
+      },
     },
   },
   plugins: [

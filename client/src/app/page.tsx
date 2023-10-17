@@ -1,28 +1,32 @@
 "use client"
 
 import React from "react";
-import DesktopGamePreview from "../../assets/icons/pongDesktopImage.svg";
-import MobileGamePreview from "../../assets/icons/pongMobileImage.svg";
+import GamePreviewDesktop from "../../assets/icons/pongDesktopImage.svg";
 import Image from "next/image";
-import { Flex, Box, Center, Button } from "@chakra-ui/react";
+import { Box, Center, Button } from "@chakra-ui/react";
 import { PageWrapper } from "./animationWrapper/pageWrapper";
-import { Text } from "@chakra-ui/react";
 import PageDivider from "../../assets/icons/wavesOpacityInversed.svg"
-import BlackBackground from "../../assets/icons/blackBackground.svg"
-
+import BlackBakground from "../../assets/icons/blackBackground.svg"
 
 export function CustomButton(props: any) {
+  const primaryColor = props.inverseColor ? "neutral-950" : "neutral-50";
+  const secondaryColor = props.inverseColor ? "neutral-50" : "neutral-950";
   return (
-    <Button 
-      className={`text-2xl w-44 h-14 max-w-xs border-2 border-${props.borderColor} text-${props.color} bg-${props.backgroundColor}`}
+    <Button
+      className={`
+        text-xl lg:text-2xl 4xl:text-3xl
+        w-20 md:w-24 lg:w-24 xl:w-28 2xl:w-36
+        h-8  md:h-10 lg:h-10 xl:h-12 2xl:h-12
+        border-2 border-neutral-950 text-${secondaryColor} bg-${primaryColor}
+      `}
       as='a' href={props.href}
       size='lg' rounded='sm'
-      boxShadow='0.2rem 0.2rem 0rem 0rem rgb(150,150,150)'
+      boxShadow='0.4rem 0.4rem 0rem 0rem rgb(60,60,60)'
       fontWeight='semibold'
       _hover={{}}
       _active={{
-        transform: 'translate(0.2rem, 0.2rem)',
-        boxShadow: '0rem 0rem 0rem 0rem rgb(20,20,20)',
+        transform: 'translate(0.4rem, 0.4rem)',
+        boxShadow: '0rem 0rem 0rem 0rem rgb(60,60,60)',
       }}
     >
       <Center>
@@ -32,54 +36,88 @@ export function CustomButton(props: any) {
   )
 }
 
-export function PlaySignupButtons(props: any) {
-  const primaryColor = props.inverseColor ? "neutral-950" : "neutral-50";
-  const secondaryColor = props.inverseColor ? "neutral-50" : "neutral-950";
-  return (
-    <Flex className="flex-row justify-evenly gap-6">
-      <CustomButton href="#0" backgroundColor={primaryColor} color={secondaryColor} borderColor={primaryColor}>
-        Play!
-      </CustomButton>
-      <CustomButton href="#0" backgroundColor={secondaryColor} color={primaryColor} borderColor={primaryColor}>
-        Sign Up
-      </CustomButton>
-    </Flex>
-  )
-}
-
-export function HomepageBlackText() {
-  return (
-    <Flex className="flex-col justify-evenly content-center justify-items-center items-center max-w-6xl gap-6">
-      <Box className="pb-10">
-        <Text className="text-neutral-950 text-4xl md:text-5xl lg:text-9xl text-center">The Legacy PONG Game</Text>
-        <Text className="text-neutral-600 text-3xl md:text-4xl lg:text-7xl text-center">as never seen before</Text>
-      </Box>
-      <Text className="text-neutral-500 text-lg md:text-2xl lg:text-3xl text-justify md:text-center max-w-2xl">
-        Pong is a vintage arcade game that revolutionized the world of video gaming.
-        Released in 1972, it emulates a virtual table tennis match. Players control
-        rectangular paddles situated on opposite sides of the screen, tasked with
-        deflecting a small ball and preventing it from breaching their territory.
-      </Text>
-      <Box className="pt-10">
-        <PlaySignupButtons inverseColor={true} />
-      </Box>
-    </Flex>
-  )
-}
+// TODO add a custom cursor for the whole website
+// TODO add a custom favicon
 
 export default function Home() {
   return (
     <PageWrapper>
-      <Box className='border h-full w-screen pt-24'>
-        <Flex className='h-full w-3/4 justify-center items-center m-auto'>
-          <Box className='h-full w-full lg:w-1/2 flex justify-center items-center'>
-            <Image className='h-full w-full lg:max-w-4xl' src={DesktopGamePreview} alt="Pong Desktop Preview" />
-          </Box>
-          <Box className='h-full w-full lg:w-1/2 flex justify-center items-center'>
-            <HomepageBlackText />
-          </Box>
-        </Flex>
+      <div
+        className="flex flex-col xl:flex-row 
+        w-screen min-h-fit
+        px-10 xl:px-30 2xl:px-40 3xl:px-50 4xl:px-60 5xl:px-70 6xl:px-80
+        pt-[6rem] md:pt-[10rem] xl:pt-[16rem] pb-[4rem] md:pb-[10rem]
+        justify-evenly justify-items-center
+        content-center items-center"
+        >
+        <div
+          className="h-full w-full flex-1 hidden xl:flex 
+          justify-evenly justify-items-center
+          content-center items-center"
+        >
+          <Image
+            className="h-full w-full object-cover
+            p-10 xl:p-20 2xl:p-30 "
+            src={GamePreviewDesktop}
+            alt="Pong Game Preview"
+          />
+        </div>
+        <div
+          className="h-full flex flex-col flex-1
+          justify-evenly justify-items-center
+          content-center items-center
+          gap-8 2xl:gap-110 3xl:gap-12 4xl:gap-14 5xl:gap-16 6xl:gap-20"
+        >
+          <div>
+            <p
+              className="text-neutral-950 text-center
+              sm:text-4xl md:text-6xl 
+              xl:text-5xl 2xl:text-5xl 3xl:text-6xl 4xl:text-7xl 5xl:text-8xl 6xl:text-9xl"
+            >
+              The Legacy PONG Game
+            </p>
+            <p
+              className="text-neutral-600 text-center
+              sm:text-2xl md:text-4xl
+              text-3xl xl:text-3xl 2xl:text-3xl 3xl:text-4xl 4xl:text-5xl 5xl:text-6xl 6xl:text-7xl"
+            >
+              as never seen before
+            </p>
+          </div>
+          <div
+            className="block xl:hidden max-w-lg"
+          >
+            <Image src={GamePreviewDesktop} alt="Homepage Image" />
+          </div>
+          <p
+            className="text-neutral-500 text-center
+            max-w-xl xl:max-w-fit
+            text-2xl xl:text-xl 2xl:text-xl 3xl:text-2xl 4xl:text-2xl 5xl:text-3xl 6xl:text-4xl"
+          >
+            Pong is a vintage arcade game that revolutionized the<br className="hidden xl:block"/> world of video gaming.
+            Released in 1972, it emulates a<br className="hidden xl:block"/> virtual table tennis match. Players control
+            rectangular<br className="hidden xl:block"/> paddles situated on opposite sides of the screen, tasked<br className="hidden xl:block"/> with
+            deflecting a small ball and preventing it from<br className="hidden xl:block"/> breaching their territory.
+          </p>
+          <div className="flex flex-row justify-evenly gap-6">
+            <CustomButton href="#0" inverseColor={true}>
+              Play!
+            </CustomButton>
+            <CustomButton href="#0" inverseColor={false}>
+              Sign Up
+            </CustomButton>
+          </div>
+        </div>
+      </div>
+      <Box className="w-full h-5 md:h-10 z-10 relative">
+        <Image src={PageDivider} alt="Page Divider" className="w-full h-full" />
       </Box>
+
+      <div className="w-screen -mt-5 md:-mt-10 z-0 relative">
+        <Image src={BlackBakground} alt="Black Background" className="w-full h-full object-cover"/>
+      </div>
+
+
     </PageWrapper>
   );
 }

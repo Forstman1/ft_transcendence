@@ -37,11 +37,11 @@ import { IconType } from "react-icons";
 import { HamburgerIcon } from '@chakra-ui/icons';
 import { FcGoogle } from 'react-icons/fc';
 import { FaGithub } from 'react-icons/fa6';
-import { FaTwitter } from 'react-icons/fa6';
 
 /* -------------------------------------------------- Local Assets -------------------------------------------------- */
 import WavesDivider from 'assets/icons/wavesOpacity.svg';
 import Logo from '../../../../assets/icons/Logo.svg';
+import LoginThumbnail from '../../../../assets/icons/Auth/undraw_my_password_re_ydq7.svg';
 
 /* --------------------------------------------------- Header Logo -------------------------------------------------- */
 const HeaderLogo = () => {
@@ -110,15 +110,6 @@ const AuthButonsList: Array<AuthButtonObj> = [
     clr: 'white',
     hoverClr:'gray.700',
     icon: FaGithub,
-  },
-  {
-    text: 'Twitter',
-    href: '#0',
-    borderClr: 'cyan.500',
-    bgClr: 'cyan.500',
-    clr: 'white',
-    hoverClr:'cyan.400',
-    icon: FaTwitter,
   },
 ]
 
@@ -214,6 +205,7 @@ export function SignupForm() {
                 <Text className='text-lg text-center text-neutral-600'>
                   to enjoy all of our cool features ✌️
                 </Text>
+              <Image src={LoginThumbnail} alt='Login Thumbnail' className='hidden md:block w-full max-w-[14rem]' />
               </Stack>
             </ModalHeader>
             <ModalCloseButton />
@@ -348,6 +340,7 @@ const HeaderRoutes: React.FC = () => {
 }
 
 /* ------------------------------------------------------------------------------------------------------------------ */
+
 interface HeaderComponents {
   name: string;
   component: React.FC<{}>
@@ -370,7 +363,7 @@ const HEADER_ITEMS: Array<HeaderComponents> = [
 
 const Navbar: React.FC = () => {
   return (
-    <header className='w-full h-16 md:h-24 bg-neutral-950 fixed top-0 z-10'>
+    <header className='w-screen h-16 md:h-24 bg-neutral-950 fixed top-0 z-50'>
 
       <Flex
         className='grid-cols-3 justify-around md:justify-between
@@ -405,7 +398,7 @@ const Navbar: React.FC = () => {
         }
       </Flex>
 
-      <Image src={WavesDivider} alt='Header Decoration' className='w-full h-5' />
+      <Image src={WavesDivider} alt='Header Decoration' className='w-full h-5 -mt-[1px]' />
 
     </header>
   )
