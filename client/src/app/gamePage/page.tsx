@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 // import waitLoading from "../../../assets/animations/waitLoading.json";
 import LodingAnimation from "../../../assets/animations/loadingAnimation.json";
 import Lottie from "lottie-react";
+import pingPong from "../../../assets/images/pingPong.png";
 
 export default function GamePage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -85,7 +86,7 @@ export default function GamePage() {
           />
         </div>
       )}
-      <div className="flex flex-row h-full justify-center items-center mx-[10%]  z-0">
+      <div className="relative flex flex-row h-full justify-center items-center mx-[10%]  z-0">
         <div
           className={`${
             breakpoint === "base" ? "absolute" : "flex"
@@ -100,8 +101,11 @@ export default function GamePage() {
           <div
             className={`flex flex-col justify-center items-center  space-y-6  mx-auto w-[400px] p-10`}
           >
-            <div className="flex flex-col justify-end h-[150px] border-2 rounded-lg items-center ">
+              {/* <div className="absolute -bottom-14 -left-60">
+                <Image src={pingPong} alt="pingPong" width={400} height={400} />
+              </div> */}
               <Button
+                className="rounded-full"
                 colorScheme="teal"
                 variant="outline"
                 bg="white"
@@ -114,9 +118,8 @@ export default function GamePage() {
               >
                 Friend Mode
               </Button>
-            </div>
-            <div className="flex flex-col justify-end h-[150px] border-2 rounded-lg items-center ">
               <Button
+                className="rounded-full"
                 colorScheme="teal"
                 variant="outline"
                 size="lg"
@@ -128,9 +131,8 @@ export default function GamePage() {
               >
                 Training Mode
               </Button>
-            </div>
-            <div className="flex flex-col justify-end h-[150px] border-2 rounded-lg items-center ">
               <Button
+                className="rounded-full"  
                 colorScheme="teal"
                 variant="outline"
                 size="lg"
@@ -142,7 +144,6 @@ export default function GamePage() {
               >
                 Matchmaking
               </Button>
-            </div>
           </div>
         </div>
         <motion.div

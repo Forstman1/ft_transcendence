@@ -11,6 +11,7 @@ import ReduxProvider from "../redux/provider";
 import SplashScreen from "@/components/elements/spalshScreen/SplashScreen";
 import { usePathname } from "next/navigation";
 import GameNotification from "./gamePage/gameNotification/page";
+import Footer from "@/components/elements/Footer/Footer";
 
 const geo = Geo({
   subsets: ['latin'],
@@ -32,7 +33,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={geo.className}>
+      <body className={`${geo.className} h-screen w-screen `}>
         <ReduxProvider>
             <CacheProvider>
               <ChakraProvider>
@@ -41,6 +42,7 @@ export default function RootLayout({
                   <GameNotification />
                   <Navbar />
                   {children}
+                  <Footer />
                 </>
                 }
               </ChakraProvider>
