@@ -12,6 +12,7 @@ export class UsersService {
                     id : userData.id
                 }
             })
+            return adduser
         }
         catch(error){
             return error

@@ -24,7 +24,7 @@ type ChannelState = {
       },
       setMessages: (state, action) => {
         state.messages = action.payload
-        console.log(state.messages)
+        // console.log(state.messages)
       },
       addMessage: (state, action) => {
         state.messages.push(action.payload)

@@ -25,12 +25,9 @@ export default function RightSidebar() {
   const { LeftClice } = useSelector((state: any) => state.mobile)
   const { RightClice } = useSelector((state: any) => state.mobile)
   const isDesktop = useMediaQuery("(min-width: 1000px)")
+
   const toast = useToast();
   const dispatch = useDispatch()
-
-  console.log(MidleClice)
-  console.log(RightClice)
-  console.log(isDesktop)
 
 
   if(isDesktop[0]) {
@@ -38,6 +35,7 @@ export default function RightSidebar() {
     dispatch(setMidle(true))
     dispatch(setLeft(true))
   }
+console.log(isDesktop[0])
 
   const sidebar = {
     open: (height = 1000) => ({
@@ -62,7 +60,7 @@ export default function RightSidebar() {
 
 
   return (
-   
+
     <Box  className='RightSideBar w-[375px] absolute md:block backdrop-blur-xl md:static md:w-[465px] h-full overflow-y-auto border-l-[3px] border-l-black pb-28 right-0'
   
       as={motion.div}
@@ -84,13 +82,23 @@ export default function RightSidebar() {
       <hr className='bg-black h-[2px] mx-10' />
       <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7'>
         <Box className='flex items-center gap-6 w-[220px]'>
-          <Image src={Profile} width={30} height={30} alt="View Profile" />
+          <Image src={Profile} priority={false} width={30} height={30} alt="View Profile" 
+          style={{
+            width: '30px',
+            height: '30px'
+          }}
+          />
           <Link href={'/gamePage'} className='text-2xl cursor-pointer'>
             View Profile
           </Link>
         </Box>
         <Box className='flex items-center gap-6 w-[220px]'>
-          <Image src={InviteToaGame} width={30} height={30} alt="View Profile" />
+          <Image src={InviteToaGame} priority={false} width={30} height={30} alt="View Profile"
+          style={{
+            width: '30px',
+            height: '30px'
+          }}
+          />
           <Text className='text-2xl cursor-pointer' onClick={() => toast({
             title: 'Invitation sent',
             position: 'bottom-right',

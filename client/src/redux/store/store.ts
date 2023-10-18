@@ -5,6 +5,7 @@ import channelReducer from '../slices/channel/channelSlice';
 import globalSocketReducer  from '../slices/socket/globalSocketSlice';
 import userReducer from '../slices/chat/chatSlice'
 import mobileReducer from "../slices/chat/MobileSlice";
+import chatSocketReducer from '../slices/socket/chatSocket';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     channel: channelReducer,
     userID: userReducer,
     globalSocketReducer,
+    chatSocketReducer,
     mobile: mobileReducer,
   },
   middleware: (getDefaultMiddleware) =>

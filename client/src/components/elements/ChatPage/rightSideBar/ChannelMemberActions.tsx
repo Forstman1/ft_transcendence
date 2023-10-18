@@ -25,7 +25,12 @@ export default function ChannelMemberActions() {
       <Box className='flex items-center gap-6 w-[220px]'
       key={image.alt}
       >
-        <Image src={image.src} width={30} height={30} alt={image.alt} />
+        <Image src={image.src} priority={false} width={30} height={30} alt={image.alt} 
+        style={{
+          width: '30px',
+          height: '30px'
+        }}
+        />
         <Text className='text-2xl cursor-pointer'
           onClick={() => { onOpen(); setImageAlt(image.alt) }}
         >

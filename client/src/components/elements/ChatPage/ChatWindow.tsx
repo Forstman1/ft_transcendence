@@ -68,7 +68,7 @@ export default function ChatWindow() {
   const scrollToBottom = () => {
     if (chatContainer.current) {
       chatContainer.current.scrollTop = chatContainer.current.scrollHeight;
-      console.log(chatContainer.current.scrollTop)
+      // console.log(chatContainer.current.scrollTop)
     }
   };
 

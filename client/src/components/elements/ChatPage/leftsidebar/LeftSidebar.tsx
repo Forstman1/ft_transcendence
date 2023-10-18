@@ -5,7 +5,6 @@ import { Avatar, AvatarBadge,  Icon,  useDisclosure, Modal, background } from '@
 import React, {  useEffect, useState, useRef, use } from 'react'
 import Newchannel from './newchannel';
 
-
 import Hashtag from './hatshtag';
 import Newmessage from './newmessage';
 import Search from './search';
@@ -15,28 +14,29 @@ import { PrismaClient } from '@prisma/client';
 import { Box, Flex } from '@chakra-ui/layout';
 import { inView } from 'framer-motion';
 import { motion } from 'framer-motion';
+import { usePathname } from 'next/navigation';
+import io from 'socket.io-client';
 
 
 function Usercard(props: any) {
 
   // const { inView: boolean } = useSelector((state: any) => state.counter)
   const { user } = useSelector((state : any) => state.userID)
+
+  const [socket, setSocket] = useState<any>();
   
   const scroolToRef = useRef<HTMLDivElement>(null)
 
-  let pathname : string = '';
+  const pathname = usePathname()
+
   
   return (
   
   <Box ref={scroolToRef} className='flex justify-between items-center cursor-pointer m-2 ml-0 p-2 rounded-md active:bg-zinc-300'
 
-  
-  id={pathname === props.id ? 'active' : ''}
-  onClick={() => {console.log(pathname)}}
   {...(user === props.data.id ? scroolToRef.current?.scrollIntoView({ block: 'nearest', inline: 'start' }) && {bg: 'bg-zinc-300'} : {})}
 
   >
-
     <div> 
       <Avatar className='custom-shadow border-[1px] border-black' boxSize={14}>
         <AvatarBadge className='custom-shadow border-[1px] border-black' boxSize={4} bg='green.500' />

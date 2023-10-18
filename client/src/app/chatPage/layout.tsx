@@ -1,10 +1,10 @@
 "use client";
 
-import { FC, ReactNode} from "react";
+import { FC, ReactNode, useEffect} from "react";
 import LeftSidebar from "@/components/elements/ChatPage/leftsidebar/LeftSidebar";
 import { Flex } from "@chakra-ui/react";
 import MobileFooter from "@/components/elements/ChatPage/Mobile/MobileFooter";
-import MobileLeftBar from "@/components/elements/ChatPage/Mobile/MobileLeftBar";
+// import chatSocketsli
 
 
 export interface LayoutProps{
@@ -13,6 +13,9 @@ export interface LayoutProps{
 }
 
 export const Layout: FC<LayoutProps> = ({children}) => {
+
+    // const socket = 
+
     return(
         <>
             <Flex className="Chat_Parent h-[calc(100vh_-_170px)] md:h-[calc(100vh_-_90px)] ">

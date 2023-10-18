@@ -20,6 +20,10 @@ const socket = io('http://localhost:3001', {
   },
 });
 
+socket.on('connect', () => {
+  // console.log("global socket connected")
+})
+
 export interface GlobalSocketState {
   socket: Socket | null;
   socketId: string;
