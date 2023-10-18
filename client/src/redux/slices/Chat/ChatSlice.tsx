@@ -21,7 +21,7 @@ type ChatState = {
   const initialState: ChatState = {
     selectedChannelorUser: null,
     channels: [],
-    userId: "0e40b5fd-5a06-4b05-bc21-63c796f6832e",
+    userId: "05ab5089-a8c5-4e7b-bde9-5e2c705d48ff",
     messages: [],
   };
   

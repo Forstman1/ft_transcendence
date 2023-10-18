@@ -41,6 +41,7 @@ export default function RootLayout({
                 {isloading ? <SplashScreen  finishLoading={() => setIsLoading(false)}/> :
                 <>
                   <Navbar />
+
                   {children}
                 </>
                 }
