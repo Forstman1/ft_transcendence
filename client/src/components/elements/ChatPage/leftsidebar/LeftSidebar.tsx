@@ -1,8 +1,8 @@
 "use client";
 
 import { SmallAddIcon } from '@chakra-ui/icons';
-import { Avatar, AvatarBadge,  Icon,  useDisclosure, Modal } from '@chakra-ui/react';
-import React, {  useEffect, useState } from 'react'
+import { Avatar, AvatarBadge,  Icon,  useDisclosure, Modal, background } from '@chakra-ui/react';
+import React, {  useEffect, useState, useRef, use } from 'react'
 import Newchannel from './newchannel';
 
 
@@ -11,10 +11,20 @@ import Newmessage from './newmessage';
 import Search from './search';
 import { Channel } from '@/utils/types/chat/ChatTypes';
 import { useDispatch, useSelector } from 'react-redux';
+import {  User } from '@/utils/types/chat/ChatTypes';
+
+import { Box, Flex } from '@chakra-ui/layout';
+import { inView } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { setChannels } from '@/redux/slices/Chat/ChatSlice';
 
 
+function Usercard(props: any) {
 
+  // const { inView: boolean } = useSelector((state: any) => state.counter)
+  const { user } = useSelector((state : any) => state.userID)
+  
+  const scroolToRef = useRef<HTMLDivElement>(null)
 
 type UserValues = {
   userName: string
@@ -25,12 +35,18 @@ type UserValues = {
 
 
 
+  let pathname : string = '';
+  
+  return (
+  
+  <Box ref={scroolToRef} className='flex justify-between items-center cursor-pointer m-2 ml-0 p-2 rounded-md active:bg-zinc-300'
 
+  
+  id={pathname === props.id ? 'active' : ''}
+  onClick={() => {console.log(pathname)}}
+  {...(user === props.data.id ? scroolToRef.current?.scrollIntoView({ block: 'nearest', inline: 'start' }) && {bg: 'bg-zinc-300'} : {})}
 
-function Usercard(props: any) {
-
-  return (<div className='flex justify-between items-center  cursor-pointer m-2 ml-0 p-2  rounded-md'
-  onClick={() => console.log("ana hna")}>
+  >
 
     <div> 
       <Avatar className='custom-shadow border-[1px] border-black' boxSize={14}>
@@ -40,7 +56,7 @@ function Usercard(props: any) {
     </div>
 
     <div className='ml-[7px] flex flex-col  text-left w-[60%] justify-around'>
-      <div className='text-[22px] font-bold'>{props.data.userName}</div>
+      <div className='text-[22px] font-bold'>{props.data.username}</div>
       <div className='text-gray-400 text-[12px] font-medium	'>ok, see you tomorrow</div>
     </div>
 
@@ -49,7 +65,7 @@ function Usercard(props: any) {
       <div className='rounded-full bg-black w-5 h-5 flex items-center justify-center text-[20px] text-white'>3</div>
     </div>
 
-  </div>)
+  </Box>)
 }
 
 
@@ -68,7 +84,6 @@ export default function LeftSidebar() {
   const userId = useSelector((state:any) => state.chat.userId);
 
   useEffect(() => {
-    console.log("ana hna")
     
     const fetchData = async () => {
       const fetchChannels = await fetch('http://127.0.0.1:3001/channel/getallchannels/' + userId)
@@ -85,10 +100,41 @@ export default function LeftSidebar() {
     fetchData()
   }, [])
 
+  const { MidleClice } = useSelector((state: any) => state.mobile)
+  const { LeftClice } = useSelector((state: any) => state.mobile)
+  const { RightClice } = useSelector((state: any) => state.mobile)
+
+  const sidebar = {
+    open: (height = 1000) => ({
+      clipPath: `circle(${height * 2 + 200}px at 90% 90%)`,
+      transition: {
+        type: "spring",
+        stiffness: 20,
+        restDelta: 2
+      }
+    }),
+    closed: {
+
+      width: 0,
+      clipPath: `circle(0px at 10% 90%)`,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 40
+      }
+    }
+  };
+
 
   return (
 
-      <div className='hidden  md:flex justify-center w-[350px]  flex-col items-center xl:w-[465px] '>
+    // <Box className='LeftSideBar hidden md:grid border-r-[3px] border-r-black overflow-y-scroll place-items-center '
+    <Box className='LeftSideBar place-items-center grid w-[375px] absolute  h-full overflow-y-auto border-r-[3px] border-r-black  md:static md:w-[400px] backdrop-blur-xl z-10'
+      as={motion.div}
+      initial={false}
+      animate={LeftClice.LeftValue ? "open" : "closed"}
+      variants={sidebar}
+    >
         <Search
           channels={channels}
           users={users}
@@ -108,15 +154,18 @@ export default function LeftSidebar() {
 
         </div>
 
-        <div className='w-[90%] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
+        <div className='w-[80%] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
           <div className='text-[30px] font-bold'>Direct Messages</div>
           <div onClick={() => { onOpen(), setChannelOrUser(false) }} className='cursor-pointer'><Icon boxSize={10} as={SmallAddIcon} /></div>
         </div>
 
         <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
 
-          {users.map((data: UserValues) => {
-            return <Usercard data={data} />
+          {users.map((data: User) => {
+            return <Usercard 
+            key={data.username}
+            data={data} 
+            />
           })}
 
         </div>
@@ -134,7 +183,7 @@ export default function LeftSidebar() {
           users={users}
         />
       </Modal>}
-      </div>
+      </Box>
 
   )
 }

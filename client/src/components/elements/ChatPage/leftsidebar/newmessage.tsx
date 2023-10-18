@@ -2,7 +2,7 @@
 
 import { Search2Icon, SearchIcon, SmallAddIcon } from '@chakra-ui/icons';
 import { Avatar, AvatarBadge, Box, Button, FormControl, FormLabel, Icon, Input, InputGroup, InputLeftElement, InputRightElement, Select, useToast } from '@chakra-ui/react';
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import {
     Modal,
     ModalOverlay,
@@ -13,37 +13,42 @@ import {
     ModalCloseButton,
     Radio
 } from '@chakra-ui/react'
-
+import { User } from '@/utils/types/chat/ChatTypes';
+// import { setToTrue, setToFalse } from '@/redux/slices/chat/chatSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { setUser } from '@/redux/slices/Chat/ChatSlice';
 
 
 type Props = {
 
     isOpen: boolean;
     onClose: () => void;
-    setNewUsers: Dispatch<SetStateAction<UserValues[]>>;
-    users: UserValues[]
+    setNewUsers: Dispatch<SetStateAction<User[]>>;
+    users: User[]
 };
 
 
-type UserValues = {
-    userName: string
-    id: number
-    onlineStatus: string
-}
+const getUsers = async() => {
 
+    const res = await fetch('http://localhost:3001/users')
+    return res.json()
+}
 
 
 function Usercard(props: any) {
 
+
     const { data, selectedOption, onOptionChange } = props;
 
     const handleChange = () => {
-        onOptionChange(data.userName);
+    
+        onOptionChange(data);
     };
 
 
-    return (<div onClick={handleChange} className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md  '>
-
+    return (
+        
+    <div onClick={handleChange} className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md'>
         <div>
             <Avatar boxSize={12}>
                 <AvatarBadge boxSize={6} bg='green' />
@@ -51,17 +56,16 @@ function Usercard(props: any) {
         </div>
 
         <div className='flex flex-col items-center justify-around'>
-            <div className='text-[20px] md:text-[30px]'>{data.userName}</div>
+            <div className='text-[20px] md:text-[30px]'>{data.username}</div>
         </div>
 
         <Radio
             className='md:w-[30px] md:h-[30px] w-[20px] h-[20px] rounded-sm'
-            value={data.userName}
+            value={data.username}
             onChange={handleChange}
-            isChecked={selectedOption === data.userName}
+            isChecked={selectedOption === data.username}
         >
         </Radio>
-
     </div>)
 }
 
@@ -70,122 +74,143 @@ function Usercard(props: any) {
 export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Props) {
 
 
-    let users1: UserValues[] = [{ userName: "sahafid", id: 1, onlineStatus: "active" },
-    { userName: "houazzan", id: 2, onlineStatus: "active" },
-    { userName: "rel-fagr", id: 3, onlineStatus: "active" },
-    { userName: "haitkadir", id: 4, onlineStatus: "busy" },
-    { userName: "mnaimi", id: 5, onlineStatus: "offline" },
-    { userName: "test1", id: 5, onlineStatus: "offline" },
-    { userName: "test2", id: 5, onlineStatus: "offline" },
-    { userName: "test3", id: 5, onlineStatus: "offline" },
-    { userName: "test4", id: 5, onlineStatus: "offline" },
-    ]
-
+    const users1: User[] = []
+    const url = 'http://localhost:3001/users';
+    const [Users, setUsers]: any = useState([])
     const [selectedOption, setSelectedOption]: any = useState('');
     const toast = useToast()
-
+    
+    useEffect(() => {
+        
+        async function fetchData () {
+            const api = await fetch(url)
+            const response = await api.json()
+            if (response)
+            {
+                setUsers(response)
+            }
+        }
+        fetchData()
+    }, [])
 
     const handleOptionChange = (newValue: any) => {
+
         setSelectedOption(newValue);
+
     };
+
+    const dispatch = useDispatch()
 
 
     const handleSubmit = () => {
 
-        let user: UserValues = {
-            userName: selectedOption,
-            id: 1,
-            onlineStatus: "available"
+        if (!users.find(user => user.username === selectedOption.username)) {
+            
+            let user: User = {
+                
+                ...selectedOption
+                
+            }
+            setNewUsers([user, ...users])
         }
-
-        setNewUsers([user, ...users])
+        else {
+            let user: User = {
+                ...selectedOption
+            }
+            dispatch(setUser(user))
+        }
         onClose()
     }
 
-    return (<div>
+    function display(Users: User) {
 
-        <ModalOverlay />
+    }
 
-        <ModalOverlay
-            style={{
-                backgroundColor: "rgba(0, 0, 0, 0.1)",
-                backdropFilter: "blur(5px)",
-            }}
-        />
-        <ModalContent
-            bg={`rgba(255, 255, 255, 0.95)`}
-            className="relative  duration-500 ease-in-out rounded-2xl shadow-2xl border-1 border-black flex justify-between  items-center bg-gray-100"
-        >
+    return (
 
-            <ModalHeader>Find Friend</ModalHeader>
-            <ModalBody>
-                <InputGroup>
-                    <InputLeftElement pointerEvents="none">
-                        <Search2Icon color="gray.300" />
-                    </InputLeftElement>
-                    <InputRightElement width="4.5rem" height={12}>
-                        <Button
-                            variant="outline"
-                            h="2rem"
-                            size="sm"
-                        // onClick={handleSearchClick}
-                        >
-                            Search
-                        </Button>
-                    </InputRightElement>
-                    <Input
-                        type="tel"
-                        placeholder="Search for a friend"
-                        height={12}
-                        borderEndEndRadius={0}
-                    // value={search}
-                    // onChange={handleChange}
-                    />
-                </InputGroup>
+        <div>
+            <ModalOverlay />
 
-                <div className=' mt-[20px] flex  justify-between md:h-[400px] h-[200px] flex-col    overflow-y-scroll'>
+            <ModalOverlay
+                style={{
+                    backgroundColor: "rgba(0, 0, 0, 0.1)",
+                    backdropFilter: "blur(5px)",
+                }}
+            />
+            <ModalContent
+                bg={`rgba(255, 255, 255, 0.95)`}
+                className="relative  duration-500 ease-in-out rounded-2xl shadow-2xl border-1 border-black flex justify-between  items-center bg-gray-100"
+            >
 
-                    {users1.map((data: any) => {
-                        return <Usercard
-                            data={data}
-                            selectedOption={selectedOption}
-                            onOptionChange={handleOptionChange}
+                <ModalHeader>Find Friend</ModalHeader>
+                <ModalBody>
+                    <InputGroup>
+                        <InputLeftElement pointerEvents="none">
+                            <Search2Icon color="gray.300" />
+                        </InputLeftElement>
+                        <InputRightElement width="4.5rem" height={12}>
+                            <Button
+                                variant="outline"
+                                h="2rem"
+                                size="sm"
+                            // onClick={handleSearchClick}
+                            >
+                                Search
+                            </Button>
+                        </InputRightElement>
+                        <Input
+                            type="tel"
+                            placeholder="Search for a friend"
+                            height={12}
+                            borderEndEndRadius={0}
+                        // value={search}
+                        // onChange={handleChange}
                         />
-                    })}
-                </div>
-            </ModalBody>
-            <ModalCloseButton />
-            <ModalFooter>
-                <Button
-                    colorScheme="red"
-                    variant="outline"
-                    mr={10}
-                    onClick={onClose}
-                >
-                    Close
-                </Button>
-                <Button
-                    colorScheme="green"
-                    variant="outline"
-                    ml={10}
+                    </InputGroup>
 
-                    onClick={() => {
-                        onClose(); toast({
-                            title: "DM added",
-                            position: `bottom-right`,
-                            status: 'success',
-                            duration: 1000,
-                            containerStyle: {
-                                width: 300,
-                                height: 100,
-                            }
-                        }); handleSubmit()
-                    }}
-                >
+                    <div className=' mt-[20px] flex  justify-between md:h-[400px] h-[200px] flex-col overflow-y-scroll'>
+                        {Users.map((data: any) => {
+                            return <Usercard
+                                key={data.username}
+                                data={data}
+                                selectedOption={selectedOption}
+                                onOptionChange={handleOptionChange}
+                            />
+                        })}
 
-                    Confirm
-                </Button>
-            </ModalFooter>
-        </ModalContent>
-    </div>)
+                    </div>
+                </ModalBody>
+                <ModalCloseButton />
+                <ModalFooter>
+                    <Button
+                        colorScheme="red"
+                        variant="outline"
+                        mr={10}
+                        onClick={onClose}
+                    >
+                        Close
+                    </Button>
+                    <Button
+                        colorScheme="green"
+                        variant="outline"
+                        ml={10}
+
+                        onClick={() => {
+                            onClose(); toast({
+                                title: "DM added",
+                                position: `bottom-right`,
+                                status: 'success',
+                                duration: 1000,
+                                containerStyle: {
+                                    width: 300,
+                                    height: 100,
+                                }
+                            }); handleSubmit()
+                        }}
+                    >
+                        Confirm
+                    </Button>
+                </ModalFooter>
+            </ModalContent>
+        </div>)
 }

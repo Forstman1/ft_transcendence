@@ -13,6 +13,10 @@ async function bootstrap() {
   }));
   app.use(cors());
   await app.listen(3001);
+
+  // setInterval(() => {
+  //   gameService.updateBallPosition();
+  // }, 1000 / 60);
 }
 
 // async function bootstrap() {
@@ -20,3 +24,4 @@ async function bootstrap() {
 
 // }
 bootstrap();
+

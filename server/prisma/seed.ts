@@ -1,13 +1,18 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 import { faker } from '@faker-js/faker';
+import { userInfo } from 'os';
+import { string } from 'zod';
 
 async function seed() {
   const numberOfUsers = 5;
   // create users
   for (let numUser = 0; numUser < numberOfUsers; numUser++) {
-    await prisma.user.create({
-      data: {
+    await prisma.user.upsert({
+      
+      where: {email: faker.internet.email() },
+      update: {},
+      create: {
         email: faker.internet.email(),
         username: faker.internet.userName(),
         fullname: faker.internet.displayName(),
@@ -16,7 +21,18 @@ async function seed() {
         coalitionColor: faker.internet.userName(),
         accessToken: faker.internet.password(),
         refreshToken: faker.internet.password(),
-      },
+        channelmessages:{
+          create: {
+            content: faker.lorem.text(),
+            authorName:faker.internet.userName(),
+            createdAt: faker.date.recent(),
+            reciver: {
+              connect: {id: "user2"}
+            },
+          }
+
+        }
+      }
     });
   }
   console.log('seeded successfully');

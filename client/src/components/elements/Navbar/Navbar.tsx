@@ -735,7 +735,7 @@ const Navbar: React.FC = () => {
           <Box className="w-1/3 h-auto">
             <Center>
               <Link href="/">
-                <Image src={Logo} alt="Logo" width={150} height={150} />
+                <Image src={Logo} alt="Logo" width={150}  />
               </Link>
             </Center>
           </Box>
@@ -755,7 +755,7 @@ const Navbar: React.FC = () => {
         <Flex className="w-full h-full items-center grid-cols-4">
           <Box className="col-span-1 ml-20 p-auto w-auto h-auto ">
             <Link href="/">
-              <Image src={Logo} alt="Logo" width={150} height={150} />
+              <Image src={Logo} alt="Logo" width={150}  />
             </Link>
           </Box>
           <Box className="col-span-1 ml-20 w-auto h-auto">

@@ -165,7 +165,7 @@ export default function Newchannel({ isOpen, onClose, channels }: Props) {
 
           <FormLabel>Channel Name</FormLabel>
           <Input required {...register("channelName")} placeholder='Channel Name' />
-          {dup && <div>Already exists this channel name</div>}
+          {dup && <div>Already exists this channel name</div>} 
 
           </FormControl>
 

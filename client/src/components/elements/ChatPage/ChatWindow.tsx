@@ -11,8 +11,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addMessage } from '@/redux/slices/Chat/ChatSlice';
 import { Message } from '@/utils/types/chat/ChatTypes';
 import { useMutation } from 'react-query';
-
-
+import MobileFooter from './Mobile/MobileFooter';
+import { setLeft, setRight, setMidle } from '@/redux/slices/Chat/MobileSlice';
 
 
 
@@ -45,6 +45,10 @@ function Own_Message({ message, sender, time }: any) {
 
 export default function ChatWindow() {
 
+
+
+
+
   let yerstday = new Date("2023-09-16")
   let today = new Date()
   const { handleSubmit, register, reset } = useForm<any>();
@@ -55,6 +59,8 @@ export default function ChatWindow() {
   const messages: Message[] = useSelector((state:any) => state.chat.messages);
   const userId = useSelector((state:any) => state.chat.userId)
   const dispatch = useDispatch();
+  const { LeftClice } = useSelector((state: any) => state.mobile)
+  const { RightClice } = useSelector((state: any) => state.mobile)
 
 
 
@@ -73,30 +79,30 @@ export default function ChatWindow() {
 
 
 
-  const createMessage = useMutation<any, Error, any>((variables) => 
-  fetch('http://127.0.0.1:3001/message/createmessage', {
-    method: "POST",
-    body: JSON.stringify(variables),
-    headers: {
-      "content-type": "application/json",
-    }
-  }).then((res) => {
-    return res.json()
-  }).catch((error) => {
-    return error
-  }))
+  // const createMessage = useMutation<any, Error, any>((variables) => 
+  // fetch('http://127.0.0.1:3001/message/createmessage', {
+  //   method: "POST",
+  //   body: JSON.stringify(variables),
+  //   headers: {
+  //     "content-type": "application/json",
+  //   }
+  // }).then((res) => {
+  //   return res.json()
+  // }).catch((error) => {
+  //   return error
+  // }))
 
   const handelNewMessage = async (data: any) => {
 
     if (!data.newmessage)
       return;
 
-    const message = await createMessage.mutateAsync({
-      content: data.newmessage,
-      userId: userId,
-      reciverId: selectedChannel.id
-    })
-
+    // const message = await createMessage.mutateAsync({
+    //   content: data.newmessage,
+    //   userId: userId,
+    //   reciverId: selectedChannel.id
+    // })
+    const message = "fake massage"
     
     dispatch(addMessage(message));
 
@@ -107,17 +113,14 @@ export default function ChatWindow() {
 
 
 
-
-
-
   return (
-    <div className='flex-grow flex justify-between border-l-[3px] border-black flex-col gap-[10px] z-0'>
-      <div className=' flex flex-col gap-[10px] overflow-y-scroll z-0 h-[90%] ' ref={chatContainer}>
+    <div className='justify-between flex-col gap-[10px] w-full h-full'>
+      <div className=' flex flex-col gap-[10px] overflow-y-scroll z-0 h-[91%] ' ref={chatContainer}>
 
 
         {messages.map((message: Message, index: number) => {
           
-          if (message.authorName === "sahafid") {
+          if (message.authorName === "sahafid") { 
             return <Own_Message key={index} message={message.content} sender={message.authorName} time={message.createdAt} />
           }
           return <Message_other key={index} message={message.content} sender={message.authorName} time={message.createdAt} />
@@ -136,16 +139,13 @@ export default function ChatWindow() {
               loop={true}
               autoplay={true}
             />
-
           </div>
         </div>
-
-
-
-
       </div>
-      <form onSubmit={handleSubmit(handelNewMessage)} className='h-[55px] mb-[15px] flex w-[100%] justify-around items-center  '>
-        <Input {...register("newmessage")} className='bg-[#D9D9D9] border-2 rounded-ld w-[90%] border-black h-[100%]' placeholder='Type your message here ...' />
+      <form onSubmit={handleSubmit(handelNewMessage)} className='h-[55px] mb-[15px] flex justify-around items-center'>
+        <Input {...register("newmessage")} className='bg-[#D9D9D9] border-2 rounded-ld w-[90%] border-black h-[100%]' placeholder='Type your message here ...' 
+        onClick={() => {dispatch(setRight(false)); dispatch(setLeft(false))}}
+        />
         <button type='submit' className='bg-black w-[50px] rounded-md cursor-pointer flex justify-start items-center h-[100%]'>
           <Image className=' w-[40px] ' src={arrow} alt='arrow' />
         </button>

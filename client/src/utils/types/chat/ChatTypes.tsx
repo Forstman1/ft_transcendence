@@ -14,3 +14,12 @@ export type Message = {
     authorName: string
     createdAt: Date;
 }
+
+export type User = {
+    id:                String       
+    username:          String      
+    email:             String      
+    fullname:          String       
+    avatar:            String
+    isOnline:          Boolean
+}
