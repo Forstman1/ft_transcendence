@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { GameServiceData } from './dto/create-game.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { GameHistory } from './dto/create-game.dto';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class GameService {
+  constructor(private readonly prisma: PrismaService) {}
   private rooms: Map<
     string,
     {
@@ -299,4 +302,23 @@ export class GameService {
   };
 
   //----------------------------------------------------
+
+  createGameHistory = async (
+    data: GameHistory,
+    opponentId: string,
+  ): Promise<void> => {
+    const { userId, status, userScore, opponentScore, rounds, matches } = data;
+    await this.prisma.gameHistory.create({
+      data: {
+        user: { connect: { id: userId } },
+        opponentId,
+        status,
+        userScore,
+        opponentScore,
+        rounds,
+        matches,
+      },
+    });
+    return;
+  }
 }

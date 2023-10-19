@@ -6,8 +6,8 @@ import {
 } from '@nestjs/websockets';
 import { GameService } from './game.service';
 import { Server, Socket } from 'socket.io';
-import { Body } from '@nestjs/common';
-import { GameModalState } from './dto/create-game.dto';
+import { Body, Post } from '@nestjs/common';
+import { GameModalState, GameHistory } from './dto/create-game.dto';
 
 @WebSocketGateway()
 export class GameGateway {
@@ -248,17 +248,38 @@ export class GameGateway {
     }
   }
 
-  @SubscribeMessage('ImReady')
-  ImReady(@ConnectedSocket() client: Socket, @Body() roomId: string): void {
+  // @SubscribeMessage('ImReady')
+  // ImReady(@ConnectedSocket() client: Socket, @Body() roomId: string): void {
+  //   try {
+  //     console.log('-----------------ImReady-----------------');
+  //     this.isAllReady[roomId] += 1;
+  //     if (this.isAllReady[roomId] === 2) {
+  //       this.server.to(roomId).emit('allready');
+  //       delete this.isAllReady[roomId];
+  //     }
+  //   } catch (error) {
+  //     console.error('Error in ImReady:', error);
+  //   }
+  // }
+
+  //-------------getGameHistory
+  @SubscribeMessage('CreateGameHistory')
+  async postGameHistory(
+    @ConnectedSocket() client: Socket,
+    @Body() data: GameHistory,
+  ): Promise<void> {
     try {
-      console.log('-----------------ImReady-----------------');
-      this.isAllReady[roomId] += 1;
-      if (this.isAllReady[roomId] === 2) {
-        this.server.to(roomId).emit('allready');
-        delete this.isAllReady[roomId];
-      }
+      console.log('-----------------CreateGameHistory-----------------');
+      const userId = data.userId;
+      const sockets = await this.server.in(data.roomId).fetchSockets();
+      const opponentSocket = sockets.find(
+        (socket) => socket.handshake.auth.id !== userId,
+      );
+      const opponentId = opponentSocket.handshake.auth.id;
+      return this.gameService.createGameHistory(data, opponentId);
+      
     } catch (error) {
-      console.error('Error in ImReady:', error);
+      console.error('Error in CreateGameHistory:', error);
     }
   }
 }

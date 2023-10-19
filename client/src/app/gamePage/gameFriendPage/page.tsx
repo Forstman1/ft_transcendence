@@ -136,6 +136,7 @@ export default function GameFriendPage() {
     };
   }, [socketState]);
 
+  //----------------------------------------------------------------------------------------------
   const closeSocketConnection = () => {
     if (socket) {
       if (socketState.isOwner) {
@@ -144,6 +145,7 @@ export default function GameFriendPage() {
     }
   };
 
+  //----------------------------------------------------------------------------------------------
   useEffect(() => {
     if (!socketState.isOwner) return;
     if (gameStarted && !hasInitialized && roomId !== "") {
@@ -174,6 +176,8 @@ export default function GameFriendPage() {
     }
   }, [gameStarted, hasInitialized]);
 
+
+  //-------------------------------Update Paddles----------------------------------------------
   useEffect(() => {
     if (roomId !== "") {
     const canvasData: CanvasData = {
@@ -194,11 +198,44 @@ export default function GameFriendPage() {
     }
    }, [leftPaddle, rightPaddle]);
 
-  useEffect(() => {
-    if (roomId == "" || !socketState.isOwner) return;
-    if (gameEnded) {
-      closeSocketConnection();
+   //-------------------------------Post Game History----------------------------------------------
+
+  
+  const PostGameHistory = async () => {
+
+    let userScore = 0;
+    let opponentScore = 0;
+    if (socketState.isOwner) {
+      userScore = rightScore;
+      opponentScore = leftScore;
     }
+    else {
+      userScore = leftScore;
+      opponentScore = rightScore;
+    }
+    const data: any = {
+      userId: socketState.playerId,
+      status: socketState.isOwner ? gameEndStatic.user : gameEndStatic.bot,
+      userScore: userScore,
+      opponentScore: opponentScore,
+      rounds: gameSettings.rounds,
+      matches: gameSettings.matches,
+      roomId: roomId,
+    };
+
+    await socket?.emit("CreateGameHistory", data);
+  }
+
+  //----------------------------------------------------------------------------------------------
+  useEffect(() => {
+    if (roomId == "") return;
+    if (gameEnded) {
+      PostGameHistory().then(() => {
+        if (socketState.isOwner)
+          closeSocketConnection();
+      });
+    }
+    if (!socketState.isOwner) return;
     if (!gameStarted && !gameEnded ) {
       socket?.emit("pauseGame", roomId);
     }
@@ -295,10 +332,12 @@ export default function GameFriendPage() {
     }
   };
   
+  //---------------------------------------------------------------------------
   const handleKeyUp = (event: KeyboardEvent) => {
     setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: false }));
   };
 
+  //---------------------------------------------------------------------------
   useEffect(() => {
     if (!gameStarted) return;
     window.addEventListener("keydown", handleKeyDown);
