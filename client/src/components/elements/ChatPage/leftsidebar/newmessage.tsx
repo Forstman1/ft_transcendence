@@ -15,8 +15,8 @@ import {
 } from '@chakra-ui/react'
 import { User } from '@/utils/types/chat/ChatTypes';
 // import { setToTrue, setToFalse } from '@/redux/slices/chat/chatSlice';
-import { setUser, clearuser } from '@/redux/slices/chat/chatSlice';
 import { useSelector, useDispatch } from 'react-redux';
+import { setUser } from '@/redux/slices/Chat/ChatSlice';
 
 
 type Props = {
@@ -101,7 +101,6 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
 
     const dispatch = useDispatch()
 
-    const { user } = useSelector((state : any) => state.userID)
 
     const handleSubmit = () => {
 
@@ -115,7 +114,10 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
             setNewUsers([user, ...users])
         }
         else {
-            dispatch(setUser(selectedOption.id))
+            let user: User = {
+                ...selectedOption
+            }
+            dispatch(setUser(user))
         }
         onClose()
     }

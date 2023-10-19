@@ -21,7 +21,7 @@ async function seed() {
         coalitionColor: faker.internet.userName(),
         accessToken: faker.internet.password(),
         refreshToken: faker.internet.password(),
-        message:{
+        channelmessages:{
           create: {
             content: faker.lorem.text(),
             authorName:faker.internet.userName(),

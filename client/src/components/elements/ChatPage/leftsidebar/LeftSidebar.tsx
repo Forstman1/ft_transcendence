@@ -4,36 +4,31 @@ import { SmallAddIcon } from '@chakra-ui/icons';
 import { Avatar, AvatarBadge,  Icon,  useDisclosure, Modal, background } from '@chakra-ui/react';
 import React, {  useEffect, useState, useRef, use } from 'react'
 import Newchannel from './newchannel';
-
 import Hashtag from './hatshtag';
 import Newmessage from './newmessage';
 import Search from './search';
-import { Channel, User } from '@/utils/types/chat/ChatTypes';
-import { useSelector } from 'react-redux';
-import { PrismaClient } from '@prisma/client';
+import { Channel } from '@/utils/types/chat/ChatTypes';
+import { useDispatch, useSelector } from 'react-redux';
+import {  User } from '@/utils/types/chat/ChatTypes';
 import { Box, Flex } from '@chakra-ui/layout';
-import { inView } from 'framer-motion';
 import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
-import io from 'socket.io-client';
+import { ChatSocketState } from '@/redux/slices/socket/chatSocketSlice';
+import { RootState } from '@/redux/store/store';
 
 
 function Usercard(props: any) {
-
-  // const { inView: boolean } = useSelector((state: any) => state.counter)
+  
   const { user } = useSelector((state : any) => state.userID)
-
-  const [socket, setSocket] = useState<any>();
+  const socket = useSelector((state: RootState) => state.socket.socket)
+  
   
   const scroolToRef = useRef<HTMLDivElement>(null)
-
-  const pathname = usePathname()
-
   
   return (
   
   <Box ref={scroolToRef} className='flex justify-between items-center cursor-pointer m-2 ml-0 p-2 rounded-md active:bg-zinc-300'
-
+    onClick={()=> socket?.emit('message', 'hello')}
   {...(user === props.data.id ? scroolToRef.current?.scrollIntoView({ block: 'nearest', inline: 'start' }) && {bg: 'bg-zinc-300'} : {})}
 
   >
@@ -45,13 +40,13 @@ function Usercard(props: any) {
     </div>
 
     <div className='ml-[7px] flex flex-col  text-left w-[60%] justify-around'>
-      <div className='text-[22px] font-bold'>{props.data.username}</div>
-      <div className='text-gray-400 text-[12px] font-medium	'>ok, see you tomorrow</div>
+      <div className='text-[22px] font-bold'>{props.data.username} </div>
+      <div className='text-gray-400 text-[12px] font-medium	'>ok, see you tomorrow </div>
     </div>
 
     <div className='flex flex-col items-center text-center '>
-      <div className='text-[13px] text-gray-400'>06:49 pm</div>
-      <div className='rounded-full bg-black w-5 h-5 flex items-center justify-center text-[20px] text-white'>3</div>
+      <div className='text-[13px] text-gray-400'>06:49 pm </div>
+      <div className='rounded-full bg-black w-5 h-5 flex items-center justify-center text-[20px] text-white'>3 </div>
     </div>
 
   </Box>)
@@ -61,26 +56,27 @@ function Usercard(props: any) {
 
 export default function LeftSidebar() {
 
-  let [channels, setNewChannels]: any = useState([])
+
+
 
   let [users, setNewUsers]: any = useState([])
-
+  const dispatch = useDispatch()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [ChannelOrUser, setChannelOrUser] = useState(false)
+  const channels = useSelector((state: any) => state.chat.channels)
 
-
-  const userId = useSelector((state:any) => state.channel.userId);
+  const userId = useSelector((state:any) => state.chat.userId);
 
   useEffect(() => {
     
     const fetchData = async () => {
-      // const fetchChannels = await fetch('http://127.0.0.1:3001/channel/getallchannels/' + userId)
+      // const fetchChannels = await fetch('http://127.0.0.1:300/channel/getallchannels/' + userId)
       // const response = await fetchChannels.json()
       // if (response.length > 0)
       // {
       //   const allchannels: Channel[] = response
       //   console.log(allchannels)
-      //   setNewChannels(allchannels)
+      //   dispatch(setChannels(allchannels))
       //   return allchannels;
       // }
 
@@ -160,7 +156,7 @@ export default function LeftSidebar() {
         {ChannelOrUser === true ? <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <Newchannel isOpen={isOpen}
           onClose={onClose}
-          setNewChannels={setNewChannels}
+          // setNewChannels={setNewChannels}
           channels={channels}
 
         />

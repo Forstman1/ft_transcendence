@@ -1,20 +1,21 @@
 import {configureStore} from '@reduxjs/toolkit'
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import  gameReducer  from '../slices/game/gameModalSlice';
-import channelReducer from '../slices/channel/channelSlice';
 import globalSocketReducer  from '../slices/socket/globalSocketSlice';
-import userReducer from '../slices/chat/chatSlice'
 import mobileReducer from "../slices/chat/MobileSlice";
-import chatSocketReducer from '../slices/socket/chatSocket';
+import chatSocketReducer from "@/redux/slices/socket/chatSocketSlice";
+import chatSlice from '../slices/chat/ChatSlice'
+import userReducer from '../slices/chat/UserSlice'
+
 
 export const store = configureStore({
   reducer: {
     gameReducer,
-    channel: channelReducer,
-    userID: userReducer,
     globalSocketReducer,
-    chatSocketReducer,
+    socket: chatSocketReducer,
+    userID: userReducer,
     mobile: mobileReducer,
+    chat: chatSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -8,7 +8,6 @@ import {HiOutlineChatBubbleLeftRight} from 'react-icons/hi2'
 import {IoSettingsOutline} from 'react-icons/io5'
 import { useSelector, useDispatch } from 'react-redux';
 import { setLeft, setRight, setMidle } from '@/redux/slices/chat/MobileSlice';
-import LeftSidebar from '../leftsidebar/LeftSidebar';
 
 
 

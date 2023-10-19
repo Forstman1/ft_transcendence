@@ -29,20 +29,21 @@ export class ChannelService {
                     password: channelData.type === "Protected" ? hash : '',
                 }
             })
+
             delete channel.password
-            const channelMember = await this.prisma.channelMember.create({
-                data: {
-                    role: 'OWNER',
-                    channel: {
-                        connect: {id: channel.id}
-                    },
-                    user: {
-                        connect: {id: channelData.userId}
+            try {
+                const channelMember = await this.prisma.channelMember.create({
+                    data: {
+                        role: 'OWNER',
+                        channel: {
+                            connect: {id: channel.id}
+                        },
+                        user: {
+                            connect: {id: channelData.userId}
+                        }
                     }
-                }
-            })
-            if (!channelMember)
-            {
+                })
+            } catch (error) {
                 await this.prisma.channel.delete({
                     where: {
                         id: channel.id,
@@ -50,12 +51,12 @@ export class ChannelService {
                 })
                 console.log("no user to own the channel")
                 return {status: "this user couldn't be found"}
-    
-    
             }
+
             console.log("creating new channel")
             return channel
         } catch (error) {
+
             return "couldn' create channel"
         }
         
@@ -101,9 +102,9 @@ export class ChannelService {
             where: {
                 name: channelName,
             },
-            // include: {
-            //     message: true
-            // }
+            include: {
+                channelmessages: true
+            }
         })
         if (await argon2.verify(channel.password, password))
         {
@@ -151,6 +152,40 @@ export class ChannelService {
         return channelmember
     }
 
+
+    async removepassword(channelName:string, userId: string) {
+
+
+        let channel = await this.prisma.channel.findUnique({
+            where: {
+                name: channelName,
+            }
+        })
+
+        let channelmembers = await this.prisma.channelMember.findMany({
+            where: {
+                userId: userId,
+                channel: channel,
+            }
+        })
+        let channelmember = channelmembers[0]
+
+        if (channelmember.role === 'OWNER')
+        {
+            channel = await this.prisma.channel.update({
+                where: {
+                    id: channel.id,
+                },
+                data: {
+                    password: "",
+                    type: 'PUBLIC',
+                }
+            })
+            return channel
+        }
+        else
+            return {status: "you are not owner of the channel"};
+    }
 
     async setAdministrator(channelName: string, userIdOwner: string, userIdadministrateur: string)
     {

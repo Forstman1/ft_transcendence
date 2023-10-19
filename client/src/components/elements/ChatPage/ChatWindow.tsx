@@ -8,11 +8,11 @@ import arrow from "../../../../../client/assets/icons/arrow.svg";
 import Image from 'next/image';
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
-import { addMessage } from '@/redux/slices/channel/channelSlice';
+import { addMessage } from '@/redux/slices/Chat/ChatSlice';
 import { Message } from '@/utils/types/chat/ChatTypes';
 import { useMutation } from 'react-query';
 import MobileFooter from './Mobile/MobileFooter';
-import { setLeft, setRight, setMidle } from '@/redux/slices/chat/MobileSlice';
+import { setLeft, setRight, setMidle } from '@/redux/slices/Chat/MobileSlice';
 
 
 
@@ -55,9 +55,9 @@ export default function ChatWindow() {
   const chatContainer = useRef<any>(null);
 
 
-  const selectedChannel = useSelector((state:any) => state.channel.selectedChannel);
-  const messages: Message[] = useSelector((state:any) => state.channel.messages);
-  const userId = useSelector((state:any) => state.channel.userId)
+  const selectedChannel = useSelector((state:any) => state.chat.selectedChannelorUser);
+  const messages: Message[] = useSelector((state:any) => state.chat.messages);
+  const userId = useSelector((state:any) => state.chat.userId)
   const dispatch = useDispatch();
   const { LeftClice } = useSelector((state: any) => state.mobile)
   const { RightClice } = useSelector((state: any) => state.mobile)
@@ -77,7 +77,6 @@ export default function ChatWindow() {
     scrollToBottom();
   }, [messages]);
 
-  // messages.sort((a: Message, b: Message) => a.createdAt.getTime() - b.createdAt.getTime());
 
 
   // const createMessage = useMutation<any, Error, any>((variables) => 
@@ -107,7 +106,6 @@ export default function ChatWindow() {
     
     dispatch(addMessage(message));
 
-    // setMessages([message, ...messages])
     reset({ newmessage: '' });
 
     scrollToBottom();

@@ -12,30 +12,29 @@ import ChannelMemberActions from './ChannelMemberActions'
 import UserControls from './UserControls'
 import { useSelector, useDispatch } from 'react-redux'
 import { useMediaQuery } from '@chakra-ui/react'
-import { setLeft, setMidle, setRight } from '@/redux/slices/Chat/MobileSlice'
 
 
 
 
 
-export default function RightSidebar() {
+
+export default function RightSidebarChannel() {
 
   
   const { MidleClice } = useSelector((state: any) => state.mobile)
   const { LeftClice } = useSelector((state: any) => state.mobile)
   const { RightClice } = useSelector((state: any) => state.mobile)
   const isDesktop = useMediaQuery("(min-width: 1000px)")
-
   const toast = useToast();
   const dispatch = useDispatch()
 
 
-  if(isDesktop[0]) {
-    dispatch(setRight(true))
-    dispatch(setMidle(true))
-    dispatch(setLeft(true))
-  }
-console.log(isDesktop[0])
+
+  // if(isDesktop[0]) {
+  //   dispatch(setRight(true))
+  //   dispatch(setMidle(true))
+  //   dispatch(setLeft(true))
+  // }
 
   const sidebar = {
     open: (height = 1000) => ({
@@ -60,7 +59,7 @@ console.log(isDesktop[0])
 
 
   return (
-
+   
     <Box  className='RightSideBar w-[375px] absolute md:block backdrop-blur-xl md:static md:w-[465px] h-full overflow-y-auto border-l-[3px] border-l-black pb-28 right-0'
       as={motion.div}
       initial={false}
@@ -70,34 +69,19 @@ console.log(isDesktop[0])
     >
       <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7 '>
         <Text className='flex text-black text-4xl drop-shadow-[2px_2px_0_rgba(18,18,18,.0.50)]'>
-          user_455013
+          # Music
         </Text>
-        <Avatar className='m-7 h-[130px] w-[130px] drop-shadow-[2px_2px_0_rgba(18,18,18,0.50)]' />
-        <Box className='bg-black justify-start flex items-center rounded text-white w-[200px] h-[45px] drop-shadow-[2px_2px_0_rgba(18,18,18,0.50)]'>
-          <Box className='AvatarBadge w-[25px] h-[25px] rounded-full bg-green-600 mx-5' />
-          <Text className='text-3xl'>Available</Text>
-        </Box>
       </Box>
       <hr className='bg-black h-[2px] mx-10' />
       <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7'>
         <Box className='flex items-center gap-6 w-[220px]'>
-          <Image src={Profile} priority={false} width={30} height={30} alt="View Profile" 
-          style={{
-            width: '30px',
-            height: '30px'
-          }}
-          />
+          <Image src={Profile} width={30} height={30} alt="View Profile" />
           <Link href={'/gamePage'} className='text-2xl cursor-pointer'>
             View Profile
           </Link>
         </Box>
         <Box className='flex items-center gap-6 w-[220px]'>
-          <Image src={InviteToaGame} priority={false} width={30} height={30} alt="View Profile"
-          style={{
-            width: '30px',
-            height: '30px'
-          }}
-          />
+          <Image src={InviteToaGame} width={30} height={30} alt="View Profile" />
           <Text className='text-2xl cursor-pointer' onClick={() => toast({
             title: 'Invitation sent',
             position: 'bottom-right',

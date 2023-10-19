@@ -25,7 +25,7 @@ export class MessageService {
         })
         if (!channel)
             return {status: "couldn't find channel"}
-        const message = await this.prisma.message.create({
+        const message = await this.prisma.channelMessage.create({
             data: {
                 content: messageInfo.content,
                 authorName: user.username,
@@ -44,16 +44,16 @@ export class MessageService {
 
     async getMessages(channelId: string) {
 
-        // const channel = await this.prisma.channel.findUnique({
-        //     where: {
-        //         id: channelId
-        //     },
-        //     include: {
-        //         message: true,
-        //     }
-        // })
+        const channel = await this.prisma.channel.findUnique({
+            where: {
+                id: channelId
+            },
+            include: {
+                channelmessages: true,
+            }
+        })
 
-        // return channel.message
+        return channel.channelmessages
     }
 
     async getuserinfo(userId: string) {

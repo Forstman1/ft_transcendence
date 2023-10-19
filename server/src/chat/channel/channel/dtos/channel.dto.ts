@@ -21,3 +21,24 @@ export class CreateChannelDto {
     userId: string;
 }
 
+export class ChangePassword {
+
+
+
+    @IsNotEmpty()
+    @IsString()
+    channelName:string
+
+    @IsNotEmpty()
+    @IsString()
+    userId: string
+
+    @IsNotEmpty()
+    @IsString()
+    currentpassword: string
+
+    @IsNotEmpty()
+    @IsString()
+    newpassword: string
+}
+
