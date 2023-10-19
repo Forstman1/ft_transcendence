@@ -59,13 +59,13 @@ export default function userPage() {
 
 
         <Flex className='flex-wrap xl:flex-nowrap xl:space-x-4'>
-            <div className='w-full basis-full xl:basis-1/2 border-2 border-black rounded custom-shadow'>
+            <div className='w-full basis-full xl:basis-1/2 border-2 border-black rounded custom-shadow mb-4'>
                 <FriendList />
             </div>
 
             <div className='w-full basis-full xl:basis-1/2'>
                 <Flex className='w-full h-full flex-col justify-between md:space-y-4'>
-                    <div className='h-full border-black border-2 rounded custom-shadow'>
+                    <div className='h-full border-black border-2 rounded custom-shadow min-h-[200px]'>
                         <Achievements />
                     </div>
                     <div className='h-full border-black border-2 rounded custom-shadow'>
