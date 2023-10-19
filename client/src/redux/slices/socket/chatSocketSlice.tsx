@@ -3,22 +3,36 @@ import { stat } from "fs";
 import { ACTION } from "next/dist/client/components/app-router-headers";
 import { io, Socket } from "socket.io-client";
 
+let userId: number | null = null
 
-const socket = io('http://localhost:3001', {
-    transports: ['websocket']
+function assignuserId() {
+    if (userId === null) {
+        userId = Math.floor(Math.random() * 3) + 1;
+        console.log(`user ID is: ${userId}`)
+    }
+}
+
+assignuserId()
+
+const socket = io('http://localhost:3001/chat', {
+    transports: ['websocket'],
+    auth: {
+        id: userId,
+    },
 })
+
 socket.on('connect', () => {
     console.log('chat user connected')
 })
 
 export interface ChatSocketState {
     socket: Socket | null;
+
 }
 
 
 const initialState: ChatSocketState = {
     socket: socket,
-
 }
 
 const chatSocketSlice = createSlice({

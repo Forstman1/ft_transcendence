@@ -12,7 +12,7 @@ import ChannelMemberActions from './ChannelMemberActions'
 import UserControls from './UserControls'
 import { useSelector, useDispatch } from 'react-redux'
 import { useMediaQuery } from '@chakra-ui/react'
-import { setLeft, setMidle, setRight } from '@/redux/slices/Chat/MobileSlice'
+import { setLeft, setMidle, setRight } from '@/redux/slices/chat/MobileSlice'
 
 
 
@@ -21,8 +21,8 @@ import { setLeft, setMidle, setRight } from '@/redux/slices/Chat/MobileSlice'
 export default function RightSidebar() {
 
   
-  const { MidleClice } = useSelector((state: any) => state.mobile)
-  const { LeftClice } = useSelector((state: any) => state.mobile)
+  // const { MidleClice } = useSelector((state: any) => state.mobile)
+  // const { LeftClice } = useSelector((state: any) => state.mobile)
   const { RightClice } = useSelector((state: any) => state.mobile)
   const isDesktop = useMediaQuery("(min-width: 1000px)")
 
@@ -35,7 +35,7 @@ export default function RightSidebar() {
     dispatch(setMidle(true))
     dispatch(setLeft(true))
   }
-console.log(isDesktop[0])
+
 
   const sidebar = {
     open: (height = 1000) => ({

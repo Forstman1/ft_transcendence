@@ -10,10 +10,10 @@ export class UsersController {
     listusers(@Body() Body) {
         return this.usersService.listUsers()
     }
-    @Get('./adduser')
-    adduser(@Body() body) {
-        return this.usersService.add(body)
-    }
+    // @Get('./adduser')
+    // adduser(@Body() body) {
+    //     return this.usersService.add(body)
+    // }
     // @Get()
     // hello(){
     //     return("hello world")

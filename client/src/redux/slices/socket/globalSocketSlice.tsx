@@ -6,7 +6,7 @@ let playerId: number | null = null;
 function assignPlayerId() {
   if (playerId === null) {
     playerId = Math.floor(Math.random() * 2) + 1;
-    console.log(`Player ID assigned: ${playerId}`);
+    // console.log(`Player ID assigned: ${playerId}`);
   }
 }
 

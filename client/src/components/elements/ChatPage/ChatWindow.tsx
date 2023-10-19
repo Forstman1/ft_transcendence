@@ -8,11 +8,11 @@ import arrow from "../../../../../client/assets/icons/arrow.svg";
 import Image from 'next/image';
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
-import { addMessage } from '@/redux/slices/Chat/ChatSlice';
+import { addMessage } from '@/redux/slices/chat/ChatSlice';
 import { Message } from '@/utils/types/chat/ChatTypes';
 import { useMutation } from 'react-query';
 import MobileFooter from './Mobile/MobileFooter';
-import { setLeft, setRight, setMidle } from '@/redux/slices/Chat/MobileSlice';
+import { setLeft, setRight, setMidle } from '@/redux/slices/chat/MobileSlice';
 
 
 
@@ -44,8 +44,6 @@ function Own_Message({ message, sender, time }: any) {
 
 
 export default function ChatWindow() {
-
-
 
 
 
@@ -97,20 +95,26 @@ export default function ChatWindow() {
     if (!data.newmessage)
       return;
 
+      console.log(data);
+
     // const message = await createMessage.mutateAsync({
     //   content: data.newmessage,
     //   userId: userId,
     //   reciverId: selectedChannel.id
     // })
-    const message = "fake massage"
+    // const message = "fake massage"
     
-    dispatch(addMessage(message));
+    // dispatch(addMessage(message));
 
-    reset({ newmessage: '' });
+    // reset({ newmessage: '' });
 
     scrollToBottom();
   }
 
+  const HideMobileSideBars = () => {
+    dispatch(setRight(false)); 
+    dispatch(setLeft(false))
+  };
 
 
   return (
@@ -144,7 +148,7 @@ export default function ChatWindow() {
       </div>
       <form onSubmit={handleSubmit(handelNewMessage)} className='h-[55px] mb-[15px] flex justify-around items-center'>
         <Input {...register("newmessage")} className='bg-[#D9D9D9] border-2 rounded-ld w-[90%] border-black h-[100%]' placeholder='Type your message here ...' 
-        onClick={() => {dispatch(setRight(false)); dispatch(setLeft(false))}}
+        onClick={() => {HideMobileSideBars()}}
         />
         <button type='submit' className='bg-black w-[50px] rounded-md cursor-pointer flex justify-start items-center h-[100%]'>
           <Image className=' w-[40px] ' src={arrow} alt='arrow' />

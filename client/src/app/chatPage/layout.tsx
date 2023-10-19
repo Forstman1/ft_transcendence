@@ -4,7 +4,9 @@ import { FC, ReactNode, useEffect} from "react";
 import LeftSidebar from "@/components/elements/ChatPage/leftsidebar/LeftSidebar";
 import { Flex } from "@chakra-ui/react";
 import MobileFooter from "@/components/elements/ChatPage/Mobile/MobileFooter";
-// import chatSocketsli
+import { RootState } from "@/redux/store/store";
+import { useSelector } from "react-redux";
+import { ChatSocketState } from "@/redux/slices/socket/chatSocketSlice";
 
 
 export interface LayoutProps{
@@ -14,7 +16,11 @@ export interface LayoutProps{
 
 export const Layout: FC<LayoutProps> = ({children}) => {
 
-    // const socket = 
+    const socket = useSelector((state: ChatSocketState) => state.socket)
+
+    // socket?.on('connect', () => {
+    //     console.log('hello from the chat layout')
+    // })
 
     return(
         <>

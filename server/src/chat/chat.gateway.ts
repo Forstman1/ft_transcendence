@@ -1,8 +1,9 @@
 import { MessageBody, OnGatewayInit, SubscribeMessage, WebSocketGateway, OnGatewayConnection, WebSocketServer } from '@nestjs/websockets';
-import { Body, Logger } from '@nestjs/common';
-import { Server } from 'socket.io';
+import { Logger } from '@nestjs/common';
+import { Server, Socket } from 'socket.io';
 
-@WebSocketGateway({namespace: 'chat'}) 
+
+@WebSocketGateway({namespace: '/chat'}) 
 export class ChatGateway implements OnGatewayInit , OnGatewayConnection {
   @WebSocketServer()
   server: Server;
@@ -14,16 +15,18 @@ export class ChatGateway implements OnGatewayInit , OnGatewayConnection {
   }
 
   handleConnection(client: any) {
-    console.log("client ")
+    // console.log(client)
+    // return client
   }
 
   handleDisconnect(client: any) {
     // Handle disconnection event
   }
+  
   @SubscribeMessage('message')
-  handleMessage(@MessageBody() data: string): string {
-    console.log(data)
-    this.server.emit(data);
-    return data
+  handleMessage(client: Socket, message: {sender: string, room: string, message: string}) {
+    client.join('room')
+    client.to(message.room).emit('message', `${client.id} joined the room`)
+    // this.server.to(message.room).emit('message', message)
   }
 }

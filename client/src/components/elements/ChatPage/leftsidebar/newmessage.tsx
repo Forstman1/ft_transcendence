@@ -16,7 +16,7 @@ import {
 import { User } from '@/utils/types/chat/ChatTypes';
 // import { setToTrue, setToFalse } from '@/redux/slices/chat/chatSlice';
 import { useSelector, useDispatch } from 'react-redux';
-import { setUser } from '@/redux/slices/Chat/ChatSlice';
+import { setUser } from '@/redux/slices/chat/ChatSlice';
 
 
 type Props = {
@@ -28,11 +28,11 @@ type Props = {
 };
 
 
-const getUsers = async() => {
+// const getUsers = async() => {
 
-    const res = await fetch('http://localhost:3001/users')
-    return res.json()
-}
+//     const res = await fetch('http://localhost:3001/users')
+//     return res.json()
+// }
 
 
 function Usercard(props: any) {

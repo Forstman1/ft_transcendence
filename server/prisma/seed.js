@@ -50,8 +50,10 @@ function seed() {
                     _a.label = 1;
                 case 1:
                     if (!(numUser < numberOfUsers)) return [3 /*break*/, 4];
-                    return [4 /*yield*/, prisma.user.create({
-                            data: {
+                    return [4 /*yield*/, prisma.user.upsert({
+                            where: { email: faker_1.faker.internet.email() },
+                            update: {},
+                            create: {
                                 email: faker_1.faker.internet.email(),
                                 username: faker_1.faker.internet.userName(),
                                 fullname: faker_1.faker.internet.displayName(),
@@ -60,7 +62,17 @@ function seed() {
                                 coalitionColor: faker_1.faker.internet.userName(),
                                 accessToken: faker_1.faker.internet.password(),
                                 refreshToken: faker_1.faker.internet.password(),
-                            },
+                                channelmessages: {
+                                    create: {
+                                        content: faker_1.faker.lorem.text(),
+                                        authorName: faker_1.faker.internet.userName(),
+                                        createdAt: faker_1.faker.date.recent(),
+                                        reciver: {
+                                            connect: { id: "user2" }
+                                        },
+                                    }
+                                }
+                            }
                         })];
                 case 2:
                     _a.sent();
