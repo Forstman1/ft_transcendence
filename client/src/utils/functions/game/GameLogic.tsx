@@ -1,6 +1,6 @@
 import { getGameColor } from "./GetGameColor";
 import React from "react";
-import { Rectangle, gameSettingsProps, Ball } from "@/utils/types/game/GameTypes";
+import { Rectangle, gameSettingsProps, Ball, throttleProps } from "@/utils/types/game/GameTypes";
 
 
 export const canvasMiddleLineWidth = 10;
@@ -253,24 +253,14 @@ export const animate = (
   setBall((prevBall) => ({ ...prevBall, x: newBallX, y: newBallY }));
 };
 
-// export const handelGameStatic = (
-//   setRobotScore: React.Dispatch<React.SetStateAction<number>>,
-//   setUserScore: React.Dispatch<React.SetStateAction<number>>,
-//   leftScore: number,
-//   rightScore: number,
-//   gameMatches: number
-// ) => {
+export function throttle({ func, delay }: throttleProps) {
+  let lastCall = 0;
+  return function (...args: any) {
+    const now = new Date().getTime();
+    if (now - lastCall >= delay) {
+      lastCall = now;
+      func(...args);
+    }
+  };
+}
 
-//   if (gameMatches === 0){
-//     if (leftScore > rightScore){
-//       setRobotScore((prev) => prev + 1);
-//     }
-//     else if (leftScore < rightScore){
-//       setUserScore((prev) => prev + 1);
-//     }
-//     else {
-//       setRobotScore((prev) => prev + 1);
-//       setUserScore((prev) => prev + 1);
-//     }
-//   }
-// }

@@ -71,8 +71,8 @@ export const BackgroundsImg = [
 ];
 
 export const initialCanvasSize = {
-  width: 1400,
-  height: 500,
+  width: 1300,
+  height: 700,
 };
 
 export const initialLeftPaddle = {

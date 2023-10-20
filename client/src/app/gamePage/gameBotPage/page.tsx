@@ -21,6 +21,7 @@ import {
   initialBallSpeed,
   draw,
   botMove,
+  throttle,
 } from "@/utils/functions/game/GameLogic";
 import {
   Ball,
@@ -34,22 +35,7 @@ import {
   initialGameEndStatic,
 } from "@/utils/constants/game/GameConstants";
 
-type throttleProps = {
-  // eslint-disable-next-line no-unused-vars
-  func: (...args: any) => void;
-  delay: number;
-};
 
-function throttle({ func, delay }: throttleProps) {
-  let lastCall = 0;
-  return function (...args: any) {
-    const now = new Date().getTime();
-    if (now - lastCall >= delay) {
-      lastCall = now;
-      func(...args);
-    }
-  };
-}
 
 
 export default function GameBotPage() {
@@ -208,7 +194,7 @@ export default function GameBotPage() {
   };
 
   useEffect(() => {
-    if (!gameStarted || gameEnded) return;
+    if (!gameStarted || gameEnded || gamePause) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === " ") {
@@ -225,12 +211,17 @@ export default function GameBotPage() {
   
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
+
+    if (!gameStarted) {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keyup", handleKeyUp);
+    }
   
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);
     };
-  }, [gameStarted, gamePause, gameEnded]);
+  }, [gamePause, gameEnded, ball, gameStarted]);
 
   //---------------------------------------------------------------------------
 
@@ -255,7 +246,6 @@ export default function GameBotPage() {
       }));
     }
 
-    // Redraw the canvas
     const context = canvasRef.current?.getContext("2d");
     if (context)
       draw(canvasRef.current!, context, leftRectangle, rightRectangle, ball, gameSettings);
@@ -322,7 +312,7 @@ export default function GameBotPage() {
                   <GameHeader leftScore={leftScore} rightScore={rightScore} />
                   <div
                     id="canvas-container"
-                    className="relative flex items-center bg-background-primary rounded-lg h-[55vh] w-full max-w-[1200px]"
+                    className="relative flex items-center bg-background-primary rounded-lg h-[50vh] w-full max-w-[1200px]"
                   >
                     <div className="absolute top-0 left-0 w-full h-full rounded-lg z-10">
                       {gamePause && !gameEnded && (

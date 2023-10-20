@@ -42,7 +42,7 @@ export default function GamePage() {
     );
     dispatch(
       setModal({
-        mode: "MEDIUM",
+        mode: "EASY",
         playgroundtheme: {
           id: 1,
           playgroundColor: "bg-black",
@@ -86,7 +86,7 @@ export default function GamePage() {
           />
         </div>
       )}
-      <div className="relative flex flex-row h-full justify-center items-center mx-[10%]  z-0">
+      <div className="relative flex flex-row h-full justify-center items-center mx-[10%] z-0 mt-20">
         <div
           className={`${
             breakpoint === "base" ? "absolute" : "flex"
@@ -101,9 +101,6 @@ export default function GamePage() {
           <div
             className={`flex flex-col justify-center items-center  space-y-6  mx-auto w-[400px] p-10`}
           >
-              {/* <div className="absolute -bottom-14 -left-60">
-                <Image src={pingPong} alt="pingPong" width={400} height={400} />
-              </div> */}
               <Button
                 className="rounded-full"
                 colorScheme="teal"
