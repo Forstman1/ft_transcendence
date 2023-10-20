@@ -8,11 +8,11 @@ import arrow from "../../../../../client/assets/icons/arrow.svg";
 import Image from 'next/image';
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
-import { addMessage } from '@/redux/slices/Chat/ChatSlice';
+import { addMessage } from '@/redux/slices/chat/ChatSlice';
 import { Message } from '@/utils/types/chat/ChatTypes';
 import { useMutation } from 'react-query';
 import MobileFooter from './Mobile/MobileFooter';
-import { setLeft, setRight, setMidle } from '@/redux/slices/Chat/MobileSlice';
+import { setLeft, setRight, setMidle } from '@/redux/slices/chat/MobileSlice';
 
 
 
@@ -79,30 +79,29 @@ export default function ChatWindow() {
 
 
 
-  // const createMessage = useMutation<any, Error, any>((variables) => 
-  // fetch('http://127.0.0.1:3001/message/createmessage', {
-  //   method: "POST",
-  //   body: JSON.stringify(variables),
-  //   headers: {
-  //     "content-type": "application/json",
-  //   }
-  // }).then((res) => {
-  //   return res.json()
-  // }).catch((error) => {
-  //   return error
-  // }))
+  const createMessage = useMutation<any, Error, any>((variables) => 
+  fetch('http://127.0.0.1:3001/message/createmessage', {
+    method: "POST",
+    body: JSON.stringify(variables),
+    headers: {
+      "content-type": "application/json",
+    }
+  }).then((res) => {
+    return res.json()
+  }).catch((error) => {
+    return error
+  }))
 
   const handelNewMessage = async (data: any) => {
 
     if (!data.newmessage)
       return;
 
-    // const message = await createMessage.mutateAsync({
-    //   content: data.newmessage,
-    //   userId: userId,
-    //   reciverId: selectedChannel.id
-    // })
-    const message = "fake massage"
+    const message = await createMessage.mutateAsync({
+      content: data.newmessage,
+      userId: userId,
+      reciverId: selectedChannel.id
+    })
     
     dispatch(addMessage(message));
 

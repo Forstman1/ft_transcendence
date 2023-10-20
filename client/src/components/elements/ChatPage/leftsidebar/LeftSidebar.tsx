@@ -16,13 +16,13 @@ import {  User } from '@/utils/types/chat/ChatTypes';
 import { Box, Flex } from '@chakra-ui/layout';
 import { inView } from 'framer-motion';
 import { motion } from 'framer-motion';
-import { setChannels } from '@/redux/slices/Chat/ChatSlice';
+import { setChannels } from '@/redux/slices/chat/ChatSlice';
 
 
 function Usercard(props: any) {
 
   // const { inView: boolean } = useSelector((state: any) => state.counter)
-  const { user } = useSelector((state : any) => state.userID)
+  const user  = useSelector((state : any) => state.chat.userID)
   
   const scroolToRef = useRef<HTMLDivElement>(null)
 
@@ -147,9 +147,9 @@ export default function LeftSidebar() {
 
         <div className='flex h-[400px] flex-col w-full mt-[30px] items-center gap-6 overflow-y-scroll'>
 
-          {channels.map((data: Channel) => {
+          {channels.map((data: Channel, id: number) => {
             if (data.name)
-              return <Hashtag data={data} />
+              return <Hashtag key={id} data={data} />
           })}
 
         </div>

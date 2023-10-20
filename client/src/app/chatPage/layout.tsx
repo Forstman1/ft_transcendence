@@ -4,7 +4,6 @@ import { FC, ReactNode} from "react";
 import LeftSidebar from "@/components/elements/ChatPage/leftsidebar/LeftSidebar";
 import { Flex } from "@chakra-ui/react";
 import MobileFooter from "@/components/elements/ChatPage/Mobile/MobileFooter";
-import MobileLeftBar from "@/components/elements/ChatPage/Mobile/MobileLeftBar";
 
 
 export interface LayoutProps{

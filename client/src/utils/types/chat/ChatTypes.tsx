@@ -4,7 +4,18 @@ export type Channel = {
     id: string;
     name: string;
     type: string;
+    channelMembers: ChannelMember[];
 };
+
+
+export type User = {
+    id: String
+    username: String
+    email: String
+    fullname: String
+    avatar: String
+    isOnline: Boolean
+}
 
 export type Message = {
     id: string;
@@ -15,11 +26,12 @@ export type Message = {
     createdAt: Date;
 }
 
-export type User = {
-    id:                String       
-    username:          String      
-    email:             String      
-    fullname:          String       
-    avatar:            String
-    isOnline:          Boolean
+export type ChannelMember = {
+
+    id: string
+    channelId: string
+    userId: string
+    role: string
+    createdAt: Date
+
 }

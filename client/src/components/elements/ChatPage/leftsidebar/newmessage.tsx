@@ -16,7 +16,7 @@ import {
 import { User } from '@/utils/types/chat/ChatTypes';
 // import { setToTrue, setToFalse } from '@/redux/slices/chat/chatSlice';
 import { useSelector, useDispatch } from 'react-redux';
-import { setUser } from '@/redux/slices/Chat/ChatSlice';
+import { setUser } from '@/redux/slices/chat/ChatSlice';
 
 
 type Props = {
@@ -63,7 +63,7 @@ function Usercard(props: any) {
             className='md:w-[30px] md:h-[30px] w-[20px] h-[20px] rounded-sm'
             value={data.username}
             onChange={handleChange}
-            isChecked={selectedOption === data.username}
+            isChecked={selectedOption.username === data.username}
         >
         </Radio>
     </div>)

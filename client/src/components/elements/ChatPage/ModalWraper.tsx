@@ -15,7 +15,7 @@ import SelectComponent from './rightSideBar/SelectComponent'
 
 
 
-export default function ModalWraper({ isOpen, onClose, imageAlt }: any) {
+export default function ModalWraper({ isOpen, onClose, imageAlt, Componenent }: any) {
 
   const toast = useToast()
 
@@ -29,29 +29,29 @@ export default function ModalWraper({ isOpen, onClose, imageAlt }: any) {
     
   }
 
-  const ShosenContent = () => {
+  // const ShosenContent = () => {
 
-    switch (imageAlt) {
-      case `Add to channel`:
-        return (
-          <SelectComponent />
-        );
-      case `Ban from channel`:
-        return (
-          <>
-            <SelectComponent />
-            <h1 className=' font-thin text-xl text-red-700 pt-3'>
-              Banning a user will prevent them from joining or viewing this channel.
-            </h1>
-          </>
-        );
-      case "Mute":
-        return <p className='font-thin text-xl text-red-700 pt-5'>Are you sure you want to mute <b>USER</b> in this channel?</p>;
-      default:
-        break
-    }
-  }
-
+  //   switch (imageAlt) {
+  //     case `Add to channel`:
+  //       return (
+  //         <SelectComponent />
+  //       );
+  //     case `Ban from channel`:
+  //       return (
+  //         <>
+  //           <SelectComponent />
+  //           <h1 className=' font-thin text-xl text-red-700 pt-3'>
+  //             Banning a user will prevent them from joining or viewing this channel.
+  //           </h1>
+  //         </>
+  //       );
+  //     case "Mute":
+  //       return <p className='font-thin text-xl text-red-700 pt-5'>Are you sure you want to mute <b>USER</b> in this channel?</p>;
+  //     default:
+  //       break
+  //   }
+  // }
+  
   return (
 
     <Modal
@@ -73,10 +73,11 @@ export default function ModalWraper({ isOpen, onClose, imageAlt }: any) {
 
         <ModalHeader>{imageAlt}</ModalHeader>
         <ModalBody>
-          <ShosenContent />
+          <Componenent />
+          {/* <ShosenContent /> */}
         </ModalBody>
         <ModalCloseButton />
-        <ModalFooter>
+        {!Componenent && <ModalFooter>
           <Button
             colorScheme="red"
             variant="outline"
@@ -90,7 +91,8 @@ export default function ModalWraper({ isOpen, onClose, imageAlt }: any) {
             variant="outline"
             ml={10}
             onClick={() => {
-              onClose(); toast({
+              onClose();
+               toast({
                 title: getAnswer(imageAlt),
                 position: `bottom-right`,
                 status: 'success',
@@ -104,7 +106,8 @@ export default function ModalWraper({ isOpen, onClose, imageAlt }: any) {
           >
             Confirm
           </Button>
-        </ModalFooter>
+        </ModalFooter>}
+        
       </ModalContent>
     </Modal>
   )

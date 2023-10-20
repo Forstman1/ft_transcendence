@@ -12,7 +12,10 @@ import ChannelMemberActions from './ChannelMemberActions'
 import UserControls from './UserControls'
 import { useSelector, useDispatch } from 'react-redux'
 import { useMediaQuery } from '@chakra-ui/react'
-import { setLeft, setMidle, setRight } from '@/redux/slices/Chat/MobileSlice'
+import { setLeft, setMidle, setRight } from '@/redux/slices/chat/MobileSlice'
+import ChannelConfiguration from './channelconfiguration/ChannelConfiguration'
+import { Channel } from '@/utils/types/chat/ChatTypes'
+import ChannelSetting from './channelsetting/ChannelSetting'
 
 
 
@@ -27,7 +30,7 @@ export default function RightSidebarChannel() {
   const isDesktop = useMediaQuery("(min-width: 1000px)")
   const toast = useToast();
   const dispatch = useDispatch()
-
+  const channel: Channel = useSelector((state:any) => state.chat.selectedChannelorUser)
 
 
   if(isDesktop[0]) {
@@ -69,39 +72,19 @@ export default function RightSidebarChannel() {
     >
       <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7 '>
         <Text className='flex text-black text-4xl drop-shadow-[2px_2px_0_rgba(18,18,18,.0.50)]'>
-          # Music
+          # {channel.name}
         </Text>
       </Box>
       <hr className='bg-black h-[2px] mx-10' />
-      <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7'>
-        <Box className='flex items-center gap-6 w-[220px]'>
-          <Image src={Profile} width={30} height={30} alt="View Profile" />
-          <Link href={'/gamePage'} className='text-2xl cursor-pointer'>
-            View Profile
-          </Link>
-        </Box>
-        <Box className='flex items-center gap-6 w-[220px]'>
-          <Image src={InviteToaGame} width={30} height={30} alt="View Profile" />
-          <Text className='text-2xl cursor-pointer' onClick={() => toast({
-            title: 'Invitation sent',
-            position: 'bottom-right',
-            status: 'success',
-            duration: 1000,
-            containerStyle: {
-              width: 300,
-              height: 100,
-            }
-          })}
-          >
-            Invite to a game
-          </Text>
-        </Box>
-        <UserControls />
-      </Box>
+
+        <ChannelConfiguration />
+        
       <hr className='bg-black h-[2px] mx-10' />
-      <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7'>
+
+        <ChannelSetting />
+      {/* <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7'>
         <ChannelMemberActions />
-      </Box>
+      </Box> */}
     </Box>
   )
 }

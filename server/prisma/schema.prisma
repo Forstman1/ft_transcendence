@@ -50,7 +50,7 @@ model ChannelMember {
   channelId String
   userId    String
   role     Role @default(MEMBER)
-  channel Channel @relation(fields: [channelId], references: [id])
+  channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
   user    User  @relation(fields: [userId], references: [id], onDelete: Cascade) 
   createdAt DateTime @default(now())
 }
@@ -58,8 +58,8 @@ model ChannelMember {
 model ChannelMessage {
   id        String   @id @default(uuid())
   content   String
-  author User @relation(fields: [authorID], references: [id])
-	reciver Channel @relation(fields: [reciverID], references: [id])
+  author User @relation(fields: [authorID], references: [id], onDelete: Cascade)
+	reciver Channel @relation(fields: [reciverID], references: [id], onDelete: Cascade)
 	reciverID String
 	authorID String
   authorName String

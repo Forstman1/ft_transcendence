@@ -12,7 +12,7 @@ import ChannelMemberActions from './ChannelMemberActions'
 import UserControls from './UserControls'
 import { useSelector, useDispatch } from 'react-redux'
 import { useMediaQuery } from '@chakra-ui/react'
-import { setLeft, setMidle, setRight } from '@/redux/slices/Chat/MobileSlice'
+import { setLeft, setMidle, setRight } from '@/redux/slices/chat/MobileSlice'
 
 
 

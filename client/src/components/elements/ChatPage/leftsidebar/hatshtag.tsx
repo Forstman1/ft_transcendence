@@ -18,7 +18,7 @@ import { Button, FormControl, FormLabel, Icon, Input, Select } from '@chakra-ui/
 import { useForm } from "react-hook-form";
 import { LockIcon, SmallAddIcon } from "@chakra-ui/icons";
 import { useMutation } from "react-query";
-import { setChannel, setMessages } from "@/redux/slices/Chat/ChatSlice";
+import { setChannel, setMessages } from "@/redux/slices/chat/ChatSlice";
 import { useDispatch } from "react-redux";
 import { Channel, Message } from "@/utils/types/chat/ChatTypes";
 
@@ -73,6 +73,7 @@ const getMessages = useMutation<any, Error, any>((variables) =>
         else {
 
             dispatch(setChannel(data))
+            console.log("ana hna")
             const messages = await getMessages.mutateAsync({
                 channelId: id,
             })
@@ -93,19 +94,35 @@ const getMessages = useMutation<any, Error, any>((variables) =>
     }
 
 
-    const onSubmit = async (data: any) => {
+    const onSubmit = async (info: any) => {
 
         const check = await checkpassword.mutateAsync({
             channelName: name,
-            password: data.password
+            password: info.password
         })
         console.log(check)
         if (check.status === "wrong password") {
             setWrongpassowrd(true)
             return;
         }
-        console.log(check)
-        data.password = "";
+        dispatch(setChannel(data))
+        const messages = await getMessages.mutateAsync({
+            channelId: id,
+        })
+        if (messages) {
+            dispatch(setMessages(messages))
+        }
+        toast({
+            title: name,
+            position: `bottom-right`,
+            status: 'success',
+            duration: 1000,
+            containerStyle: {
+                width: 300,
+                height: 100,
+            }
+        })
+        info.password = "";
         reset({ password: "" })
         onClose();
 

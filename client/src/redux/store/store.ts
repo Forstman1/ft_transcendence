@@ -3,8 +3,8 @@ import { TypedUseSelectorHook, useSelector } from "react-redux";
 import  gameReducer  from '../slices/game/gameModalSlice';
 
 import globalSocketReducer  from '../slices/socket/globalSocketSlice';
-import chatSlice from '../slices/Chat/ChatSlice'
-import mobileReducer from "../slices/Chat/MobileSlice";
+import chatSlice from '../slices/chat/ChatSlice'
+import mobileReducer from "../slices/chat/MobileSlice";
 
 export const store = configureStore({
   reducer: {

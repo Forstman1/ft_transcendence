@@ -1,5 +1,4 @@
-import { Channel, Message } from "@/utils/types/chat/ChatTypes";
-import { User } from "@/utils/types/chat/ChatTypes";
+import { Channel, Message, User } from "@/utils/types/chat/ChatTypes";
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -16,7 +15,7 @@ type ChatState = {
   const initialState: ChatState = {
     selectedChannelorUser: null,
     channels: [],
-    userId: "0e40b5fd-5a06-4b05-bc21-63c796f6832e",
+    userId: "0d299b7d-cb87-4a18-8788-27bcd4744987",
     messages: [],
   };
   
@@ -40,7 +39,6 @@ type ChatState = {
       },
       setMessages: (state, action) => {
         state.messages = action.payload
-        console.log(state.messages)
       },
       addMessage: (state, action) => {
         state.messages.push(action.payload)
