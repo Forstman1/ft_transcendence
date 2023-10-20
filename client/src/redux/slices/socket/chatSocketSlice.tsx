@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { data } from "autoprefixer";
 import { stat } from "fs";
 import { ACTION } from "next/dist/client/components/app-router-headers";
+import { dash } from "radash";
 import { io, Socket } from "socket.io-client";
 
 let userId: number | null = null
@@ -8,7 +10,7 @@ let userId: number | null = null
 function assignuserId() {
     if (userId === null) {
         userId = Math.floor(Math.random() * 3) + 1;
-        console.log(`user ID is: ${userId}`)
+        // console.log(`user ID is: ${userId}`)
     }
 }
 
@@ -23,6 +25,10 @@ const socket = io('http://localhost:3001/chat', {
 
 socket.on('connect', () => {
     console.log('chat user connected')
+})
+
+socket.emit(`createRoom`, {userId: userId}, (data: any) => {
+    console.log(`the data returned is ` + data)
 })
 
 export interface ChatSocketState {

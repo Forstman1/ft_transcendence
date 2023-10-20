@@ -69,4 +69,7 @@ export class MessageService {
         return user;
     }
 
+    async getDMMessages() {
+        
+    }
 }
