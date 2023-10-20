@@ -8,15 +8,16 @@ import Collection from '@/components/userPage/Collection';
 import ChartLine from '@/components/userPage/CartLine';
 import FriendList from '@/components/userPage/FriendList';
 import Achievements from '@/components/userPage/Achievements'
+import MatchHistory from '@/components/userPage/MatchHistory';
 
 
 
 export default function userPage() {
   return (
-    <div className="pt-10 container m-auto">
-        <Flex className='flex-wrap lg:flex-nowrap lg:space-x-4'>
+    <div className="w-full h-full py-16 container m-auto">
+        <Flex className='flex-wrap lg:flex-nowrap lg:space-x-8'>
             {/* Profile */}
-            <Box className='mb-4 p-0 mr-0 border-solid border-2 border-gray-900 custom-shadow rounded w-full lg:w-1/3' p={4} color="black">
+            <Box className='mb-8 p-0 mr-0 border-solid border-2 border-gray-900 custom-shadow rounded w-full lg:w-1/3' p={4} color="black">
                 <div className='w-1/2 bg-black text-white p-1 text-xl rounded-br-lg'>
                     <Image src={active} alt='online' width={30} height={30} className='inline-block mr-4'/>
                     Available
@@ -33,7 +34,7 @@ export default function userPage() {
                 </Container>
             </Box>
             {/* Stats */}
-            <Box className='flex-grow mb-4 p-0 mr-0 border-solid border-2 border-gray-900 custom-shadow rounded' p={4} color="black">
+            <Box className='flex-grow mb-8 p-0 mr-0 border-solid border-2 border-gray-900 custom-shadow rounded' p={4} color="black">
                 <Flex className='flex-wrap md:flex-nowrap'>
                     <div className='bg-gray-200 border-r-2 border-black w-[100%] md:basis-1/12'>
                         <h4 className='font-bold text-center bg-black text-white text-xl border-r border-white md:h-[15%]'>Team</h4>
@@ -58,18 +59,18 @@ export default function userPage() {
         </Flex>
 
 
-        <Flex className='flex-wrap xl:flex-nowrap xl:space-x-4'>
-            <div className='w-full basis-full xl:basis-1/2 border-2 border-black rounded custom-shadow mb-4'>
+        <Flex className='h-[540px] flex-wrap xl:flex-nowrap xl:space-x-8'>
+            <div className='w-full h-full basis-full xl:basis-1/2 border-2 border-black rounded custom-shadow mb-4'>
                 <FriendList />
             </div>
 
             <div className='w-full basis-full xl:basis-1/2'>
-                <Flex className='w-full h-full flex-col justify-between md:space-y-4'>
-                    <div className='h-full border-black border-2 rounded custom-shadow min-h-[200px]'>
+                <Flex className='w-full h-full flex-col justify-between md:space-y-8'>
+                    <div className='h-full border-black border-2 rounded custom-shadow min-h-[250px] xl:min-h-fit'>
                         <Achievements />
                     </div>
-                    <div className='h-full border-black border-2 rounded custom-shadow'>
-                        two
+                    <div className='h-full border-black border-2 rounded custom-shadow min-h-[250px] xl:min-h-fit'>
+                        <MatchHistory />
                     </div>
                 </Flex>
             </div>

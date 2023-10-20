@@ -33,9 +33,18 @@ const data: AchievementType = [
 ]
 
 export default function Achievements() {
-
-    const [showUnlocked, setShowUnlocked] = useState(true);
-    const filterdData: AchievementType = data.filter((item) => showUnlocked || !item.locked);
+    const [showUnlocked, setShowUnlocked] = useState(false);
+    const [showAll, setShowAll] = useState(true);
+  
+    const filterdData = data.filter((item) => {
+      if (showAll) {
+        return true;
+      }
+      if (showUnlocked) {
+        return !item.locked;
+      }
+      return item.locked;
+    });
 
   return (
     <>
@@ -43,10 +52,19 @@ export default function Achievements() {
             <Flex className='justify-between font-bold text-lg'>
                 <h2 className='bg-black text-white px-2 rounded-br'>Achievements</h2>
                 <button className='border-black border-l-2 border-b-2 rounded-bl px-2'
-                    onClick={() => setShowUnlocked(!showUnlocked)}
+                    onClick={() => {
+                        if (showAll) {
+                          setShowAll(false);
+                          setShowUnlocked(true);
+                        } else if (showUnlocked) {
+                          setShowUnlocked(false);
+                        } else {
+                          setShowAll(true);
+                        }
+                      }}
                 >
                     <Icon as={TriangleDownIcon} boxSize={4} />
-                    {showUnlocked ? 'Unlocked' : 'All'}
+                    {showAll ? 'All' : (showUnlocked ? 'Unlocked' : 'Locked')}
                 </button>
             </Flex>
             <div className='h-[calc(100%-30px)] grid grid-cols-5 grid-rows-2 gap-2 content-center'>

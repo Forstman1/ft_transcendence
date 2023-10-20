@@ -9,8 +9,8 @@ import { Flex, Box, Center } from "@chakra-ui/react";
 
 export default function Home() {
   return (
-    <Box className="w-screen h-screen">
-      {/* <Flex className="w-screen flex-row justify-center content-center justify-items-center items-center grid-cols-2">
+    <Box className="w-screen">
+      <Flex className="w-screen flex-row justify-center content-center justify-items-center items-center grid-cols-2">
         <Box className="col-span-1 w-1/2 ">
           <Image className="m-auto p-auto" width={680} src={GamePreview} alt="Game Preview" />
         </Box>
@@ -27,7 +27,7 @@ export default function Home() {
             </p>
           </Flex>
         </Box>
-      </Flex> */}
+      </Flex>
     </Box>
   );
 }
