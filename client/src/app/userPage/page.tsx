@@ -1,8 +1,8 @@
 'use client';
 
-import { Flex, Box, Avatar, Container } from '@chakra-ui/react'
-import Image from 'next/image'
-import active  from '@/../public/Icons/online.svg'
+import { Flex, Box, Avatar, Container, Icon } from '@chakra-ui/react'
+import { MdSettings } from 'react-icons/md'
+
 import ChartPie from '@/components/userPage/ChartPie';
 import Collection from '@/components/userPage/Collection';
 import ChartLine from '@/components/userPage/CartLine';
@@ -18,10 +18,15 @@ export default function userPage() {
         <Flex className='flex-wrap lg:flex-nowrap lg:space-x-8'>
             {/* Profile */}
             <Box className='mb-8 p-0 mr-0 border-solid border-2 border-gray-900 custom-shadow rounded w-full lg:w-1/3' p={4} color="black">
-                <div className='w-1/2 bg-black text-white p-1 text-xl rounded-br-lg'>
-                    <Image src={active} alt='online' width={30} height={30} className='inline-block mr-4'/>
-                    Available
-                </div>
+                <Flex className='justify-between'>
+                    <h2 className=' bg-black text-white p-1 text-xl rounded-br-lg'>
+                        <span className='inline-block w-5 h-5 rounded-full border mr-4 bg-green-500'></span>
+                        Available
+                    </h2>
+                    <button className='bg-black text-white px-4 rounded-bl-lg hover:bg-gray-700'>
+                        <Icon as={MdSettings} /> Edit
+                    </button>
+                </Flex>
 
                 <Container>
                     <Flex className='justify-between pt-2 pb-6'>
@@ -59,17 +64,17 @@ export default function userPage() {
         </Flex>
 
 
-        <Flex className='h-[540px] flex-wrap xl:flex-nowrap xl:space-x-8'>
-            <div className='w-full h-full basis-full xl:basis-1/2 border-2 border-black rounded custom-shadow mb-4'>
+        <Flex className='h-[540px] flex flex-col items-start lg:flex-row lg:space-x-8'>
+            <div className='w-full lg:w-1/2 h-full  border-2 border-black rounded custom-shadow mb-4'>
                 <FriendList />
             </div>
 
-            <div className='w-full basis-full xl:basis-1/2'>
+            <div className='w-full lg:w-1/2 '>
                 <Flex className='w-full h-full flex-col justify-between md:space-y-8'>
-                    <div className='h-full border-black border-2 rounded custom-shadow min-h-[250px] xl:min-h-fit'>
+                    <div className='h-full border-black border-2 rounded custom-shadow min-h-[250px] '>
                         <Achievements />
                     </div>
-                    <div className='h-full border-black border-2 rounded custom-shadow min-h-[250px] xl:min-h-fit'>
+                    <div className='h-full border-black border-2 rounded custom-shadow min-h-[250px]'>
                         <MatchHistory />
                     </div>
                 </Flex>

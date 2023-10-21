@@ -1,16 +1,16 @@
 import { useState } from 'react'
 import { Flex, Icon, Tooltip } from '@chakra-ui/react'
 import { TriangleDownIcon } from '@chakra-ui/icons'
-import achvmt6 from '@/../public/Achievements/ponger.svg'
-import achvmt from '@/../public/Achievements/onestar.svg'
-import achvmt1 from '@/../public/Achievements/twostars.svg'
-import achvmt2 from '@/../public/Achievements/threestars.svg'
-import achvmt3 from '@/../public/Achievements/firsttrophy.svg'
-import achvmt4 from '@/../public/Achievements/fivedraws.svg'
-import achvmt5 from '@/../public/Achievements/drawer.svg'
-import achvmt7 from '@/../public/Achievements/legend.svg'
-import achvmt10 from '@/../public/Achievements/king.svg'
-import locked from '@/../public/Achievements/Key-yellow.svg'
+import achvmt1 from '@/../public/Achievements/one.png'
+import achvmt2 from '@/../public/Achievements/two.png'
+import achvmt3 from '@/../public/Achievements/three.png'
+import achvmt4 from '@/../public/Achievements/four.png'
+import achvmt5 from '@/../public/Achievements/five.png'
+import achvmt6 from '@/../public/Achievements/six.png'
+// import achvmt5 from '@/../public/Achievements/drawer.svg'
+// import achvmt7 from '@/../public/Achievements/legend.svg'
+// import achvmt10 from '@/../public/Achievements/king.svg'
+// import locked from '@/../public/Achievements/Key-yellow.svg'
 
 
 type AchievementType =  Array<{
@@ -20,16 +20,16 @@ type AchievementType =  Array<{
 }>
 
 const data: AchievementType = [
-    {'title':'PONGER',          'locked': false, 'imageSrc': achvmt6.src},
-    {'title':'LEVEL 1',         'locked': false, 'imageSrc': achvmt.src},
-    {'title':'LEVEL 2',         'locked': false, 'imageSrc': achvmt1.src},
-    {'title':'LEVEL 3',         'locked': false, 'imageSrc': achvmt2.src},
-    {'title':'CHAMPION',        'locked': true, 'imageSrc': achvmt3.src},
-    {'title':'DRAW MASTER',     'locked': false, 'imageSrc': achvmt4.src},
-    {'title':'Master Level',    'locked': true, 'imageSrc': achvmt5.src},
-    {'title':'Master Level',    'locked': false, 'imageSrc': achvmt.src},
-    {'title':'LEGEND',    'locked': true, 'imageSrc': achvmt7.src},
-    {'title':'KING OF THE HILL',    'locked': true, 'imageSrc': achvmt10.src},
+    {'title':'PONGER',          'locked': false, 'imageSrc': achvmt1.src},
+    {'title':'LEVEL 1',         'locked': false, 'imageSrc': achvmt2.src},
+    {'title':'LEVEL 2',         'locked': true, 'imageSrc': achvmt3.src},
+    {'title':'LEVEL 3',         'locked': true, 'imageSrc': achvmt4.src},
+    {'title':'CHAMPION',        'locked': true, 'imageSrc': achvmt5.src},
+    {'title':'DRAW MASTER',     'locked': true, 'imageSrc': achvmt6.src},
+    // {'title':'Master Level',    'locked': true, 'imageSrc': achvmt5.src},
+    // {'title':'Master Level',    'locked': false, 'imageSrc': achvmt.src},
+    // {'title':'LEGEND',    'locked': true, 'imageSrc': achvmt7.src},
+    // {'title':'KING OF THE HILL',    'locked': true, 'imageSrc': achvmt10.src},
 ]
 
 export default function Achievements() {
@@ -67,21 +67,16 @@ export default function Achievements() {
                     {showAll ? 'All' : (showUnlocked ? 'Unlocked' : 'Locked')}
                 </button>
             </Flex>
-            <div className='h-[calc(100%-30px)] grid grid-cols-5 grid-rows-2 gap-2 content-center'>
+            <div className='h-[calc(100%-30px)] grid grid-cols-3 grid-rows-2 gap-2 content-center'>
                 {
                 filterdData.map((item, index) => (
 
                     <div className="w-full h-full grid place-items-center" key={index}>
                         <Tooltip label={item.title} placement='right' bg='black'>
-                            <div className="h-16 w-16 border-2 rounded-full relative overflow-hidden">
-                                <div className=" absolute inset-x-0 inset-y-0 p-1">
-                                    <img src={item.imageSrc} alt={item.title}  className="w-full h-full" />
-                                </div>
-                                {item.locked && (
-                                    <Flex className=" bg-black opacity-[60%] absolute inset-x-0 inset-y-0 justify-center items-center">
-                                        {/* <img src={locked.src} alt="Locked" className="w-8 h-8" /> */}
-                                    </Flex>
-                                )}
+                            <div className={`h-24 w-24 border-2 rounded-full overflow-hidden text-center ${item.locked ? 'filter grayscale blur-sm': null}`}>
+                                {/* <div className=" filter grayscale contrast-75"> */}
+                                    <img src={item.imageSrc} alt={item.title}  className="w-full h-full object-cover " />
+                                {/* </div> */}
                             </div>
                         </Tooltip>
 

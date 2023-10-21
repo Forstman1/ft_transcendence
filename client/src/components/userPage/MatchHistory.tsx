@@ -16,8 +16,8 @@ const data: matchInfoType = [
     {'username':'haitkadir', 'score': 5, 'opponentScore': 7, 'profilePicSrc': 'https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg'},
     {'username':'sahafid', 'score': 15, 'opponentScore': 15, 'profilePicSrc': 'https://avatars.githubusercontent.com/u/76266668?v=4'},
     {'username':'haitkadir', 'score': 5, 'opponentScore': 7, 'profilePicSrc': 'https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg'},
-    // {'username':'sahafid', 'score': 10, 'opponentScore': 7, 'profilePicSrc': 'https://avatars.githubusercontent.com/u/76266668?v=4'},
-    // {'username':'haitkadir', 'score': 5, 'opponentScore': 7, 'profilePicSrc': 'https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg'},
+    {'username':'sahafid', 'score': 10, 'opponentScore': 7, 'profilePicSrc': 'https://avatars.githubusercontent.com/u/76266668?v=4'},
+    {'username':'haitkadir', 'score': 5, 'opponentScore': 7, 'profilePicSrc': 'https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg'},
     // {'username':'sahafid', 'score': 15, 'opponentScore': 15, 'profilePicSrc': 'https://avatars.githubusercontent.com/u/76266668?v=4'},
     // {'username':'haitkadir', 'score': 5, 'opponentScore': 7, 'profilePicSrc': 'https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg'},
 ]
