@@ -16,14 +16,15 @@ import {  User } from '@/utils/types/chat/ChatTypes';
 import { Box, Flex } from '@chakra-ui/layout';
 import { inView } from 'framer-motion';
 import { motion } from 'framer-motion';
-import { setChannels } from '@/redux/slices/chat/ChatSlice';
+import { setChannels, setUser } from '@/redux/slices/chat/ChatSlice';
 
 
 function Usercard(props: any) {
 
   // const { inView: boolean } = useSelector((state: any) => state.counter)
   const user  = useSelector((state : any) => state.chat.userID)
-  
+  const dispatch = useDispatch()
+
   const scroolToRef = useRef<HTMLDivElement>(null)
 
 type UserValues = {
@@ -32,24 +33,26 @@ type UserValues = {
   onlineStatus: string
 }
 
-
+  const onSubmited = () => {
+      dispatch(setUser(props.data))
+  }
 
 
   let pathname : string = '';
   
   return (
   
-  <Box ref={scroolToRef} className='flex justify-between items-center cursor-pointer m-2 ml-0 p-2 rounded-md active:bg-zinc-300'
+  <Box  ref={scroolToRef} className='flex justify-between items-center cursor-pointer m-2 ml-0 p-2 rounded-md active:bg-zinc-300'
 
   
   id={pathname === props.id ? 'active' : ''}
-  onClick={() => {console.log(pathname)}}
+  onClick={() => {console.log(pathname); onSubmited()} }
   {...(user === props.data.id ? scroolToRef.current?.scrollIntoView({ block: 'nearest', inline: 'start' }) && {bg: 'bg-zinc-300'} : {})}
 
   >
 
     <div> 
-      <Avatar className='custom-shadow border-[1px] border-black' boxSize={14}>
+      <Avatar className='custom-shadow border-[1px] border-black' boxSize={14} src={props.data.avatar}>
         <AvatarBadge className='custom-shadow border-[1px] border-black' boxSize={4} bg='green.500' />
       </Avatar>
 

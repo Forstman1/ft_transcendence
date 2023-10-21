@@ -23,7 +23,6 @@ export default function ChannelSetting() {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [imageAlt, setImageAlt] = useState('');
     const channelinfo: Channel = useSelector((state:any) => state.chat.selectedChannelorUser)
-    
     const CtrlImages = [
         { src: invite, alt: "Invite People", Componenent: ChangePassword },
         { src: ban, alt: "Ban People", Componenent: ChangePassword },
@@ -31,13 +30,14 @@ export default function ChannelSetting() {
         { src: leavechannel, alt: "Leave Channel", Componenent: ChangePassword },
 
     ]
-
+    
    
     return <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7'>
 
         <InvitePeople />
         <LeaveChannel />
         <DeletChannel />
+        
         {/* {CtrlImages.map((data: any) => {
             if (channelinfo.type != 'PROTECTED' && (data.alt == "Change Channel Password" || data.alt == "Remove Channel Password")){}
             else if (channelinfo.type == 'PROTECTED' && data.alt == "Set Channel Password" ){}

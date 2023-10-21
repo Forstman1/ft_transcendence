@@ -1,6 +1,4 @@
 import React, { useState } from "react"
-
-
 import {
     Modal,
     ModalOverlay,
@@ -18,9 +16,9 @@ import { Button, FormControl, FormLabel, Icon, Input, Select } from '@chakra-ui/
 import { useForm } from "react-hook-form";
 import { LockIcon, SmallAddIcon } from "@chakra-ui/icons";
 import { useMutation } from "react-query";
-import { setChannel, setMessages } from "@/redux/slices/chat/ChatSlice";
-import { useDispatch } from "react-redux";
-import { Channel, Message } from "@/utils/types/chat/ChatTypes";
+import { setChannel, setChannelMember, setMessages } from "@/redux/slices/chat/ChatSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { Channel, ChannelMessage } from "@/utils/types/chat/ChatTypes";
 
 
 
@@ -36,33 +34,39 @@ export default function Hashtag(props: any) {
     let { id, name, type }: Channel = props.data;
     let data: Channel = props.data;
     const toast = useToast()
-
+    const userId = useSelector((state: any) => state.chat.userId)
     const dispatch = useDispatch()
 
 
     const checkpassword = useMutation<any, Error, any>((variables) =>
-    fetch('http://127.0.0.1:3001/channel/checkpassword', {
-        method: "POST",
-        body: JSON.stringify(variables),
-        headers: {
-            "content-type": "application/json",
+        fetch('http://127.0.0.1:3001/channel/checkpassword', {
+            method: "POST",
+            body: JSON.stringify(variables),
+            headers: {
+                "content-type": "application/json",
+            }
+        }).then((response) => {
+            return response.json()
+
+        }).catch((error) => {
+            return error
+        }))
+
+    const getchannelmember = useMutation<any, Error, any>((variables) =>
+        fetch('http://127.0.0.1:3001/channel/getchannelmemberinfo/' + variables.channelId + '/' + variables.userId).then((response) => {
+            return response.json()
         }
-    }).then((response) => {
-        return response.json()
+        ).catch((error) => {
+            return error
+        }))
 
-    }).catch((error) => {
-        return error
-    }))
+    const getMessages = useMutation<any, Error, any>((variables) =>
+        fetch('http://127.0.0.1:3001/message/getmessages/' + variables.channelId ).then((response) => {
+            return response.json()
 
-
-    
-const getMessages = useMutation<any, Error, any>((variables) =>
-    fetch('http://127.0.0.1:3001/message/getmessages/' + variables.channelId).then((response) => {
-        return response.json()
-
-    }).catch((error) => {
-        return error
-    }))
+        }).catch((error) => {
+            return error
+        }))
 
 
     const handleClick = async () => {
@@ -74,11 +78,19 @@ const getMessages = useMutation<any, Error, any>((variables) =>
 
             dispatch(setChannel(data))
             console.log("ana hna")
-            const messages = await getMessages.mutateAsync({
+            const messages: ChannelMessage[] = await getMessages.mutateAsync({
                 channelId: id,
             })
             if (messages) {
                 dispatch(setMessages(messages))
+            }
+            const channelmember = await getchannelmember.mutateAsync({
+                channelId: id,
+                userId
+            })
+            if (channelmember) {
+                console.log(channelmember)
+                dispatch(setChannelMember(channelmember))
             }
             toast({
                 title: name,

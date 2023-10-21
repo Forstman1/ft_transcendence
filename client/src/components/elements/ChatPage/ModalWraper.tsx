@@ -29,28 +29,28 @@ export default function ModalWraper({ isOpen, onClose, imageAlt, Componenent }: 
     
   }
 
-  // const ShosenContent = () => {
+  const ShosenContent = () => {
 
-  //   switch (imageAlt) {
-  //     case `Add to channel`:
-  //       return (
-  //         <SelectComponent />
-  //       );
-  //     case `Ban from channel`:
-  //       return (
-  //         <>
-  //           <SelectComponent />
-  //           <h1 className=' font-thin text-xl text-red-700 pt-3'>
-  //             Banning a user will prevent them from joining or viewing this channel.
-  //           </h1>
-  //         </>
-  //       );
-  //     case "Mute":
-  //       return <p className='font-thin text-xl text-red-700 pt-5'>Are you sure you want to mute <b>USER</b> in this channel?</p>;
-  //     default:
-  //       break
-  //   }
-  // }
+    switch (imageAlt) {
+      case `Add to channel`:
+        return (
+          <SelectComponent />
+        );
+      case `Ban from channel`:
+        return (
+          <>
+            <SelectComponent />
+            <h1 className=' font-thin text-xl text-red-700 pt-3'>
+              Banning a user will prevent them from joining or viewing this channel.
+            </h1>
+          </>
+        );
+      case "Mute":
+        return <p className='font-thin text-xl text-red-700 pt-5'>Are you sure you want to mute <b>USER</b> in this channel?</p>;
+      default:
+        break
+    }
+  }
   
   return (
 
@@ -73,8 +73,8 @@ export default function ModalWraper({ isOpen, onClose, imageAlt, Componenent }: 
 
         <ModalHeader>{imageAlt}</ModalHeader>
         <ModalBody>
-          <Componenent />
-          {/* <ShosenContent /> */}
+          {Componenent &&  <Componenent />}
+          <ShosenContent />
         </ModalBody>
         <ModalCloseButton />
         {!Componenent && <ModalFooter>

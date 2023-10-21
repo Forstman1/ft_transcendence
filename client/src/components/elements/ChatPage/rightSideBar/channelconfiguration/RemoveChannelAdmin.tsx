@@ -7,6 +7,7 @@ import Image from 'next/image'
 import AddToChannel from '../../../../../../assets/icons/AddToChannel.svg'
 import Usercard from '../channelsetting/UserCard'
 import { ChannelMember, User } from '@/utils/types/chat/ChatTypes'
+import Ban from "../../../../../../assets/icons/Ban.svg"
 
 
 
@@ -35,7 +36,7 @@ function Componenent({ onClose }: any) {
 
 
                 const filteredUsers = users.filter((user: any) => {
-                    return user.role !== "ADMIN" && user.role !== "OWNER";
+                    return user.role !== "MEMBER" && user.role !== "OWNER";
                 });
 
                 console.log(filteredUsers)
@@ -60,9 +61,9 @@ function Componenent({ onClose }: any) {
                   setUsers(usersData);
 
             } catch (error) {
-                console.error('Error fetching users and channel members:', error);
+                console.error('Error fetching users and channel Admins:', error);
                 toast({
-                    title: 'Error fetching users and channel members',
+                    title: 'Error fetching users and channel Admins',
                     position: `bottom-right`,
                     status: 'error',
                     duration: 1000,
@@ -76,8 +77,8 @@ function Componenent({ onClose }: any) {
         fetchUsers()
     }, [])
 
-    const setAdmin  = useMutation<any, Error, any>((variables) => fetch('http://127.0.0.1:3001/channel/setadministrator', {
-        method: 'PUT',
+    const removeAdmin  = useMutation<any, Error, any>((variables) => fetch('http://127.0.0.1:3001/channel/removeadministrator', {
+        method: 'DELETE',
         body: JSON.stringify(variables),
         headers: {
             'Content-Type': 'application/json',
@@ -91,18 +92,27 @@ function Componenent({ onClose }: any) {
 
     const onSubmit = async () => {
         try {
-            const response = await setAdmin.mutateAsync({
+            const response = await removeAdmin.mutateAsync({
                 channelName: channel.name, 
                 userIdOwner: userId, 
                 userIdadministrateur: selectedOption.id
             });
-            console.log(response)
-            if (response.status == "this member can't set member to administrator") {
-                throw   new Error("this member can't set member to administrator")
+            if (response.status == "This administrator can't be removed.")
+            {
+                toast({
+                    title: "This administrator can't be removed.",
+                    position: `bottom-right`,
+                    status: 'error',
+                    duration: 1000,
+                    containerStyle: {
+                        bottom: 90,
+                        right: 30,
+                    },
+                });
+                return
             }
-            onClose()
             toast({
-                title: 'User set as administrator',
+                title: 'Admin removed successfully',
                 position: `bottom-right`,
                 status: 'success',
                 duration: 1000,
@@ -111,10 +121,12 @@ function Componenent({ onClose }: any) {
                     right: 30,
                 },
             });
+            onClose()
+
         } catch (error) {
-        console.error('Error setting user as administrator:', error);
+        console.error('Error removing administrator:', error);
         toast({
-            title: 'Error setting user as administrator',
+            title: 'Error removing administrator',
             position: `bottom-right`,
             status: 'error',
             duration: 1000,
@@ -130,7 +142,7 @@ function Componenent({ onClose }: any) {
     return (
     <div>
         <h1 className=' font-thin text-xl text-red-700 pt-3'>
-            Are you sure you want to set this user as an administrator
+            Select a Admin to remove from the channel
         </h1>
         
         <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
@@ -168,7 +180,7 @@ function Componenent({ onClose }: any) {
 }
 
 
-export default function SetChannelAdmin() {
+export default function RemoveChannelAdmin() {
 
 
     const channelName = useSelector((state: any) => state.chat.selectedChannelorUser)
@@ -178,7 +190,7 @@ export default function SetChannelAdmin() {
 
 
 
-    const data = { src: AddToChannel, alt: "Set New Channel Administrateur" }
+    const data = { src: Ban, alt: "Remove Channel Admin" }
 
 
     return (<Box className='flex items-center gap-6 w-[220px]'

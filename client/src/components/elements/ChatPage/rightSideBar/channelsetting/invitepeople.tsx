@@ -6,40 +6,8 @@ import ModalWraper from '../../ModalWraper'
 import Image from 'next/image'
 import invite from "../../../../../../assets/icons/invite.svg"
 import { User } from '@/utils/types/chat/ChatTypes'
+import Usercard from './UserCard'
 
-function Usercard(props: any) {
-
-
-    const { data, selectedOption, onOptionChange } = props;
-
-
-    const handleChange = () => {
-
-        onOptionChange(data);
-    };
-
-    return (
-
-        <div onClick={handleChange} className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md'>
-            <div>
-                <Avatar boxSize={12} src={data.avatar}>
-                    <AvatarBadge boxSize={6} bg='green' />
-                </Avatar>
-            </div>
-
-            <div className='flex flex-col items-center justify-around'>
-                <div className='text-[20px] md:text-[30px]'>{data.username}</div>
-            </div>
-
-            <Radio
-                className='md:w-[30px] md:h-[30px] w-[20px] h-[20px] rounded-sm'
-                value={data.username}
-                onChange={handleChange}
-                isChecked={selectedOption.username === data.username}
-            >
-            </Radio>
-        </div>)
-}
 
 
 function Componenent({ onClose }: any) {
@@ -64,7 +32,7 @@ function Componenent({ onClose }: any) {
         const fetchUsers = async () => {
           try {
             const [usersResponse, membersResponse] = await Promise.all([
-              fetch('http://127.0.0.1:3001/users').then((api) => api.json()),
+              fetch('http://127.0.0.1:3001/users/listusers').then((api) => api.json()),
               fetch(`http://127.0.0.1:3001/channel/getallmembers/${channelName.id}`).then((api) => api.json())
             ]);
       
@@ -150,7 +118,7 @@ function Componenent({ onClose }: any) {
             <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
 
                 {users.map((data: User) => {
-                    return <Usercard
+                    return <Usercard 
                         key={data.username}
                         data={data}
                         selectedOption={selectedOption}

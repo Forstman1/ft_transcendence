@@ -50,6 +50,11 @@ export class ChannelController {
         return this.channelservice.setAdministrator(body.channelName, body.userIdOwner, body.userIdadministrateur)
     }
 
+    @Delete('/removeadministrator')
+    removeAdministrator(@Body() body: any){
+        return this.channelservice.removeAdministrator(body.channelName, body.userIdOwner, body.userIdadministrateur)
+    }
+
     @Post('/invitemember')
     inviteMember(@Body() body: any){
         return this.channelservice.inviteMember(body.channelName, body.userIdOwner, body.userIdMember)
@@ -68,5 +73,11 @@ export class ChannelController {
     @Delete('/deleteChannel')
     deleteChannel(@Body() body: any){
         return this.channelservice.deleteChannel(body.channelName, body.userId)
+    }
+
+
+    @Get('/getchannelmemberinfo/:channelId/:userId')
+    getchannelmemberinfo(@Param('channelId') channelId: string, @Param('userId') userId: string){
+        return this.channelservice.getchannelmemberinfo(channelId, userId)
     }
 }

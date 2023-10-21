@@ -17,14 +17,24 @@ export type User = {
     isOnline: Boolean
 }
 
-export type Message = {
-    id: string;
-    content: string;
-    reciverID: string;
-    authorID: string;
+// export type Message = {
+//     id: string;
+//     content: string;
+//     reciverID: string;
+//     authorID: string;
+//     authorName: string
+//     createdAt: Date;
+// }
+
+export type ChannelMessage = {
+    id: string
+    content: string
+    reciverID: string
+    authorID: string
     authorName: string
-    createdAt: Date;
+    createdAt: Date
 }
+
 
 export type ChannelMember = {
 
@@ -33,5 +43,6 @@ export type ChannelMember = {
     userId: string
     role: string
     createdAt: Date
+    user: User
 
 }

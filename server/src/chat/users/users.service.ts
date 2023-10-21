@@ -33,4 +33,18 @@ export class UsersService {
             return error
         }
     }
+
+    async getUser(id: string){
+        try {
+            const getuser = await this.prisma.user.findUnique({
+                where: {
+                    id: id
+                }
+            })
+            return getuser
+        }
+        catch(error){
+            return error
+        }
+    }
 }
