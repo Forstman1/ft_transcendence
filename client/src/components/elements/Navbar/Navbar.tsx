@@ -196,7 +196,7 @@ const Navbar: React.FC = () => {
 
   if (breakpoint === "base") {
     return (
-      <Box className="w-full h-20 bg-neutral-950 sticky top-0 z-100">
+      <Box className="w-full h-20 bg-neutral-950 sticky top-0 z-50">
         <Flex className="w-full h-full items-center justify-end">
           <Box className="w-1/3 h-auto">
             <Center>
@@ -206,7 +206,7 @@ const Navbar: React.FC = () => {
           <Box className="w-1/3 h-auto">
             <Center>
               <Link href="/">
-                <Image src={Logo} alt="Logo" width={150} height={150} />
+                <Image src={Logo} alt="Logo" width={150}  />
               </Link>
             </Center>
           </Box>
@@ -216,17 +216,17 @@ const Navbar: React.FC = () => {
             </Center>
           </Box>
         </Flex>
-        <Image src={WavesDivider} alt="WavesDivider" className="w-full h-5" />
+        <Image src={WavesDivider} alt="WavesDivider" className="w-full " />
       </Box>
     )
   }
   else {
     return (
-      <Box className="w-full h-24 bg-neutral-950 sticky top-0 z-100">
+      <Box className="w-full h-24 bg-neutral-950 sticky top-0 z-50">
         <Flex className="w-full h-full items-center grid-cols-4">
           <Box className="col-span-1 ml-20 p-auto w-auto h-auto ">
             <Link href="/">
-              <Image src={Logo} alt="Logo" width={150} height={150} />
+              <Image src={Logo} alt="Logo" width={150}  />
             </Link>
           </Box>
           <Box className="col-span-1 ml-20 w-auto h-auto">

@@ -6,17 +6,20 @@ import { useAppSelector } from "@/redux/store/store";
 import { getTextColor2 } from "@/utils/functions/game/GetGameColor";
 import { motion } from "framer-motion";
 
+
+type Props = {
+  seconds: number;
+  onCountdownEnd: () => void;
+  RoundNumber: number;
+  gamePause: boolean;
+};
+
 const Countdown = ({
   seconds,
   onCountdownEnd,
   RoundNumber,
   gamePause,
-}: {
-  seconds: number;
-  onCountdownEnd: () => void;
-  RoundNumber: number;
-  gamePause: boolean;
-}) => {
+}: Props) => {
   const [timeLeft, setTimeLeft] = useState(seconds);
   const [isCountdownVisible, setIsCountdownVisible] = useState(true);
   const gameSettings = useAppSelector((state) => state.gameReducer);
@@ -24,9 +27,9 @@ const Countdown = ({
   useEffect(() => {
     if (gamePause) return;
     if (timeLeft <= 0) {
-      setIsCountdownVisible(false); // Hide the countdown
+      setIsCountdownVisible(false);
       setTimeout(() => {
-        onCountdownEnd(); // Execute onCountdownEnd after 1 second
+        onCountdownEnd();
       }, 1000);
       return;
     }
@@ -46,7 +49,7 @@ const Countdown = ({
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
-          <div className="flex flex-col items-center justify-center bg-white rounded-lg p-5 w-full h-full bg-opacity-0 ">
+          <div className="flex flex-col items-center justify-center bg-red-500 rounded-lg p-5 w-full h-full bg-opacity-0 ">
             <div className="flex flex-row items-center justify-center space-x-5">
               <Text
                 className={`text-[200px] font-bold opacity-90 ${getTextColor2(
@@ -64,7 +67,7 @@ const Countdown = ({
               </Text>
             </div>
             <Text
-              className={` text-[200px] font-bold opacity-90 ${getTextColor2(
+              className={` text-[200px] font-bold opacity-90 -mt-[100px] ${getTextColor2(
                 gameSettings
               )}`}
             >
