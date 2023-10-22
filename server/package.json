@@ -20,7 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "studio": "npx prisma studio",
     "prisma:generate": "npx prisma generate",
-    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:migrate": "dotenv -e .env.local npx prisma migrate dev",
     "prisma:seed": "npx prisma db seed"
   },
   "prisma": {
@@ -34,7 +34,8 @@
     "@nestjs/platform-socket.io": "^10.2.4",
     "@nestjs/websockets": "^10.2.1",
     "@prisma/client": "^4.16.2",
-    "argon2": "^0.27.1",
+    "argon2": "^0.27.2",
+    "dotenv": "^16.3.1",
     "nodemon": "^3.0.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",

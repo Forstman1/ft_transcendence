@@ -7,7 +7,7 @@ import {
 import { GameService } from './game.service';
 import { Server, Socket } from 'socket.io';
 import { Body } from '@nestjs/common';
-import { GameModalState } from './dto/create-game.dto';
+import { GameModalState, GameHistory } from './dto/create-game.dto';
 
 @WebSocketGateway()
 export class GameGateway {
@@ -18,13 +18,23 @@ export class GameGateway {
 
   private interval: NodeJS.Timeout | null = null;
   private isPaused = false;
-  private count = 0;
   private readonly connectedUsers: { [userId: string]: Socket } = {};
   private readonly gameQueue: { [userId: string]: Socket } = {};
+  private readonly isAllReady: { [roomId: string]: number } = {};
 
-  // handelConnection(client: Socket): void {
-  //   console.log('client connected', client);
-  // }
+  handleConnection(@ConnectedSocket() client: Socket) {
+    client.on('disconnect', () => {
+      console.log('-----------------disconnect-----------------');
+      console.log('disconnect userId:', client.handshake.auth.id);
+      const roomId = this.gameService.getRoomIdByUserId(client.id);
+      if (roomId) {
+        this.server.sockets.in(roomId).emit('friendExitGame');
+        this.gameService.resetGameDate(roomId);
+        this.gameService.deleteRoom(roomId);
+        this.server.in(roomId).socketsLeave(roomId);
+      }
+    });
+  }
 
   // ---------------- sendGameData
   @SubscribeMessage('sendGameData')
@@ -32,15 +42,19 @@ export class GameGateway {
     try {
       this.gameService.resetGameDate(data.roomId);
       this.gameService.initGameData(data.initCanvasData, data.roomId);
-      this.interval = setInterval(() => {
-        const getRoom = this.gameService.getRoom(data.roomId);
-        if (!getRoom?.isPoused) {
-          this.gameService.updateBallPosition(data.roomId);
-          this.server
-            .to(data.roomId)
-            .emit('GetGameData', this.gameService.getUpdateData(data.roomId));
-        }
-      }, 20);
+      this.isAllReady[data.roomId] += 1;
+      if (this.isAllReady[data.roomId] === 2) {
+        this.isAllReady[data.roomId] = 0;
+        this.interval = setInterval(() => {
+          const getRoom = this.gameService.getRoom(data.roomId);
+          if (!getRoom?.isPoused) {
+            this.gameService.updateBallPosition(data.roomId);
+            this.server
+              .to(data.roomId)
+              .emit('GetGameData', this.gameService.getUpdateData(data.roomId));
+          }
+        }, 20);
+      }
     } catch (error) {
       console.error('Error in sendGameData:', error);
     }
@@ -61,10 +75,13 @@ export class GameGateway {
   endGame(@ConnectedSocket() client: Socket, @Body() roomId: string): void {
     try {
       console.log('-----------------endGame-----------------');
-      this.gameService.resetGameDate(roomId);
-      this.gameService.setRoomPause(roomId, true);
-      this.gameService.deleteRoom(roomId);
-      this.server.in(roomId).socketsLeave(roomId);
+      this.isAllReady[roomId] += 1;
+      if (this.isAllReady[roomId] === 2) {
+        this.gameService.resetGameDate(roomId);
+        this.gameService.setRoomPause(roomId, true);
+        this.gameService.deleteRoom(roomId);
+        this.server.in(roomId).socketsLeave(roomId);
+      }
     } catch (error) {
       console.error('Error in endGame:', error);
     }
@@ -108,6 +125,7 @@ export class GameGateway {
       const clientUserId = client.id;
       const roomId = this.gameService.createRoom(clientUserId);
       client.join(roomId);
+      this.isAllReady[roomId] = 0;
       return roomId;
     } catch (error) {
       console.error('Error in createRoom:', error);
@@ -140,7 +158,6 @@ export class GameGateway {
           const friendSocket = this.connectedUsers[friendUserId];
           if (this.gameService.checkFriendIsInOtherRoom(friendUserId)) {
             client.emit('friendIsInRoom');
-            return;
           } else if (friendSocket) {
             this.server
               .to(friendUserId)
@@ -192,6 +209,7 @@ export class GameGateway {
       this.gameService.resetGameDate(data.roomId);
       this.gameService.deleteRoom(data.roomId);
       this.server.in(data.roomId).socketsLeave(data.roomId);
+      delete this.isAllReady[data.roomId];
     } catch (error) {
       console.error('Error in denyInvitation:', error);
     }
@@ -214,7 +232,6 @@ export class GameGateway {
   addPlayerToQueue(@ConnectedSocket() client: Socket): void {
     try {
       console.log('-----------------addPlayerToQueue-----------------');
-      console.log('addPlayerToQueue userId:', client.handshake.auth.id);
       const userId = client.handshake.auth.id;
       this.gameQueue[userId] = client;
       const queue = Object.keys(this.gameQueue);
@@ -222,18 +239,41 @@ export class GameGateway {
         const player1 = this.gameQueue[queue[0]];
         const player2 = this.gameQueue[queue[1]];
         const roomId = this.gameService.createRoom(player1.id);
+        this.isAllReady[roomId] = 0;
         player1.join(roomId);
         player2.join(roomId);
+        this.gameService.addPlayerToRoom(roomId, player2.id);
         player1.emit('setIsOwner', { isOwner: true, roomId });
         player2.emit('setIsOwner', { isOwner: false, roomId });
-        this.gameService.addPlayerToRoom(roomId, player1.id);
-        this.gameService.addPlayerToRoom(roomId, player2.id);
         this.server.to(roomId).emit('playGame');
         delete this.gameQueue[queue[0]];
         delete this.gameQueue[queue[1]];
       }
     } catch (error) {
       console.error('Error in addPlayerToQueue:', error);
+    }
+  }
+
+  //-------------getGameHistory
+  @SubscribeMessage('CreateGameHistory')
+  async postGameHistory(
+    @ConnectedSocket() client: Socket,
+    @Body() data: GameHistory,
+  ): Promise<void> {
+    try {
+      console.log('-----------------CreateGameHistory-----------------');
+      const userId = data.userId;
+      const sockets = await this.server.in(data.roomId).fetchSockets();
+      const opponentSocket = sockets.find(
+        (socket) => socket.handshake.auth.id !== userId,
+      );
+      const opponentId = opponentSocket.handshake.auth.id;
+      console.log('CreateGameHistory opponentId:', opponentId);
+      console.log('CreateGameHistory userId:', userId);
+      console.log('CreateGameHistory data:', data);
+      return this.gameService.createGameHistory(data, opponentId);
+    } catch (error) {
+      console.error('Error in CreateGameHistory:', error);
     }
   }
 }

@@ -3,8 +3,23 @@ const prisma = new PrismaClient();
 import { faker } from '@faker-js/faker';
 import * as argon2 from 'argon2';
 
+// model GameHistory {
+//   id        String   @id @default(uuid())
+//   user      User     @relation(fields: [userId], references: [id])
+//   userId    String
+//   opponentId String
+//   status    String
+//   userScore Int
+//   opponentScore Int
+//   rounds    Int
+//   matches   Int
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+
 async function seed() {
-  const numberOfUsers = 5;
+  const numberOfUsers = 2;
   const password = await argon2.hash('password');
   // create users
   for (let numUser = 0; numUser < numberOfUsers; numUser++) {
@@ -13,6 +28,16 @@ async function seed() {
         email: faker.internet.email(),
         username: faker.internet.userName(),
         password,
+        games: {
+          create: {
+            status: 'win',
+            opponentId: '1',
+            userScore: 5,
+            opponentScore: 3,
+            rounds: 5,
+            matches: 3,
+          },
+          }
       },
     });
   }
