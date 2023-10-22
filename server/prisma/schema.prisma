@@ -1,6 +1,7 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -16,6 +17,22 @@ model User {
   email           String       @unique
   password        String
   isEmailVerified Boolean      @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  games           GameHistory[]
+}
+
+
+model GameHistory {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  opponentId String
+  status    String
+  userScore Int
+  opponentScore Int
+  rounds    Int
+  matches   Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

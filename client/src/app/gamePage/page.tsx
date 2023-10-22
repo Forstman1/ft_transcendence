@@ -6,7 +6,6 @@ import { Button, Text, useDisclosure, useBreakpointValue } from "@chakra-ui/reac
 import Image from "next/image";
 import Gamepad from "../../../assets/icons/gamepad.svg";
 import Robot from "../../../assets/icons/robot.svg";
-import Lottie from "lottie-react";
 import animationData from "../../../assets/animations/animation3.json";
 import GameModesModal from "./ui/GameModesModal";
 import { motion } from "framer-motion";
@@ -20,6 +19,8 @@ import { setModal } from "@/redux/slices/game/gameModalSlice";
 import { useRouter } from "next/navigation";
 // import waitLoading from "../../../assets/animations/waitLoading.json";
 import LodingAnimation from "../../../assets/animations/loadingAnimation.json";
+import Lottie from "lottie-react";
+import pingPong from "../../../assets/images/pingPong.png";
 
 export default function GamePage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -78,59 +79,68 @@ export default function GamePage() {
   return (
     <PageWrapper>
       {isLoading && (
-      <div className="absolute top-0 left-0 w-full h-screen z-20 bg-black opacity-50" >
-        <Lottie
-          animationData={LodingAnimation}
-          className="absolute inset-0 w-full h-full z-10"
-        />
-      </div>
+        <div className="absolute top-0 left-0 w-full h-screen z-20 bg-black opacity-50">
+          <Lottie
+            animationData={LodingAnimation}
+            className="absolute inset-0 w-full h-full z-10"
+          />
+        </div>
       )}
-      <div className="flex flex-row h-full justify-center items-center mx-[10%]  z-0">
-        <div className={`${breakpoint === "base" ? "absolute" : "flex"} flex-col justify-center items-center  P-20 space-y-6 z-10`}>
+      <div className="relative flex flex-row h-full justify-center items-center mx-[10%] z-0 mt-20">
+        <div
+          className={`${
+            breakpoint === "base" ? "absolute" : "flex"
+          } flex-col justify-center items-center  P-20 space-y-6 z-10`}
+        >
           <Text className=" flex text-emerald-300 font-bold text-2xl">
             EXPLORE THE GAME
           </Text>
           <Text className=" flex text-black font-bold text-6xl">
             It&apos;s time to enjoy the game
           </Text>
-          <div className={`flex flex-col justify-center items-center  space-y-6  mx-auto w-[400px] h-[300px] p-10`}>
-            <Button
-              colorScheme="teal"
-              variant="outline"
-              bg="white"
-              size="lg"
-              width={300}
-              leftIcon={
-                <Image src={Gamepad} alt="Gamepad" width={25} height={25} />
-              }
-              onClick={handleFriendClick}
-            >
-              Play with a friend
-            </Button>
-            <Button
-              colorScheme="teal"
-              variant="outline"
-              size="lg"
-              width={300}
-              leftIcon={
-                <Image src={Robot} alt="Robot" width={25} height={25} />
-              }
-              onClick={handleBotClick}
-            >
-              Play with a robot
-            </Button>
-            <Button
-              colorScheme="teal"
-              variant="outline"
-              size="lg"
-              width={300}
-              leftIcon={
-                <Image src={Gamepad} alt="Gamepad" width={25} height={25} />
-              }
-              onClick={handleMatchmakingClick}
-            >
-              Play with a random player
-            </Button>
+          <div
+            className={`flex flex-col justify-center items-center  space-y-6  mx-auto w-[400px] p-10`}
+          >
+              <Button
+                className="rounded-full"
+                colorScheme="teal"
+                variant="outline"
+                bg="white"
+                size="lg"
+                width={300}
+                leftIcon={
+                  <Image src={Gamepad} alt="Gamepad" width={25} height={25} />
+                }
+                onClick={handleFriendClick}
+              >
+                Friend Mode
+              </Button>
+              <Button
+                className="rounded-full"
+                colorScheme="teal"
+                variant="outline"
+                size="lg"
+                width={300}
+                leftIcon={
+                  <Image src={Robot} alt="Robot" width={25} height={25} />
+                }
+                onClick={handleBotClick}
+              >
+                Training Mode
+              </Button>
+              <Button
+                className="rounded-full"  
+                colorScheme="teal"
+                variant="outline"
+                size="lg"
+                width={300}
+                leftIcon={
+                  <Image src={Gamepad} alt="Gamepad" width={25} height={25} />
+                }
+                onClick={handleMatchmakingClick}
+              >
+                Matchmaking
+              </Button>
           </div>
         </div>
         <motion.div
@@ -144,7 +154,9 @@ export default function GamePage() {
         >
           <Lottie
             animationData={animationData}
-            className={`w-full h-[900px] border-2 border-white rounded-[100%] shadow-xl min-w-[370px] ${breakpoint === "base" ? "opacity-20" : ""}`} 
+            className={`w-full h-[900px] border-2 border-white rounded-[100%] shadow-xl min-w-[370px] ${
+              breakpoint === "base" ? "opacity-20" : ""
+            }`}
           />
         </motion.div>
       </div>

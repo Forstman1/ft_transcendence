@@ -52,14 +52,14 @@ const Countdown = ({
           <div className="flex flex-col items-center justify-center bg-red-500 rounded-lg p-5 w-full h-full bg-opacity-0 ">
             <div className="flex flex-row items-center justify-center space-x-5">
               <Text
-                className={`text-[200px] font-bold opacity-90 ${getTextColor2(
+                className={`text-[100px] font-bold opacity-90 ${getTextColor2(
                   gameSettings
                 )}`}
               >
                 ROUND
               </Text>
               <Text
-                className={`text-[200px] font-bold opacity-90 ${getTextColor2(
+                className={`text-[100px] font-bold opacity-90 ${getTextColor2(
                   gameSettings
                 )}`}
               >
@@ -67,7 +67,7 @@ const Countdown = ({
               </Text>
             </div>
             <Text
-              className={` text-[200px] font-bold opacity-90 -mt-[100px] ${getTextColor2(
+              className={` text-[100px] font-bold opacity-90 -mt-[100px] ${getTextColor2(
                 gameSettings
               )}`}
             >

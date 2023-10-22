@@ -68,3 +68,9 @@ export type Rectangle = {
     leftPaddle: leftPaddle;
     rightPaddle: rightPaddle;
   };
+
+  export type throttleProps = {
+    // eslint-disable-next-line no-unused-vars
+    func: (...args: any) => void;
+    delay: number;
+  };
