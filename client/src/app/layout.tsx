@@ -33,7 +33,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${geo.className} h-screen w-screen `}>
+      <body className={`${geo.className} `}>
         <ReduxProvider>
             <CacheProvider>
               <ChakraProvider>
@@ -42,7 +42,7 @@ export default function RootLayout({
                   <GameNotification />
                   <Navbar />
                   {children}
-                  <Footer />
+                  {/* <Footer /> */}
                 </>
                 }
               </ChakraProvider>

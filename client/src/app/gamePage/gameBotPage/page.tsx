@@ -194,7 +194,7 @@ export default function GameBotPage() {
   };
 
   useEffect(() => {
-    if (!gameStarted || gameEnded || gamePause) return;
+    if (!gameStarted || gameEnded) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === " ") {

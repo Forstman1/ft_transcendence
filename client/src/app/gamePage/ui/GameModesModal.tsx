@@ -104,6 +104,7 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
       isOpen={isOpen}
       onClose={onClose}
       isCentered
+      size="xl"
       onCloseComplete={() => setIsSearchModalOpen(false)}
     >
       <ModalOverlay
@@ -112,6 +113,7 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
           backdropFilter: "blur(5px)",
         }}
       />
+      <ModalOverlay />
       {!isSearchModalOpen ? (
         <ModalContent
           bg={`rgba(255, 255, 255, 0.95)`}
