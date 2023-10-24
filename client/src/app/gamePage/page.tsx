@@ -17,10 +17,10 @@ import {
 } from "@/redux/slices/socket/globalSocketSlice";
 import { setModal } from "@/redux/slices/game/gameModalSlice";
 import { useRouter } from "next/navigation";
-// import waitLoading from "../../../assets/animations/waitLoading.json";
 import LodingAnimation from "../../../assets/animations/loadingAnimation.json";
 import Lottie from "lottie-react";
-import pingPong from "../../../assets/images/pingPong.png";
+import {InfoOutlineIcon} from "@chakra-ui/icons";
+import GameInstruction from "./ui/GameInstruction";
 
 export default function GamePage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -30,6 +30,7 @@ export default function GamePage() {
   const socket = useAppSelector((state) => state.globalSocketReducer);
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [isGameInstructionOpen, setIsGameInstructionOpen] = React.useState<boolean>(false);
 
   socket.socket?.on("setIsOwner", (data: { isOwner: boolean, roomId: string }) => {
     dispatch(
@@ -86,7 +87,7 @@ export default function GamePage() {
           />
         </div>
       )}
-      <div className="relative flex flex-row h-full justify-center items-center mx-[10%] z-0 mt-20">
+      <div className="relative flex flex-row h-full justify-center items-center mx-[10%] z-0 ">
         <div
           className={`${
             breakpoint === "base" ? "absolute" : "flex"
@@ -142,6 +143,21 @@ export default function GamePage() {
                 Matchmaking
               </Button>
           </div>
+          <div className="flex flex-row justify-center items-center space-x-2">
+            <Text className="text-black font-bold text-2xl">
+              Game Instructions?
+            </Text>
+            <Button
+              colorScheme="teal"
+              variant="outline"
+              size="sm"
+              leftIcon={<InfoOutlineIcon />}
+              onClick={() => setIsGameInstructionOpen(true)}
+            >
+              Learn
+            </Button>
+          </div>
+          <GameInstruction isOpen={isGameInstructionOpen} onClose={() => setIsGameInstructionOpen(false)} />
         </div>
         <motion.div
           initial={{ scale: 0 }}
