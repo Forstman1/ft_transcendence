@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateMessageDto } from './dto';
 import { UsersService } from 'src/users/users.service';
+import { date } from 'zod';
+import { UserMessage } from '@prisma/client';
+import { tr } from '@faker-js/faker';
 
 @Injectable()
 export class MessageService {
@@ -67,6 +70,41 @@ export class MessageService {
         if (!user)
             return {status: "couldn't find user"}
         return user;
+    }
+
+    async getUserMessage(author: string, reciver: string) {
+        return await this.prisma.userMessage.findFirst({
+            where: {
+                AND:[
+                        {authorID: author},
+                        {reciverID: reciver},
+                ]
+            },
+            include:{
+                author: true,
+                reciver: true,
+            }
+        })
+    }
+
+    async creatUserMessage(author: string, reciver: string) {
+
+        try {
+            return await this.prisma.userMessage.create({
+                data: {
+                    authorID: author,
+                    reciverID: reciver,
+                    authorName: author
+                } as UserMessage,
+                include: {
+                    author: true,
+                    reciver: true,
+                }
+            })
+        }
+        catch {
+            return null
+        }
     }
 
 }

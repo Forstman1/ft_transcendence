@@ -17,7 +17,7 @@ import { useMutation } from 'react-query';
 import { error } from 'console';
 import { Channel } from '@/utils/types/chat/ChatTypes';
 import { useDispatch, useSelector } from 'react-redux';
-import { setNewChannel } from '@/redux/slices/chat/ChatSlice';
+import { setNewChannel } from '@/redux/slices/Chat/ChatSlice';
 
 
 

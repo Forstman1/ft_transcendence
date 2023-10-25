@@ -27,7 +27,10 @@ model User {
   hasTwoFA          Boolean     @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
+  friends User[] @relation("Friends")
+  friendOf User[] @relation("Friends")
+
   usersmessages1 UserMessage[] @relation("Author")
   usersmessages2 UserMessage[] @relation("Reciver")
 
@@ -35,6 +38,9 @@ model User {
 
   channelMember ChannelMember[]
 }
+
+
+
 
 model Channel {
   id       String   @id @default(uuid())
@@ -67,6 +73,7 @@ model ChannelMessage {
 }
 model UserMessage {
   id        String   @id @default(uuid())
+  roomID    String?   @unique @default(uuid())
   content   String
   author User @relation(name: "Author", fields: [authorID], references: [id])
 	reciver User @relation(name: "Reciver", fields: [reciverID], references: [id])

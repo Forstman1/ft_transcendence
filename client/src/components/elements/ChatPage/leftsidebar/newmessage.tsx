@@ -16,7 +16,7 @@ import {
 import { User } from '@/utils/types/chat/ChatTypes';
 // import { setToTrue, setToFalse } from '@/redux/slices/chat/chatSlice';
 import { useSelector, useDispatch } from 'react-redux';
-import { setUser } from '@/redux/slices/chat/ChatSlice';
+import { setUser } from '@/redux/slices/Chat/ChatSlice';
 
 
 type Props = {

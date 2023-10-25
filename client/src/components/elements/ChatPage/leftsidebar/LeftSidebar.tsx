@@ -21,14 +21,16 @@ function Usercard(props: any) {
   
   const { user } = useSelector((state : any) => state.userID)
   const socket = useSelector((state: RootState) => state.socket.socket)
-  
-  
   const scroolToRef = useRef<HTMLDivElement>(null)
+
+  // const createRoom = () => {
+  //   socket?.emit('joinRoom')
+  // }
   
   return (
   
   <Box ref={scroolToRef} className='flex justify-between items-center cursor-pointer m-2 ml-0 p-2 rounded-md active:bg-zinc-300'
-    onClick={()=> socket?.emit('message', 'hello')}
+    onClick={() => console.log(props.username)}
   {...(user === props.data.id ? scroolToRef.current?.scrollIntoView({ block: 'nearest', inline: 'start' }) && {bg: 'bg-zinc-300'} : {})}
 
   >

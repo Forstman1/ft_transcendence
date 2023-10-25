@@ -12,7 +12,7 @@ import { addMessage } from '@/redux/slices/chat/ChatSlice';
 import { Message } from '@/utils/types/chat/ChatTypes';
 import { useMutation } from 'react-query';
 import MobileFooter from './Mobile/MobileFooter';
-import { setLeft, setRight, setMidle } from '@/redux/slices/chat/MobileSlice';
+import { setLeft, setRight, setMidle } from '@/redux/slices/Chat/MobileSlice';
 
 
 

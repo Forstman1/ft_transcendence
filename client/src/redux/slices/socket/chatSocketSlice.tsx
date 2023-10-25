@@ -1,6 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { stat } from "fs";
-import { ACTION } from "next/dist/client/components/app-router-headers";
+import { createSlice } from "@reduxjs/toolkit";
 import { io, Socket } from "socket.io-client";
 
 let userId: number | null = null
@@ -19,10 +17,6 @@ const socket = io('http://localhost:3001/chat', {
     auth: {
         id: userId,
     },
-})
-
-socket.on('connect', () => {
-    console.log('chat user connected')
 })
 
 export interface ChatSocketState {
