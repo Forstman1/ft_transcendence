@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { UsersService } from './users.service';
 
 
@@ -6,14 +6,18 @@ import { UsersService } from './users.service';
 export class UsersController {
 
     constructor(private readonly usersService: UsersService) {}
-    @Get()
+    @Get('/listusers')
     listusers(@Body() Body) {
         return this.usersService.listUsers()
     }
-    // @Get('./adduser')
-    // adduser(@Body() body) {
-    //     return this.usersService.add(body)
-    // }
+    @Get('/adduser')
+    adduser(@Body() body) {
+        return this.usersService.add(body)
+    }
+    @Get('/getuser/:id')
+    getuser(@Param('id') id: string) {
+        return this.usersService.getUser(id)
+    }
     // @Get()
     // hello(){
     //     return("hello world")

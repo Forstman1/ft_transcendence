@@ -50,7 +50,7 @@ function Usercard(props: any) {
         
     <div onClick={handleChange} className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md'>
         <div>
-            <Avatar boxSize={12}>
+            <Avatar boxSize={12} src={data.avatar}>
                 <AvatarBadge boxSize={6} bg='green' />
             </Avatar>
         </div>
@@ -63,7 +63,7 @@ function Usercard(props: any) {
             className='md:w-[30px] md:h-[30px] w-[20px] h-[20px] rounded-sm'
             value={data.username}
             onChange={handleChange}
-            isChecked={selectedOption === data.username}
+            isChecked={selectedOption.username === data.username}
         >
         </Radio>
     </div>)
@@ -75,7 +75,7 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
 
 
     const users1: User[] = []
-    const url = 'http://localhost:3001/users';
+    const url = 'http://localhost:3001/users/listusers';
     const [Users, setUsers]: any = useState([])
     const [selectedOption, setSelectedOption]: any = useState('');
     const toast = useToast()
@@ -112,6 +112,7 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
                 
             }
             setNewUsers([user, ...users])
+            dispatch(setUser(user))
         }
         else {
             let user: User = {

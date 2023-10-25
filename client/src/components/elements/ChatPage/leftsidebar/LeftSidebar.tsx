@@ -15,6 +15,7 @@ import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { ChatSocketState } from '@/redux/slices/socket/chatSocketSlice';
 import { RootState } from '@/redux/store/store';
+import { setUser } from '@/redux/slices/chat/ChatSlice';
 
 
 function Usercard(props: any) {
@@ -22,8 +23,25 @@ function Usercard(props: any) {
   const { user } = useSelector((state : any) => state.userID)
   const socket = useSelector((state: RootState) => state.socket.socket)
   
-  
+  // const user  = useSelector((state : any) => state.chat.userID)
+  const dispatch = useDispatch()
+
   const scroolToRef = useRef<HTMLDivElement>(null)
+
+type UserValues = {
+  userName: string
+  id: string
+  onlineStatus: string
+}
+
+  const onSubmited = () => {
+      dispatch(setUser(props.data))
+  }
+
+
+  let pathname : string = '';
+  
+  
   
   return (
   
@@ -33,7 +51,7 @@ function Usercard(props: any) {
 
   >
     <div> 
-      <Avatar className='custom-shadow border-[1px] border-black' boxSize={14}>
+      <Avatar className='custom-shadow border-[1px] border-black' boxSize={14} src={props.data.avatar}>
         <AvatarBadge className='custom-shadow border-[1px] border-black' boxSize={4} bg='green.500' />
       </Avatar>
 
@@ -131,9 +149,9 @@ export default function LeftSidebar() {
 
         <div className='flex h-[400px] flex-col w-full mt-[30px] items-center gap-6 overflow-y-scroll'>
 
-          {channels.map((data: Channel) => {
+          {channels.map((data: Channel, id: number) => {
             if (data.name)
-              return <Hashtag data={data} />
+              return <Hashtag key={id} data={data} />
           })}
 
         </div>

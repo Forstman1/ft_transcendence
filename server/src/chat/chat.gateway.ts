@@ -41,5 +41,5 @@ export class ChatGateway implements OnGatewayInit , OnGatewayConnection {
     }
   }
  //! SINCE THE ROOM WILL TAKE THE USER ID THE DB MODAL SHOULD ALSO HAVE THE SAME
-  @SubscribeMessage(`createNotif`)
+  // @SubscribeMessage(`createNotif`)
 }

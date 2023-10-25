@@ -9,7 +9,7 @@ import Image from 'next/image';
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { addMessage } from '@/redux/slices/chat/ChatSlice';
-import { Message } from '@/utils/types/chat/ChatTypes';
+import { ChannelMessage } from '@/utils/types/chat/ChatTypes';
 import { useMutation } from 'react-query';
 import MobileFooter from './Mobile/MobileFooter';
 import { setLeft, setRight, setMidle } from '@/redux/slices/chat/MobileSlice';
@@ -54,7 +54,7 @@ export default function ChatWindow() {
 
 
   const selectedChannel = useSelector((state:any) => state.chat.selectedChannelorUser);
-  const messages: Message[] = useSelector((state:any) => state.chat.messages);
+  const messages: ChannelMessage[] = useSelector((state:any) => state.chat.messages);
   const userId = useSelector((state:any) => state.chat.userId)
   const dispatch = useDispatch();
   const { LeftClice } = useSelector((state: any) => state.mobile)
@@ -77,32 +77,29 @@ export default function ChatWindow() {
 
 
 
-  // const createMessage = useMutation<any, Error, any>((variables) => 
-  // fetch('http://127.0.0.1:3001/message/createmessage', {
-  //   method: "POST",
-  //   body: JSON.stringify(variables),
-  //   headers: {
-  //     "content-type": "application/json",
-  //   }
-  // }).then((res) => {
-  //   return res.json()
-  // }).catch((error) => {
-  //   return error
-  // }))
+  const createMessage = useMutation<any, Error, any>((variables) => 
+  fetch('http://127.0.0.1:3001/message/createmessage', {
+    method: "POST",
+    body: JSON.stringify(variables),
+    headers: {
+      "content-type": "application/json",
+    }
+  }).then((res) => {
+    return res.json()
+  }).catch((error) => {
+    return error
+  }))
 
   const handelNewMessage = async (data: any) => {
 
     if (!data.newmessage)
       return;
 
-      console.log(data);
-
-    // const message = await createMessage.mutateAsync({
-    //   content: data.newmessage,
-    //   userId: userId,
-    //   reciverId: selectedChannel.id
-    // })
-    // const message = "fake massage"
+    const message = await createMessage.mutateAsync({
+      content: data.newmessage,
+      userId: userId,
+      reciverId: selectedChannel.id
+    })
     
     // dispatch(addMessage(message));
 
@@ -122,7 +119,7 @@ export default function ChatWindow() {
       <div className=' flex flex-col gap-[10px] overflow-y-scroll z-0 h-[91%] ' ref={chatContainer}>
 
 
-        {messages.map((message: Message, index: number) => {
+        {messages.length != 0 && messages.map((message: ChannelMessage, index: number) => {
           
           if (message.authorName === "sahafid") { 
             return <Own_Message key={index} message={message.content} sender={message.authorName} time={message.createdAt} />

@@ -7,6 +7,8 @@ import chatSocketReducer from "@/redux/slices/socket/chatSocketSlice";
 import chatSlice from '../slices/chat/ChatSlice'
 import userReducer from '../slices/chat/UserSlice'
 
+// import chatSlice from '../slices/chat/ChatSlice'
+// import mobileReducer from "../slices/chat/MobileSlice";
 
 export const store = configureStore({
   reducer: {

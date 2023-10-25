@@ -14,10 +14,9 @@ import {
 } from '@chakra-ui/react'
 import { useForm } from "react-hook-form"
 import { useMutation } from 'react-query';
-import { error } from 'console';
 import { Channel } from '@/utils/types/chat/ChatTypes';
 import { useDispatch, useSelector } from 'react-redux';
-import { setNewChannel } from '@/redux/slices/chat/ChatSlice';
+import { setChannel, setNewChannel } from '@/redux/slices/chat/ChatSlice';
 
 
 
@@ -67,27 +66,6 @@ export default function Newchannel({ isOpen, onClose, channels }: Props) {
 
     const onSubmit = async (data: ChannelValues) => {
 
-        // let exists: any = channels.map((allChannelsNames: ChannelValues) => {
-        //     return allChannelsNames.channelName
-        // })
-
-
-        // if (exists.includes(data.channelName)) {
-        //   toast({
-        //     title: "Channel name Already Exists",
-        //     position: `bottom-right`,
-        //     status: 'error',
-        //     duration: 1000,
-        //     containerStyle: {
-        //       width: 300,
-        //       height: 100,
-        //     }
-        //   })  
-        //     setDup(true)
-        //     return 0;
-        // }
-        
-        // data.userId = useSelector((state:any) => state.chat.userId);
         data.userId = userId
         console.log(data)
         
@@ -101,7 +79,6 @@ export default function Newchannel({ isOpen, onClose, channels }: Props) {
             password: data.password,
             userId: data.userId
           })
-
           data.type = data.type.toUpperCase()
           if (newchannel.status)
             throw newchannel.status;
@@ -136,6 +113,8 @@ export default function Newchannel({ isOpen, onClose, channels }: Props) {
           }
         })
         dispatch(setNewChannel(channel))
+        dispatch(setChannel(channel))
+
         onClose();
 
     };
