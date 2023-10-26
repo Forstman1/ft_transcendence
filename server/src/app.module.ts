@@ -1,8 +1,15 @@
 import { Module } from '@nestjs/common';
 import { GameModule } from './game/game.module';
+import { ChatModule } from './chat/chat.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { AuthModule } from './auth/auth.module';
+
+
+
 
 @Module({
-  imports: [GameModule],
+  imports: [ChatModule, PrismaModule, GameModule],
+  // imports: [],
   controllers: [],
   providers: [],
 })

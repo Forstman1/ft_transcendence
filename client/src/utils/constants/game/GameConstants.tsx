@@ -71,20 +71,35 @@ export const BackgroundsImg = [
 ];
 
 export const initialCanvasSize = {
+<<<<<<< HEAD
+  width: 1500,
+  height: 600,
+=======
   width: 1300,
   height: 700,
+>>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
 };
 
 export const initialLeftPaddle = {
   x: 10,
+<<<<<<< HEAD
+  y: initialCanvasSize.height / 2,
+  width: 15,
+  height: initialCanvasSize.height / 5,
+=======
   y: initialCanvasSize.height / 2 - 50,
   width: 15,
   height: initialCanvasSize.height / 5 ,
+>>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
 };
 
 export const initialRightPaddle = {
   x: initialCanvasSize.width - 25,
+<<<<<<< HEAD
+  y: initialCanvasSize.height / 2,
+=======
   y: initialCanvasSize.height / 2 - 50,
+>>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
   width: 15,
   height: initialCanvasSize.height / 5,
 };

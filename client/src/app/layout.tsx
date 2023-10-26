@@ -10,6 +10,7 @@ import Navbar from "../components/elements/Navbar/Navbar";
 import ReduxProvider from "../redux/provider";
 import SplashScreen from "@/components/elements/spalshScreen/SplashScreen";
 import { usePathname } from "next/navigation";
+import { QueryClient, QueryClientProvider } from "react-query";
 import GameNotification from "./gamePage/gameNotification/page";
 import Footer from "@/components/elements/Footer/Footer";
 
@@ -19,6 +20,7 @@ const geo = Geo({
   weight: "400"
 });
 
+const queryClient = new QueryClient();
 
 
 export default function RootLayout({
@@ -36,16 +38,19 @@ export default function RootLayout({
       <body className={`${geo.className} `}>
         <ReduxProvider>
             <CacheProvider>
+              <QueryClientProvider client={queryClient}>
               <ChakraProvider>
                 {isloading ? <SplashScreen  finishLoading={() => setIsLoading(false)}/> :
                 <>
                   <GameNotification />
                   <Navbar />
+
                   {children}
                   {/* <Footer /> */}
                 </>
                 }
               </ChakraProvider>
+              </QueryClientProvider>
             </CacheProvider>
         </ReduxProvider>
       </body>

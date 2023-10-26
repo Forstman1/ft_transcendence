@@ -13,19 +13,13 @@ html,body {
   background-repeat: no-repeat;
   margin: 0;
   padding: 0;
-  height: 100%;
-  width: 100%;
+  overflow: hidden;
 }
 
-
-/* This is the shadow used in all of our components*/
 
 .custom-shadow {
-    box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.50);
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.50);
 }
-
 .custom-bg {
-    background: linear-gradient(to bottom, transparent 50%, black 50%);
+  background: linear-gradient(to bottom, transparent 50%, black 50%);
 }
-
-
