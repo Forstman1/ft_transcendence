@@ -1,19 +1,38 @@
 
 import { faker } from '@faker-js/faker';
 import { PrismaClient } from '@prisma/client';
+import * as argon2 from 'argon2';
 
 
 const prisma = new PrismaClient();
+
+
 
 const NUM_USERS = 10;
 const NUM_CHANNELS = 5;
 const NUM_CHANNEL_MEMBERS = 20;
 const NUM_CHANNEL_MESSAGES = 50;
 const NUM_USER_MESSAGES = 50;
+// model GameHistory {
+//   id        String   @id @default(uuid())
+//   user      User     @relation(fields: [userId], references: [id])
+//   userId    String
+//   opponentId String
+//   status    String
+//   userScore Int
+//   opponentScore Int
+//   rounds    Int
+//   matches   Int
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
 
 async function seedDatabase() {
-  // Create fake users
-  for (let i = 0; i < NUM_USERS; i++) {
+  const numberOfUsers = 2;
+  const password = await argon2.hash('password');
+  // create users
+  for (let numUser = 0; numUser < numberOfUsers; numUser++) {
     await prisma.user.create({
       data: {
         username: faker.internet.userName(),
@@ -86,3 +105,45 @@ seedDatabase()
     await prisma.$disconnect();
   });
 
+
+
+  async function seed() {
+    const numberOfUsers = 2;
+    const password = await argon2.hash('password');
+    // create users
+    for (let numUser = 0; numUser < numberOfUsers; numUser++) {
+      await prisma.user.create({
+        data: {
+          username: faker.internet.userName(),
+          email: faker.internet.email(),
+          fullname: faker.internet.userName(),
+          avatar: faker.image.avatar(),
+          accessToken: faker.string.uuid(),
+          refreshToken: faker.string.uuid(),
+          isOnline: faker.datatype.boolean(),
+          hasTwoFA: faker.datatype.boolean(),
+          games: {
+            create: {
+              status: 'win',
+              opponentId: '1',
+              userScore: 5,
+              opponentScore: 3,
+              rounds: 5,
+              matches: 3,
+            },
+            }
+        },
+      });
+    }
+    console.log('seeded successfully');
+    console.log(`generated users`);
+  }
+  seed()
+    .then(async () => {
+      await prisma.$disconnect();
+    })
+    .catch(async (e) => {
+      console.error(e);
+      await prisma.$disconnect();
+      process.exit(1);
+    });

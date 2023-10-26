@@ -8,7 +8,8 @@ import { AuthModule } from './auth/auth.module';
 
 
 @Module({
-  imports: [ChatModule, PrismaModule],
+  imports: [ChatModule, PrismaModule, GameModule],
+  // imports: [],
   controllers: [],
   providers: [],
 })

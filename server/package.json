@@ -20,7 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "studio": "npx prisma studio",
     "prisma:generate": "npx prisma generate",
-    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:migrate": "dotenv -e .env.local npx prisma migrate dev",
     "prisma:seed": "npx prisma db seed"
   },
   "prisma": {
@@ -36,14 +36,10 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/platform-socket.io": "^10.2.4",
     "@nestjs/websockets": "^10.2.1",
-    "@prisma/client": "^5.3.1",
-    "@socket.io/redis-adapter": "^8.2.1",
+    "@prisma/client": "^4.16.2",
     "argon2": "^0.27.2",
-    "axios": "^0.24.0",
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.0",
+    "axios": "^1.5.1",
     "dotenv": "^16.3.1",
-    "express-session": "^1.17.3",
     "nodemon": "^3.0.1",
     "passport": "^0.6.0",
     "passport-42": "^1.2.6",
@@ -53,7 +49,6 @@
     "redis": "^4.6.10",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
-    "socket.io": "^4.7.2",
     "uuid": "^9.0.1",
     "zod": "^3.21.4"
   },
