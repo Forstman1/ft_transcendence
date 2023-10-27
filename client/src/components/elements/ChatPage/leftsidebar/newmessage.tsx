@@ -16,7 +16,7 @@ import {
 import { User } from '@/utils/types/chat/ChatTypes';
 // import { setToTrue, setToFalse } from '@/redux/slices/chat/chatSlice';
 import { useSelector, useDispatch } from 'react-redux';
-import { setUser } from '@/redux/slices/chat/ChatSlice';
+import { setTheUser } from '@/redux/slices/chat/ChatSlice';
 
 
 type Props = {
@@ -112,13 +112,13 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
                 
             }
             setNewUsers([user, ...users])
-            dispatch(setUser(user))
+            dispatch(setTheUser(user))
         }
         else {
             let user: User = {
                 ...selectedOption
             }
-            dispatch(setUser(user))
+            dispatch(setTheUser(user))
         }
         onClose()
     }

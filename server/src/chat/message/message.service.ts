@@ -25,17 +25,13 @@ export class MessageService {
         })
         if (!channel)
             return {status: "couldn't find channel"}
+        
         const message = await this.prisma.channelMessage.create({
             data: {
                 content: messageInfo.content,
                 authorName: user.username,
-                author: {
-                    connect: user,
-                },
-                reciver: {
-                    connect: channel
-                }
-
+                reciverID: channel.id,
+                authorID: user.id,
             }
         })
         return message

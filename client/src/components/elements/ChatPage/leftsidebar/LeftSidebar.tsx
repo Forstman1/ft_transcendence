@@ -15,7 +15,7 @@ import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { ChatSocketState } from '@/redux/slices/socket/chatSocketSlice';
 import { RootState } from '@/redux/store/store';
-import { setUser } from '@/redux/slices/chat/ChatSlice';
+import { setChannels,  setTheUser } from '@/redux/slices/chat/ChatSlice';
 
 
 function Usercard(props: any) {
@@ -23,19 +23,15 @@ function Usercard(props: any) {
   const { user } = useSelector((state : any) => state.userID)
   const socket = useSelector((state: RootState) => state.socket.socket)
   
-  // const user  = useSelector((state : any) => state.chat.userID)
   const dispatch = useDispatch()
 
   const scroolToRef = useRef<HTMLDivElement>(null)
 
-type UserValues = {
-  userName: string
-  id: string
-  onlineStatus: string
-}
+
 
   const onSubmited = () => {
-      dispatch(setUser(props.data))
+      socket?.emit('message', 'hello')
+      dispatch(setTheUser(props.data))
   }
 
 
@@ -46,7 +42,7 @@ type UserValues = {
   return (
   
   <Box ref={scroolToRef} className='flex justify-between items-center cursor-pointer m-2 ml-0 p-2 rounded-md active:bg-zinc-300'
-    onClick={()=> socket?.emit('message', 'hello')}
+    onClick={()=>  onSubmited()}
   {...(user === props.data.id ? scroolToRef.current?.scrollIntoView({ block: 'nearest', inline: 'start' }) && {bg: 'bg-zinc-300'} : {})}
 
   >
@@ -83,28 +79,34 @@ export default function LeftSidebar() {
   const [ChannelOrUser, setChannelOrUser] = useState(false)
   const channels = useSelector((state: any) => state.chat.channels)
 
-  const userId = useSelector((state:any) => state.chat.userId);
+  const userId = useSelector((state:any) => state.userID.user);
+
+
+
+  const { MidleClice } = useSelector((state: any) => state.mobile)
+  const { LeftClice } = useSelector((state: any) => state.mobile)
+  const { RightClice } = useSelector((state: any) => state.mobile)
+
+
 
   useEffect(() => {
     
     const fetchData = async () => {
-      // const fetchChannels = await fetch('http://127.0.0.1:300/channel/getallchannels/' + userId)
-      // const response = await fetchChannels.json()
-      // if (response.length > 0)
-      // {
-      //   const allchannels: Channel[] = response
-      //   console.log(allchannels)
-      //   dispatch(setChannels(allchannels))
-      //   return allchannels;
-      // }
+
+      const fetchChannels = await fetch('http://127.0.0.1:3001/channel/getallchannels/' + userId)
+      const response = await fetchChannels.json()
+      if (response.length > 0)
+      {
+        const allchannels: Channel[] = response
+        // console.log(allchannels)
+        dispatch(setChannels(allchannels))
+        return allchannels;
+      }
 
     }
     fetchData()
   }, [])
 
-  const { MidleClice } = useSelector((state: any) => state.mobile)
-  const { LeftClice } = useSelector((state: any) => state.mobile)
-  const { RightClice } = useSelector((state: any) => state.mobile)
 
   const sidebar = {
     open: (height = 1000) => ({
@@ -128,9 +130,9 @@ export default function LeftSidebar() {
   };
 
 
+
   return (
 
-    // <Box className='LeftSideBar hidden md:grid border-r-[3px] border-r-black overflow-y-scroll place-items-center '
     <Box className='LeftSideBar place-items-center grid w-[375px] absolute  h-full overflow-y-auto border-r-[3px] border-r-black  md:static md:w-[400px] backdrop-blur-xl z-10'
       as={motion.div}
       initial={false}
@@ -150,6 +152,7 @@ export default function LeftSidebar() {
         <div className='flex h-[400px] flex-col w-full mt-[30px] items-center gap-6 overflow-y-scroll'>
 
           {channels.map((data: Channel, id: number) => {
+            // console.log(data)
             if (data.name)
               return <Hashtag key={id} data={data} />
           })}
@@ -174,7 +177,6 @@ export default function LeftSidebar() {
         {ChannelOrUser === true ? <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <Newchannel isOpen={isOpen}
           onClose={onClose}
-          // setNewChannels={setNewChannels}
           channels={channels}
 
         />

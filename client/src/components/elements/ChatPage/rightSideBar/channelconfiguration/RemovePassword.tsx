@@ -44,7 +44,7 @@ export default function RemovePassword() {
 
     const toast = useToast()
     const channelName = useSelector((state: any) => state.chat.selectedChannelorUser)
-    const userId = useSelector((state: any) => state.chat.userId)
+    const userId = useSelector((state: any) => state.userID.user)
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [imageAlt, setImageAlt] = useState('');
     const dispatch = useDispatch()

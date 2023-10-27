@@ -15,7 +15,7 @@ function Componenent({ onClose }: any) {
     const [selectedOption, setSelectedOption]: any = useState('');
     const [users, setUsers] = useState<any[]>([])
     const toast = useToast()
-    const userId = useSelector((state: any) => state.chat.userId)
+    const userId = useSelector((state: any) => state.userID.user)
     const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
     const handleOptionChange = (newValue: any) => {
 
@@ -172,7 +172,7 @@ export default function SetChannelAdmin() {
 
 
     const channelName = useSelector((state: any) => state.chat.selectedChannelorUser)
-    const userId = useSelector((state: any) => state.chat.userId)
+    const userId = useSelector((state: any) => state.userID.user)
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [imageAlt, setImageAlt] = useState('');
 

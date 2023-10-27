@@ -13,7 +13,7 @@ import invite from "../../../../../../assets/icons/invite.svg"
 function Usercard(props: any) {
 
 
-    const { data } = props;
+    const  data:ChannelMember  = props.data;
     const [user, setUser] = useState<any>({})
 
     function cutString(str: string, maxLength: number): string {
@@ -73,16 +73,11 @@ function Componenent({ onClose }: any) {
             try {
 
                 const usersResponse = await fetch('http://127.0.0.1:3001/channel/getallmembers/' + channel.id)
-                const users: ChannelMember[] = await usersResponse.json()
+                const users1: ChannelMember[] = await usersResponse.json()
 
 
-                let listedusers: any = []
 
-                users.map((channelmember: ChannelMember) => {
-                    listedusers.push(channelmember.userId)
-                })
-
-                setUsers(users);
+                setUsers(users1);
 
             } catch (error) {
                 console.error('Error fetching users and channel Admins:', error);
@@ -113,7 +108,7 @@ function Componenent({ onClose }: any) {
 
             <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll '>
 
-                {users.map((data: User, id: number) => {
+                {users.map((data: any, id: number) => {
                     return <Usercard
 
                         key={id}

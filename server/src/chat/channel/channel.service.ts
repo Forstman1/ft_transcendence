@@ -392,6 +392,7 @@ export class ChannelService {
         channelMember: true,
       },
     });
+    
     if (channel) 
         return channel.channelMember;
     else 

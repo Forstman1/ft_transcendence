@@ -46,7 +46,7 @@ export default function Newchannel({ isOpen, onClose, channels }: Props) {
     const [show, setShow] = React.useState(false)
     const handleClick = () => setShow(!show)
     const dispatch = useDispatch()
-    const userId = useSelector((state:any) => state.chat.userId)
+    const userId = useSelector((state:any) => state.userID.user)
 
 
     const createchannel = useMutation<any, Error, ChannelValues>((variables) => 
