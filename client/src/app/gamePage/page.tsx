@@ -6,10 +6,6 @@ import { Button, Text, useDisclosure, useBreakpointValue } from "@chakra-ui/reac
 import Image from "next/image";
 import Gamepad from "../../../assets/icons/gamepad.svg";
 import Robot from "../../../assets/icons/robot.svg";
-<<<<<<< HEAD
-import Lottie from "lottie-react";
-=======
->>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
 import animationData from "../../../assets/animations/animation3.json";
 import GameModesModal from "./ui/GameModesModal";
 import { motion } from "framer-motion";
@@ -21,15 +17,10 @@ import {
 } from "@/redux/slices/socket/globalSocketSlice";
 import { setModal } from "@/redux/slices/game/gameModalSlice";
 import { useRouter } from "next/navigation";
-<<<<<<< HEAD
-// import waitLoading from "../../../assets/animations/waitLoading.json";
-import LodingAnimation from "../../../assets/animations/loadingAnimation.json";
-=======
 import LodingAnimation from "../../../assets/animations/loadingAnimation.json";
 import Lottie from "lottie-react";
 import {InfoOutlineIcon} from "@chakra-ui/icons";
 import GameInstruction from "./ui/GameInstruction";
->>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
 
 export default function GamePage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -39,10 +30,7 @@ export default function GamePage() {
   const socket = useAppSelector((state) => state.globalSocketReducer);
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-<<<<<<< HEAD
-=======
   const [isGameInstructionOpen, setIsGameInstructionOpen] = React.useState<boolean>(false);
->>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
 
   socket.socket?.on("setIsOwner", (data: { isOwner: boolean, roomId: string }) => {
     dispatch(
@@ -92,17 +80,6 @@ export default function GamePage() {
   return (
     <PageWrapper>
       {isLoading && (
-<<<<<<< HEAD
-      <div className="absolute top-0 left-0 w-full h-screen z-20 bg-black opacity-50" >
-        <Lottie
-          animationData={LodingAnimation}
-          className="absolute inset-0 w-full h-full z-10"
-        />
-      </div>
-      )}
-      <div className="flex flex-row h-full justify-center items-center mx-[10%]  z-0">
-        <div className={`${breakpoint === "base" ? "absolute" : "flex"} flex-col justify-center items-center  P-20 space-y-6 z-10`}>
-=======
         <div className="absolute top-0 left-0 w-full h-screen z-20 bg-black opacity-50">
           <Lottie
             animationData={LodingAnimation}
@@ -116,38 +93,12 @@ export default function GamePage() {
             breakpoint === "base" ? "absolute" : "flex"
           } flex-col justify-center items-center  P-20 space-y-6 z-10`}
         >
->>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
           <Text className=" flex text-emerald-300 font-bold text-2xl">
             EXPLORE THE GAME
           </Text>
           <Text className=" flex text-black font-bold text-6xl">
             It&apos;s time to enjoy the game
           </Text>
-<<<<<<< HEAD
-          <div className={`flex flex-col justify-center items-center  space-y-6  mx-auto w-[400px] h-[300px] p-10`}>
-            <Button
-              colorScheme="teal"
-              variant="outline"
-              bg="white"
-              size="lg"
-              width={300}
-              leftIcon={
-                <Image src={Gamepad} alt="Gamepad" width={25} height={25} />
-              }
-              onClick={handleFriendClick}
-            >
-              Play with a friend
-            </Button>
-            <Button
-              colorScheme="teal"
-              variant="outline"
-              size="lg"
-              width={300}
-              leftIcon={
-                <Image src={Robot} alt="Robot" width={25} height={25} />
-              }
-              onClick={handleBotClick}
-=======
           <div
             className={`flex flex-col justify-center items-center  space-y-6  mx-auto w-[400px] p-10`}
           >
@@ -202,21 +153,8 @@ export default function GamePage() {
               size="sm"
               leftIcon={<InfoOutlineIcon />}
               onClick={() => setIsGameInstructionOpen(true)}
->>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
             >
               Learn
-            </Button>
-            <Button
-              colorScheme="teal"
-              variant="outline"
-              size="lg"
-              width={300}
-              leftIcon={
-                <Image src={Gamepad} alt="Gamepad" width={25} height={25} />
-              }
-              onClick={handleMatchmakingClick}
-            >
-              Play with a random player
             </Button>
           </div>
           <GameInstruction isOpen={isGameInstructionOpen} onClose={() => setIsGameInstructionOpen(false)} />
