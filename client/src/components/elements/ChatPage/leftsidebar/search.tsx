@@ -18,6 +18,7 @@ import Image from "next/image";
 import { Channel, User } from "@/utils/types/chat/ChatTypes";
 import { useDispatch } from "react-redux";
 import { setTheUser } from "@/redux/slices/chat/ChatSlice";
+import { useMutation } from "react-query";
 
 
 
@@ -40,19 +41,19 @@ function Usercard(props: any) {
 
 
     return (
-        
-    <div onClick={() => dispatch(setTheUser(user))} className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md'>
-        <div>
-            <Avatar boxSize={12} src={user.avatar}>
-                <AvatarBadge boxSize={6} bg='green' />
-            </Avatar>
-        </div>
 
-        <div className='flex flex-col items-center justify-around'>
-            <div className='text-[20px] md:text-[30px]'>{user.username}</div>
-        </div>
+        <div onClick={() => dispatch(setTheUser(user))} className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md'>
+            <div>
+                <Avatar boxSize={12} src={user.avatar}>
+                    <AvatarBadge boxSize={6} bg='green' />
+                </Avatar>
+            </div>
 
-    </div>)
+            <div className='flex flex-col items-center justify-around'>
+                <div className='text-[20px] md:text-[30px]'>{user.username}</div>
+            </div>
+
+        </div>)
 }
 
 
@@ -70,11 +71,13 @@ export default function Search({ channels, users }: Props) {
     const { isOpen, onOpen, onClose } = useDisclosure()
 
 
-    useEffect(() => {
-        setAllSearchChannels(channels)
-        setAllSearchUsers(users)
-    }, [channels || users])
 
+    const getchannels = useMutation<any, Error, any>((variables) =>
+        fetch('http://127.0.0.1:3001/channel/getallchannelsapp/' + variables.tofound).then((res) => {
+            console.log(variables)
+            return res.json()
+        }).catch((err) => console.log(err))
+    )
 
     const findMatches = (wordToMatch: string, ChannelsOrUsers: string[]) => {
 
@@ -85,63 +88,81 @@ export default function Search({ channels, users }: Props) {
         })
     }
 
+    const getusers = useMutation<any, Error, any>((variables) =>
+        fetch('http://127.0.0.1:3001/users/getusers/' + variables.tofound).then((res) => {
+        return res.json() }).catch((err) => console.log(err)))
+
     const handleSearchClick = async () => {
 
         console.log(search)
+        
+        if (search === "") {
+            let allChannelsnames: any = channels.map((channel: Channel) => {
+                return channel.name
+            })
+            let content1: string[] = findMatches(search, allChannelsnames)
+    
+    
+            let searcharray: any = channels.map((channel: Channel) => {
+                for (let i: number = 0; i < content1.length; i++) {
+                    if (channel.name === content1[i])
+                        return channel
+                }
+            })
+    
+    
+            searcharray = searcharray.filter((channel: Channel) => {
+                return (channel !== undefined)
+            })
+    
+    
+            let allUsersnames: any = users.map((user: User) => {
+                return user.username
+            })
+    
+            let content2: string[] = findMatches(search, allUsersnames)
+    
+    
+            let searchuserarray: any = users.map((user: User) => {
+    
+                for (let i: number = 0; i < content2.length; i++) {
+                    if (user.username === content2[i])
+                        return user
+                }
+            })
+            
+            searchuserarray = searchuserarray.filter((user: User) => {
+                return user !== undefined
+            })
 
-        let allChannelsnames: any = channels.map((channel: Channel) => {
-            return channel.name
-        })
-        let content1: string[] = findMatches(search, allChannelsnames)
+            setAllSearchChannels(searcharray)
+    
+            setAllSearchUsers(searchuserarray)
+            return ;
+        }
+
+        const allchannel = await getchannels.mutateAsync({ tofound: search })
+        const allusers = await getusers.mutateAsync({ tofound: search })
 
 
-        let searcharray: any = channels.map((channel: Channel) => {
-            for (let i: number = 0; i < content1.length; i++) {
-                if (channel.name === content1[i])
-                    return channel
-            }
-        })
+        setAllSearchChannels(allchannel)
+    
+        setAllSearchUsers(allusers)
+
+        // console.log(allchannel)
 
 
-        searcharray = searcharray.filter((channel: Channel) => {
-            return (channel !== undefined)
-        })
-
-
-        let allUsersnames: any = users.map((user: User) => {
-            return user.username
-        })
-
-        let content2: string[] = findMatches(search, allUsersnames)
-
-
-        let searchuserarray: any = users.map((user: User) => {
-
-            for (let i: number = 0; i < content2.length; i++) {
-                if (user.username === content2[i])
-                    return user
-            }
-        })
-
-
-
-
-
-        searchuserarray = searchuserarray.filter((user: User) => {
-            return user !== undefined
-        })
-
-
-        setAllSearchChannels(searcharray)
-
-        setAllSearchUsers(searchuserarray)
         setSearch("")
         onOpen()
     };
 
 
 
-
+    const handleClick = () => {
+        setAllSearchChannels(channels)
+        setAllSearchUsers(users)
+        onOpen()
+    }
 
     const handleChange = async (data: any) => {
         setSearch(data.target.value)
@@ -152,7 +173,7 @@ export default function Search({ channels, users }: Props) {
     const toast = useToast()
 
     return (<>
-        <div onClick={onOpen} className='w-[80%]  md:h-[65px] h-[40px] mt-5 border-2 border-black rounded-sm flex justify-between items-center custom-shadow cursor-pointer'>
+        <div onClick={handleClick} className='w-[80%]  md:h-[65px] h-[40px] mt-5 border-2 border-black rounded-sm flex justify-between items-center custom-shadow cursor-pointer'>
 
             <div className='border-none w-full h-full text-gray-400 text-[30px] items-center flex ml-[10px]'>Search...</div>
             <div className='rounded-none w-[75px] md:h-[63px] h-[40px] bg-black active:bg-black  flex items-center justify-center cursor-pointer'><Icon boxSize={5} color="white" as={SearchIcon} /></div>
@@ -201,15 +222,12 @@ export default function Search({ channels, users }: Props) {
                     <div className="flex w-full h-[300px]  flex-col  overflow-y-scroll ">
                         {allSearchChannels.map((channels: Channel, id: number) => {
                             return <Box key={id} className="flex  w-[95%] p-2 flex-row justify-between items-center border-2 border-gray-300 rounded-lg  mt-5">
-                                <div className="flex h-[50px] " >
-                                    <h1 className="text-[40px] h-[20px] mr-3">#</h1>
-                                    <h1 className="text-[30px] h-[20px]"> {channels.name}</h1>
-                                </div>
-
+                                <Hashtag key={id} data={channels} />
                             </Box>
+                            return
                         })}
                         {allSearchUsers.map((users: User, id: number) => {
-                            return (<Usercard key={id} user={users}/>)
+                            return (<Usercard key={id} user={users} />)
                         })}
                     </div>
                 </ModalBody>

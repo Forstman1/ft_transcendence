@@ -18,7 +18,7 @@ import { LockIcon, SmallAddIcon } from "@chakra-ui/icons";
 import { useMutation } from "react-query";
 import { setChannel, setChannelMember, setMessages } from "@/redux/slices/chat/ChatSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { Channel, ChannelMessage } from "@/utils/types/chat/ChatTypes";
+import { Channel, ChannelMember, ChannelMessage } from "@/utils/types/chat/ChatTypes";
 
 
 
@@ -34,7 +34,7 @@ export default function Hashtag(props: any) {
     let { id, name, type }: Channel = props.data;
     let data: Channel = props.data;
     const toast = useToast()
-    const userId = useSelector((state: any) => state.chat.userId)
+    const userId = useSelector((state: any) => state.userID.user)
     const dispatch = useDispatch()
 
 
@@ -84,12 +84,11 @@ export default function Hashtag(props: any) {
             if (messages) {
                 dispatch(setMessages(messages))
             }
-            const channelmember = await getchannelmember.mutateAsync({
+            const channelmember: ChannelMember = await getchannelmember.mutateAsync({
                 channelId: id,
                 userId
             })
             if (channelmember) {
-                console.log(channelmember)
                 dispatch(setChannelMember(channelmember))
             }
             toast({

@@ -492,5 +492,16 @@ export class ChannelService {
     return channelmember;
   }
   
+  async getallchannelsapp(tofound: string)
+  {
+    const channels = await this.prisma.channel.findMany({
+      where: {
+        name: {
+          contains: tofound,
+        },
+      }
+    });
+    return channels;
+  }
 
 }

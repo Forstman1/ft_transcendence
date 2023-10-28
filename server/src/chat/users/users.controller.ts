@@ -18,6 +18,12 @@ export class UsersController {
     getuser(@Param('id') id: string) {
         return this.usersService.getUser(id)
     }
+
+    @Get('/getusers/:tofound')
+    getuserstofound(@Param('tofound') tofound: string) {
+        console.log(tofound)
+        return this.usersService.getuserstofound(tofound)
+    }
     // @Get()
     // hello(){
     //     return("hello world")

@@ -80,4 +80,10 @@ export class ChannelController {
     getchannelmemberinfo(@Param('channelId') channelId: string, @Param('userId') userId: string){
         return this.channelservice.getchannelmemberinfo(channelId, userId)
     }
+
+
+    @Get('/getallchannelsapp/:tofound')
+    getallchannelsapp(@Param('tofound') tofound: string) {
+        return this.channelservice.getallchannelsapp(tofound)
+    }
 }

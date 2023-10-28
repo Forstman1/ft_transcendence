@@ -48,4 +48,21 @@ export class UsersService {
             return error
         }
     }
+
+
+    async getuserstofound(tofound: string){
+        try {
+            const getuserstofound = await this.prisma.user.findMany({
+                where: {
+                    username: {
+                        contains: tofound
+                    }
+                }
+            })
+            return getuserstofound
+        }
+        catch(error){
+            return error
+        }
+    }
 }
