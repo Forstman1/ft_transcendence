@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import AddToChannel from '../../../../../assets/icons/AddToChannel.svg'
 import Mute from '../../../../../assets/icons/Mute.svg'
 import Ban from '../../../../../assets/icons/Ban.svg'
 import Block from '../../../../../assets/icons/Block.svg'
@@ -13,7 +12,7 @@ export default function ChannelMemberActions() {
   const [imageAlt, setImageAlt] = useState('');
 
   const CtrlImages = [
-    { src: AddToChannel, alt: "Add to channel" },
+    // { src: AddToChannel, alt: "Add to channel" },
     { src: Ban, alt: "Ban from channel" },
     { src: Mute, alt: "Mute" },
     { src: Block, alt: " Kick out from channel" }

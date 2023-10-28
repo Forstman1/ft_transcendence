@@ -21,7 +21,6 @@ export class UsersController {
 
     @Get('/getusers/:tofound')
     getuserstofound(@Param('tofound') tofound: string) {
-        console.log(tofound)
         return this.usersService.getuserstofound(tofound)
     }
     // @Get()

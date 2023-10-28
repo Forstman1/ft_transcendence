@@ -13,6 +13,7 @@ import UserControls from './UserControls'
 import { useSelector, useDispatch } from 'react-redux'
 import { useMediaQuery } from '@chakra-ui/react'
 import { setLeft, setMidle, setRight } from '@/redux/slices/chat/MobileSlice'
+import AddToChannelComponent from './AddToChannelComponent'
 
 
 
@@ -117,6 +118,7 @@ export default function RightSidebar() {
       </Box>
       <hr className='bg-black h-[2px] mx-10' />
       <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7'>
+        <AddToChannelComponent />
         <ChannelMemberActions />
       </Box>
     </Box>
