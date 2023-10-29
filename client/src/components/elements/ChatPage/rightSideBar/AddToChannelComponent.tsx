@@ -22,12 +22,9 @@ export default function AddToChannelComponent() {
   const userId = useSelector((state: any) => state.userID.user)
   const userSelected = useSelector((state: any) => state.chat.selectedChannelorUser)
   const [channels, setChannels]: any = useState([])
-  const toast = useToast
+  const toast = useToast()
 
 
-  // const getChannels = useMutation<any, Error, any>((variables) =>
-  //   fetch('http://127.0.0.1:3001:channels/getallchannels/' + variables.userId).then((res) =>
-  //     res.json()).catch((error) => { return error }))
 
 
   useEffect(() => {
@@ -59,6 +56,50 @@ export default function AddToChannelComponent() {
     fetchChannels()
 
   }, [userSelected])
+
+  const addtochannel = useMutation<any, Error, any>((variables) => fetch('http://127.0.0.1:3001/channel/invitemember', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(variables)})
+    .then(res => res.json()).catch(err => console.log(err)))
+
+  const onSubmit = async () => {
+    if (Chosen === "Channels")
+      return;
+    const invite = await addtochannel.mutateAsync({
+      channelName: Chosen,
+      userIdOwner: userId,
+      userIdMember: userSelected.id
+    })
+    if (invite.status)
+    {
+      toast({
+        title: invite.status,
+        position: `bottom-right`,
+        status: 'error',
+        duration: 1000,
+        containerStyle: {
+          width: 300,
+          height: 100,
+        }
+      })
+      return ;
+    }
+    onClose();
+    toast({
+      title: "User added to channel",
+      position: `bottom-right`,
+      status: 'success',
+      duration: 1000,
+      containerStyle: {
+        width: 300,
+        height: 100,
+      }
+    })
+    
+  }
 
   return (
     <Box className='flex items-center gap-6 w-[220px]'
@@ -163,19 +204,7 @@ export default function AddToChannelComponent() {
               colorScheme="green"
               variant="outline"
               ml={10}
-              onClick={() => {
-                onClose();
-                toast({
-                  title: "ADD TO CHANNEL",
-                  position: `bottom-right`,
-                  status: 'success',
-                  duration: 1000,
-                  containerStyle: {
-                    width: 300,
-                    height: 100,
-                  }
-                })
-              }}
+              onClick={onSubmit}
             >
               Confirm
             </Button>

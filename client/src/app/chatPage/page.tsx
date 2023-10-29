@@ -31,12 +31,13 @@ export default function ChatPage() {
 
 
   const selected: Channel | User | null = useSelector((state: any) => state.chat.selectedChannelorUser);
+  
   if(isDesktop[0]) {
     dispatch(setRight(true))
     dispatch(setMidle(true))
     dispatch(setLeft(true))
   }
-
+  
   const sidebar = {
     open: (height = 1000) => ({
       // width: "375px",

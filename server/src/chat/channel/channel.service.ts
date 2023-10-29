@@ -334,6 +334,8 @@ export class ChannelService {
     userIdOwner: string,
     userIdMember: string,
   ) {
+
+
     const channel = await this.prisma.channel.findUnique({
       where: {
         name: channelName,
@@ -349,8 +351,7 @@ export class ChannelService {
 
     const channelowner = channelmembers[0];
     delete channelmembers[0];
-    const channeladministrator = channelmembers[0];
-    delete channelmembers[0];
+
 
     try {
       const channelmembers = await this.prisma.channelMember.findMany({
@@ -360,12 +361,14 @@ export class ChannelService {
         },
       });
       if (channelmembers.length === 1)
-        return { status: 'this user already member of the channel' };
-    } catch (error) {}
+        return { status: "this user already member of the channel" };
+    } catch (error) {
 
+    }
+    console.log(channelowner);
     if (
       channelowner.role === 'OWNER' ||
-      channeladministrator.role === 'ADMIN'
+      channelowner.role === 'ADMIN'
     ) {
       const channelmember = await this.prisma.channelMember.create({
         data: {

@@ -1,4 +1,3 @@
-"use client";
 
 import { Avatar, Input } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react'
@@ -19,6 +18,7 @@ import { setLeft, setRight, setMidle } from '@/redux/slices/chat/MobileSlice';
 function Message_other({ usermessage, message, sender, time }: any) {
 
   const [user, setUser]: any = useState()
+
   useEffect(() => {
     const fetchData = async () => {
 
@@ -121,7 +121,7 @@ export default function ChatWindow() {
     })
     if (message)
       dispatch(addMessage(message));
-
+    
     reset({ newmessage: '' });
 
     scrollToBottom();
@@ -145,7 +145,7 @@ export default function ChatWindow() {
           return <Message_other key={index} usermessage={message} message={message.content} sender={message.authorName} time={message.createdAt} />
         })}
 
-
+{/* 
         <div className='w-full flex   items-baseline gap-[5px]  pl-[15px] h-[100px] mb-[5px]'  >
           <Avatar className='custom-shadow' boxSize={12} />
 
@@ -159,7 +159,7 @@ export default function ChatWindow() {
               autoplay={true}
             />
           </div>
-        </div>
+        </div> */}
       </div>
       <form onSubmit={handleSubmit(handelNewMessage)} className='h-[55px] mb-[15px] flex justify-around items-center'>
         <Input {...register("newmessage")} className='bg-[#D9D9D9] border-2 rounded-ld w-[90%] border-black h-[100%]' placeholder='Type your message here ...'
