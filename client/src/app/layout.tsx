@@ -10,6 +10,9 @@ import Navbar from "../components/elements/Navbar/Navbar";
 import ReduxProvider from "../redux/provider";
 import SplashScreen from "@/components/elements/spalshScreen/SplashScreen";
 import { usePathname } from "next/navigation";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
 
 const geo = Geo({
   subsets: ['latin'],
@@ -17,33 +20,27 @@ const geo = Geo({
   weight: "400"
 });
 
-
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   const path = usePathname();
   const isHome = path === "/";
   const [isloading, setIsLoading] = React.useState(isHome);
-
   return (
     <html lang="en">
       <body className={geo.className}>
-        <ReduxProvider>
+        <QueryClientProvider client={queryClient}>
+          <ReduxProvider>
             <CacheProvider>
               <ChakraProvider>
-                {isloading ? <SplashScreen  finishLoading={() => setIsLoading(false)}/> :
-                <>
-                  <Navbar />
-                  {children}
-                </>
+                {isloading ? <SplashScreen finishLoading={() => setIsLoading(false)} /> :
+                  <>
+                    <Navbar />
+                    {children}
+                  </>
                 }
               </ChakraProvider>
             </CacheProvider>
-        </ReduxProvider>
+          </ReduxProvider>
+        </QueryClientProvider>
       </body>
     </html>
   );

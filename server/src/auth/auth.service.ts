@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { User } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
@@ -12,13 +12,26 @@ export class AuthService {
     private userService: UserService,
     private jwtService: JwtService,
   ) {}
+
   /* ------------------------------------------------------------------------------------------------------------------ */
+
+  twoFACookieOptions = {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'lax',
+    domain: `${process.env.DOMAIN_NAME}`,
+    path: '/auth/2fa/verify',
+    expires: new Date(Date.now() + 300000), // expies in 5 minutes
+    maxAge: 300000,
+  };
+
+  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
   cookieOptions = {
     httpOnly: true,
-    secure: false, // TODO Later set to true when deploying to production
-    sameSite: 'Strict',
-    domain: process.env.DOMAIN_NAME,
+    secure: false, // TODO Later set to true when deploying to production (requires SSL/HTTPS)
+    sameSite: 'lax',
+    domain: `${process.env.DOMAIN_NAME}`,
     path: '/',
     expires: new Date(Date.now() + 3600000),
     maxAge: 3600000,
@@ -39,11 +52,38 @@ export class AuthService {
 
   /* ------------------------------------------------------------------------------------------------------------------ */
 
-  async login(userInput: UserDto): Promise<string> {
+  async issueTemporaryToken(userInput: UserDto): Promise<string> {
     const user: User = await this.validateUser(userInput);
     const payload = {
       id: user.id,
-      is2FA: false,
+      TwoFA_Success: false,
+    };
+    return this.jwtService.sign(payload);
+  }
+
+  /* ------------------------------------------------------------------------------------------------------------------ */
+
+  async login(userInput: UserDto): Promise<string> {
+    const user: User = await this.validateUser(userInput);
+    if (user.twoFactorEnabled) {
+      throw new UnauthorizedException('Two-factor Authentication Required');
+    }
+    const payload = {
+      id: user.id,
+      TwoFA_Success: false,
+    };
+    return this.jwtService.sign(payload);
+  }
+
+  /* ------------------------------------------------------------------------------------------------------------------ */
+
+  async loginWithTwoFactorAuth(user: User): Promise<string> {
+    if (!user.twoFactorEnabled) {
+      throw new UnauthorizedException('Two-factor Authentication Disabled');
+    }
+    const payload = {
+      id: user.id,
+      TwoFA_Success: true,
     };
     return this.jwtService.sign(payload);
   }

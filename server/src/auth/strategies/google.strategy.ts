@@ -6,11 +6,7 @@ import {
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-google-oauth20';
 import { UserDto } from 'src/user/user.dto';
-import {
-  uniqueUsernameGenerator,
-  adjectives,
-  nouns,
-} from 'unique-username-generator';
+import { generateFromEmail } from 'unique-username-generator';
 import { UserService } from 'src/user/user.service';
 
 @Injectable()
@@ -36,12 +32,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
       let generatedUsername: string;
       let usernameExists: boolean = true;
       while (usernameExists) {
-        generatedUsername = uniqueUsernameGenerator({
-          dictionaries: [adjectives, nouns],
-          separator: '',
-          style: 'lowerCase',
-          randomDigits: 3,
-        });
+        generatedUsername = generateFromEmail(profile._json.email, 3);
         const userFound = await this.userService.findUser({
           username: generatedUsername,
         });

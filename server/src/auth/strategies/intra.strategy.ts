@@ -23,7 +23,7 @@ export class IntraStrategy extends PassportStrategy(Strategy) {
     userid: string,
     accessToken: string,
   ): Promise<{ image_url: string; color: string }> {
-    const url = `https://api.intra.42.fr/v2/user/${userid}/coalitions`;
+    const url = `https://api.intra.42.fr/v2/users/${userid}/coalitions`;
     const response = await axios.get(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -66,12 +66,14 @@ export class IntraStrategy extends PassportStrategy(Strategy) {
         username: generatedUsername,
         email: profile._json.email,
         fullname: profile._json.displayname,
-        avatarURL: profile?._json?.login,
-        coalitionURL: profile?._json?.image?.versions?.large,
+        avatarURL: profile._json.image.versions.large,
+        coalitionURL: coalitionData?.image_url,
         coalitionColor: coalitionData?.color,
       };
       return user;
     } catch (error) {
+      // print the line that made the error
+      console.error(error.stack);
       console.error(error.message);
       throw new InternalServerErrorException('Internal Server Error');
     }

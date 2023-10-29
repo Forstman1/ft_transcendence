@@ -6,131 +6,53 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import {
-  Box,
-  Icon,
-  Flex,
-  Button,
-  Center,
-  Text,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  MenuDivider,
-  IconButton,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Stack,
+  MenuButton, MenuList, MenuItem, MenuDivider,
+  IconButton, Modal, ModalOverlay, ModalContent,
+  Stack, Avatar, AvatarBadge, SkeletonCircle,
+  Box, Flex, Button, Center, Text, Menu,
+  ModalHeader, ModalFooter, ModalBody,
+  ModalCloseButton, Skeleton,
 } from '@chakra-ui/react';
 /* ------------------------------------------------------ Hooks ----------------------------------------------------- */
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
-/* ------------------------------------------------------ Types ----------------------------------------------------- */
-import { IconType } from "react-icons";
+import { useQuery } from '@tanstack/react-query';
+import { fetchUserProfile } from '../../../utils/functions/auth/fetchingUserData';
+import {
+  AuthButtonsList, NAVBAR_ITEMS, AuthButtonObj
+} from '../../../utils/constants/auth/AuthConstants';
+import { useDispatch, useSelector } from "react-redux";
+import { updateUser } from '@/redux/slices/user/userSlice';
 
 /* -------------------------------------------------- Remote Assets ------------------------------------------------- */
 import { HamburgerIcon } from '@chakra-ui/icons';
-import { FcGoogle } from 'react-icons/fc';
-import { FaGithub } from 'react-icons/fa6';
 
 /* -------------------------------------------------- Local Assets -------------------------------------------------- */
 import WavesDivider from 'assets/icons/wavesOpacity.svg';
-import Logo from '../../../../assets/icons/Logo.svg';
-import LoginThumbnail from '../../../../assets/icons/Auth/undraw_my_password_re_ydq7.svg';
-
-/* --------------------------------------------------- Header Logo -------------------------------------------------- */
-const HeaderLogo = () => {
-  return (
-    <>
-      <Link href="/">
-        <Image src={Logo} alt="Website Logo" width={150} height={150} />
-      </Link>,
-    </>
-  )
-}
+import Logo from 'assets/icons/Logo.svg';
+import LoginThumbnail from 'assets/icons/Auth/undraw_my_password_re_ydq7.svg';
 
 /* --------------------------------------------------- AuthButtons -------------------------------------------------- */
-interface AuthButtonObj {
-  text: string;
-  href: string;
-  borderClr: string;
-  bgClr: string;
-  clr: string;
-  hoverClr: string;
-  icon: IconType | React.FC;
-}
 
 
-const IntraLogoIcon: React.FC = () => {
-  return (
-    <Icon
-      enableBackground="new 0 0 595.3 841.9"
-      viewBox="0 0 137.6 96.6"
-    >
-      <g transform="translate(-229.2 -372.7)" fill="#fff">
-        <polygon points="229.2 443.9 279.9 443.9 279.9 469.3 305.2 469.3 305.2 423.4 254.6 423.4 305.2 372.7 279.9 372.7 229.2 423.4" />
-        <polygon points="316.1 398.1 341.4 372.7 316.1 372.7" />
-        <polygon points="341.4 398.1 316.1 423.4 316.1 448.7 341.4 448.7 341.4 423.4 366.8 398.1 366.8 372.7 341.4 372.7" />
-        <polygon points="366.8 423.4 341.4 448.7 366.8 448.7" />
-      </g>
-    </Icon>
-  )
-};
-
-
-const AuthButonsList: Array<AuthButtonObj> = [
-  {
-    text: 'Intra',
-    href: '#0',
-    borderClr: 'teal.400',
-    bgClr: 'teal.400',
-    clr: 'white',
-    hoverClr:'teal.300',
-    icon: IntraLogoIcon,
-  },
-  {
-    text: 'Google',
-    href: '#0',
-    borderClr: 'blue.600',
-    bgClr: 'transparent',
-    clr: 'blue.600',
-    hoverClr:'blue.50',
-    icon: FcGoogle,
-  },
-  {
-    text: 'Github',
-    href: '#0',
-    borderClr: 'gray.900',
-    bgClr: 'gray.900',
-    clr: 'white',
-    hoverClr:'gray.700',
-    icon: FaGithub,
-  },
-]
-
-const AuthButtons: React.FC = () => {
+function AuthButtons() {
   return (
     <Flex className='w-full flex-row flex-wrap justify-center gap-4'>
-      {AuthButonsList.map((
-        button: AuthButtonObj, index: number) => {
+      {AuthButtonsList.map((button: AuthButtonObj, index: number) => {
         return (
           <Button
-            key={index}
-            className='text-xl w-full max-w-[18rem]'
-            as='a' href={button.href}
-            size='lg'
+            key={index} className='text-xl w-full max-w-[18rem]'
+            as='a' href={`${process.env.NEXT_PUBLIC_SERVER_URL}auth/${button.name}/login`}
+            target='_self'
             backgroundColor={button.bgClr} color={button.clr}
-            border='2px' borderColor={button.borderClr} rounded='md'
+            border='2px' borderColor={button.borderClr}
+            size='lg' rounded='md' fontWeight='semibold'
             boxShadow='0.2rem 0.2rem 0rem 0rem rgb(150,150,150)'
-            fontWeight='semibold'
             _hover={{
               bgColor: button.hoverClr,
-              borderColor: `${button.borderClr === button.bgClr ? button.hoverClr : button.borderClr}`,
+              borderColor: `${button.borderClr === button.bgClr ? button.hoverClr : button.borderClr
+                }`,
             }}
             _active={{
               transform: 'translate(0.2rem, 0.2rem)',
@@ -142,39 +64,79 @@ const AuthButtons: React.FC = () => {
               <Text>{button.text}</Text>
             </Center>
           </Button>
-        )
+        );
       })}
     </Flex>
-  )
+  );
 }
 
 /* --------------------------------------------------- SignupButton -------------------------------------------------- */
 
 export function SignupButton({ onClick, customClasses }: { onClick: () => void, customClasses: string }) {
   return (
-    <>
-      <motion.div>
-        <Button
-          as='a'
-          className={`cursor-pointer w-16 h-6 text-xl md:w-24 md:h-10 md:text-2xl ${customClasses}`}
-          backgroundColor='whiteAlpha.900' color='blackAlpha.900'
-          border='1px' borderColor='whiteAlpha.900' rounded='sm'
-          boxShadow='0.2rem 0.2rem 0rem 0rem rgb(150,150,150)'
-          fontWeight='semibold'
-          _hover={{}}
-          _active={{
-            transform: 'translate(0.2rem, 0.2rem)',
-            boxShadow: '0rem 0rem 0rem 0rem rgb(20,20,20)',
-          }}
-          onClick={onClick}
-        >
-          Sign Up
-        </Button>
-      </motion.div>
-    </>
+    <motion.div>
+      <Button
+        as='a'
+        className={`cursor-pointer w-16 h-6 text-xl md:w-24 md:h-10 md:text-2xl ${customClasses}`}
+        backgroundColor='whiteAlpha.900' color='blackAlpha.900'
+        border='1px' borderColor='whiteAlpha.900' rounded='sm'
+        boxShadow='0.2rem 0.2rem 0rem 0rem rgb(150,150,150)'
+        fontWeight='semibold'
+        _hover={{}}
+        _active={{
+          transform: 'translate(0.2rem, 0.2rem)',
+          boxShadow: '0rem 0rem 0rem 0rem rgb(20,20,20)',
+        }}
+        onClick={onClick}
+      >
+        Sign Up
+      </Button>
+    </motion.div>
   )
 }
 
+/* ------------------------------------------------------------------------------------------------------------------ */
+
+export function UserProfileNavbarBadge() {
+  interface UserState {
+    username: string;
+    email: string;
+    avatarUrl: string;
+    isOnline: boolean;
+  }
+  const data = useSelector((state: { user: UserState }) => state.user);
+  return (
+    <Flex alignItems='center' gap={5} flexDirection='row-reverse'>
+      <Box flexShrink={0}>
+        <Link href='/profile'>
+          <Avatar size='lg' src={data.avatarUrl}>
+            <AvatarBadge
+              boxSize='1em'
+              borderColor={data.isOnline ? 'green.100' : 'red.100'}
+              bg={data.isOnline ? 'green.500' : 'red.500'}
+            />
+          </Avatar>
+        </Link>
+      </Box>
+      <Link href='/profile'>
+        <Text className='hidden md:block text-2xl font-semibold' color='white'>
+          {data.username}
+        </Text>
+      </Link>
+    </Flex>
+  );
+}
+
+export function UserProfileSkelletonBadge() {
+  return (
+    <Flex alignItems='center' gap={5}>
+      <Skeleton height='24px' width='100px' />
+      <SkeletonCircle size='12' />
+    </Flex>
+  );
+}
+
+/* ------------------------------------------------------------------------------------------------------------------ */
 
 export function SignupForm() {
   const OverlayOne = () => (
@@ -205,7 +167,7 @@ export function SignupForm() {
                 <Text className='text-lg text-center text-neutral-600'>
                   to enjoy all of our cool features ✌️
                 </Text>
-              <Image src={LoginThumbnail} alt='Login Thumbnail' className='hidden md:block w-full max-w-[14rem]' />
+                <Image src={LoginThumbnail} alt='Login Thumbnail' className='hidden md:block w-full max-w-[14rem]' />
               </Stack>
             </ModalHeader>
             <ModalCloseButton />
@@ -233,23 +195,6 @@ export function SignupForm() {
 
 /* ------------------------------------------------------------------------------------------------------------------ */
 
-const NAVBAR_ITEMS: Array<{
-  text: string,
-  href: string
-}> = [
-    {
-      text: "Home",
-      href: "/"
-    },
-    {
-      text: "Game",
-      href: "/gamePage"
-    },
-    {
-      text: "Chat",
-      href: "/chatPage"
-    }
-  ];
 
 const HeaderNavDesktop: React.FC = () => {
   let path = usePathname();
@@ -312,98 +257,85 @@ const HeaderNavMobile: React.FC = () => {
             href: string
           }, index: number) => {
             return (
-              <>
-                <MenuItem key={index} rounded='md' className='bg-neutral-900 text-neutral-50 border-neutral-950' as={"a"} href={item.href}>
-                  <Text className="text-xl font-semibold">
-                    {item.text}
-                  </Text>
-                </MenuItem>
+              <MenuItem
+                key={`mobile-navbar-menu-item-${index}`} rounded='md' as={"a"} href={item.href}
+                className='bg-neutral-900 text-neutral-50 border-neutral-950'
+              >
+                <Text className="text-xl font-semibold">
+                  {item.text}
+                </Text>
                 {index != NAVBAR_ITEMS.length - 1 ? <MenuDivider /> : null}
-              </>
+              </MenuItem>
             )
           })}
         </MenuList>
       </Menu>
     </Box>
-
-  )
-}
-
-// TODO need to change this later, i don't like it
-const HeaderRoutes: React.FC = () => {
-  return (
-    <>
-      <HeaderNavMobile />
-      <HeaderNavDesktop />
-    </>
   )
 }
 
 /* ------------------------------------------------------------------------------------------------------------------ */
 
-interface HeaderComponents {
-  name: string;
-  component: React.FC<{}>
-}
+export default function Navbar() {
+  const [userIsLoading, setUserIsLoading] = useState(true);
+  const [userNotAuthenticated, setUserNotAuthenticated] = useState(true);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['userProfile'],
+    queryFn: fetchUserProfile,
+  });
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (isLoading) {
+      setUserIsLoading(true);
+    } else if (isError) {
+      setUserIsLoading(false);
+      setUserNotAuthenticated(true);
+    } else {
+      setUserIsLoading(false);
+      setUserNotAuthenticated(false);
+      dispatch(updateUser(data));
+    }
+  }, [data, dispatch, isError, isLoading]);
 
-const HEADER_ITEMS: Array<HeaderComponents> = [
-  {
-    name: 'HeaderRoutes',
-    component: HeaderRoutes
-  },
-  {
-    name: 'HeaderLogo',
-    component: HeaderLogo
-  },
-  {
-    name: 'SignupButton',
-    component: SignupForm
-  }
-];
-
-const Navbar: React.FC = () => {
   return (
     <header className='w-screen h-16 md:h-24 bg-neutral-950 fixed top-0 z-50'>
-
       <Flex
-        className='grid-cols-3 justify-around md:justify-between
-        '
+        className='grid-cols-3 justify-around md:justify-between'
         width='full' height='full'
         alignItems='center'
         flexDirection='row'
       >
-        {
-          HEADER_ITEMS.map((item: HeaderComponents, index: number) => {
-            let customClasses: string;
-            if (item.name == 'HeaderRoutes') {
-              customClasses = 'order-1 md:order-2 w-1/3 md:w-72 md:mr-auto';
-            } else if (item.name == 'HeaderLogo') {
-              customClasses = 'order-2 md:order-1 w-1/3 md:w-56';
-            } else if (item.name == 'SignupButton') {
-              customClasses = 'order-last w-1/3 md:w-56';
-            } else {
-              customClasses = ' '
-            }
-            return (
-              <Flex
-                key={index}
-                className={`h-full col-span-1 ${customClasses}`}
-                justifyContent='center'
-                alignItems='center'
-              >
-                <item.component />
-              </Flex>
-            )
-          })
-        }
+        <Flex
+          key='navbar-menu-item-1'
+          className='h-full col-span-1 order-1 md:order-2 w-1/3 md:w-72 md:mr-auto'
+          justifyContent='center'
+          alignItems='center'
+        >
+          <HeaderNavMobile />
+          <HeaderNavDesktop />
+        </Flex>
+        <Flex
+          key='navbar-menu-item-2'
+          className='h-full col-span-1 order-2 md:order-1 w-1/3 md:w-56'
+          justifyContent='center'
+          alignItems='center'
+        >
+          <Link href="/">
+            <Image src={Logo} alt="Website Logo" width={150} height={150} />
+          </Link>,
+        </Flex>
+        <Flex
+          key='navbar-menu-item-3'
+          className='h-full col-span-1 order-last w-1/3 md:w-72'
+          justifyContent='center'
+          alignItems='center'
+        >
+          {userIsLoading ? <UserProfileSkelletonBadge /> : (userIsLoading == false && userNotAuthenticated == false ? <UserProfileNavbarBadge /> : <SignupForm />)}
+        </Flex>
+
       </Flex>
 
       <Image src={WavesDivider} alt='Header Decoration' className='w-full h-5 -mt-[1px]' />
-
     </header>
   )
 }
-
-/* ------------------------------------------------------------------------------------------------------------------ */
-
-export default Navbar;
