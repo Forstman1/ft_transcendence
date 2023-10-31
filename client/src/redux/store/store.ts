@@ -14,6 +14,7 @@ export const store = configureStore({
   reducer: {
     gameReducer,
     globalSocketReducer,
+    authUserReducer,
     socket: chatSocketReducer,
     userID: userReducer,
     mobile: mobileReducer,

@@ -14,12 +14,12 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
+  // app.use(cors()); // already enabled in the previous line, uncomment if the previous one doesn't work as this one
   app.use(cookieParser());
-
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true
   }));
-  // app.use(cors()); // already enabled in the previous line
+  
   await app.listen(3001);
 
   // setInterval(() => {
