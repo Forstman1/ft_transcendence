@@ -7,7 +7,7 @@ import { useAppSelector } from "@/redux/store/store";
 import { getTextColor } from "@/utils/functions/game/GetGameColor";
 
 
-const GameHeader = ({
+const GameBotHeader = ({
     leftScore,
     rightScore,
   }: {
@@ -16,9 +16,10 @@ const GameHeader = ({
   }) => {
     const gameSettings = useAppSelector((state) => state.gameReducer);
     const balColor = gameSettings.playgroundtheme.balColor;
+
     
     return (
-      <div className={`flex items-center justify-between h-[100px] mx-auto rounded-lg p-10 drop-shadow-2xl w-full max-w-[1200px] ${balColor}`}>
+      <div className={`flex items-center justify-between h-[100px] mx-auto rounded-lg p-10 drop-shadow-2xl w-full max-w-[1200px] ${balColor}`} >
         <div className="flex flex-row items-center space-x-5">
           <Avatar size="lg">
             <Image src={Robot} alt="Logo" />
@@ -44,4 +45,4 @@ const GameHeader = ({
     );
   };
  
-export default GameHeader;
+export default GameBotHeader;

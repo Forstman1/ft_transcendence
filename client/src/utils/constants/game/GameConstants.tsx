@@ -8,8 +8,6 @@ import canvasBg7 from "../../../../assets/icons/canvas_background/canvasBg7.jpg"
 import canvasBg8 from "../../../../assets/icons/canvas_background/canvasBg8.jpg";
 
 
-
-
 export const Modes = ["EASY", "MEDIUM", "HARD"];
 export const Rounds = [1, 2, 3, 4, 5];
 export const Matches = [1, 2, 3, 4, 5];
@@ -71,3 +69,27 @@ export const BackgroundsImg = [
     src: canvasBg8,
   },
 ];
+
+export const initialCanvasSize = {
+  width: 1300,
+  height: 700,
+};
+
+export const initialLeftPaddle = {
+  x: 10,
+  y: initialCanvasSize.height / 2 - 50,
+  width: 15,
+  height: initialCanvasSize.height / 5 ,
+};
+
+export const initialRightPaddle = {
+  x: initialCanvasSize.width - 25,
+  y: initialCanvasSize.height / 2 - 50,
+  width: 15,
+  height: initialCanvasSize.height / 5,
+};
+
+export const initialGameEndStatic = {
+  bot: "DRAW",
+  user: "DRAW",
+};

@@ -7,12 +7,21 @@
     --background-primary: #0a0a0a;
   }
 
-body {
+html,body {
   background-image: url('../../assets/icons/background.svg');
   background-size: cover;
   background-repeat: no-repeat;
   margin: 0;
   padding: 0;
+  overflow: hidden;
+}
+
+
+.custom-shadow {
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.50);
+}
+.custom-bg {
+  background: linear-gradient(to bottom, transparent 50%, black 50%);
 }
 /* add some css code that'll change the mouse cusor to the given image */
 

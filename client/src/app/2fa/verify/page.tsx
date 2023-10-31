@@ -29,7 +29,6 @@ export default function TwoFactorAuthPage() {
         minH={'100vh'}
         align={'center'}
         justify={'center'}
-        bg={'gray.50'}
       >
         <Stack
           spacing={4}

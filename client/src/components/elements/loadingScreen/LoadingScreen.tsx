@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import Lottie from "lottie-react";
 import LodingAnimation from "../../../../assets/animations/loadingAnimation.json";
-import Image from "next/image";
-import ImgBackground from "../../../../assets/icons/background.svg";
 
 const LoadingScreen = ({
   loading,
@@ -15,18 +13,13 @@ const LoadingScreen = ({
     setTimeout(() => {
       setLoading(false);
     }, 2000);
-  }, []);
+  }, [setLoading]);
 
   if (!loading) return null;
 
   return (
     <div className="absolute inset-0 flex justify-center items-center  w-screen h-screen">
       <div className="relative w-full h-full">
-        <Image
-            src={ImgBackground}
-            alt="Background"
-            className="object-cover w-full h-full"
-          />
           <div className="absolute inset-0 flex justify-center items-center w-full h-full">
             <Lottie
               animationData={LodingAnimation}

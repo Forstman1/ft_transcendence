@@ -11,8 +11,8 @@ import ReduxProvider from "../redux/provider";
 import SplashScreen from "@/components/elements/spalshScreen/SplashScreen";
 import { usePathname } from "next/navigation";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-
-const queryClient = new QueryClient()
+import GameNotification from "./gamePage/gameNotification/page";
+import Footer from "@/components/elements/Footer/Footer";
 
 const geo = Geo({
   subsets: ['latin'],
@@ -20,27 +20,38 @@ const geo = Geo({
   weight: "400"
 });
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+const queryClient = new QueryClient();
+
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+
   const path = usePathname();
   const isHome = path === "/";
   const [isloading, setIsLoading] = React.useState(isHome);
   return (
     <html lang="en">
-      <body className={geo.className}>
-        <QueryClientProvider client={queryClient}>
-          <ReduxProvider>
+      <body className={`${geo.className} `}>
+        <ReduxProvider>
             <CacheProvider>
+              <QueryClientProvider client={queryClient}>
               <ChakraProvider>
-                {isloading ? <SplashScreen finishLoading={() => setIsLoading(false)} /> :
-                  <>
-                    <Navbar />
-                    {children}
-                  </>
+                {isloading ? <SplashScreen  finishLoading={() => setIsLoading(false)}/> :
+                <>
+                  <GameNotification />
+                  <Navbar />
+
+                  {children}
+                  {/* <Footer /> */}
+                </>
                 }
               </ChakraProvider>
+              </QueryClientProvider>
             </CacheProvider>
           </ReduxProvider>
-        </QueryClientProvider>
       </body>
     </html>
   );

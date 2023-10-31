@@ -48,13 +48,20 @@ const GameSideBar = ({
   tableResults,
   gamePause,
   setGamePause,
+  gameStarted,
+  gameEnded,
+  gameMode,
 }: {
   tableResults: tableResultProps[];
   gamePause: boolean;
   setGamePause: React.Dispatch<React.SetStateAction<boolean>>;
+  gameStarted: boolean;
+  gameEnded: boolean;
+  gameMode: string;
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const gameSettings = useAppSelector((state) => state.gameReducer);
+  const socketState = useAppSelector((state) => state.globalSocketReducer);
   const [Playground, setPlayground] = useState(gameSettings.playgroundtheme);
   const [canvasBgImg, setCanvasBgImg] = useState<number>(
     gameSettings.backgroundImg
@@ -75,6 +82,12 @@ const GameSideBar = ({
     onClose();
   }
   }, [gamePause]);
+
+  useEffect(() => {
+    if (gameEnded && !isOpen) {
+      toggleSidebar();
+    }
+  }, [gameEnded]);
 
   const handleRadioChange = (id: string) => {
     const selectedTheme =
@@ -109,30 +122,29 @@ const GameSideBar = ({
   return (
     <>
       {!isOpen && (
-      <div
-        className={`absolute top-60 left-10`}
-      >
-        <button onClick={() => {
-          if (!isOpen){
-            if (!gamePause)
-            {
-              setGamePause(true);
-            }
-            else if (gamePause)
-            {
-              onOpen();
-            }
-          }
-        }} tabIndex={0}>
-          <Image
-            src={openBarIcon}
-            alt="openBar"
-            width={41}
-            height={41}
-            className="cursor-pointer"
-          />
-        </button>
-      </div>
+        <div className={`absolute top-[135px] left-20`}>
+          {(gameStarted || gameEnded) && (
+            <button
+              onClick={() => {
+                if (!isOpen) {
+                  if (!gamePause) {
+                    setGamePause(true);
+                  } else if (gamePause) {
+                    onOpen();
+                  }
+                }
+              }}
+              tabIndex={0}
+            >
+              <Image
+                src={openBarIcon}
+                alt="openBar"
+                width={41}
+                className="cursor-pointer"
+              />
+            </button>
+          )}
+        </div>
       )}
       <Drawer
         isOpen={isOpen}
@@ -145,9 +157,7 @@ const GameSideBar = ({
         <DrawerContent className="opacity-90">
           <DrawerCloseButton className="text-white" />
           <DrawerBody className="bg-background-primary">
-            <div
-              className={` relative h-screen w-full`}
-            >
+            <div className={` relative h-screen w-full`}>
               <div className="flex flex-col justify-center items-center p-10 w-full space-y-10 ">
                 <div className="flex flex-col justify-center items-center space-y-6">
                   <Text className="text-white font-bold text-2xl">
@@ -176,7 +186,6 @@ const GameSideBar = ({
                           }
                           alt={mode}
                           width={50}
-                          height={50}
                         />
                       </div>
                     ))}
@@ -260,7 +269,7 @@ const GameSideBar = ({
                         <button
                           key={bg.id}
                           onClick={() => handleBackgroundSelect(bg.id)}
-                          className={`relative w-16 h-10 rounded-lg border-2 ${
+                          className={`relative w-16 h-10 rounded-lg border-2 mb-2 ${
                             canvasBgImg === bg.id
                               ? "bg-green-500 border-green-500"
                               : "border-white"
@@ -277,7 +286,6 @@ const GameSideBar = ({
                                 src={checkIcon}
                                 alt="check"
                                 width={20}
-                                height={20}
                               />
                             </div>
                           )}
@@ -314,10 +322,10 @@ const GameSideBar = ({
                                       Round
                                     </Th>
                                     <Th color="white" className=" font-bold">
-                                      UserScore
+                                      MyScore
                                     </Th>
                                     <Th color="white" className=" font-bold">
-                                      BotScore
+                                      {gameMode === "BOT" ? "BotScore" : "FriendScore"}
                                     </Th>
                                   </Tr>
                                 </Thead>
@@ -328,10 +336,10 @@ const GameSideBar = ({
                                         {result.RoundNamber}
                                       </Td>
                                       <Td className="text-red-700 text-xl font-bold">
-                                        {result.userPoints}
+                                        {socketState.isOwner ? result.botPoints : result.userPoints}
                                       </Td>
                                       <Td className="text-red-700 text-xl font-bold">
-                                        {result.botPoints}
+                                        {socketState.isOwner ? result.userPoints : result.botPoints}
                                       </Td>
                                     </Tr>
                                   ))}
