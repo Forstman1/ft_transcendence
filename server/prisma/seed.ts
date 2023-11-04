@@ -13,26 +13,13 @@ const NUM_CHANNELS = 5;
 const NUM_CHANNEL_MEMBERS = 20;
 const NUM_CHANNEL_MESSAGES = 50;
 const NUM_USER_MESSAGES = 50;
-// model GameHistory {
-//   id        String   @id @default(uuid())
-//   user      User     @relation(fields: [userId], references: [id])
-//   userId    String
-//   opponentId String
-//   status    String
-//   userScore Int
-//   opponentScore Int
-//   rounds    Int
-//   matches   Int
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
 
 
 async function seedDatabase() {
-  const numberOfUsers = 2;
+  const numberOfUsers = 10;
   const password = await argon2.hash('password');
   // create users
-  for (let numUser = 0; numUser < numberOfUsers; numUser++) {
+  for (let numUser = 0; numUser <= numberOfUsers; numUser++) {
     await prisma.user.create({
       data: {
         username: faker.internet.userName(),
@@ -43,6 +30,21 @@ async function seedDatabase() {
         refreshToken: faker.string.uuid(),
         isOnline: faker.datatype.boolean(),
         hasTwoFA: faker.datatype.boolean(),
+      },
+    });
+  }
+
+  ///add friends to users
+  const users = await prisma.user.findMany();
+  for (let i = 0; i < users.length; i++) {
+    const user = users[i];
+    const friends = users.filter((u) => u.id !== user.id);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        friends: {
+          connect: friends.map((u) => ({ id: u.id })),
+        },
       },
     });
   }
@@ -58,7 +60,6 @@ async function seedDatabase() {
   }
 
   // Create fake channel members
-  const users = await prisma.user.findMany();
   const channels = await prisma.channel.findMany();
   for (let i = 0; i < NUM_CHANNEL_MEMBERS; i++) {
     await prisma.channelMember.create({

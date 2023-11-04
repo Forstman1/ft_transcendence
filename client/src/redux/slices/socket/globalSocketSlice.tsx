@@ -6,8 +6,8 @@ let playerId: string | null = null;
 
 function assignPlayerId() {
   if (playerId === null) {
-    const id1 = "18717cab-8acf-412f-ae09-c1d310529c40";
-    const id2 = "ba1e3254-5201-4abf-973e-30a10c0ba527";
+    const id1 = "2965d888-34ca-4a99-b0e2-73b4790ccf04";
+    const id2 = "18b3ffc8-6f7f-4f49-b8af-0e2f8becfd4f";
     playerId = Math.floor(Math.random() * 11) > 5 ? id1 : id2;
     console.log(`Player ID assigned: ${playerId}`);
   }

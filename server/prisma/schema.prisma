@@ -37,6 +37,9 @@ model User {
   channelMember ChannelMember[]
   games     GameHistory[]
 
+  friends  User[] @relation("friends")
+  friendOf User[] @relation("friends")
+
 }
 
 model Channel {
