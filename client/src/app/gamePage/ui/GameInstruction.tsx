@@ -48,10 +48,10 @@ export default function GameInstruction({ isOpen, onClose }: Props) {
             <ArrowRightIcon className="inline-block mr-2" />
             General
           </Text>
-            <p className="text-gray-500">
-                Pong is a table tennis-themed arcade video game, featuring simple
-                two-dimensional graphics, manufactured with love by our team.
-            </p>
+          <p className="text-gray-500">
+            Pong is a table tennis-themed arcade video game, featuring simple
+            two-dimensional graphics, manufactured with love by our team.
+          </p>
           <div className="flex flex-col  space-y-2  w-full px-5">
             <Text
               fontSize="lg"
@@ -62,15 +62,21 @@ export default function GameInstruction({ isOpen, onClose }: Props) {
             </Text>
             <div className="flex flex-col justify-center px-10 w-[400px]">
               <p className="text-gray-500">
-                <span className="text-black font-bold hover:text-red-500">Friend Mode: </span>
+                <span className="text-black font-bold hover:text-red-500">
+                  Friend Mode:{" "}
+                </span>
                 Play with your friends
               </p>
               <p className="text-gray-500">
-                <span className="text-black font-bold hover:text-red-500">Training Mode: </span>
+                <span className="text-black font-bold hover:text-red-500">
+                  Training Mode:{" "}
+                </span>
                 Play with bots
               </p>
               <p className="text-gray-500">
-                <span className="text-black font-bold hover:text-red-500">Matchmaking: </span>
+                <span className="text-black font-bold hover:text-red-500">
+                  Matchmaking:{" "}
+                </span>
                 Play with random players
               </p>
             </div>
@@ -126,15 +132,41 @@ export default function GameInstruction({ isOpen, onClose }: Props) {
               </p>
             </div>
           </div>
+          <div className="flex flex-col  space-y-2 w-full px-5">
+            <Text
+              fontSize="lg"
+              fontWeight="bold"
+              className="underline decoration-2 hover:text-green-500"
+            >
+              5. Player side
+            </Text>
+            <div className="flex flex-col justify-center px-10 w-[400px]">
+              <p className="text-gray-500">
+                <span className="text-black font-bold">1. </span>in friend mode
+                the player who create the game will be the right player and the
+                other player will be the left player
+              </p>
+              <p className="text-gray-500">
+                <span className="text-black font-bold">2. </span>in training
+                mode you will be the right player and the bot will be the left
+                player
+              </p>
+              <p className="text-gray-500">
+                <span className="text-black font-bold">3. </span>in matchmaking
+                you will be get your side randomly
+              </p>
+            </div>
+          </div>
           <div className="flex flex-col  space-y-2 w-full">
             <Text>
               <ArrowRightIcon className="inline-block mr-2" />
               Matchmaking Mode
             </Text>
             <p className="text-gray-500">
-                <span className="text-black font-bold">1. </span>you will be
-                matched with a random player 3 rounds each round 3 matches with default theme and none background
-                </p>
+              <span className="text-black font-bold">1. </span>you will be
+              matched with a random player 3 rounds each round 3 matches with
+              default theme and none background
+            </p>
           </div>
           <div className="flex flex-col  space-y-2 w-full px-5">
             <Text
@@ -142,14 +174,14 @@ export default function GameInstruction({ isOpen, onClose }: Props) {
               fontWeight="bold"
               className="underline decoration-2 hover:text-green-500"
             >
-              5. Start the game
+              6. Start the game
             </Text>
             <Text
               fontSize="lg"
               fontWeight="bold"
               className="underline decoration-2 hover:text-green-500"
             >
-              6. Enjoy!
+              7. Enjoy!
             </Text>
           </div>
         </ModalBody>
