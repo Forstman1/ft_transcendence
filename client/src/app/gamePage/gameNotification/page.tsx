@@ -158,13 +158,13 @@ export default function GameNotification() {
     socket.socket?.on("room-invitation", handleRoomInvitation);
     socket.socket?.on("friendDenyInvitation", handelDenyInvitation);
     socket.socket?.on("frinedIsInGame", handelfrinedIsInGame);
-    socket.socket?.on("friendExitGame", friendExitGame);
+    socket.socket?.on("friendExitGame2", friendExitGame);
 
     return () => {
       socket.socket?.off("room-invitation", handleRoomInvitation);
       socket.socket?.off("friendDenyInvitation", handelDenyInvitation);
       socket.socket?.off("frinedIsInGame", handelfrinedIsInGame);
-      socket.socket?.off("friendExitGame", friendExitGame);
+      socket.socket?.off("friendExitGame2", friendExitGame);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket.socket, toast]);

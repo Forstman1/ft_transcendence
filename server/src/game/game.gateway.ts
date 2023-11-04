@@ -28,10 +28,11 @@ export class GameGateway {
       console.log('disconnect userId:', client.handshake.auth.id);
       const roomId = this.gameService.getRoomIdByUserId(client.id);
       if (roomId) {
-        this.server.sockets.in(roomId).emit('friendExitGame');
+        this.server.sockets.in(roomId).emit('friendExitGame1');
+        this.server.sockets.in(roomId).emit('friendExitGame2');
         this.gameService.resetGameDate(roomId);
-        this.gameService.deleteRoom(roomId);
-        this.server.in(roomId).socketsLeave(roomId);
+        // this.gameService.deleteRoom(roomId);
+        // this.server.in(roomId).socketsLeave(roomId);
       }
     });
   }
@@ -47,7 +48,9 @@ export class GameGateway {
         this.isAllReady[data.roomId] = 0;
         this.interval = setInterval(() => {
           const getRoom = this.gameService.getRoom(data.roomId);
-          if (!getRoom?.isPoused) {
+          const room = this.server.sockets.adapter.rooms.get(data.roomId);
+
+          if (!getRoom?.isPoused && room && room.size === 2) {
             this.gameService.updateBallPosition(data.roomId);
             this.server
               .to(data.roomId)
@@ -265,12 +268,9 @@ export class GameGateway {
       const userId = data.userId;
       const sockets = await this.server.in(data.roomId).fetchSockets();
       const opponentSocket = sockets.find(
-        (socket) => socket.handshake.auth.id !== userId,
+        (socket) => socket?.handshake?.auth?.id !== userId,
       );
-      const opponentId = opponentSocket.handshake.auth.id;
-      console.log('CreateGameHistory opponentId:', opponentId);
-      console.log('CreateGameHistory userId:', userId);
-      console.log('CreateGameHistory data:', data);
+      const opponentId = opponentSocket?.handshake?.auth?.id;
       return this.gameService.createGameHistory(data, opponentId);
     } catch (error) {
       console.error('Error in CreateGameHistory:', error);
