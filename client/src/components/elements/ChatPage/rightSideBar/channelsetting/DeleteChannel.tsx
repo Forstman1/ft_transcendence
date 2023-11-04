@@ -15,63 +15,83 @@ import Ban from "../../../../../../assets/icons/Ban.svg"
 function Componenent({ onClose }: any) {
 
 
-    const channelName = useSelector((state: any) => state.chat.selectedChannelorUser)
+    const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
     const userId = useSelector((state: any) => state.userID.user)
     const toast = useToast()
     const dispatch = useDispatch()
 
+    const socket = useSelector((state: any) => state.channelChatSocket.socket)
+    
 
-    const deleteChannel = useMutation<any, Error, any>((variables) => fetch('http://127.0.0.1:3001/channel/deleteChannel', {
-        method: 'DELETE',
-        body: JSON.stringify(variables),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then((response) => {
-        return response.json()
-    }).catch((error) => {
-        return error
-    }))
+    // const deleteChannel = useMutation<any, Error, any>((variables) => fetch('http://127.0.0.1:3001/channel/deleteChannel', {
+    //     method: 'DELETE',
+    //     body: JSON.stringify(variables),
+    //     headers: {
+    //         'Content-Type': 'application/json'
+    //     }
+    // }).then((response) => {
+    //     return response.json()
+    // }).catch((error) => {
+    //     return error
+    // }))
 
 
-    const fetchData = async () => {
-        const fetchChannels = await fetch('http://127.0.0.1:3001/channel/getallchannels/' + userId)
-        const response = await fetchChannels.json()
-        if (response.length > 0) {
-            const allchannels: Channel[] = response
-            dispatch(setChannels(allchannels))
-            return allchannels;
-        }
+    // const fetchData = async () => {
+    //     const fetchChannels = await fetch('http://127.0.0.1:3001/channel/getallchannels/' + userId)
+    //     const response = await fetchChannels.json()
+    //     if (response.length > 0) {
+    //         const allchannels: Channel[] = response
+    //         dispatch(setChannels(allchannels))
+    //         return allchannels;
+    //     }
 
-    }
+    // }
 
     const onSubmit = async () => {
-        const response = await deleteChannel.mutateAsync({
-            channelName: channelName.name,
-            userId: userId
-        })
-        if (response.status == "you are not owner of the channel") {
-            toast({
-                title: response.status,
-                position: `bottom-right`,
-                status: "error",
-                duration: 3000,
-                isClosable: true,
-            })
-            onClose()
-        }
-        else {
-            toast({
-                title: "Channel has been deleted",
-                position: `bottom-right`,
-                status: "success",
-                duration: 3000,
-                isClosable: true,
-            })
-            fetchData()
-            onClose()
-        }
 
+        socket.emit('deleteChannel', {
+            channelName: channel.name,
+            userId: userId,
+        });
+        
+        onClose()
+
+
+        // dispatch(setChannel(null))
+        // toast({
+        //     title: "You have left the channel",
+        //     status: "success",
+        //     position: `bottom-right`,
+        //     isClosable: true,
+        // })
+        // const response = await deleteChannel.mutateAsync({
+        //     channelName: channelName.name,
+        //     userId: userId
+        // })
+        // if (response.status == "you are not owner of the channel") {
+        //     toast({
+        //         title: response.status,
+        //         position: `bottom-right`,
+        //         status: "error",
+        //         duration: 3000,
+        //         isClosable: true,
+        //     })
+        //     onClose()
+        // }
+        // else {
+        //     toast({
+        //         title: "Channel has been deleted",
+        //         position: `bottom-right`,
+        //         status: "success",
+        //         duration: 3000,
+        //         isClosable: true,
+        //     })
+        //     fetchData()
+        //     onClose()
+        // }
+
+
+        // channelDeleted
 
 
     }

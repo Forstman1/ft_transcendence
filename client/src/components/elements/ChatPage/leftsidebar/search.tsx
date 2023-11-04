@@ -13,13 +13,14 @@ import {
 } from '@chakra-ui/react';
 
 import { Avatar, AvatarBadge, InputGroup, InputRightElement, Select } from '@chakra-ui/react';
-import Hashtag from "./hatshtag";
+// import Hashtag from "./hatshtag";
 import Image from "next/image";
-import { Channel, User } from "@/utils/types/chat/ChatTypes";
-import { useDispatch } from "react-redux";
-import { setTheUser } from "@/redux/slices/chat/ChatSlice";
+import { Channel, ChannelMember, ChannelMessage, User } from "@/utils/types/chat/ChatTypes";
+import { useDispatch, useSelector } from "react-redux";
+import { setChannel, setChannelMember, setMessages, setNewChannel, setTheUser } from "@/redux/slices/chat/ChatSlice";
 import { useMutation } from "react-query";
-
+import { LockIcon, SmallAddIcon } from "@chakra-ui/icons";
+import { select } from "radash";
 
 
 
@@ -34,15 +35,19 @@ type Props = {
 function Usercard(props: any) {
 
 
-    const { user } = props;
+    const { user, selectedOption, setSelectedOption } = props;
 
+    const handleChange = () => {
+
+        setSelectedOption(user);
+    };
 
     const dispatch = useDispatch()
 
 
     return (
 
-        <div onClick={() => dispatch(setTheUser(user))} className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md'>
+        <div onClick={handleChange} className='flex justify-between items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md w-full'>
             <div>
                 <Avatar boxSize={12} src={user.avatar}>
                     <AvatarBadge boxSize={6} bg='green' />
@@ -52,23 +57,62 @@ function Usercard(props: any) {
             <div className='flex flex-col items-center justify-around'>
                 <div className='text-[20px] md:text-[30px]'>{user.username}</div>
             </div>
+            <Radio
+                className='md:w-[30px] md:h-[30px] w-[20px] h-[20px] rounded-sm'
+                value={user.username}
+                onChange={handleChange}
+                isChecked={selectedOption?.username === user.username}
+            >
+            </Radio>
 
         </div>)
 }
 
+function Hashtag(props: any) {
+
+    const { data, selectedOption, setSelectedOption } = props;
+
+    const handleChange = () => {
+
+        setSelectedOption(data);
+    };
+
+
+    return (
+
+        <div className='flex items-center cursor-pointer justify-around w-full' onClick={handleChange}>
+            <div className="flex h-[40px]">
+                <div className='h-[20px] text-[40px] mr-3'>#</div>
+                <div className='text-[20px] md:text-[30px]'>{data.name}</div>
+            </div>
+            {data.type === 'PROTECTED' ? <div className='cursor-pointer flex items-center justify-center'><Icon boxSize={5} as={LockIcon} /></div> : <div></div>}
+            <Radio
+                className='md:w-[30px] md:h-[30px] w-[20px] h-[20px] rounded-sm'
+                value={data.name}
+                onChange={handleChange}
+                isChecked={selectedOption?.name === data.name}
+            >
+            </Radio>
+        </div>
+    )
+}
 
 
 
-
-export default function Search({ channels, users }: Props) {
+export default function Search() {
 
 
     const [search, setSearch] = useState('');
     const [allSearchChannels, setAllSearchChannels]: any = useState([])
     const [allSearchUsers, setAllSearchUsers]: any = useState([])
-
-    // const { handleSubmit, register } = useForm<{ search: string }>();
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const channels = useSelector((state: any) => state.chat.channels)
+
+    const [selectedOption, setSelectedOption]: any = useState();
+    const dispatch = useDispatch()
+    const toast = useToast()
+    const userId = useSelector((state: any) => state.userID.user)
+    const socket = useSelector((state: any) => state.channelChatSocket.socket)
 
 
 
@@ -79,66 +123,36 @@ export default function Search({ channels, users }: Props) {
         }).catch((err) => console.log(err))
     )
 
-    const findMatches = (wordToMatch: string, ChannelsOrUsers: string[]) => {
 
-        return ChannelsOrUsers.filter((word: string) => {
-            const regex = new RegExp(wordToMatch, 'gi')
-            return word.match(regex)
-
-        })
-    }
 
     const getusers = useMutation<any, Error, any>((variables) =>
         fetch('http://127.0.0.1:3001/users/getusers/' + variables.tofound).then((res) => {
-        return res.json() }).catch((err) => console.log(err)))
+            return res.json()
+        }).catch((err) => console.log(err)))
+
+    const listusers = useMutation<any, Error, any>((variables) =>
+        fetch('http://127.0.0.1:3001/users/listusers').then((res) => {
+            return res.json()
+        }).catch((err) => console.log(err)))
+
+    const listchannels = useMutation<any, Error, any>((variables) =>
+        fetch('http://127.0.0.1:3001/channel/getallpublicandprivatechannels').then((res) => {
+            return res.json()
+        }).catch((err) => console.log(err)))
 
     const handleSearchClick = async () => {
 
         console.log(search)
-        
-        if (search === "") {
-            let allChannelsnames: any = channels.map((channel: Channel) => {
-                return channel.name
-            })
-            let content1: string[] = findMatches(search, allChannelsnames)
-    
-    
-            let searcharray: any = channels.map((channel: Channel) => {
-                for (let i: number = 0; i < content1.length; i++) {
-                    if (channel.name === content1[i])
-                        return channel
-                }
-            })
-    
-    
-            searcharray = searcharray.filter((channel: Channel) => {
-                return (channel !== undefined)
-            })
-    
-    
-            let allUsersnames: any = users.map((user: User) => {
-                return user.username
-            })
-    
-            let content2: string[] = findMatches(search, allUsersnames)
-    
-    
-            let searchuserarray: any = users.map((user: User) => {
-    
-                for (let i: number = 0; i < content2.length; i++) {
-                    if (user.username === content2[i])
-                        return user
-                }
-            })
-            
-            searchuserarray = searchuserarray.filter((user: User) => {
-                return user !== undefined
-            })
 
-            setAllSearchChannels(searcharray)
-    
+        if (search === "") {
+
+            const searchchannelarray = await listchannels.mutateAsync({})
+            const searchuserarray = await listusers.mutateAsync({})
+
+            setAllSearchChannels(searchchannelarray)
+
             setAllSearchUsers(searchuserarray)
-            return ;
+            return;
         }
 
         const allchannel = await getchannels.mutateAsync({ tofound: search })
@@ -146,7 +160,7 @@ export default function Search({ channels, users }: Props) {
 
 
         setAllSearchChannels(allchannel)
-    
+
         setAllSearchUsers(allusers)
 
         // console.log(allchannel)
@@ -159,8 +173,7 @@ export default function Search({ channels, users }: Props) {
 
 
     const handleClick = () => {
-        setAllSearchChannels(channels)
-        setAllSearchUsers(users)
+
         onOpen()
     }
 
@@ -169,8 +182,118 @@ export default function Search({ channels, users }: Props) {
     };
 
 
+    const getchannelmember = useMutation<any, Error, any>((variables) =>
+        fetch('http://127.0.0.1:3001/channel/getchannelmemberinfo/' + variables.channelId + '/' + variables.userId).then((response) => {
+            return response.json()
+        }
+        ).catch((error) => {
+            return error
+        }))
 
-    const toast = useToast()
+    const getMessages = useMutation<any, Error, any>((variables) =>
+        fetch('http://127.0.0.1:3001/message/getmessages/' + variables.channelId ).then((response) => {
+            return response.json()
+
+        }).catch((error) => {
+            return error
+        }))
+
+    const enterChannel = useMutation<any, Error, any>((variables) =>
+        fetch('http://127.0.0.1:3001/channel/enterchannel', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(variables),
+        }).then((res) => {
+            return res.json()
+        }).catch((err) => console.log(err)))
+
+
+
+    const confirm = async () => {
+        if ('name' in selectedOption) {
+            if (channels.includes(selectedOption)) {
+                dispatch(setChannel(selectedOption))
+                socket.emit('joinChannel', {
+                    channelId: selectedOption.id,
+                    userId: userId,
+                });
+                toast({
+                    title: selectedOption.name,
+                    position: `bottom-right`,
+                    status: 'success',
+                    duration: 1000,
+                    containerStyle: {
+                        width: 300,
+                        height: 100,
+                    }
+                })
+                onClose();
+                return  ;
+            }
+            else {
+                if (selectedOption.type === 'PUBLIC') {
+
+                    const channel = await enterChannel.mutateAsync({ channelName: selectedOption.name, userId: userId })
+                    
+                    if (channel.status)
+                    {
+                        toast({
+                            title: channel.status,
+                            position: `bottom-right`,
+                            status: 'error',
+                            duration: 1000,
+                            containerStyle: {
+                                width: 300,
+                                height: 100,
+                            }
+                        })
+                        
+                        onClose();
+                        return  ;
+                    }
+                    socket.emit('joinChannel', {
+                        channelId: channel.id,
+                        userId: userId,
+                    });
+                    dispatch(setNewChannel(selectedOption))
+                    dispatch(setChannel(selectedOption))
+
+
+
+                    const messages: ChannelMessage[] = await getMessages.mutateAsync({
+                        channelId: channel.id,
+                    })
+                    if (messages) {
+                        dispatch(setMessages(messages))
+                    }
+                    const channelmember: ChannelMember = await getchannelmember.mutateAsync({
+                        channelId: channel.id,
+                        userId
+                    })
+                    if (channelmember) {
+                        dispatch(setChannelMember(channelmember))
+                    }
+
+                    
+                    toast({
+                        title: "hadi rah public",
+                        position: `bottom-right`,
+                        status: 'success',
+                        duration: 1000,
+                        containerStyle: {
+                            width: 300,
+                            height: 100,
+                        }
+                    })
+                    onClose()
+                }
+            }
+        }
+
+    }
+
 
     return (<>
         <div onClick={handleClick} className='w-[80%]  md:h-[65px] h-[40px] mt-5 border-2 border-black rounded-sm flex justify-between items-center custom-shadow cursor-pointer'>
@@ -222,12 +345,23 @@ export default function Search({ channels, users }: Props) {
                     <div className="flex w-full h-[300px]  flex-col  overflow-y-scroll ">
                         {allSearchChannels.map((channels: Channel, id: number) => {
                             return <Box key={id} className="flex  w-[95%] p-2 flex-row justify-between items-center border-2 border-gray-300 rounded-lg  mt-5">
-                                <Hashtag key={id} data={channels} />
+
+                                <Hashtag
+                                    key={id}
+                                    data={channels}
+                                    selectedOption={selectedOption}
+                                    setSelectedOption={setSelectedOption}
+                                />
                             </Box>
                             return
                         })}
                         {allSearchUsers.map((users: User, id: number) => {
-                            return (<Usercard key={id} user={users} />)
+                            return (<Usercard
+                                key={id}
+                                user={users}
+                                selectedOption={selectedOption}
+                                setSelectedOption={setSelectedOption}
+                            />)
                         })}
                     </div>
                 </ModalBody>
@@ -246,16 +380,8 @@ export default function Search({ channels, users }: Props) {
                         variant="outline"
                         ml={10}
                         onClick={() => {
-                            onClose(); toast({
-                                title: "Searched",
-                                position: `bottom-right`,
-                                status: 'success',
-                                duration: 1000,
-                                containerStyle: {
-                                    width: 300,
-                                    height: 100,
-                                }
-                            })
+                            confirm();
+
                         }}
                     >
                         Confirm

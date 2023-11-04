@@ -6,6 +6,7 @@ import mobileReducer from "../slices/chat/MobileSlice";
 import chatSocketReducer from "@/redux/slices/socket/chatSocketSlice";
 import chatSlice from '../slices/chat/ChatSlice'
 import userReducer from '../slices/chat/UserSlice'
+import channelChatSocketReducer from '../slices/socket/channelChatSocketSlice'
 
 // import chatSlice from '../slices/chat/ChatSlice'
 // import mobileReducer from "../slices/chat/MobileSlice";
@@ -18,6 +19,8 @@ export const store = configureStore({
     userID: userReducer,
     mobile: mobileReducer,
     chat: chatSlice,
+    channelChatSocket: channelChatSocketReducer,
+    
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

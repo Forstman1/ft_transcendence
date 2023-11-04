@@ -36,6 +36,9 @@ export default function Hashtag(props: any) {
     const toast = useToast()
     const userId = useSelector((state: any) => state.userID.user)
     const dispatch = useDispatch()
+    const socket = useSelector((state: any) => state.channelChatSocket.socket)
+
+    
 
 
     const checkpassword = useMutation<any, Error, any>((variables) =>
@@ -70,12 +73,16 @@ export default function Hashtag(props: any) {
 
 
     const handleClick = async () => {
+        
         if (props.data.type === 'PROTECTED') {
             setWrongpassowrd(false)
             onOpen()
         }
         else {
-
+            socket.emit('joinChannel', {
+                channelId: data.id,
+                userId: userId,
+            })
             dispatch(setChannel(data))
             console.log("ana hna")
             const messages: ChannelMessage[] = await getMessages.mutateAsync({
@@ -123,6 +130,8 @@ export default function Hashtag(props: any) {
         if (messages) {
             dispatch(setMessages(messages))
         }
+        
+
         toast({
             title: name,
             position: `bottom-right`,

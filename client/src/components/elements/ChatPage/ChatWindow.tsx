@@ -62,15 +62,17 @@ export default function ChatWindow() {
 
   const { handleSubmit, register, reset } = useForm<any>();
   const chatContainer = useRef<any>(null);
-
-
-  const selectedChannel = useSelector((state: any) => state.chat.selectedChannelorUser);
+  
+  
+  const selected = useSelector((state: any) => state.chat.selectedChannelorUser);
   const messages: ChannelMessage[] = useSelector((state: any) => state.chat.messages);
   const userId = useSelector((state: any) => state.userID.user)
   const dispatch = useDispatch();
   const { LeftClice } = useSelector((state: any) => state.mobile)
   const { RightClice } = useSelector((state: any) => state.mobile)
   const [user, setUser]: any = useState()
+  
+  const socket = useSelector((state:any) => state.channelChatSocket.socket)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -109,23 +111,42 @@ export default function ChatWindow() {
       return error
     }))
 
-  const handelNewMessage = async (data: any) => {
 
-    if (!data.newmessage)
-      return;
-    console.log(data.newmessage, userId, selectedChannel.id)
-    const message = await createMessage.mutateAsync({
-      content: data.newmessage,
-      userId: userId,
-      reciverId: selectedChannel.id
-    })
-    if (message)
-      dispatch(addMessage(message));
-    
+  const handleNewMessage = async (data: any) => {
+    if (!data.newmessage) return;
+
+    if (selected.name )
+      socket.emit('sendMessage', {
+        channelId: selected.id,
+        userId: userId,
+        message: data.newmessage,
+      });
+      else
+      {
+
+      }
+      
     reset({ newmessage: '' });
-
     scrollToBottom();
-  }
+  };
+
+
+
+
+
+  useEffect(() => {
+
+    socket.on('receivedMessage', (data: any) => {
+      console.log("waslat chi7aja", data.channelId)
+      dispatch(addMessage(data.message));
+      scrollToBottom();
+    });
+
+    return () => {
+      socket.off('receivedMessage');
+    };
+  }, [dispatch]);
+
 
   const HideMobileSideBars = () => {
     dispatch(setRight(false));
@@ -161,7 +182,7 @@ export default function ChatWindow() {
           </div>
         </div> */}
       </div>
-      <form onSubmit={handleSubmit(handelNewMessage)} className='h-[55px] mb-[15px] flex justify-around items-center'>
+      <form onSubmit={handleSubmit(handleNewMessage)} className='h-[55px] mb-[15px] flex justify-around items-center'>
         <Input {...register("newmessage")} className='bg-[#D9D9D9] border-2 rounded-ld w-[90%] border-black h-[100%]' placeholder='Type your message here ...'
           onClick={() => { HideMobileSideBars() }}
         />

@@ -59,6 +59,11 @@ export class ChannelController {
     inviteMember(@Body() body: any){
         return this.channelservice.inviteMember(body.channelName, body.userIdOwner, body.userIdMember)
     }
+
+    @Post('/enterchannel')
+    enterchannel(@Body() body: any){
+        return this.channelservice.enterchannel(body.channelName, body.userId)
+    }
     
     @Get('/getallmembers/:id')
     getallmembers(@Param('id') id: string){
@@ -86,4 +91,10 @@ export class ChannelController {
     getallchannelsapp(@Param('tofound') tofound: string) {
         return this.channelservice.getallchannelsapp(tofound)
     }
+
+    @Get('/getallpublicandprivatechannels/')
+    getallpublicandprivatechannels() {
+        return this.channelservice.getallpublicandprivatechannels()
+    }
+
 }

@@ -386,10 +386,47 @@ export class ChannelService {
   }
 
 
+  async enterchannel(channelName: string, userId: string) {
+    const channel = await this.prisma.channel.findUnique({
+      where: {
+        name: channelName,
+      },
+    });
+    
+    const channelmembers = await this.prisma.channelMember.findMany({
+      where: {
+        userId: userId,
+        channel: channel,
+      },
+    });
+    if (!channelmembers[0])
+    {
+      if (channel.type === 'PUBLIC') {
+        const channelmember = await this.prisma.channelMember.create({
+          data: {
+            role: 'MEMBER',
+            channel: {
+              connect: { id: channel.id },
+            },
+            user: {
+              connect: { id: userId },
+            },
+          },
+        });
+        return channel;
+      }
+      
+    }
+    else 
+    { 
+      return { status: "you are already member of the channel" };
+    }
+  }
+
   async getallmembers(id: string) {
     const channel = await this.prisma.channel.findUnique({
       where: {
-        id: id,
+        id: id, 
       },
       include: {
         channelMember: true,
@@ -402,34 +439,79 @@ export class ChannelService {
         return { status: "couldn't found channel" };
   }
 
-
   async leaveChannel(channelName: string, userId: string) {
-
     const channel = await this.prisma.channel.findUnique({
       where: {
         name: channelName,
       },
     });
-
+  
+    if (!channel) {
+      return { status: "couldn't found channel" };
+    }
+  
     const channelmembers = await this.prisma.channelMember.findMany({
       where: {
         userId: userId,
-        channel: channel,
+        channelId: channel.id,
       },
     });
-    const channelmember = channelmembers[0];
-    
-    // if he is owner of the channel he can't leave it
+  
+    let channelmemberOwner = channelmembers[0];
+  
+    console.log("ana hna", channelmemberOwner);
+  
+    if (channelmemberOwner.role === 'OWNER') {
 
-    if (channelmember.role === 'OWNER') {
-        console.log("ana hna")
-      return { status: 'you are owner of the channel' };
+      console.log("ana hna owner");
+  
+      channelmemberOwner = await this.prisma.channelMember.delete({
+        where: {
+          id: channelmemberOwner.id,
+        },
+      });
+  
+      const channelmembers = await this.prisma.channelMember.findMany({
+        where: {
+          channelId: channel.id,
+        },
+      });
+  
+      const channelmember = channelmembers[0];
+  
+      if (channelmember) {
+        await this.prisma.channelMember.update({
+          where: {
+            id: channelmember.id,
+          },
+          data: {
+            role: 'OWNER', 
+          },
+        });
+        return { status: 'you left the channel' };
+      } else {
+
+        console.log("delete channel");
+        
+        await this.prisma.channel.delete({
+          where: {
+            id: channel.id,
+          },
+        });
+        
+        return { status: 'you left the channel' };
+      }
     }
-    await this.prisma.channelMember.delete({
-      where: {
-        id: channelmember.id,
-      },
-    });
+  
+  
+    if (channelmemberOwner) {
+      await this.prisma.channelMember.delete({
+        where: {
+          id: channelmemberOwner.id,
+        },
+      });
+    }
+  
     return { status: 'you left the channel' };
   }
 
@@ -439,6 +521,7 @@ export class ChannelService {
   
 
   async deleteChannel(channelName: string, userId: string) {
+
     const channel = await this.prisma.channel.findUnique({
       where: {
         name: channelName,
@@ -469,7 +552,8 @@ export class ChannelService {
   
     await this.prisma.channel.delete({
       where: {
-        id: channel.id,
+        name: channelName,
+        // id: channel.id,
       },
       include: {
         channelMember: true,
@@ -478,6 +562,10 @@ export class ChannelService {
   
     return { status: 'Channel deleted' };
   }
+
+
+
+
 
   async getchannelmemberinfo(channelId: string, userId: string) {
     const channel = await this.prisma.channel.findUnique({
@@ -502,6 +590,24 @@ export class ChannelService {
         name: {
           contains: tofound,
         },
+      }
+    });
+    return channels;
+  }
+
+
+  async getallpublicandprivatechannels()
+  {
+    const channels = await this.prisma.channel.findMany({
+      where: {
+        OR: [
+          {
+            type: 'PUBLIC'
+          },
+          {
+            type: 'PROTECTED'
+          }
+        ]
       }
     });
     return channels;
