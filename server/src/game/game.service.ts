@@ -189,6 +189,13 @@ export class GameService {
   //------------------ create room ------------------
 
   createRoom(ownerId: string): string {
+    //check if user already has room and return room id
+    // this.rooms.forEach((room, key) => {
+    //   if (room.players.includes(ownerId)) {
+    //     roomId = key;
+    //   }
+    // });
+    // if (roomId) return roomId;
     const roomId = uuidv4();
     const gameData: GameServiceData = {
       id: roomId,
