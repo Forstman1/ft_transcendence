@@ -3,8 +3,8 @@
 import { Avatar, Input } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react'
 import Lottie from 'lottie-react';
-import animationData from '../../../../../client/assets/animations/animation_typing.json';
-import arrow from "../../../../../client/assets/icons/arrow.svg";
+// import animationData from '../../../../../client/assets/animations/animation_typing.json';
+// import arrow from "../../../../../client/assets/icons/arrow.svg";
 import Image from 'next/image';
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
@@ -77,29 +77,29 @@ export default function ChatWindow() {
 
 
 
-  const createMessage = useMutation<any, Error, any>((variables) => 
-  fetch('http://127.0.0.1:3001/message/createmessage', {
-    method: "POST",
-    body: JSON.stringify(variables),
-    headers: {
-      "content-type": "application/json",
-    }
-  }).then((res) => {
-    return res.json()
-  }).catch((error) => {
-    return error
-  }))
+  // const createMessage = useMutation<any, Error, any>((variables) => 
+  // fetch('http://127.0.0.1:3001/message/createmessage', {
+  //   method: "POST",
+  //   body: JSON.stringify(variables),
+  //   headers: {
+  //     "content-type": "application/json",
+  //   }
+  // }).then((res) => {
+  //   return res.json()
+  // }).catch((error) => {
+  //   return error
+  // }))
 
   const handelNewMessage = async (data: any) => {
 
     if (!data.newmessage)
       return;
 
-    const message = await createMessage.mutateAsync({
-      content: data.newmessage,
-      userId: userId,
-      reciverId: selectedChannel.id
-    })
+    // const message = await createMessage.mutateAsync({
+    //   content: data.newmessage,
+    //   userId: userId,
+    //   reciverId: selectedChannel.id
+    // })
     
     // dispatch(addMessage(message));
 
@@ -134,12 +134,12 @@ export default function ChatWindow() {
 
           <div className='bg-white border-2 border-black rounded-2xl custom-shadow flex rounded-tl-none p-[5px] ' >
             <div className='h-[15px]'></div>
-            <Lottie
+            {/* <Lottie
               className=' w-[50px] h-[30px]'
               animationData={animationData}
               loop={true}
               autoplay={true}
-            />
+            /> */}
           </div>
         </div>
       </div>
@@ -148,7 +148,7 @@ export default function ChatWindow() {
         onClick={() => {HideMobileSideBars()}}
         />
         <button type='submit' className='bg-black w-[50px] rounded-md cursor-pointer flex justify-start items-center h-[100%]'>
-          <Image className=' w-[40px] ' src={arrow} alt='arrow' />
+          {/* <Image className=' w-[40px] ' src={arrow} alt='arrow' /> */}
         </button>
       </form>
     </div>
