@@ -72,8 +72,9 @@ export default function GameFriendPage() {
   const [userPoints, setUserPoints] = useState<number>(0);
   const [gamePause, setGamePause] = useState<boolean>(false);
   const [hasInitialized, setHasInitialized] = useState(false);
+  const [friendExitGame, setFriendExitGame] = useState<boolean>(false);
 
-  window.addEventListener('offline', () => {
+  window?.addEventListener('offline', () => {
     if (
       socket &&
       socket.io &&
@@ -200,7 +201,7 @@ export default function GameFriendPage() {
 
   
   const PostGameHistory = async () => {
-
+    if (friendExitGame) return;
     let userScore = 0;
     let opponentScore = 0;
     if (socketState.isOwner) {
@@ -229,7 +230,10 @@ export default function GameFriendPage() {
     if (roomId == "") return;
     if (gameEnded) {
       PostGameHistory().then(() => {
-          closeSocketConnection();
+        if (friendExitGame) {
+          socket?.emit("leaveRoom", roomId);
+        }
+        closeSocketConnection();
       });
     }
     if (!socketState.isOwner) return;
@@ -242,18 +246,24 @@ export default function GameFriendPage() {
   }, [gameEnded, gameStarted]);
 
   useEffect(() => {
-    socket?.on("friendExitGame", () => {
+    socket?.on("friendExitGame1", () => {
+      console.log("friendExitGame1");
       if (socketState.isOwner) {
         setGameEndStatic({
           bot: "LOSE",
           user: "WIN",
         });
+        setRightScore(1);
+        setLeftScore(0);
       } else {
         setGameEndStatic({
           bot: "WIN",
           user: "LOSE",
         });
+        setRightScore(0);
+        setLeftScore(1);
       }
+      setFriendExitGame(true);
       setGameEnded(true);
     });
     return () => {

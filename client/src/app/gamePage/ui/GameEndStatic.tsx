@@ -26,7 +26,6 @@ const GameEndStatic = ({opponent, user, isFriendMode}: GameStaticProps) => {
     const handleExitClick = () => {
         router.back();
     }
-
   
     return (
       <PageWrapper>

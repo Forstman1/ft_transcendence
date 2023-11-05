@@ -11,16 +11,74 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+
+
 model User {
-  id              String       @id @default(uuid())
-  username        String       @unique
-  email           String       @unique
-  password        String
-  isEmailVerified Boolean      @default(false)
+  id                String       @id @default(uuid())
+  username          String       @unique
+  email             String       @unique
+  fullname          String       
+  avatar            String?
+  coalitionUrl      String?
+  coalitionColor    String?
+  accessToken       String
+  refreshToken      String
+  isOnline          Boolean     @default(false)
+  hasTwoFA          Boolean     @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  games           GameHistory[]
+  
+  usersmessages1 UserMessage[] @relation("Author")
+  usersmessages2 UserMessage[] @relation("Reciver")
+
+  channelmessages ChannelMessage[]
+
+  channelMember ChannelMember[]
+  games     GameHistory[]
+
 }
+
+model Channel {
+  id       String   @id @default(uuid())
+  name     String @unique
+  type     Type @default(PUBLIC)
+  channelmessages ChannelMessage[]
+  password  String?
+  channelMember ChannelMember[]
+}
+
+model ChannelMember {
+  id        String   @id @default(uuid())
+  channelId String
+  userId    String
+  role     Role @default(MEMBER)
+  channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  createdAt DateTime @default(now())
+}
+
+model ChannelMessage {
+  id        String   @id @default(uuid())
+  content   String
+  author User @relation(fields: [authorID], references: [id], onDelete: Cascade)
+	reciver Channel @relation(fields: [reciverID], references: [id], onDelete: Cascade)
+	reciverID String
+	authorID String
+  authorName String
+  createdAt DateTime @default(now())
+}
+model UserMessage {
+  id        String   @id @default(uuid())
+  content   String
+  author User @relation(name: "Author", fields: [authorID], references: [id])
+	reciver User @relation(name: "Reciver", fields: [reciverID], references: [id])
+	reciverID String
+	authorID String
+  authorName String
+  createdAt DateTime @default(now())
+}
+
 
 
 model GameHistory {
@@ -35,4 +93,16 @@ model GameHistory {
   matches   Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  OWNER
+  MEMBER
+}
+
+enum Type {
+  PUBLIC
+  PRIVATE
+  PROTECTED
 }
