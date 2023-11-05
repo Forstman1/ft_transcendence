@@ -17,7 +17,7 @@ import {
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from 'react-query';
 import { fetchUserProfile } from '../../../utils/functions/auth/fetchingUserData';
 import {
   AuthButtonsList, NAVBAR_ITEMS, AuthButtonObj
