@@ -12,7 +12,7 @@ import {
   PinInput,
   PinInputField
 } from '@chakra-ui/react'
-import { useMutation } from "@tanstack/react-query";
+import { useMutation } from "react-query";
 import { useState } from 'react';
 import { verify2FA } from "@/utils/functions/auth/fetchingUserData";
 
