@@ -13,7 +13,7 @@ const GameRouter = ["/gamePage/gameFriendPage", "/gamePage/gameBotPage"]
 const MENU_LIST = [
   { text: "Home", href: "/" },
   { text: "Game", href: "/gamePage" },
-  // { text: "Chat", href: "/chatPage" },
+  { text: "Chat", href: "/chatPage" },
 ];
 
 
