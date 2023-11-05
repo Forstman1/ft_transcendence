@@ -79,7 +79,7 @@ export default function GamePage() {
   return (
     <PageWrapper>
       {isLoading && (
-        <div className="absolute top-0 left-0 w-full h-screen z-20 bg-black opacity-50">
+        <div className="absolute top-0 left-0 w-full h-full z-20 bg-black opacity-50">
           <Lottie
             animationData={LodingAnimation}
             className="absolute inset-0 w-full h-full z-10"

@@ -18,7 +18,7 @@ const LoadingScreen = ({
   if (!loading) return null;
 
   return (
-    <div className="absolute inset-0 flex justify-center items-center  w-screen h-screen">
+    <div className="absolute inset-0 flex justify-center items-center  w-screen h-full">
       <div className="relative w-full h-full">
           <div className="absolute inset-0 flex justify-center items-center w-full h-full">
             <Lottie

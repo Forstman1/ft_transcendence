@@ -19,7 +19,7 @@ import * as argon2 from 'argon2';
 
 
 async function seed() {
-  const numberOfUsers = 2;
+  const numberOfUsers = 5;
   const password = await argon2.hash('password');
   // create users
   for (let numUser = 0; numUser < numberOfUsers; numUser++) {

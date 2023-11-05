@@ -33,7 +33,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${geo.className} h-screen w-screen `}>
+      <body className={`${geo.className} w-full w-full `}>
         <ReduxProvider>
             <CacheProvider>
               <ChakraProvider>

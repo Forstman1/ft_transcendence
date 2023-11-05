@@ -5,21 +5,19 @@ import { TriangleDownIcon } from '@chakra-ui/icons'
 
 
 type matchInfoType =  Array<{
-    username: string;
     score: number;
+    profile: string;
     opponentScore: number;
-    profilePicSrc: string;
+    opponentProfile: string;
 }>
 
 const data: matchInfoType = [
-    {'username':'sahafid', 'score': 10, 'opponentScore': 7, 'profilePicSrc': 'https://avatars.githubusercontent.com/u/76266668?v=4'},
-    {'username':'haitkadir', 'score': 5, 'opponentScore': 7, 'profilePicSrc': 'https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg'},
-    {'username':'sahafid', 'score': 15, 'opponentScore': 15, 'profilePicSrc': 'https://avatars.githubusercontent.com/u/76266668?v=4'},
-    {'username':'haitkadir', 'score': 5, 'opponentScore': 7, 'profilePicSrc': 'https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg'},
-    {'username':'sahafid', 'score': 10, 'opponentScore': 7, 'profilePicSrc': 'https://avatars.githubusercontent.com/u/76266668?v=4'},
-    {'username':'haitkadir', 'score': 5, 'opponentScore': 7, 'profilePicSrc': 'https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg'},
-    // {'username':'sahafid', 'score': 15, 'opponentScore': 15, 'profilePicSrc': 'https://avatars.githubusercontent.com/u/76266668?v=4'},
-    // {'username':'haitkadir', 'score': 5, 'opponentScore': 7, 'profilePicSrc': 'https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg'},
+    {'score': 10, 'profile':'https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg', 'opponentScore': 7, 'opponentProfile': 'https://avatars.githubusercontent.com/u/76266668?v=4'},
+    {'score': 5, 'profile':'https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg', 'opponentScore': 7, 'opponentProfile': 'https://avatars.githubusercontent.com/u/76266668?v=4'},
+    {'score': 15, 'profile':'https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg', 'opponentScore': 15, 'opponentProfile': 'https://avatars.githubusercontent.com/u/76266668?v=4'},
+    {'score': 5, 'profile':'https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg', 'opponentScore': 7, 'opponentProfile': 'https://avatars.githubusercontent.com/u/76266668?v=4'},
+    {'score': 10, 'profile':'https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg', 'opponentScore': 7, 'opponentProfile': 'https://avatars.githubusercontent.com/u/76266668?v=4'},
+    {'score': 5, 'profile':'https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg', 'opponentScore': 7, 'opponentProfile': 'https://avatars.githubusercontent.com/u/76266668?v=4'},
 ]
 
 export default function MatchHistory() {
@@ -36,6 +34,15 @@ export default function MatchHistory() {
             return item.score < item.opponentScore;
         return item.score == item.opponentScore;
     });
+    const checkMatchStatus = (score: number, opponentScore: number) => {
+        const matchStatus: {win:string;lose:string;draw:string;} = {'win':'border-green-600', 'lose':'border-red-600', 'draw':'border-gray-400'};
+        if (score > opponentScore)
+            return matchStatus.win;
+        if (score < opponentScore)
+            return matchStatus.lose;
+        if (opponentScore == score)
+            return matchStatus.draw;
+    }
 
   return (
     <>
@@ -65,12 +72,19 @@ export default function MatchHistory() {
                 {
                 filterdData.map((item, index) => (
 
-                    <Flex className="custom-bg h-full flex-col rounded-xl border-black border-2 min-w-[140px]" key={index}>
-                        <h2 className='text-lg px-1 font-bold text-gray-400 text-center'>@{item.username}</h2>
-                        <div className='w-fit m-auto rounded-full border-black border-2'>
-                            <Avatar size='xl' src={item.profilePicSrc} className='border-green-600 border-8' />
-                        </div>
-                        <h2 className='text-white text-center text-xl font-bold'>{`${item.score} - ${item.opponentScore}`}</h2>
+                    <Flex className="custom-bg h-[180px] flex-row rounded-xl border-black border-2 min-w-[150px]" key={index}>
+                        <Flex className='w-[50%] flex-col justify-around border-dashed border-r-2 border-gray-400'>
+                            <h2 className='text-center text-4xl font-bold'>{item.score}</h2>
+                            <div className='mx-auto rounded-full border-black border-2'>
+                                <Avatar size='md' src={item.profile} className={`border-4 ${checkMatchStatus(item.score, item.opponentScore)}`} />
+                            </div>
+                        </Flex>
+                        <Flex className='w-[50%] flex-col justify-around'>
+                            <h2 className='text-center text-4xl font-bold'>{item.opponentScore}</h2>
+                            <div className='mx-auto rounded-full border-black border-2'>
+                                <Avatar size='md' src={item.opponentProfile} className={`border-4 ${checkMatchStatus(item.opponentScore, item.score)}`} />
+                            </div>
+                        </Flex>
                     </Flex>
                 ))
                 }
@@ -79,3 +93,5 @@ export default function MatchHistory() {
     </>
   )
 }
+
+
