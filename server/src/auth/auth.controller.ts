@@ -26,10 +26,10 @@ export class AuthController {
 
   /* ------------------------------------------------------------------------------------------------------------------ */
 
-  @Post('logout')
+  @Get('logout')
   @UseGuards(JwtAuthGuard)
   async handleLogout(@Res({ passthrough: true }) res) {
-    res.cookie('access_token', '', { expires: new Date() });
+    await res.cookie('access_token', '', { expires: new Date() });
     await res.clearCookie('access_token');
     return res.redirect(process.env.CLIENT_URL);
   }
