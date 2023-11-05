@@ -21,6 +21,7 @@ import LodingAnimation from "../../../assets/animations/loadingAnimation.json";
 import Lottie from "lottie-react";
 import {InfoOutlineIcon} from "@chakra-ui/icons";
 import GameInstruction from "./ui/GameInstruction";
+import Footer from "@/components/elements/Footer/Footer";
 
 export default function GamePage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -87,7 +88,7 @@ export default function GamePage() {
           />
         </div>
       )}
-      <div className="relative flex flex-row h-full justify-center items-center mx-[10%] z-0 ">
+      <div className="relative flex flex-row h-screen justify-center items-center mx-[10%] z-0 ">
         <div
           className={`${
             breakpoint === "base" ? "absolute" : "flex"
@@ -181,6 +182,7 @@ export default function GamePage() {
         onClose={onClose}
         gameType={gameType as "bot" | "friend"}
       />
+      <Footer />
     </PageWrapper>
   );
 }

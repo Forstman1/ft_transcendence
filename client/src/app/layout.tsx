@@ -12,7 +12,6 @@ import SplashScreen from "@/components/elements/spalshScreen/SplashScreen";
 import { usePathname } from "next/navigation";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import GameNotification from "./gamePage/gameNotification/page";
-import Footer from "@/components/elements/Footer/Footer";
 
 const geo = Geo({
   subsets: ['latin'],
@@ -45,7 +44,6 @@ export default function RootLayout({
                   <Navbar />
 
                   {children}
-                  {/* <Footer /> */}
                 </>
                 }
               </ChakraProvider>

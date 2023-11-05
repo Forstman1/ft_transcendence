@@ -45,7 +45,7 @@ export default function Home() {
     <PageWrapper>
       <div
         className="flex flex-col xl:flex-row 
-        w-screen min-h-fit
+        w-full min-h-fit
         px-10 xl:px-30 2xl:px-40 3xl:px-50 4xl:px-60 5xl:px-70 6xl:px-80
         pt-[6rem] md:pt-[10rem] xl:pt-[16rem] pb-[4rem] md:pb-[10rem]
         justify-evenly justify-items-center
@@ -116,7 +116,7 @@ export default function Home() {
 
       <div
         className="flex flex-col xl:flex-row image-div
-        w-screen min-h-fit -mt-5 md:-mt-10 z-0 relative
+        w-full min-h-fit -mt-5 md:-mt-10 z-0 relative
         px-10 xl:px-30 2xl:px-40 3xl:px-50 4xl:px-60 5xl:px-70 6xl:px-80
         pt-[6rem] md:pt-[10rem] xl:pt-[16rem] pb-[4rem] md:pb-[10rem]
         justify-evenly justify-items-center

@@ -424,7 +424,7 @@ export default function GameFriendPage() {
                   gameStarted={gameStarted}
                   gameMode="FRIEND"
                 />
-                <div className="flex flex-col space-y-10 w-full mx-[10%] h-full justify-center items-center mt-[100px]" >
+                <div className="flex flex-col space-y-10 w-full mx-[10%] h-screen justify-center items-center" >
                   <GameHeader leftScore={leftScore} rightScore={rightScore} />
                   <div
                     id="canvas-container"
