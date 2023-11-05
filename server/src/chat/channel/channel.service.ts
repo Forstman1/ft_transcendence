@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateChannelDto } from './dtos';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon2 from 'argon2';
+import { tr } from '@faker-js/faker';
 
 
 
@@ -161,10 +162,10 @@ export class ChannelService {
 
 
 
-  async setpassword(channelName: string, userId: string, newpassword: string) {
+  async setpassword(channelId: string, userId: string, newpassword: string) {
     let channel = await this.prisma.channel.findUnique({
       where: {
-        name: channelName,
+        id: channelId,
       },
     });
 
@@ -176,22 +177,26 @@ export class ChannelService {
     });
     const channelmember = channelmembers[0];
     if (channelmember.role === 'OWNER') {
+
       const hash = await argon2.hash(newpassword);
+
       channel = await this.prisma.channel.update({
         where: {
-          name: channelName,
+          id: channelId,
         },
         data: {
           password: hash,
           type: 'PROTECTED',
         },
       });
+
       return channel;
+
     } else return { status: 'you are not owner of the channel' };
   }
 
 
-
+  
 
   async removepassword(channelName: string, userId: string) {
     let channel = await this.prisma.channel.findUnique({
@@ -221,12 +226,14 @@ export class ChannelService {
       return channel;
     } else return { status: 'you are not owner of the channel' };
   }
+ 
 
-  async removeAdministrator(channelName:string, userIdOwner:string, userIdAdministrator:string){
+
+  async removeAdministrator(channelId:string, userIdOwner:string, userIdAdministrator:string){
     try {
       const channel = await this.prisma.channel.findUnique({
         where: {
-          name: channelName,
+          id: channelId,
         },
       });
   
@@ -236,8 +243,8 @@ export class ChannelService {
           channel: channel,
         },
       });
+
       const channelOwner = channelMembers[0];
-      channelMembers.splice(0, 1);
   
       channelMembers = await this.prisma.channelMember.findMany({
         where: {
@@ -245,14 +252,13 @@ export class ChannelService {
           channel: channel,
         },
       });
+
       const channelAdministrator = channelMembers[0];
-      channelMembers.splice(0, 1);
-  
-      if (
-        (channelOwner.role === 'OWNER' || channelAdministrator.role === 'ADMIN') &&
-        channelAdministrator.role === 'ADMIN'
-      ) {
-        await this.prisma.channelMember.update({
+
+      
+      if ( (channelOwner.role === 'OWNER' || channelOwner.role === "ADMIN") && channelAdministrator.role === 'ADMIN') {
+
+        let member = await this.prisma.channelMember.update({
           where: {
             id: channelAdministrator.id,
           },
@@ -260,7 +266,9 @@ export class ChannelService {
             role: 'MEMBER',
           },
         });
-        return { status: 'This administrator is now a member.' };
+
+        return { channelmember : member,  status: 'This administrator is now a member.' };
+
       } else {
         return { status: "This administrator can't be removed." };
       }
@@ -274,14 +282,14 @@ export class ChannelService {
 
 
   async setAdministrator(
-    channelName: string,
+    channelId: string,
     userIdOwner: string,
     userIdAdministrator: string,
   ) {
     try {
       const channel = await this.prisma.channel.findUnique({
         where: {
-          name: channelName,
+          id: channelId,
         },
       });
   
@@ -290,9 +298,8 @@ export class ChannelService {
           userId: userIdOwner,
           channel: channel,
         },
-      });
+      }); 
       const channelOwner = channelMembers[0];
-      channelMembers.splice(0, 1);
   
       channelMembers = await this.prisma.channelMember.findMany({
         where: {
@@ -301,13 +308,12 @@ export class ChannelService {
         },
       });
       const channelAdministrator = channelMembers[0];
-      channelMembers.splice(0, 1);
   
       if (
-        (channelOwner.role === 'OWNER' || channelAdministrator.role === 'ADMIN') &&
+        (channelOwner.role === 'OWNER' || channelOwner.role === 'ADMIN') &&
         channelAdministrator.role === 'MEMBER'
       ) {
-        await this.prisma.channelMember.update({
+        let member = await this.prisma.channelMember.update({
           where: {
             id: channelAdministrator.id,
           },
@@ -315,16 +321,69 @@ export class ChannelService {
             role: 'ADMIN',
           },
         });
-        return { status: 'This member is now an administrator.' };
+        return { channelmember : member, status: 'This member is now an administrator.' };
       } else {
         return { status: "This member can't be set as an administrator." };
       }
     } catch (error) {
       console.error('Error setting administrator:', error);
-      // Handle the error appropriately (e.g., throw, log, return an error response)
       throw new Error('Failed to set administrator.');
     }
   }
+
+
+
+
+
+  async removeMember(channelId: string,  userId: string, otherUserId: string) {
+
+    try {
+      
+      const channel = await this.prisma.channel.findUnique({
+        where: {
+          id: channelId,
+        },
+      });
+  
+      let channelMembers = await this.prisma.channelMember.findMany({
+        where: {
+          userId: userId,
+          channel: channel,
+        },
+      });
+  
+      const channelMember = channelMembers[0];
+  
+      channelMembers = await this.prisma.channelMember.findMany({
+        where: {
+          userId: otherUserId,
+          channel: channel,
+        },
+      });
+  
+      const otherChannelMember = channelMembers[0];
+  
+      if (
+        (channelMember.role === 'OWNER' || channelMember.role === 'ADMIN') &&
+        (otherChannelMember.role === 'MEMBER'  || otherChannelMember.role === 'ADMIN')
+      ) {
+        let member = await this.prisma.channelMember.delete({
+          where: {
+            id: otherChannelMember.id,
+          },
+        });
+        return { channelmember : member, status: 'This member is removed.' };
+      } else {
+        return { status: "This member can't be removed." };
+      }
+
+
+    } catch (error) {
+      console.error('Error setting member:', error);
+      throw new Error('Failed to remove member.');
+    }
+  }
+
 
 
 

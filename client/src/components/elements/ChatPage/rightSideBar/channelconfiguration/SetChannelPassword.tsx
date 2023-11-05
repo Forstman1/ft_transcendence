@@ -44,6 +44,9 @@ type Change_Password = {
         return error
       })
     )
+
+
+    
     const fetchData = async () => {
       const fetchChannels = await fetch('http://127.0.0.1:3001/channel/getallchannels/' + userId)
       const response = await fetchChannels.json()
@@ -56,6 +59,8 @@ type Change_Password = {
       }
 
     }
+
+
     const setpassword = async (data: Change_Password) => {
         
       if (data.confirm_password === data.new_password) {

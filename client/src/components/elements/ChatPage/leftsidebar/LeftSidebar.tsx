@@ -15,7 +15,7 @@ import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { ChatSocketState } from '@/redux/slices/socket/chatSocketSlice';
 import { RootState } from '@/redux/store/store';
-import { setChannels, setTheUser } from '@/redux/slices/chat/ChatSlice';
+import { addMessage, setChannel, setChannelMember, setChannels, setTheUser } from '@/redux/slices/chat/ChatSlice';
 
 
 function Usercard(props: any) {
@@ -96,7 +96,6 @@ export default function LeftSidebar() {
     socket.emit('getChannels', { userId: userId })
 
 
-
     socket.on('allchannels', (data: any) => {
       console.log(data)
       const allchannels: Channel[] = data.channels
@@ -134,7 +133,7 @@ export default function LeftSidebar() {
     })
 
     socket.on('channelDeleted', (data: any) => {
-      if (data.status == "you are not owner of the channel") {
+      if (data.status == "You are not owner of the channel") {
 
         toast({
           title: data.status,
@@ -152,15 +151,96 @@ export default function LeftSidebar() {
           duration: 3000,
           isClosable: true,
         })
-        dispatch(setChannels(null))
+        dispatch(setChannel(null))
+      }
+    })
+    socket.on('setAdministrator', (data: any) => {
+      console.log(data)
+      if (data.status === "This member can't be set as an administrator.") {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+      else {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+      if (data.member && data.member.userId === userId) {
+        dispatch(setChannelMember(data.member))
       }
     })
 
-    
+    socket.on('removeAdministrator', (data: any) => {
+      console.log(data)
+      if (data.status === "This member can't be removed as an administrator.") {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+      else if (selected?.id === data.channelId) {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+
+      if (data.member && data.member.userId === userId) {
+        console.log(data.member)
+        dispatch(setChannelMember(data.member))
+      }
+    })
+
+    socket.on('removeMember', (data: any) => {
+      console.log(data)
+      if (data.status === "This member can't be removed.") {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+      else {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+      if (data.userId === userId) {
+        
+        dispatch(setChannel(null))
+      }
+
+    })
+
+
+
     return () => {
       socket.off('channelLeft');
       socket.off('allchannels');
       socket.off('channelDeleted');
+      socket.off('setAdministrator');
+      socket.off('removeAdministrator');
     }
   }, [])
 

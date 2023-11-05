@@ -4,12 +4,21 @@ import { setChannel, setChannels } from "../chat/ChatSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { useToast } from "@chakra-ui/react";
+// import getUserId from "@/redux/slices/chat/userIdSelector";
+
+
+
+
 
 
 
 
 const socket = io('http://localhost:3001/channelchat', {
     transports: ['websocket'],
+    upgrade: false,
+    // auth: {
+    //     id: '18717cab-8acf-412f-ae09-c1d310529c40'
+    // }
 })
 
 socket.on('connect', () => {

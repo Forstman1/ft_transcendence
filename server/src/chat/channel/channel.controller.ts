@@ -47,12 +47,12 @@ export class ChannelController {
 
     @Put('/setadministrator')
     setAdministrator(@Body() body: any){
-        return this.channelservice.setAdministrator(body.channelName, body.userIdOwner, body.userIdadministrateur)
+        return this.channelservice.setAdministrator(body.channelId, body.userIdOwner, body.userIdadministrateur)
     }
 
     @Delete('/removeadministrator')
     removeAdministrator(@Body() body: any){
-        return this.channelservice.removeAdministrator(body.channelName, body.userIdOwner, body.userIdadministrateur)
+        return this.channelservice.removeAdministrator(body.channelId, body.userIdOwner, body.userIdadministrateur)
     }
 
     @Post('/invitemember')

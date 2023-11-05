@@ -62,8 +62,8 @@ export default function ChatWindow() {
 
   const { handleSubmit, register, reset } = useForm<any>();
   const chatContainer = useRef<any>(null);
-  
-  
+
+
   const selected = useSelector((state: any) => state.chat.selectedChannelorUser);
   const messages: ChannelMessage[] = useSelector((state: any) => state.chat.messages);
   const userId = useSelector((state: any) => state.userID.user)
@@ -71,8 +71,8 @@ export default function ChatWindow() {
   const { LeftClice } = useSelector((state: any) => state.mobile)
   const { RightClice } = useSelector((state: any) => state.mobile)
   const [user, setUser]: any = useState()
-  
-  const socket = useSelector((state:any) => state.channelChatSocket.socket)
+
+  const socket = useSelector((state: any) => state.channelChatSocket.socket)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -98,34 +98,19 @@ export default function ChatWindow() {
 
 
 
-  const createMessage = useMutation<any, Error, any>((variables) =>
-    fetch('http://127.0.0.1:3001/message/createmessage', {
-      method: "POST",
-      body: JSON.stringify(variables),
-      headers: {
-        "content-type": "application/json",
-      }
-    }).then((res) => {
-      return res.json()
-    }).catch((error) => {
-      return error
-    }))
 
 
   const handleNewMessage = async (data: any) => {
     if (!data.newmessage) return;
 
-    if (selected.name )
-      socket.emit('sendMessage', {
-        channelId: selected.id,
-        userId: userId,
-        message: data.newmessage,
-      });
-      else
-      {
+    console.log("sifat chi7aja", selected.id, " " + selected.id)
+    socket.emit('sendMessage', {
+      channelId: selected.id,
+      userId: userId,
+      message: data.newmessage,
+    });
 
-      }
-      
+
     reset({ newmessage: '' });
     scrollToBottom();
   };
@@ -137,15 +122,22 @@ export default function ChatWindow() {
   useEffect(() => {
 
     socket.on('receivedMessage', (data: any) => {
-      console.log("waslat chi7aja", data.channelId)
-      dispatch(addMessage(data.message));
-      scrollToBottom();
+    // const selectedChannel = useSelector((state: any) => state.chat.selectedChannelorUser);
+
+      console.log("waslat chi7aja", data.channelId, " " + selected?.id)
+      if (selected?.id === data.channelId)
+      {
+        // console.log(selected?.id, " " + data.channelId)
+        dispatch(addMessage(data.message)); 
+      }
+
     });
+
 
     return () => {
       socket.off('receivedMessage');
     };
-  }, [dispatch]);
+  }, [selected]);
 
 
   const HideMobileSideBars = () => {
@@ -166,7 +158,7 @@ export default function ChatWindow() {
           return <Message_other key={index} usermessage={message} message={message.content} sender={message.authorName} time={message.createdAt} />
         })}
 
-{/* 
+        {/* 
         <div className='w-full flex   items-baseline gap-[5px]  pl-[15px] h-[100px] mb-[5px]'  >
           <Avatar className='custom-shadow' boxSize={12} />
 
