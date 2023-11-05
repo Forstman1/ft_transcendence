@@ -38,11 +38,7 @@ async function seedDatabase() {
         username: faker.internet.userName(),
         email: faker.internet.email(),
         fullname: faker.internet.userName(),
-        avatar: faker.image.avatar(),
-        accessToken: faker.string.uuid(),
-        refreshToken: faker.string.uuid(),
-        isOnline: faker.datatype.boolean(),
-        hasTwoFA: faker.datatype.boolean(),
+        avatarURL: faker.image.avatar(),
       },
     });
   }
@@ -117,11 +113,7 @@ seedDatabase()
           username: faker.internet.userName(),
           email: faker.internet.email(),
           fullname: faker.internet.userName(),
-          avatar: faker.image.avatar(),
-          accessToken: faker.string.uuid(),
-          refreshToken: faker.string.uuid(),
-          isOnline: faker.datatype.boolean(),
-          hasTwoFA: faker.datatype.boolean(),
+          avatarURL: faker.image.avatar(),
           games: {
             create: {
               status: 'win',

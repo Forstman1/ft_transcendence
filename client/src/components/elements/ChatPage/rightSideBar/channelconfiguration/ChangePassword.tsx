@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Box, Button, Input, InputGroup, InputRightElement, ModalBody, ModalCloseButton, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
-import { useMutation } from 'react-query'
+import { useMutation } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
 import Image from 'next/image'
 import ModalWraper from '../../ModalWraper'

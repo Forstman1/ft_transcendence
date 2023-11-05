@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { addMessage } from '@/redux/slices/chat/ChatSlice';
 import { ChannelMessage } from '@/utils/types/chat/ChatTypes';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import MobileFooter from './Mobile/MobileFooter';
 import { setLeft, setRight, setMidle } from '@/redux/slices/chat/MobileSlice';
 

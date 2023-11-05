@@ -10,7 +10,7 @@ import Navbar from "../components/elements/Navbar/Navbar";
 import ReduxProvider from "../redux/provider";
 import SplashScreen from "@/components/elements/spalshScreen/SplashScreen";
 import { usePathname } from "next/navigation";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import GameNotification from "./gamePage/gameNotification/page";
 import Footer from "@/components/elements/Footer/Footer";
 
@@ -32,7 +32,6 @@ export default function RootLayout({
   const path = usePathname();
   const isHome = path === "/";
   const [isloading, setIsLoading] = React.useState(isHome);
-
   return (
     <html lang="en">
       <body className={`${geo.className} h-screen`}>
@@ -52,7 +51,7 @@ export default function RootLayout({
               </ChakraProvider>
               </QueryClientProvider>
             </CacheProvider>
-        </ReduxProvider>
+          </ReduxProvider>
       </body>
     </html>
   );

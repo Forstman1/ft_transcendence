@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Avatar, AvatarBadge, Box, Button, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
-import { useMutation } from 'react-query'
+import { useMutation } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
 import ModalWraper from '../../ModalWraper'
 import Image from 'next/image'

@@ -15,28 +15,23 @@ datasource db {
 
 
 model User {
-  id                String       @id @default(uuid())
-  username          String       @unique
-  email             String       @unique
-  fullname          String       
-  avatar            String?
-  coalitionUrl      String?
-  coalitionColor    String?
-  accessToken       String
-  refreshToken      String
-  isOnline          Boolean     @default(false)
-  hasTwoFA          Boolean     @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  usersmessages1 UserMessage[] @relation("Author")
-  usersmessages2 UserMessage[] @relation("Reciver")
-
-  channelmessages ChannelMessage[]
-
-  channelMember ChannelMember[]
-  games     GameHistory[]
-
+  id                String            @id @default(uuid())
+  username          String            @unique
+  email             String            @unique
+  fullname          String
+  avatarURL         String            @default("https://iintra.freekb.es/imgs/user.png")
+  coalitionURL      String            @default("https://profile.intra.42.fr/assets/coalitions/factionless-05b8cd65bda8f5eaf56ecf1d16493f41908801cfd66aa97fb27c9611064f4f36.svg")
+  coalitionColor    String            @default("#292d39")
+  isOnline          Boolean           @default(false)
+  twoFactorEnabled  Boolean           @default(false)
+  twoFactorSecret   String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  usersmessages1    UserMessage[]     @relation("Author")
+  usersmessages2    UserMessage[]     @relation("Reciver")
+  channelmessages   ChannelMessage[]
+  channelMember     ChannelMember[]
+  games             GameHistory[]
 }
 
 model Channel {
