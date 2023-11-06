@@ -161,9 +161,10 @@ export class GameGateway {
           if (this.gameService.checkFriendIsInOtherRoom(friendUserId)) {
             client.emit('friendIsInRoom');
           } else if (friendSocket) {
+            const friendId = client.handshake.auth.id;
             this.server
               .to(friendUserId)
-              .emit('room-invitation', { roomId, modalData });
+              .emit('room-invitation', { roomId, modalData, friendId });
           }
         } else {
           console.error('Room is full. Cannot invite more players.');

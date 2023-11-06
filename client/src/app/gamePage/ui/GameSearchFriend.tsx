@@ -110,6 +110,7 @@ export default function GameSearchFriend({ onClose }: Props) {
         socketId: socket.socketId,
         isOwner: true,
         roomId: RoomId,
+        friendId: friendId,
       })
     );
     setSocketRoomId(RoomId);
