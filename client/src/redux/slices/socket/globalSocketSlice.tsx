@@ -1,27 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { io, Socket } from "socket.io-client";
-
-let playerId: string | null = null;
-// let isOnline: boolean = true;
-
-function assignPlayerId() {
-  if (playerId === null) {
-    const id1 = "2965d888-34ca-4a99-b0e2-73b4790ccf04";
-    const id2 = "18b3ffc8-6f7f-4f49-b8af-0e2f8becfd4f";
-    playerId = Math.floor(Math.random() * 11) > 5 ? id1 : id2;
-    console.log(`Player ID assigned: ${playerId}`);
-  }
-}
-
-assignPlayerId();
-
-const socket = io("http://localhost:3001", {
-  transports: ["websocket"],
-  upgrade: false,
-  auth: {
-    id: playerId,
-  },
-});
+import { Socket } from "socket.io-client";
 
 export interface GlobalSocketState {
   socket: Socket | null;
@@ -32,16 +10,12 @@ export interface GlobalSocketState {
 }
 
 const initialState: GlobalSocketState = {
-  socket: socket,
+  socket: null,
   socketId: "",
   isOwner: false,
   roomId: "",
-  playerId: playerId,
+  playerId: "",
 };
-
-socket.emit("createRoomNotification", { userId: playerId }, (data: any) => {
-  console.log("hello: " + data);
-});
 
 const globalSocketSlice = createSlice({
   name: "globalSocket",

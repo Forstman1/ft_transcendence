@@ -26,7 +26,6 @@ import { AppDispatch } from "@/redux/store/store";
 import { setSocketState } from "@/redux/slices/socket/globalSocketSlice";
 import { useAppSelector } from "@/redux/store/store";
 import { useState, useEffect } from "react";
-import { set } from "animejs";
 
 type Props = {
   onClose: () => void;
