@@ -71,6 +71,7 @@ export default function GameBotPage() {
   const [userPoints, setUserPoints] = useState<number>(0);
   const [gamePause, setGamePause] = useState<boolean>(false);
 
+
   useEffect(() => {
     const handleResize = () => {
       const aspectRatioWidth = 16;

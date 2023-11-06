@@ -26,7 +26,6 @@ import { AppDispatch } from "@/redux/store/store";
 import { setSocketState } from "@/redux/slices/socket/globalSocketSlice";
 import { useAppSelector } from "@/redux/store/store";
 import { useState, useEffect } from "react";
-import { set } from "animejs";
 
 type Props = {
   onClose: () => void;
@@ -37,10 +36,7 @@ export default function GameSearchFriend({ onClose }: Props) {
   const dispatch = useDispatch<AppDispatch>();
   const socket = useAppSelector((state) => state.globalSocketReducer);
   const [socketRoomId, setSocketRoomId] = useState<string>("");
-  const friendId =
-    socket.playerId === "2965d888-34ca-4a99-b0e2-73b4790ccf04"
-      ? "18b3ffc8-6f7f-4f49-b8af-0e2f8becfd4f"
-      : "2965d888-34ca-4a99-b0e2-73b4790ccf04";
+  const [friendId, setFriendId] = useState<string>("");
   const modalData = useAppSelector((state) => state.gameReducer);
   const [myFriends, setMyFriends] = useState<any[]>([]);
   const [friendInviteIData, setFriendInviteIData] = useState<any[]>([]);
@@ -88,8 +84,9 @@ export default function GameSearchFriend({ onClose }: Props) {
 
   //-----------------------------------------------
 
-  const createRoom = async () => {
+  const createRoom = async (friendId: string) => {
     await socket.socket?.emit("createRoom", (RoomId: any) => {
+      setFriendId(friendId);
       dispatchData(RoomId);
     });
   };
@@ -121,7 +118,7 @@ export default function GameSearchFriend({ onClose }: Props) {
   //-----------------------------------------------
 
   const handleInviteClick = async (friendId: string) => {
-    await createRoom();
+    await createRoom(friendId);
     setFriendInviteIData((prev) => 
       prev.map((friend) => {
         if (friend.id === friendId) {
