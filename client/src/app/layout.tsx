@@ -10,7 +10,7 @@ import Navbar from "../components/elements/Navbar/Navbar";
 import ReduxProvider from "../redux/provider";
 import SplashScreen from "@/components/elements/spalshScreen/SplashScreen";
 import { usePathname } from "next/navigation";
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider } from 'react-query'
 import GameNotification from "./gamePage/gameNotification/page";
 
 const geo = Geo({
