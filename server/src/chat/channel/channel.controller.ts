@@ -37,7 +37,7 @@ export class ChannelController {
 
     @Post('/setpassword')
     setpassword(@Body() body:any) {
-        return 
+        return this.channelservice.setpassword(body.channelName, body.userId, body.password)
     }
 
     @Delete('/removepassword')
@@ -50,4 +50,34 @@ export class ChannelController {
         return this.channelservice.setAdministrator(body.channelName, body.userIdOwner, body.userIdadministrateur)
     }
 
+    @Delete('/removeadministrator')
+    removeAdministrator(@Body() body: any){
+        return this.channelservice.removeAdministrator(body.channelName, body.userIdOwner, body.userIdadministrateur)
+    }
+
+    @Post('/invitemember')
+    inviteMember(@Body() body: any){
+        return this.channelservice.inviteMember(body.channelName, body.userIdOwner, body.userIdMember)
+    }
+    
+    @Get('/getallmembers/:id')
+    getallmembers(@Param('id') id: string){
+        return this.channelservice.getallmembers(id)
+    }
+
+    @Delete('/leavechannel')
+    leavechannel(@Body() body: any){
+        return this.channelservice.leaveChannel(body.channelName, body.userId)
+    }
+
+    @Delete('/deleteChannel')
+    deleteChannel(@Body() body: any){
+        return this.channelservice.deleteChannel(body.channelName, body.userId)
+    }
+
+
+    @Get('/getchannelmemberinfo/:channelId/:userId')
+    getchannelmemberinfo(@Param('channelId') channelId: string, @Param('userId') userId: string){
+        return this.channelservice.getchannelmemberinfo(channelId, userId)
+    }
 }

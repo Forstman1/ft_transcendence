@@ -15,27 +15,35 @@ import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { ChatSocketState } from '@/redux/slices/socket/chatSocketSlice';
 import { RootState } from '@/redux/store/store';
-
+import { setChannels,  setTheUser } from '@/redux/slices/chat/ChatSlice';
+import axios from "axios";
+import { useQuery, useQueryClient } from "react-query";
+import { useAppSelector } from '@/redux/store/store';
 
 function Usercard(props: any) {
   
   const { user } = useSelector((state : any) => state.userID)
   const socket = useSelector((state: RootState) => state.socket.socket)
   const scroolToRef = useRef<HTMLDivElement>(null)
+  const dispatch = useDispatch();
 
-  // const createRoom = () => {
-  //   socket?.emit('joinRoom')
-  // }
+
+  const onSubmited = () => {
+    
+    dispatch(setTheUser(props.data));
+    
+};
+
   
   return (
   
   <Box ref={scroolToRef} className='flex justify-between items-center cursor-pointer m-2 ml-0 p-2 rounded-md active:bg-zinc-300'
-    onClick={() => console.log(props.username)}
+    onClick={() => onSubmited()}
   {...(user === props.data.id ? scroolToRef.current?.scrollIntoView({ block: 'nearest', inline: 'start' }) && {bg: 'bg-zinc-300'} : {})}
 
   >
     <div> 
-      <Avatar className='custom-shadow border-[1px] border-black' boxSize={14}>
+      <Avatar className='custom-shadow border-[1px] border-black' boxSize={14} src={props.data.avatar}>
         <AvatarBadge className='custom-shadow border-[1px] border-black' boxSize={4} bg='green.500' />
       </Avatar>
 
@@ -59,36 +67,26 @@ function Usercard(props: any) {
 export default function LeftSidebar() {
 
 
-
-
-  let [users, setNewUsers]: any = useState([])
+  const chatSocket = useAppSelector((state) => state.socket);
+  const { socket, userID } = chatSocket;
   const dispatch = useDispatch()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [ChannelOrUser, setChannelOrUser] = useState(false)
   const channels = useSelector((state: any) => state.chat.channels)
-
-  const userId = useSelector((state:any) => state.chat.userId);
-
-  useEffect(() => {
-    
-    const fetchData = async () => {
-      // const fetchChannels = await fetch('http://127.0.0.1:300/channel/getallchannels/' + userId)
-      // const response = await fetchChannels.json()
-      // if (response.length > 0)
-      // {
-      //   const allchannels: Channel[] = response
-      //   console.log(allchannels)
-      //   dispatch(setChannels(allchannels))
-      //   return allchannels;
-      // }
-
-    }
-    fetchData()
-  }, [])
-
+  const userId = useSelector((state: any) => state.userID.user);
   const { MidleClice } = useSelector((state: any) => state.mobile)
   const { LeftClice } = useSelector((state: any) => state.mobile)
   const { RightClice } = useSelector((state: any) => state.mobile)
+  const queryClient = useQueryClient();
+  const [data, setData] = useState<User[]>([]);
+
+  useEffect(() => {
+  
+    socket?.on(`updateChatList`, async (date: any) => {
+      console.log(`reseving the updateChatList`)
+      setData(date);
+    });
+  }, [socket]);
 
   const sidebar = {
     open: (height = 1000) => ({
@@ -112,9 +110,9 @@ export default function LeftSidebar() {
   };
 
 
+
   return (
 
-    // <Box className='LeftSideBar hidden md:grid border-r-[3px] border-r-black overflow-y-scroll place-items-center '
     <Box className='LeftSideBar place-items-center grid w-[375px] absolute  h-full overflow-y-auto border-r-[3px] border-r-black  md:static md:w-[400px] backdrop-blur-xl z-10'
       as={motion.div}
       initial={false}
@@ -123,7 +121,7 @@ export default function LeftSidebar() {
     >
         <Search
           channels={channels}
-          users={users}
+          users={data} 
         />
 
         <div className='w-[80%] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
@@ -133,9 +131,9 @@ export default function LeftSidebar() {
 
         <div className='flex h-[400px] flex-col w-full mt-[30px] items-center gap-6 overflow-y-scroll'>
 
-          {channels.map((data: Channel) => {
+          {channels.map((data: Channel, id: number) => {
             if (data.name)
-              return <Hashtag data={data} />
+              return <Hashtag key={id} data={data} />
           })}
 
         </div>
@@ -146,27 +144,25 @@ export default function LeftSidebar() {
         </div>
 
         <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
-
-          {users.map((data: User) => {
-            return <Usercard 
-            key={data.username}
-            data={data} 
+        {
+          data.map((userData: any) => (
+            <Usercard
+              key={userData.username}
+              data={userData}
             />
-          })}
-
+          ))
+        }
+  
         </div>
         {ChannelOrUser === true ? <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <Newchannel isOpen={isOpen}
           onClose={onClose}
-          // setNewChannels={setNewChannels}
           channels={channels}
 
         />
       </Modal> : <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <Newmessage isOpen={isOpen}
           onClose={onClose}
-          setNewUsers={setNewUsers}
-          users={users}
         />
       </Modal>}
       </Box>

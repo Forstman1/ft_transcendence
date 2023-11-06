@@ -36,51 +36,214 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var client_1 = require("@prisma/client");
-var prisma = new client_1.PrismaClient();
 var faker_1 = require("@faker-js/faker");
-function seed() {
+var client_1 = require("@prisma/client");
+var argon2 = require("argon2");
+var prisma = new client_1.PrismaClient();
+var NUM_USERS = 10;
+var NUM_CHANNELS = 5;
+var NUM_CHANNEL_MEMBERS = 20;
+var NUM_CHANNEL_MESSAGES = 50;
+var NUM_USER_MESSAGES = 50;
+// model GameHistory {
+//   id        String   @id @default(uuid())
+//   user      User     @relation(fields: [userId], references: [id])
+//   userId    String
+//   opponentId String
+//   status    String
+//   userScore Int
+//   opponentScore Int
+//   rounds    Int
+//   matches   Int
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+function seedDatabase() {
     return __awaiter(this, void 0, void 0, function () {
-        var numberOfUsers, numUser;
+        var numberOfUsers, password, numUser, i, users, channels, i, i, _loop_1, i;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    numberOfUsers = 5;
-                    numUser = 0;
-                    _a.label = 1;
+                    numberOfUsers = 2;
+                    return [4 /*yield*/, argon2.hash('password')];
                 case 1:
-                    if (!(numUser < numberOfUsers)) return [3 /*break*/, 4];
-                    return [4 /*yield*/, prisma.user.upsert({
-                            where: { email: faker_1.faker.internet.email() },
-                            update: {},
-                            create: {
-                                email: faker_1.faker.internet.email(),
-                                username: faker_1.faker.internet.userName(),
-                                fullname: faker_1.faker.internet.displayName(),
-                                avatar: faker_1.faker.internet.avatar(),
-                                coalitionUrl: faker_1.faker.internet.avatar(),
-                                coalitionColor: faker_1.faker.internet.userName(),
-                                accessToken: faker_1.faker.internet.password(),
-                                refreshToken: faker_1.faker.internet.password(),
-                                channelmessages: {
-                                    create: {
-                                        content: faker_1.faker.lorem.text(),
-                                        authorName: faker_1.faker.internet.userName(),
-                                        createdAt: faker_1.faker.date.recent(),
-                                        reciver: {
-                                            connect: { id: "user2" }
-                                        },
-                                    }
-                                }
-                            }
-                        })];
+                    password = _a.sent();
+                    numUser = 0;
+                    _a.label = 2;
                 case 2:
-                    _a.sent();
-                    _a.label = 3;
+                    if (!(numUser < numberOfUsers)) return [3 /*break*/, 5];
+                    return [4 /*yield*/, prisma.user.create({
+                            data: {
+                                username: faker_1.faker.internet.userName(),
+                                email: faker_1.faker.internet.email(),
+                                fullname: faker_1.faker.internet.userName(),
+                                avatar: faker_1.faker.image.avatar(),
+                                accessToken: faker_1.faker.string.uuid(),
+                                refreshToken: faker_1.faker.string.uuid(),
+                                isOnline: faker_1.faker.datatype.boolean(),
+                                hasTwoFA: faker_1.faker.datatype.boolean(),
+                            },
+                        })];
                 case 3:
-                    numUser++;
-                    return [3 /*break*/, 1];
+                    _a.sent();
+                    _a.label = 4;
                 case 4:
+                    numUser++;
+                    return [3 /*break*/, 2];
+                case 5:
+                    i = 0;
+                    _a.label = 6;
+                case 6:
+                    if (!(i < NUM_CHANNELS)) return [3 /*break*/, 9];
+                    return [4 /*yield*/, prisma.channel.create({
+                            data: {
+                                name: faker_1.faker.word.adjective(),
+                                type: faker_1.faker.helpers.arrayElement(['PUBLIC', 'PRIVATE', 'PROTECTED']),
+                            },
+                        })];
+                case 7:
+                    _a.sent();
+                    _a.label = 8;
+                case 8:
+                    i++;
+                    return [3 /*break*/, 6];
+                case 9: return [4 /*yield*/, prisma.user.findMany()];
+                case 10:
+                    users = _a.sent();
+                    return [4 /*yield*/, prisma.channel.findMany()];
+                case 11:
+                    channels = _a.sent();
+                    i = 0;
+                    _a.label = 12;
+                case 12:
+                    if (!(i < NUM_CHANNEL_MEMBERS)) return [3 /*break*/, 15];
+                    return [4 /*yield*/, prisma.channelMember.create({
+                            data: {
+                                channelId: faker_1.faker.helpers.arrayElement(channels).id,
+                                userId: faker_1.faker.helpers.arrayElement(users).id,
+                                role: faker_1.faker.helpers.arrayElement(['ADMIN', 'OWNER', 'MEMBER']),
+                            },
+                        })];
+                case 13:
+                    _a.sent();
+                    _a.label = 14;
+                case 14:
+                    i++;
+                    return [3 /*break*/, 12];
+                case 15:
+                    i = 0;
+                    _a.label = 16;
+                case 16:
+                    if (!(i < NUM_CHANNEL_MESSAGES)) return [3 /*break*/, 19];
+                    return [4 /*yield*/, prisma.channelMessage.create({
+                            data: {
+                                content: faker_1.faker.lorem.sentence(),
+                                authorID: faker_1.faker.helpers.arrayElement(users).id,
+                                reciverID: faker_1.faker.helpers.arrayElement(channels).id,
+                                authorName: faker_1.faker.person.firstName(),
+                            },
+                        })];
+                case 17:
+                    _a.sent();
+                    _a.label = 18;
+                case 18:
+                    i++;
+                    return [3 /*break*/, 16];
+                case 19:
+                    _loop_1 = function (i) {
+                        var sender, receiver;
+                        return __generator(this, function (_b) {
+                            switch (_b.label) {
+                                case 0:
+                                    sender = faker_1.faker.helpers.arrayElement(users);
+                                    receiver = faker_1.faker.helpers.arrayElement(users.filter(function (user) { return user.id !== sender.id; }));
+                                    return [4 /*yield*/, prisma.userMessage.create({
+                                            data: {
+                                                content: faker_1.faker.lorem.sentence(),
+                                                authorID: sender.id,
+                                                reciverID: receiver.id,
+                                                authorName: sender.fullname,
+                                            },
+                                        })];
+                                case 1:
+                                    _b.sent();
+                                    return [2 /*return*/];
+                            }
+                        });
+                    };
+                    i = 0;
+                    _a.label = 20;
+                case 20:
+                    if (!(i < NUM_USER_MESSAGES)) return [3 /*break*/, 23];
+                    return [5 /*yield**/, _loop_1(i)];
+                case 21:
+                    _a.sent();
+                    _a.label = 22;
+                case 22:
+                    i++;
+                    return [3 /*break*/, 20];
+                case 23: return [2 /*return*/];
+            }
+        });
+    });
+}
+seedDatabase()
+    .catch(function (error) {
+    console.error('Error seeding database:', error);
+})
+    .finally(function () { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, prisma.$disconnect()];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+function seed() {
+    return __awaiter(this, void 0, void 0, function () {
+        var numberOfUsers, password, numUser;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    numberOfUsers = 2;
+                    return [4 /*yield*/, argon2.hash('password')];
+                case 1:
+                    password = _a.sent();
+                    numUser = 0;
+                    _a.label = 2;
+                case 2:
+                    if (!(numUser < numberOfUsers)) return [3 /*break*/, 5];
+                    return [4 /*yield*/, prisma.user.create({
+                            data: {
+                                username: faker_1.faker.internet.userName(),
+                                email: faker_1.faker.internet.email(),
+                                fullname: faker_1.faker.internet.userName(),
+                                avatar: faker_1.faker.image.avatar(),
+                                accessToken: faker_1.faker.string.uuid(),
+                                refreshToken: faker_1.faker.string.uuid(),
+                                isOnline: faker_1.faker.datatype.boolean(),
+                                hasTwoFA: faker_1.faker.datatype.boolean(),
+                                games: {
+                                    create: {
+                                        status: 'win',
+                                        opponentId: '1',
+                                        userScore: 5,
+                                        opponentScore: 3,
+                                        rounds: 5,
+                                        matches: 3,
+                                    },
+                                }
+                            },
+                        })];
+                case 3:
+                    _a.sent();
+                    _a.label = 4;
+                case 4:
+                    numUser++;
+                    return [3 /*break*/, 2];
+                case 5:
                     console.log('seeded successfully');
                     console.log("generated users");
                     return [2 /*return*/];

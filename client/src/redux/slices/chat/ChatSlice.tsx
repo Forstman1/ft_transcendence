@@ -1,6 +1,4 @@
-import { Channel, Message } from "@/utils/types/chat/ChatTypes";
-import { User } from "@/utils/types/chat/ChatTypes";
-
+import { Channel, ChannelMember, ChannelMessage, User } from "@/utils/types/chat/ChatTypes";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 
@@ -9,15 +7,17 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 type ChatState = {
     selectedChannelorUser: Channel  | User | null
     channels: Channel[]
-    userId: string
-    messages: Message[]
+    users: User[]
+    messages: ChannelMessage[]
+    ChannelMember: ChannelMember | null
   };
   
   const initialState: ChatState = {
     selectedChannelorUser: null,
     channels: [],
-    userId: "0e40b5fd-5a06-4b05-bc21-63c796f6832e",
+    users: [],
     messages: [],
+    ChannelMember: null
   };
   
   const chatSlice = createSlice({
@@ -28,7 +28,10 @@ type ChatState = {
         state.selectedChannelorUser = action.payload
         state.messages = []
       },
-      setUser: (state, action) => {
+      setChannelMember: (state, action) => {
+        state.ChannelMember = action.payload
+      },
+      setTheUser: (state, action) => {
         state.selectedChannelorUser = action.payload
         state.messages = []
       },
@@ -40,15 +43,20 @@ type ChatState = {
       },
       setMessages: (state, action) => {
         state.messages = action.payload
-        console.log(state.messages)
       },
       addMessage: (state, action) => {
         state.messages.push(action.payload)
+      },
+      setUserDms: (state, action) => {
+        state.users = action.payload;
+      },
+      setNewUser: (state, action) => {
+        state.users.push(action.payload) ;
       },
  
     },
   });
 
   
-export const { setChannel, addMessage, setMessages, setChannels, setNewChannel, setUser } = chatSlice.actions
+export const { setChannel, addMessage, setMessages, setChannels, setNewChannel, setChannelMember, setTheUser } = chatSlice.actions
 export default chatSlice.reducer

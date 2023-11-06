@@ -1,6 +1,4 @@
 import React, { useState } from "react"
-
-
 import {
     Modal,
     ModalOverlay,
@@ -18,9 +16,9 @@ import { Button, FormControl, FormLabel, Icon, Input, Select } from '@chakra-ui/
 import { useForm } from "react-hook-form";
 import { LockIcon, SmallAddIcon } from "@chakra-ui/icons";
 import { useMutation } from "react-query";
-import { setChannel, setMessages } from "@/redux/slices/Chat/ChatSlice";
-import { useDispatch } from "react-redux";
-import { Channel, Message } from "@/utils/types/chat/ChatTypes";
+import { setChannel, setChannelMember, setMessages } from "@/redux/slices/chat/ChatSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { Channel, ChannelMessage } from "@/utils/types/chat/ChatTypes";
 
 
 
@@ -36,33 +34,39 @@ export default function Hashtag(props: any) {
     let { id, name, type }: Channel = props.data;
     let data: Channel = props.data;
     const toast = useToast()
-
+    const userId = useSelector((state: any) => state.chat.userId)
     const dispatch = useDispatch()
 
 
     const checkpassword = useMutation<any, Error, any>((variables) =>
-    fetch('http://127.0.0.1:3001/channel/checkpassword', {
-        method: "POST",
-        body: JSON.stringify(variables),
-        headers: {
-            "content-type": "application/json",
+        fetch('http://127.0.0.1:3001/channel/checkpassword', {
+            method: "POST",
+            body: JSON.stringify(variables),
+            headers: {
+                "content-type": "application/json",
+            }
+        }).then((response) => {
+            return response.json()
+
+        }).catch((error) => {
+            return error
+        }))
+
+    const getchannelmember = useMutation<any, Error, any>((variables) =>
+        fetch('http://127.0.0.1:3001/channel/getchannelmemberinfo/' + variables.channelId + '/' + variables.userId).then((response) => {
+            return response.json()
         }
-    }).then((response) => {
-        return response.json()
+        ).catch((error) => {
+            return error
+        }))
 
-    }).catch((error) => {
-        return error
-    }))
+    const getMessages = useMutation<any, Error, any>((variables) =>
+        fetch('http://127.0.0.1:3001/message/getmessages/' + variables.channelId ).then((response) => {
+            return response.json()
 
-
-    
-const getMessages = useMutation<any, Error, any>((variables) =>
-    fetch('http://127.0.0.1:3001/message/getmessages/' + variables.channelId).then((response) => {
-        return response.json()
-
-    }).catch((error) => {
-        return error
-    }))
+        }).catch((error) => {
+            return error
+        }))
 
 
     const handleClick = async () => {
@@ -73,11 +77,20 @@ const getMessages = useMutation<any, Error, any>((variables) =>
         else {
 
             dispatch(setChannel(data))
-            const messages = await getMessages.mutateAsync({
+            console.log("ana hna")
+            const messages: ChannelMessage[] = await getMessages.mutateAsync({
                 channelId: id,
             })
             if (messages) {
                 dispatch(setMessages(messages))
+            }
+            const channelmember = await getchannelmember.mutateAsync({
+                channelId: id,
+                userId
+            })
+            if (channelmember) {
+                console.log(channelmember)
+                dispatch(setChannelMember(channelmember))
             }
             toast({
                 title: name,
@@ -93,19 +106,35 @@ const getMessages = useMutation<any, Error, any>((variables) =>
     }
 
 
-    const onSubmit = async (data: any) => {
+    const onSubmit = async (info: any) => {
 
         const check = await checkpassword.mutateAsync({
             channelName: name,
-            password: data.password
+            password: info.password
         })
         console.log(check)
         if (check.status === "wrong password") {
             setWrongpassowrd(true)
             return;
         }
-        console.log(check)
-        data.password = "";
+        dispatch(setChannel(data))
+        const messages = await getMessages.mutateAsync({
+            channelId: id,
+        })
+        if (messages) {
+            dispatch(setMessages(messages))
+        }
+        toast({
+            title: name,
+            position: `bottom-right`,
+            status: 'success',
+            duration: 1000,
+            containerStyle: {
+                width: 300,
+                height: 100,
+            }
+        })
+        info.password = "";
         reset({ password: "" })
         onClose();
 

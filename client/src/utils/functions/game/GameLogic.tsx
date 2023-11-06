@@ -1,6 +1,6 @@
 import { getGameColor } from "./GetGameColor";
 import React from "react";
-import { Rectangle, gameSettingsProps, Ball } from "@/utils/types/game/GameTypes";
+import { Rectangle, gameSettingsProps, Ball, throttleProps } from "@/utils/types/game/GameTypes";
 
 
 export const canvasMiddleLineWidth = 10;
@@ -80,10 +80,13 @@ export const draw = (
   context.stroke();
   context.setLineDash([]);
 
+  const aspectRatio = canvas.width / canvas.height;
+  const scaledRadius = ball.radius * Math.sqrt(aspectRatio);
+
   // Draw the ball
   context.fillStyle = balColor;
   context.beginPath();
-  context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+  context.ellipse(ball.x, ball.y, scaledRadius, ball.radius, 0, 0, Math.PI * 2);
   context.fill();
 
   // Draw the rounded rectangles
@@ -250,6 +253,7 @@ export const animate = (
   setBall((prevBall) => ({ ...prevBall, x: newBallX, y: newBallY }));
 };
 
+<<<<<<< HEAD
 // export const handelGameStatic = (
 //   setRobotScore: React.Dispatch<React.SetStateAction<number>>,
 //   setUserScore: React.Dispatch<React.SetStateAction<number>>,
@@ -271,3 +275,16 @@ export const animate = (
 //     }
 //   }
 // }
+=======
+export function throttle({ func, delay }: throttleProps) {
+  let lastCall = 0;
+  return function (...args: any) {
+    const now = new Date().getTime();
+    if (now - lastCall >= delay) {
+      lastCall = now;
+      func(...args);
+    }
+  };
+}
+
+>>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c

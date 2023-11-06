@@ -12,7 +12,7 @@ import ChannelMemberActions from './ChannelMemberActions'
 import UserControls from './UserControls'
 import { useSelector, useDispatch } from 'react-redux'
 import { useMediaQuery } from '@chakra-ui/react'
-import { setLeft, setMidle, setRight } from '@/redux/slices/Chat/MobileSlice'
+import { setLeft, setMidle, setRight } from '@/redux/slices/chat/MobileSlice'
 
 
 
@@ -28,12 +28,16 @@ export default function RightSidebar() {
 
   const toast = useToast();
   const dispatch = useDispatch()
+  const User = useSelector((state: any) => state.chat.selectedChannelorUser)
 
+  
 
-  if(isDesktop[0]) {
+  if (isDesktop[0]) {
+    
     dispatch(setRight(true))
     dispatch(setMidle(true))
     dispatch(setLeft(true))
+
   }
 
 
@@ -70,9 +74,9 @@ export default function RightSidebar() {
     >
       <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7 '>
         <Text className='flex text-black text-4xl drop-shadow-[2px_2px_0_rgba(18,18,18,.0.50)]'>
-          user_455013
+          {User.username}
         </Text>
-        <Avatar className='m-7 h-[130px] w-[130px] drop-shadow-[2px_2px_0_rgba(18,18,18,0.50)]' />
+        <Avatar src={User.avatar} className='m-7 h-[130px] w-[130px] drop-shadow-[2px_2px_0_rgba(18,18,18,0.50)] border border-black' />
         <Box className='bg-black justify-start flex items-center rounded text-white w-[200px] h-[45px] drop-shadow-[2px_2px_0_rgba(18,18,18,0.50)]'>
           <Box className='AvatarBadge w-[25px] h-[25px] rounded-full bg-green-600 mx-5' />
           <Text className='text-3xl'>Available</Text>

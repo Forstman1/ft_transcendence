@@ -1,12 +1,15 @@
-import {configureStore} from '@reduxjs/toolkit'
+`use client`;
+import { configureStore } from '@reduxjs/toolkit'
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import  gameReducer  from '../slices/game/gameModalSlice';
 import globalSocketReducer  from '../slices/socket/globalSocketSlice';
-import mobileReducer from "../slices/Chat/MobileSlice";
+import mobileReducer from "../slices/chat/MobileSlice";
 import chatSocketReducer from "@/redux/slices/socket/chatSocketSlice";
-import chatSlice from '../slices/Chat/ChatSlice'
-import userReducer from '../slices/Chat/UserSlice'
+import chatSlice from '../slices/chat/ChatSlice'
+import userReducer from '../slices/chat/UserSlice'
 
+// import chatSlice from '../slices/chat/ChatSlice'
+// import mobileReducer from "../slices/chat/MobileSlice";
 
 export const store = configureStore({
   reducer: {

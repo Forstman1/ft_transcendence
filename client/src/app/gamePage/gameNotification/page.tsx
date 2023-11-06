@@ -36,6 +36,7 @@ export default function GameNotification() {
             <Alert
               status="success"
               variant="top-accent"
+              animation={{ in: "slideInLeft", out: "slideOutRight" }}
               className=" space-x-2 border-white"
             >
               <AlertIcon />
@@ -74,6 +75,33 @@ export default function GameNotification() {
         ),
       });
     };
+
+    const friendExitGame = () => {
+      toast({
+        position: "top-right",
+        duration: 5000,
+        isClosable: true,
+        render: () => (
+          <motion.div
+            initial={{ opacity: 0, x: "50%" }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
+            <Alert
+              status="success"
+              variant="top-accent"
+              className=" space-x-2 border-white"
+            >
+              <AlertIcon />
+              <Box flex="1">
+                <strong>Game Notification</strong>
+                <p>Your opponent is exit the game</p>
+              </Box>
+            </Alert>
+          </motion.div>
+        ),
+      });
+    }
 
     const handleRoomInvitation = (data: {
       roomId: string;
@@ -130,11 +158,13 @@ export default function GameNotification() {
     socket.socket?.on("room-invitation", handleRoomInvitation);
     socket.socket?.on("friendDenyInvitation", handelDenyInvitation);
     socket.socket?.on("frinedIsInGame", handelfrinedIsInGame);
+    socket.socket?.on("friendExitGame", friendExitGame);
 
     return () => {
       socket.socket?.off("room-invitation", handleRoomInvitation);
       socket.socket?.off("friendDenyInvitation", handelDenyInvitation);
       socket.socket?.off("frinedIsInGame", handelfrinedIsInGame);
+      socket.socket?.off("friendExitGame", friendExitGame);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket.socket, toast]);

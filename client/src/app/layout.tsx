@@ -12,6 +12,7 @@ import SplashScreen from "@/components/elements/spalshScreen/SplashScreen";
 import { usePathname } from "next/navigation";
 import { QueryClient, QueryClientProvider } from "react-query";
 import GameNotification from "./gamePage/gameNotification/page";
+import Footer from "@/components/elements/Footer/Footer";
 
 const geo = Geo({
   subsets: ['latin'],
@@ -34,7 +35,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={geo.className}>
+      <body className={`${geo.className} `}>
         <ReduxProvider>
             <CacheProvider>
               <QueryClientProvider client={queryClient}>
@@ -45,6 +46,7 @@ export default function RootLayout({
                   <Navbar />
 
                   {children}
+                  {/* <Footer /> */}
                 </>
                 }
               </ChakraProvider>

@@ -1,28 +1,35 @@
-export interface Users {
-    userID: string
-    userName: string
-    socketID: string
+import { IsNotEmpty, IsString } from "class-validator";
+
+export type user = {
+    id:                string
+    socketID:          string  
+    username:          string      
+    email:             string      
+    fullname:          string       
+    avatar:            string
+    isOnline:          Boolean
 }
 
 export interface Room {
+    id: string
     name: string
-    host: Users
-    users: Users[]
+    users: user[]
 }
 
-export interface Message {
-    user: Users
-    room: Room
-    sendTime: string
-    message: string
+
+export class MessageDto {
+
+    @IsNotEmpty()
+    @IsString()
+    content: string
+
+
+    @IsNotEmpty()
+    @IsString()
+    authorName: string
+
+    @IsNotEmpty()
+    @IsString()
+    reciverID: string
+
 }
-
-// export interface ServerToClien {
-//     chat: (content: messge) => void
-// }
-
-
-// export interface ClinetToServer {
-//     chat: (content: messge) => void
-//     joinRoom: (e: {user: User, room:string}) => void
-// }

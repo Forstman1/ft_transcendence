@@ -8,25 +8,34 @@ export class UsersController {
 
     constructor(private readonly usersService: UsersService) {}
 
-    @Post()
-    async addUser(@Param() frinedUser: Prisma.UserCreateInput, currentUser: Prisma.UserCreateInput) {
-        return await this.usersService.addUser(frinedUser, currentUser)
-    } 
-
-    @Get(`/list`)
-    async listusers() {
-        return await this.usersService.listUsers()
+    @Get(`friends/:id`)
+    async listFriends(@Param() id: Prisma.UserWhereUniqueInput) { 
+        return await this.usersService.listFriends(id)
     }
+
 
     @Get(`:id`)
     async getUser(@Param() id: Prisma.UserWhereUniqueInput) {
         return await this.usersService.getUser(id)
     }
 
-    @Get()
-    async getUserByName(@Param() UserName: string) {
-        const user = await this.usersService.getUserByUserName(UserName)
-        console.log(user)
-        return this.usersService.getUserByUserName(UserName)
+    @Get(`chatList/:id`)
+    async getChatList(@Param() id: Prisma.UserWhereUniqueInput) {
+        return await this.usersService.getChatList(id)
+    }
+    
+    @Post(`sendFriendRequest/:id`)
+    async sendFriendRequest(@Param() id: Prisma.UserWhereUniqueInput, @Body() friendId: Prisma.UserWhereUniqueInput) {
+
+    }
+
+    @Post(`addToChat/:id`)
+    async addToChat(@Param() id: Prisma.UserWhereUniqueInput, @Body() friendId: Prisma.UserWhereUniqueInput) {
+        return await this.usersService.addToChat(id, friendId)
+    }
+
+    @Post(`aceptFriendRequest/:id`)
+    async acceptFriendRequest(@Param() id: Prisma.UserWhereUniqueInput, @Body() friendId: Prisma.UserWhereUniqueInput) {
+        return await this.usersService.acceptFriendRequest(id, friendId)
     }
 }

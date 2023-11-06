@@ -15,60 +15,42 @@ import {
 import { Avatar, AvatarBadge, InputGroup, InputRightElement, Select } from '@chakra-ui/react';
 import Hashtag from "./hatshtag";
 import Image from "next/image";
+import { Channel, User } from "@/utils/types/chat/ChatTypes";
+import { useDispatch } from "react-redux";
+import { setTheUser } from "@/redux/slices/chat/ChatSlice";
 
 
 
-
-type ChannelValues = {
-    channelName: string
-    password: string
-    type: string
-}
-
-type UserValues = {
-    userName: string
-    id: number
-    onlineStatus: string
-}
 
 
 type Props = {
-    channels: ChannelValues[];
-    users: UserValues[];
+    channels: Channel[];
+    users: User[];
 };
-
 
 
 
 function Usercard(props: any) {
 
 
-    const { data, selectedOption, onOptionChange } = props;
-
-    const handleChange = () => {
-        onOptionChange(data.userName);
-    };
+    const { user } = props;
 
 
-    return (<div onClick={handleChange} className='flex justify-around items-center border-1 border-black  cursor-pointer m-2 ml-0 p-2  rounded-md  '>
+    const dispatch = useDispatch()
 
+
+    return (
+        
+    <div onClick={() => dispatch(setTheUser(user))} className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md'>
         <div>
-            <Avatar boxSize={12}>
+            <Avatar boxSize={12} src={user.avatar}>
                 <AvatarBadge boxSize={6} bg='green' />
             </Avatar>
         </div>
 
         <div className='flex flex-col items-center justify-around'>
-            <div className='text-[30px]'>{data.userName}</div>
+            <div className='text-[20px] md:text-[30px]'>{user.username}</div>
         </div>
-
-        <Radio
-            className='w-[30px] h-[30px]  rounded-sm'
-            value={data.userName}
-            onChange={handleChange}
-            isChecked={selectedOption === data.userName}
-        >
-        </Radio>
 
     </div>)
 }
@@ -84,17 +66,17 @@ export default function Search({ channels, users }: Props) {
     const [allSearchChannels, setAllSearchChannels]: any = useState([])
     const [allSearchUsers, setAllSearchUsers]: any = useState([])
 
-    const { handleSubmit, register } = useForm<{ search: string }>();
+    // const { handleSubmit, register } = useForm<{ search: string }>();
     const { isOpen, onOpen, onClose } = useDisclosure()
 
 
     useEffect(() => {
-        setAllSearchChannels([])
-        setAllSearchUsers([])
-    }, [])
+        setAllSearchChannels(channels)
+        setAllSearchUsers(users)
+    }, [channels || users])
+
 
     const findMatches = (wordToMatch: string, ChannelsOrUsers: string[]) => {
-
 
         return ChannelsOrUsers.filter((word: string) => {
             const regex = new RegExp(wordToMatch, 'gi')
@@ -107,36 +89,36 @@ export default function Search({ channels, users }: Props) {
 
         console.log(search)
 
-        let allChannelsnames: any = channels.map((channel: ChannelValues) => {
-            return channel.channelName
+        let allChannelsnames: any = channels.map((channel: Channel) => {
+            return channel.name
         })
         let content1: string[] = findMatches(search, allChannelsnames)
 
 
-        let searcharray: any = channels.map((channel: ChannelValues) => {
+        let searcharray: any = channels.map((channel: Channel) => {
             for (let i: number = 0; i < content1.length; i++) {
-                if (channel.channelName === content1[i])
+                if (channel.name === content1[i])
                     return channel
             }
         })
 
 
-        searcharray = searcharray.filter((channel: ChannelValues) => {
+        searcharray = searcharray.filter((channel: Channel) => {
             return (channel !== undefined)
         })
 
 
-        let allUsersnames: any = users.map((user: UserValues) => {
-            return user.userName
+        let allUsersnames: any = users.map((user: User) => {
+            return user.username
         })
 
         let content2: string[] = findMatches(search, allUsersnames)
 
 
-        let searchuserarray: any = users.map((user: UserValues) => {
+        let searchuserarray: any = users.map((user: User) => {
 
             for (let i: number = 0; i < content2.length; i++) {
-                if (user.userName === content2[i])
+                if (user.username === content2[i])
                     return user
             }
         })
@@ -145,14 +127,14 @@ export default function Search({ channels, users }: Props) {
 
 
 
-        searchuserarray = searchuserarray.filter((user: UserValues) => {
+        searchuserarray = searchuserarray.filter((user: User) => {
             return user !== undefined
         })
 
 
-        setAllSearchChannels(searcharray)
+        // setAllSearchChannels(searcharray)
 
-        setAllSearchUsers(searchuserarray)
+        // setAllSearchUsers(searchuserarray)
         setSearch("")
         onOpen()
     };
@@ -216,25 +198,19 @@ export default function Search({ channels, users }: Props) {
                             onChange={handleChange}
                         />
                     </InputGroup>
-                    <div className="flex w-full h-[300px]  flex-col  overflow-y-scroll">
-                        {allSearchChannels.map((channels: any) => {
-                            return <Box className="flex  w-[95%] p-2 flex-row justify-between items-center border-2 border-gray-300 rounded-lg  mt-5">
+                    <div className="flex w-full h-[300px]  flex-col  overflow-y-scroll ">
+                        {allSearchChannels.map((channels: Channel, id: number) => {
+                            return <Box key={id} className="flex  w-[95%] p-2 flex-row justify-between items-center border-2 border-gray-300 rounded-lg  mt-5">
                                 <div className="flex h-[50px] " >
                                     <h1 className="text-[40px] h-[20px] mr-3">#</h1>
-                                    <h1 className="text-[30px] h-[20px]"> {channels.channelName}</h1>
+                                    <h1 className="text-[30px] h-[20px]"> {channels.name}</h1>
                                 </div>
 
                             </Box>
                         })}
-                        {allSearchUsers.map((users: any) => {
-                            return <Box className="flex w-[95%] p-2 flex-row justify-between items-center border-2 border-gray-300 rounded-lg  mt-5">
-                                <div className="flex flex-row items-center space-x-5">
-                                    <Avatar size="md" />
-                                    <h1 className="text-lg font-bold">{users.userName}</h1>
-                                </div>
-
-                            </Box>
-                        })}
+                        {/* {allSearchUsers.map((users: User, id: number) => {
+                            return (<Usercard key={id} user={users}/>)
+                        })} */}
                     </div>
                 </ModalBody>
                 <ModalCloseButton />

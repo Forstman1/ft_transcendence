@@ -15,7 +15,7 @@ import SelectComponent from './rightSideBar/SelectComponent'
 
 
 
-export default function ModalWraper({ isOpen, onClose, imageAlt }: any) {
+export default function ModalWraper({ isOpen, onClose, imageAlt, Componenent }: any) {
 
   const toast = useToast()
 
@@ -51,7 +51,7 @@ export default function ModalWraper({ isOpen, onClose, imageAlt }: any) {
         break
     }
   }
-
+  
   return (
 
     <Modal
@@ -73,10 +73,11 @@ export default function ModalWraper({ isOpen, onClose, imageAlt }: any) {
 
         <ModalHeader>{imageAlt}</ModalHeader>
         <ModalBody>
+          {Componenent &&  <Componenent />}
           <ShosenContent />
         </ModalBody>
         <ModalCloseButton />
-        <ModalFooter>
+        {!Componenent && <ModalFooter>
           <Button
             colorScheme="red"
             variant="outline"
@@ -90,7 +91,8 @@ export default function ModalWraper({ isOpen, onClose, imageAlt }: any) {
             variant="outline"
             ml={10}
             onClick={() => {
-              onClose(); toast({
+              onClose();
+               toast({
                 title: getAnswer(imageAlt),
                 position: `bottom-right`,
                 status: 'success',
@@ -104,7 +106,8 @@ export default function ModalWraper({ isOpen, onClose, imageAlt }: any) {
           >
             Confirm
           </Button>
-        </ModalFooter>
+        </ModalFooter>}
+        
       </ModalContent>
     </Modal>
   )
