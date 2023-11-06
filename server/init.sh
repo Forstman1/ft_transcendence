@@ -10,7 +10,8 @@ do
 done
 
 npm install && npm run build
-npx prisma migrate dev --name dev --preview-feature
+# npx prisma migrate dev --name dev --preview-feature
+npx prisma db push
 npx prisma generate
 # npx prisma db seed --preview-feature
 exec "$@"
