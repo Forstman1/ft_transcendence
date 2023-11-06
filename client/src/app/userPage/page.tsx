@@ -4,7 +4,7 @@ import { Flex, Box, Avatar, Container, Icon } from '@chakra-ui/react'
 import { MdSettings } from 'react-icons/md'
 
 import ChartPie from '@/components/userPage/ChartPie';
-import Collection from '@/components/userPage/Collection';
+import Collection from '@/components/userPage/Coalitions';
 import ChartLine from '@/components/userPage/CartLine';
 import FriendList from '@/components/userPage/FriendList';
 import Achievements from '@/components/userPage/Achievements'

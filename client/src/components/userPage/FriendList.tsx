@@ -1,6 +1,6 @@
 import { Flex, Avatar, AvatarBadge, Icon } from "@chakra-ui/react"
 import { TriangleDownIcon } from '@chakra-ui/icons'
-import Collection from "./Collection"
+import Collection from "./Coalitions"
 
 
 type friendsType = Array<{
