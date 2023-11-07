@@ -7,7 +7,7 @@ import arrow from "../../../../../client/assets/icons/arrow.svg";
 import Image from 'next/image';
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
-import { addMessage } from '@/redux/slices/chat/ChatSlice';
+import { addMessage, setMessages } from '@/redux/slices/chat/ChatSlice';
 import { ChannelMessage } from '@/utils/types/chat/ChatTypes';
 import { useMutation } from 'react-query';
 import MobileFooter from './Mobile/MobileFooter';
@@ -101,7 +101,8 @@ export default function ChatWindow() {
 
 
   const handleNewMessage = async (data: any) => {
-    if (!data.newmessage) return;
+    if (data.newmessage.trim() === '')
+      return;
 
     console.log("sifat chi7aja", selected.id, " " + selected.id)
     socket.emit('sendMessage', {
@@ -116,19 +117,32 @@ export default function ChatWindow() {
   };
 
 
+  const getMessages = useMutation<any, Error, any>((variables) =>
+    fetch('http://127.0.0.1:3001/message/getmessages/' + variables.channelId).then((response) => {
+      return response.json()
+
+    }).catch((error) => {
+      return error
+    }))
+
 
 
 
   useEffect(() => {
+    const fetchMessages = async () => {
+      const messages: ChannelMessage[] = await getMessages.mutateAsync({
+        channelId: selected?.id,
+      })
+      if (messages) {
+        dispatch(setMessages(messages))
+      }
+    }
 
+    fetchMessages()
     socket.on('receivedMessage', (data: any) => {
-    // const selectedChannel = useSelector((state: any) => state.chat.selectedChannelorUser);
 
-      console.log("waslat chi7aja", data.channelId, " " + selected?.id)
-      if (selected?.id === data.channelId)
-      {
-        // console.log(selected?.id, " " + data.channelId)
-        dispatch(addMessage(data.message)); 
+      if (selected?.id === data.channelId) {
+        dispatch(addMessage(data.message));
       }
 
     });

@@ -1,5 +1,5 @@
 import { Search2Icon, SearchIcon } from "@chakra-ui/icons";
-import { Box, Button, Icon, Input, InputLeftElement, Modal, Radio, useDisclosure, useToast } from "@chakra-ui/react";
+import { Box, Button, FormControl, FormLabel, Icon, Input, InputLeftElement, Modal, Radio, useDisclosure, useToast } from "@chakra-ui/react";
 import { Modak } from "next/font/google";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -20,7 +20,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { setChannel, setChannelMember, setMessages, setNewChannel, setTheUser } from "@/redux/slices/chat/ChatSlice";
 import { useMutation } from "react-query";
 import { LockIcon, SmallAddIcon } from "@chakra-ui/icons";
-import { select } from "radash";
 
 
 
@@ -106,6 +105,7 @@ export default function Search() {
     const [allSearchChannels, setAllSearchChannels]: any = useState([])
     const [allSearchUsers, setAllSearchUsers]: any = useState([])
     const { isOpen, onOpen, onClose } = useDisclosure()
+
     const channels = useSelector((state: any) => state.chat.channels)
 
     const [selectedOption, setSelectedOption]: any = useState();
@@ -113,8 +113,11 @@ export default function Search() {
     const toast = useToast()
     const userId = useSelector((state: any) => state.userID.user)
     const socket = useSelector((state: any) => state.channelChatSocket.socket)
-
-
+    const [wrongpassowrd, setWrongpassowrd] = useState(false);
+    const [openSearch, setOpenSearch] = useState(false);
+    const { handleSubmit, register, reset } = useForm<any>();
+    const [show, setShow] = React.useState(false)
+    const handleShow = () => setShow(!show)
 
     const getchannels = useMutation<any, Error, any>((variables) =>
         fetch('http://127.0.0.1:3001/channel/getallchannelsapp/' + variables.tofound).then((res) => {
@@ -130,21 +133,24 @@ export default function Search() {
             return res.json()
         }).catch((err) => console.log(err)))
 
-    const listusers = useMutation<any, Error, any>((variables) =>
+    const listusers = useMutation<any, Error, any>(() =>
         fetch('http://127.0.0.1:3001/users/listusers').then((res) => {
             return res.json()
         }).catch((err) => console.log(err)))
 
-    const listchannels = useMutation<any, Error, any>((variables) =>
+    const listchannels = useMutation<any, Error, any>(() =>
         fetch('http://127.0.0.1:3001/channel/getallpublicandprivatechannels').then((res) => {
             return res.json()
         }).catch((err) => console.log(err)))
+
+
+
 
     const handleSearchClick = async () => {
 
         console.log(search)
 
-        if (search === "") {
+        if (search.trim() === "") {
 
             const searchchannelarray = await listchannels.mutateAsync({})
             const searchuserarray = await listusers.mutateAsync({})
@@ -158,12 +164,9 @@ export default function Search() {
         const allchannel = await getchannels.mutateAsync({ tofound: search })
         const allusers = await getusers.mutateAsync({ tofound: search })
 
-
         setAllSearchChannels(allchannel)
 
         setAllSearchUsers(allusers)
-
-        // console.log(allchannel)
 
 
         setSearch("")
@@ -171,11 +174,6 @@ export default function Search() {
     };
 
 
-
-    const handleClick = () => {
-
-        onOpen()
-    }
 
     const handleChange = async (data: any) => {
         setSearch(data.target.value)
@@ -211,24 +209,114 @@ export default function Search() {
 
 
 
+
+
+    const checkpassword = useMutation<any, Error, any>((variables) =>
+        fetch('http://127.0.0.1:3001/channel/checkpassword', {
+            method: "POST",
+            body: JSON.stringify(variables),
+            headers: {
+                "content-type": "application/json",
+            }
+        }).then((response) => {
+            return response.json()
+
+        }).catch((error) => {
+            return error
+        }))
+
+    const onSubmit = async (info: any) => {
+
+            const check = await checkpassword.mutateAsync({
+                channelName: selectedOption.name,
+                password: info.password
+            })
+            console.log(check)
+            if (check.status === "wrong password") {
+                setWrongpassowrd(true)
+                return;
+            }
+            dispatch(setChannel(selectedOption))
+            const messages = await getMessages.mutateAsync({
+                channelId: selectedOption.id,
+            })
+            if (messages) {
+                dispatch(setMessages(messages))
+            }
+            const channelmember: ChannelMember = await getchannelmember.mutateAsync({
+                channelId: selectedOption.id,
+                userId
+            })
+            if (channelmember) {
+                dispatch(setChannelMember(channelmember))
+            }
+            toast({
+                title: selectedOption.name,
+                position: `bottom-right`,
+                status: 'success',
+                duration: 1000,
+                containerStyle: {
+                    width: 300,
+                    height: 100,
+                }
+            })
+    
+            info.password = "";
+            reset({ password: "" })
+            onClose();
+    
+        };
+
     const confirm = async () => {
         if ('name' in selectedOption) {
-            if (channels.includes(selectedOption)) {
-                dispatch(setChannel(selectedOption))
-                socket.emit('joinChannel', {
-                    channelId: selectedOption.id,
-                    userId: userId,
-                });
-                toast({
-                    title: selectedOption.name,
-                    position: `bottom-right`,
-                    status: 'success',
-                    duration: 1000,
-                    containerStyle: {
-                        width: 300,
-                        height: 100,
+            
+            const newchannels = channels.map((channel: any) => {
+                delete channel.channelMembers
+                return channel
+            })
+            
+            console.log(selectedOption, newchannels, " ahna hna 1")
+
+            if (newchannels.includes(selectedOption)) {
+
+                console.log(selectedOption, " ahna hna 2")
+
+                
+                if (selectedOption.type === 'PROTECTED') {
+                    setWrongpassowrd(false)
+                    // onOpen()
+                    onClose()
+                    setOpenSearch(true)
+                }
+                else {
+                    dispatch(setChannel(selectedOption))
+                    console.log("ana hna")
+                    const messages: ChannelMessage[] = await getMessages.mutateAsync({
+                        channelId: selectedOption.id,
+                    })
+                    if (messages) {
+                        dispatch(setMessages(messages))
                     }
-                })
+                    const channelmember: ChannelMember = await getchannelmember.mutateAsync({
+                        channelId: selectedOption.id,
+                        userId
+                    })
+                    if (channelmember) {
+                        dispatch(setChannelMember(channelmember))
+                    }
+                    toast({
+                        title: selectedOption.name,
+                        position: `bottom-right`,
+                        status: 'success',
+                        duration: 1000,
+                        containerStyle: {
+                            width: 300,
+                            height: 100,
+                        }
+                    })
+                }
+
+
                 onClose();
                 return  ;
             }
@@ -289,6 +377,13 @@ export default function Search() {
                     })
                     onClose()
                 }
+                else
+                {
+                    setWrongpassowrd(false)
+                    // onOpen()
+                    onClose()
+                    setOpenSearch(true)
+                }
             }
         }
 
@@ -296,7 +391,7 @@ export default function Search() {
 
 
     return (<>
-        <div onClick={handleClick} className='w-[80%]  md:h-[65px] h-[40px] mt-5 border-2 border-black rounded-sm flex justify-between items-center custom-shadow cursor-pointer'>
+        <div onClick={onOpen} className='w-[80%]  md:h-[65px] h-[40px] mt-5 border-2 border-black rounded-sm flex justify-between items-center custom-shadow cursor-pointer'>
 
             <div className='border-none w-full h-full text-gray-400 text-[30px] items-center flex ml-[10px]'>Search...</div>
             <div className='rounded-none w-[75px] md:h-[63px] h-[40px] bg-black active:bg-black  flex items-center justify-center cursor-pointer'><Icon boxSize={5} color="white" as={SearchIcon} /></div>
@@ -379,14 +474,57 @@ export default function Search() {
                         colorScheme="green"
                         variant="outline"
                         ml={10}
-                        onClick={() => {
-                            confirm();
-
-                        }}
+                        onClick={confirm}
                     >
                         Confirm
                     </Button>
                 </ModalFooter>
+            </ModalContent>
+        </Modal>
+
+
+
+        <Modal isCentered
+            isOpen={openSearch}
+            onClose={ () => setOpenSearch(false)}
+        >
+            <ModalOverlay />
+            <ModalContent>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <ModalHeader>Channel Name [{selectedOption?.name}]</ModalHeader>
+                    <ModalHeader>Enter Password</ModalHeader>
+
+                    <ModalCloseButton />
+                    <ModalBody pb={6}>
+                        <FormControl>
+                            <FormLabel>Password</FormLabel>
+                            <InputGroup size='md'>
+                                <Input
+                                    required
+                                    {...register("password")}
+                                    pr='4.5rem'
+                                    type={show ? 'text' : 'password'}
+                                    placeholder='Enter password'
+                                />
+                                <InputRightElement width='4.5rem'>
+                                    <Button h='1.75rem' size='sm' onClick={handleShow}>
+                                        {show ? 'Hide' : 'Show'}
+                                    </Button>
+                                </InputRightElement>
+                            </InputGroup>
+                            {wrongpassowrd && <div>Wrong passowrd</div>}
+                        </FormControl>
+
+
+                    </ModalBody>
+
+                    <ModalFooter>
+                        <Button type='submit' mr={3}>
+                            Enter
+                        </Button>
+
+                    </ModalFooter>
+                </form>
             </ModalContent>
         </Modal>
     </>)

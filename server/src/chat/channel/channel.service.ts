@@ -160,9 +160,10 @@ export class ChannelService {
   }
 
 
-
+ 
 
   async setpassword(channelId: string, userId: string, newpassword: string) {
+
     let channel = await this.prisma.channel.findUnique({
       where: {
         id: channelId,
@@ -176,32 +177,36 @@ export class ChannelService {
       },
     });
     const channelmember = channelmembers[0];
-    if (channelmember.role === 'OWNER') {
+    if (channel.type === 'PUBLIC' || channel.type === 'PRIVATE') {
+      if (channelmember.role === 'OWNER' || channelmember.role === 'ADMIN') {
 
-      const hash = await argon2.hash(newpassword);
-
-      channel = await this.prisma.channel.update({
-        where: {
-          id: channelId,
-        },
-        data: {
-          password: hash,
-          type: 'PROTECTED',
-        },
-      });
-
-      return channel;
-
-    } else return { status: 'you are not owner of the channel' };
+        const hash = await argon2.hash(newpassword);
+  
+        channel = await this.prisma.channel.update({
+          where: {
+            id: channelId,
+          },
+          data: {
+            password: hash,
+            type: 'PROTECTED',
+          },
+        });
+  
+        return {channel: channel, status: "Password is set. Channel is private now"};
+  
+      } else return { status: 'you are not owner or admin of the channel' };
+    }
+    else return { status: 'channel is already protected' };
+    
   }
 
 
   
 
-  async removepassword(channelName: string, userId: string) {
+  async removepassword(channelId: string, userId: string) {
     let channel = await this.prisma.channel.findUnique({
       where: {
-        name: channelName,
+        id: channelId,
       },
     });
 
@@ -213,7 +218,7 @@ export class ChannelService {
     });
     let channelmember = channelmembers[0];
 
-    if (channelmember.role === 'OWNER') {
+    if (channelmember.role === 'OWNER' || channelmember.role === 'ADMIN') {
       channel = await this.prisma.channel.update({
         where: {
           id: channel.id,
@@ -223,7 +228,7 @@ export class ChannelService {
           type: 'PUBLIC',
         },
       });
-      return channel;
+      return {channel: channel, status: "Password is removed. Channel is public now"};
     } else return { status: 'you are not owner of the channel' };
   }
  

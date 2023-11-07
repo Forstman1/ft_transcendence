@@ -93,10 +93,10 @@ export default function LeftSidebar() {
   useEffect(() => {
 
 
-    socket.emit('getChannels', { userId: userId })
+    socket.emit('getChannelsFirstTime', { userId: userId })
 
 
-    socket.on('allchannels', (data: any) => {
+    socket.on('getChannelsFirstTime', (data: any) => {
       console.log(data)
       const allchannels: Channel[] = data.channels
 
@@ -111,6 +111,20 @@ export default function LeftSidebar() {
 
     })
 
+    socket.on('allchannels', (data: any) => {
+      console.log(data)
+      const allchannels: Channel[] = data.channels
+
+      allchannels.map((channel: Channel) => {
+        console.log("ana hna", selected, channel.id)
+        if (selected?.id === channel.id) {
+          console.log("ana dkholt")
+          dispatch(setChannel(channel))
+        }
+      });
+      dispatch(setChannels(allchannels))
+
+    })
     
     socket.on('channelLeft', (data: any) => {
       console.log(data)
@@ -233,16 +247,86 @@ export default function LeftSidebar() {
 
     })
 
+    socket.on('setpassword', (data: any) => {
+      if (data.status === "You are not owner or admin of the channel") {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+      else if (data.status === "Password is set. Channel is private now") {
+        console.log(data)
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        })
+        socket.emit('getChannels', { userId: userId })
+      }
+      else
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+    })
 
+    socket.on('removepassword', (data: any) => {
+
+      if (data.status === "You are not owner or admin of the channel") {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+      else if (data.status === "Password is removed. Channel is public now") {
+        console.log(data)
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        })
+        socket.emit('getChannels', { userId: userId })
+      }
+      else
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+    })
 
     return () => {
+      socket.off('getChannelsFirstTime');
       socket.off('channelLeft');
       socket.off('allchannels');
       socket.off('channelDeleted');
       socket.off('setAdministrator');
       socket.off('removeAdministrator');
+      socket.off('removeMember');
+      socket.off('setpassword');
+      socket.off('removepassword');
+
     }
-  }, [])
+  }, [selected])
 
 
 

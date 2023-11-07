@@ -83,7 +83,6 @@ function Componenent({ onClose }: any) {
             adminId: selectedOption.id
         })
         onClose()
-
     }
 
 

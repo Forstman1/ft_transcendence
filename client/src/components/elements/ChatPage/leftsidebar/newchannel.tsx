@@ -47,7 +47,7 @@ export default function Newchannel({ isOpen, onClose, channels }: Props) {
     const handleClick = () => setShow(!show)
     const dispatch = useDispatch()
     const userId = useSelector((state:any) => state.userID.user)
-
+    const socket = useSelector((state: any) => state.channelChatSocket.socket)
 
     const createchannel = useMutation<any, Error, ChannelValues>((variables) => 
       fetch('http://127.0.0.1:3001/channel/createchannel', {
@@ -114,7 +114,10 @@ export default function Newchannel({ isOpen, onClose, channels }: Props) {
         })
         dispatch(setNewChannel(channel))
         dispatch(setChannel(channel))
-
+        socket.emit('joinChannel', {
+          channelId: channel.id,
+          userId: userId,
+        })
         onClose();
 
     };

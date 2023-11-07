@@ -37,12 +37,12 @@ export class ChannelController {
 
     @Post('/setpassword')
     setpassword(@Body() body:any) {
-        return this.channelservice.setpassword(body.channelName, body.userId, body.password)
+        return this.channelservice.setpassword(body.channelId, body.userId, body.password)
     }
 
     @Delete('/removepassword')
     removepassword(@Body() body: any) {
-        return this.channelservice.removepassword(body.channelName, body.userId)
+        return this.channelservice.removepassword(body.channelId, body.userId)
     }
 
     @Put('/setadministrator')

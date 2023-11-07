@@ -54,6 +54,7 @@ export default function Hashtag(props: any) {
         }).catch((error) => {
             return error
         }))
+        
 
     const getchannelmember = useMutation<any, Error, any>((variables) =>
         fetch('http://127.0.0.1:3001/channel/getchannelmemberinfo/' + variables.channelId + '/' + variables.userId).then((response) => {
@@ -79,10 +80,6 @@ export default function Hashtag(props: any) {
             onOpen()
         }
         else {
-            socket.emit('joinChannel', {
-                channelId: data.id,
-                userId: userId,
-            })
             dispatch(setChannel(data))
             console.log("ana hna")
             const messages: ChannelMessage[] = await getMessages.mutateAsync({
@@ -130,8 +127,13 @@ export default function Hashtag(props: any) {
         if (messages) {
             dispatch(setMessages(messages))
         }
-        
-
+        const channelmember: ChannelMember = await getchannelmember.mutateAsync({
+            channelId: id,
+            userId
+        })
+        if (channelmember) {
+            dispatch(setChannelMember(channelmember))
+        }
         toast({
             title: name,
             position: `bottom-right`,
@@ -142,6 +144,7 @@ export default function Hashtag(props: any) {
                 height: 100,
             }
         })
+
         info.password = "";
         reset({ password: "" })
         onClose();

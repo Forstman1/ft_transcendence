@@ -106,6 +106,21 @@ export class ChatGateway2 implements OnGatewayConnection, OnGatewayDisconnect, O
 
   }
 
+
+  @SubscribeMessage('getChannelsFirstTime')
+  async   getChannelsFirstTime(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
+
+
+    const channels = await this.channelService.getallchannels(data.userId);
+    client.join(client.id);
+
+    this.server.to(client.id).emit('getChannelsFirstTime', { channels: channels });
+
+  }
+  // getChannelsFirstTime
+
+
+
   @SubscribeMessage('leaveChannel')
   async leaveChannel(@ConnectedSocket() client: Socket, @MessageBody() data: any): Promise<any> {
 
@@ -190,7 +205,6 @@ export class ChatGateway2 implements OnGatewayConnection, OnGatewayDisconnect, O
 
       }
       else {
-        
         this.server.to(channel.id).emit('removeAdministrator', { member: member.channelmember, status: user.username + " is no longer an administrator." });
       }
      
@@ -230,20 +244,65 @@ export class ChatGateway2 implements OnGatewayConnection, OnGatewayDisconnect, O
 
 
 
-  // @SubscribeMessage('setpassword')
-  // async setpassword(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
+  @SubscribeMessage('setpassword')
+  async setpassword(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
 
-  //   try {
+    try {
 
-  //     const channel: any = await this.channelService.getchannelinfo(data.channelId);
-  //     const user = await this.userService.getUser(data.userId);
+      const channel: any = await this.channelService.getchannelinfo(data.channelId);
+      const user = await this.userService.getUser(data.userId);
+
+      if (channel && user) {
+        const newchannel: any = await this.channelService.setpassword(data.channelId, data.userId, data.password)
+
+        if (newchannel.status == "Password is set. Channel is private now") {
+          this.server.to(channel.id).emit('setpassword', { status: "Password is set. Channel is private now" , channel: newchannel.channel});
+          
+
+        }
+        else if (newchannel.status === "You are not the owner of the channel") {
+          this.server.to(client.id).emit('setpassword', { status: "channel is already protected" });
+        }
+        else
+          this.server.to(client.id).emit('setpassword', { status: "You are not owner or admin of the channel" });
+
+      }
 
 
-  //   } catch (error) {
+    } catch (error) {
+      console.log(error);
+      this.server.to(client.id).emit('setpassword', { status: "password can't be set" }); 
+    }
 
-  //   }
+  }
 
+  @SubscribeMessage('removepassword')
+  async removepassword(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
 
-  // }
+    try {
 
+      const channel: any = await this.channelService.getchannelinfo(data.channelId);
+      const user = await this.userService.getUser(data.userId);
+
+      if (channel && user) {
+        const newchannel: any = await this.channelService.removepassword(data.channelId, data.userId)
+
+        if (newchannel.status === "Password is removed. Channel is public now") {
+          this.server.to(channel.id).emit('removepassword', { status: "Password is removed. Channel is public now" , channel: newchannel.channel});
+          
+
+        }
+        else if (newchannel.status === "You are not the owner of the channel") {
+          this.server.to(client.id).emit('removepassword', { status: "channel is already public" });
+        }
+        else
+          this.server.to(client.id).emit('removepassword', { status: "You are not owner or admin of the channel" });
+
+      }
+    } catch (error) {
+      console.log(error);
+      this.server.to(client.id).emit('removepassword', { status: "password can't be removed" }); 
+    }
+
+  }
 }
