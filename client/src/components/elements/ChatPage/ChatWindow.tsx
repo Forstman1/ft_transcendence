@@ -133,12 +133,12 @@ export default function ChatWindow() {
       const messages: ChannelMessage[] = await getMessages.mutateAsync({
         channelId: selected?.id,
       })
-      if (messages) {
+      if (messages.length != 0) {
         dispatch(setMessages(messages))
       }
     }
-
-    fetchMessages()
+    if (selected)
+      fetchMessages()
     socket.on('receivedMessage', (data: any) => {
 
       if (selected?.id === data.channelId) {
@@ -165,7 +165,7 @@ export default function ChatWindow() {
       <div className=' flex flex-col gap-[10px] overflow-y-scroll z-0 h-[91%] ' ref={chatContainer}>
 
 
-        {messages.length != 0 && messages.map((message: ChannelMessage, index: number) => {
+        {messages && messages.length != 0 && messages.map((message: ChannelMessage, index: number) => {
           if (message.authorName === user.username) {
             return <Own_Message key={index} message={message} user={user} />
           }

@@ -40,6 +40,7 @@ export class MessageService {
 
     async getMessages(channelId: string) {
 
+
         const channel = await this.prisma.channel.findUnique({
             where: {
                 id: channelId
@@ -48,7 +49,8 @@ export class MessageService {
                 channelmessages: true,
             }
         })
-
+        if (!channel.channelmessages)
+            return []
         return channel.channelmessages
     }
 

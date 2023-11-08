@@ -31,7 +31,7 @@ export class ChannelController {
 
     @Put('/changepassword')
     changepassword(@Body() body: ChangePassword){
-        return this.channelservice.changepassword(body.channelName, body.userId, body.currentpassword, body.newpassword)
+        return this.channelservice.changepassword(body.channelId, body.userId, body.currentpassword, body.newpassword)
     }
 
 

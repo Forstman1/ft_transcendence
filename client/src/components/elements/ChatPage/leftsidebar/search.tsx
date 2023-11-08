@@ -41,7 +41,6 @@ function Usercard(props: any) {
         setSelectedOption(user);
     };
 
-    const dispatch = useDispatch()
 
 
     return (
@@ -189,7 +188,7 @@ export default function Search() {
         }))
 
     const getMessages = useMutation<any, Error, any>((variables) =>
-        fetch('http://127.0.0.1:3001/message/getmessages/' + variables.channelId ).then((response) => {
+        fetch('http://127.0.0.1:3001/message/getmessages/' + variables.channelId).then((response) => {
             return response.json()
 
         }).catch((error) => {
@@ -227,61 +226,83 @@ export default function Search() {
 
     const onSubmit = async (info: any) => {
 
-            const check = await checkpassword.mutateAsync({
-                channelName: selectedOption.name,
-                password: info.password
-            })
-            console.log(check)
-            if (check.status === "wrong password") {
-                setWrongpassowrd(true)
-                return;
-            }
-            dispatch(setChannel(selectedOption))
-            const messages = await getMessages.mutateAsync({
-                channelId: selectedOption.id,
-            })
-            if (messages) {
-                dispatch(setMessages(messages))
-            }
-            const channelmember: ChannelMember = await getchannelmember.mutateAsync({
-                channelId: selectedOption.id,
-                userId
-            })
-            if (channelmember) {
-                dispatch(setChannelMember(channelmember))
-            }
+        const check = await checkpassword.mutateAsync({
+            channelName: selectedOption.name,
+            password: info.password
+        })
+        console.log(check)
+        if (check.status === "wrong password") {
+            setWrongpassowrd(true)
             toast({
-                title: selectedOption.name,
+                title: "Wrong password",
                 position: `bottom-right`,
-                status: 'success',
+                status: 'error',
                 duration: 1000,
                 containerStyle: {
                     width: 300,
                     height: 100,
                 }
             })
-    
-            info.password = "";
-            reset({ password: "" })
-            onClose();
-    
-        };
+            return;
+        }
+
+        const channel = await enterChannel.mutateAsync({ channelName: selectedOption.name, userId: userId })
+        setWrongpassowrd(false)
+        socket.emit('joinChannel', {
+            channelId: channel.id,
+            userId: userId,
+        });
+        dispatch(setNewChannel(selectedOption))
+        dispatch(setChannel(selectedOption))
+
+
+        const messages = await getMessages.mutateAsync({
+            channelId: selectedOption.id,
+        })
+        if (messages) {
+            dispatch(setMessages(messages))
+        }
+        const channelmember: ChannelMember = await getchannelmember.mutateAsync({
+            channelId: selectedOption.id,
+            userId
+        })
+        if (channelmember) {
+            dispatch(setChannelMember(channelmember))
+        }
+        toast({
+            title: selectedOption.name,
+            position: `bottom-right`,
+            status: 'success',
+            duration: 1000,
+            containerStyle: {
+                width: 300,
+                height: 100,
+            }
+        })
+
+        info.password = "";
+        reset({ password: "" })
+        onClose();
+        setOpenSearch(false)
+
+
+    };
 
     const confirm = async () => {
         if ('name' in selectedOption) {
-            
+
             const newchannels = channels.map((channel: any) => {
                 delete channel.channelMembers
                 return channel
             })
-            
+
             console.log(selectedOption, newchannels, " ahna hna 1")
 
             if (newchannels.includes(selectedOption)) {
 
                 console.log(selectedOption, " ahna hna 2")
 
-                
+
                 if (selectedOption.type === 'PROTECTED') {
                     setWrongpassowrd(false)
                     // onOpen()
@@ -318,15 +339,14 @@ export default function Search() {
 
 
                 onClose();
-                return  ;
+                return;
             }
             else {
                 if (selectedOption.type === 'PUBLIC') {
 
                     const channel = await enterChannel.mutateAsync({ channelName: selectedOption.name, userId: userId })
-                    
-                    if (channel.status)
-                    {
+
+                    if (channel.status) {
                         toast({
                             title: channel.status,
                             position: `bottom-right`,
@@ -337,9 +357,9 @@ export default function Search() {
                                 height: 100,
                             }
                         })
-                        
+
                         onClose();
-                        return  ;
+                        return;
                     }
                     socket.emit('joinChannel', {
                         channelId: channel.id,
@@ -364,7 +384,7 @@ export default function Search() {
                         dispatch(setChannelMember(channelmember))
                     }
 
-                    
+
                     toast({
                         title: "hadi rah public",
                         position: `bottom-right`,
@@ -377,8 +397,7 @@ export default function Search() {
                     })
                     onClose()
                 }
-                else
-                {
+                else {
                     setWrongpassowrd(false)
                     // onOpen()
                     onClose()
@@ -388,7 +407,10 @@ export default function Search() {
         }
 
     }
-
+    useEffect(() => {
+        setAllSearchUsers([])
+        setAllSearchChannels([])
+    }, [isOpen])
 
     return (<>
         <div onClick={onOpen} className='w-[80%]  md:h-[65px] h-[40px] mt-5 border-2 border-black rounded-sm flex justify-between items-center custom-shadow cursor-pointer'>
@@ -486,7 +508,7 @@ export default function Search() {
 
         <Modal isCentered
             isOpen={openSearch}
-            onClose={ () => setOpenSearch(false)}
+            onClose={() => setOpenSearch(false)}
         >
             <ModalOverlay />
             <ModalContent>

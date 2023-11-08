@@ -124,14 +124,14 @@ export class ChannelService {
 
 
   async changepassword(
-    channelName: string,
+    channelId: string,
     userId: string,
     currentpassword: string,
     newpassword: string,
   ) {
     const channel = await this.prisma.channel.findUnique({
       where: {
-        name: channelName,
+        id: channelId,
       },
     });
 
@@ -141,22 +141,27 @@ export class ChannelService {
         channel: channel,
       },
     });
+
     const channelmember = channelmembers[0];
-    if (channelmember.role === 'OWNER') {
+    if (channel.type !== 'PROTECTED') 
+      return { status: 'channel is not protected' };
+
+    if (channelmember.role === 'OWNER' || channelmember.role === 'ADMIN') {
       if (await argon2.verify(channel.password, currentpassword)) {
         const hash = await argon2.hash(newpassword);
         await this.prisma.channel.update({
           where: {
-            name: channelName,
+            id: channelId,
           },
           data: {
             password: hash,
           },
         });
-      } else return { status: 'wrong password' };
+        return { status: 'Password is changed' };
+      } else 
+        return { status: 'Current password is wrong' };
     }
-    console.log(channelmember);
-    return channelmember;
+    return { status: 'You are not the owner of the channel' };
   }
 
 
@@ -465,7 +470,7 @@ export class ChannelService {
     });
     if (!channelmembers[0])
     {
-      if (channel.type === 'PUBLIC') {
+      if (channel.type === 'PUBLIC' || channel.type === 'PROTECTED') {
         const channelmember = await this.prisma.channelMember.create({
           data: {
             role: 'MEMBER',

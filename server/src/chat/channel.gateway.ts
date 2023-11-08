@@ -80,16 +80,16 @@ export class ChatGateway2 implements OnGatewayConnection, OnGatewayDisconnect, O
   @SubscribeMessage('enterChannel')
   async enterChannel(@ConnectedSocket() client: Socket, @MessageBody() data: any): Promise<any> {
 
-    const channel: any = await this.channelService.getchannelinfo(data.channelId);
+    let channel: any = await this.channelService.getchannelinfo(data.channelId);
     const user = await this.userService.getUser(data.userId);
 
 
-    this.channelService.enterchannel(channel.name, data.userId);
-
-
+    
+    
     if (channel && user) {
+      channel = this.channelService.enterchannel(channel.name, data.userId);
       client.join(channel.id);
-      this.server.to(channel.id).emit('channelEntered', { channelId: data.channelId, message: user.username + " entered the channel", userId: data.userId });
+      this.server.to(channel.id).emit('channelEntered', { channelId: data.channelId, message: user.username + " entered the channel", userId: data.userId, channel: channel });
     }
 
   }
@@ -305,4 +305,37 @@ export class ChatGateway2 implements OnGatewayConnection, OnGatewayDisconnect, O
     }
 
   }
+
+
+  @SubscribeMessage('changepassword')
+  async changepassword(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
+    try {
+        
+        const channel: any = await this.channelService.getchannelinfo(data.channelId);
+        const user = await this.userService.getUser(data.userId);
+  
+        if (channel && user) {
+          const newchannel: any = await this.channelService.changepassword(data.channelId, data.userId, data.currentpassword, data.newpassword)
+  
+          if (newchannel.status === "Password is changed") {
+            this.server.to(channel.id).emit('changepassword', { status: "Password is changed" , channel: newchannel.channel});
+            
+  
+          }
+          else if (newchannel.status === "You are not the owner of the channel") {
+            this.server.to(client.id).emit('changepassword', { status: "You are not the owner of the channel" });
+          }
+          else if (newchannel.status === "Current password is wrong") {
+            this.server.to(client.id).emit('changepassword', { status: "Current password is wrong" });
+          }
+          else
+            this.server.to(client.id).emit('changepassword', { status: "You are not authorized" });
+  
+        }
+    } catch (error) {
+      console.log(error);
+      this.server.to(client.id).emit('changepassword', { status: "password can't be changed" }); 
+    }
+  }
+
 }

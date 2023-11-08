@@ -118,12 +118,33 @@ export default function LeftSidebar() {
       allchannels.map((channel: Channel) => {
         console.log("ana hna", selected, channel.id)
         if (selected?.id === channel.id) {
-          console.log("ana dkholt")
           dispatch(setChannel(channel))
         }
       });
       dispatch(setChannels(allchannels))
 
+    })
+
+    socket.on('channelEntered', (data: any) => {
+      console.log(data)
+      if (data.userId === userId) {
+        toast({
+          title: "you joined the channel",
+          status: "success",
+          position: `bottom-right`,
+          isClosable: true,
+        })
+        dispatch(setChannel(data.channel))
+        socket.emit('getChannels', { userId: userId }) 
+      }
+      else {
+        toast({
+          title: data.message,
+          status: "success",
+          position: `bottom-right`,
+          isClosable: true,
+        })
+      }
     })
     
     socket.on('channelLeft', (data: any) => {
@@ -313,6 +334,30 @@ export default function LeftSidebar() {
         })
       }
     })
+    socket.on('changepassword', (data: any) => {
+      if (data.status === "Password is changed")
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        })
+        socket.emit('getChannels', { userId: userId })
+
+      }
+      else
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+    })
 
     return () => {
       socket.off('getChannelsFirstTime');
@@ -324,7 +369,7 @@ export default function LeftSidebar() {
       socket.off('removeMember');
       socket.off('setpassword');
       socket.off('removepassword');
-
+      socket.off('changepassword');
     }
   }, [selected])
 
