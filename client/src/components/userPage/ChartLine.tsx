@@ -48,7 +48,7 @@ export default function ChartLine() {
         {
           fill: true,
           label: 'Dataset 2',
-          data: [5, 10, 5, 10, 15, 20, 30],
+          data: [5, 10, 5, 10],
           borderColor: 'rgb(53, 162, 235)',
           backgroundColor: 'rgba(53, 162, 235, 0.5)',
         },

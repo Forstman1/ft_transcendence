@@ -20,16 +20,12 @@ type AchievementType =  Array<{
 }>
 
 const data: AchievementType = [
-    {'title':'PONGER',          'locked': false, 'imageSrc': achvmt1.src},
-    {'title':'LEVEL 1',         'locked': false, 'imageSrc': achvmt2.src},
-    {'title':'LEVEL 2',         'locked': true, 'imageSrc': achvmt3.src},
-    {'title':'LEVEL 3',         'locked': true, 'imageSrc': achvmt4.src},
-    {'title':'CHAMPION',        'locked': true, 'imageSrc': achvmt5.src},
-    {'title':'DRAW MASTER',     'locked': true, 'imageSrc': achvmt6.src},
-    // {'title':'Master Level',    'locked': true, 'imageSrc': achvmt5.src},
-    // {'title':'Master Level',    'locked': false, 'imageSrc': achvmt.src},
-    // {'title':'LEGEND',    'locked': true, 'imageSrc': achvmt7.src},
-    // {'title':'KING OF THE HILL',    'locked': true, 'imageSrc': achvmt10.src},
+    {'title':'Bronze',          'locked': false, 'imageSrc': achvmt1.src},
+    {'title':'Silver',         'locked': false, 'imageSrc': achvmt2.src},
+    {'title':'Gold',         'locked': true, 'imageSrc': achvmt3.src},
+    {'title':'Platinium',         'locked': true, 'imageSrc': achvmt4.src},
+    {'title':'Emirald',        'locked': true, 'imageSrc': achvmt5.src},
+    {'title':'Hamas',     'locked': true, 'imageSrc': achvmt6.src},
 ]
 
 export default function Achievements() {

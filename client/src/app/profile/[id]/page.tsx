@@ -5,16 +5,16 @@ import { MdSettings } from 'react-icons/md'
 
 import ChartPie from '@/components/userPage/ChartPie';
 import Collection from '@/components/userPage/Coalitions';
-import ChartLine from '@/components/userPage/CartLine';
+import ChartLine from '@/components/userPage/ChartLine';
 import FriendList from '@/components/userPage/FriendList';
 import Achievements from '@/components/userPage/Achievements'
 import MatchHistory from '@/components/userPage/MatchHistory';
 
 
 
-export default function userPage() {
+export default function Profile({params}: any) {
   return (
-    <div className="w-full h-full py-16 container m-auto">
+    <div className="w-full h-full py-40 px-8 container m-auto">
         <Flex className='flex-wrap lg:flex-nowrap lg:space-x-8'>
             {/* Profile */}
             <Box className='mb-8 p-0 mr-0 border-solid border-2 border-gray-900 custom-shadow rounded w-full lg:w-1/3' p={4} color="black">
@@ -34,7 +34,7 @@ export default function userPage() {
                             <h3>Hssain Aitkadir</h3>
                             <h3 className='text-gray-400'>@haitkadir</h3>
                         </div>
-                        <Avatar className='border-solid border-2 border-gray-900 custom-shadow' size="lg" name="Segun Adebayo" src="https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg" />
+                        <Avatar className='border-solid border-2 border-gray-900 custom-shadow' size="xl" name="Segun Adebayo" src="https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg" />
                     </Flex>
                 </Flex>
             </Box>
@@ -96,7 +96,7 @@ export default function userPage() {
             </div>
         </Flex> */}
 
-
+            <h1>{params.id}</h1>
 
     </div>
   )
