@@ -36,6 +36,7 @@ import { io } from "socket.io-client";
 import { setSocketState } from "@/redux/slices/socket/globalSocketSlice";
 
 const CreatGameGlobalSocket = (user: any) => {
+  console.log("CreatGameGlobalSocket user: ", user);
   const socket = io(process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001', {
     transports: ["websocket"],
     upgrade: false,

@@ -47,4 +47,5 @@ export class GameHistory {
   rounds: number;
   matches: number;
   roomId: string;
+  xp: number;
 }

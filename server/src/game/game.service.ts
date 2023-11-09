@@ -314,7 +314,15 @@ export class GameService {
     data: GameHistory,
     opponentId: string,
   ): Promise<void> => {
-    const { userId, status, userScore, opponentScore, rounds, matches } = data;
+    const { userId, status, userScore, opponentScore, rounds, matches, xp } = data;
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        userGamesXp: {
+          increment: xp,
+        },
+      },
+    });
     await this.prisma.gameHistory.create({
       data: {
         user: { connect: { id: userId } },
@@ -324,6 +332,7 @@ export class GameService {
         opponentScore,
         rounds,
         matches,
+        xp,
       },
     });
     return;
