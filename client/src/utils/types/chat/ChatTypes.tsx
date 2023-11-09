@@ -4,7 +4,7 @@ export type Channel = {
     id: string;
     name: string;
     type: string;
-    channelMembers: ChannelMember[];
+    channelMember: ChannelMember[];
 };
 
 

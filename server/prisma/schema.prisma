@@ -32,7 +32,6 @@ model User {
   usersmessages1 UserMessage[] @relation("Author")
   usersmessages2 UserMessage[] @relation("Reciver")
 
-  channelmessages ChannelMessage[] @relation("channelmessage")
 
   channelMember ChannelMember[]
   games     GameHistory[]
@@ -54,14 +53,18 @@ model ChannelMember {
   userId    String
   role     Role @default(MEMBER)
   channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
-  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  user    User  @relation(fields: [userId], references: [id]) 
+
+  
+  channelmessages ChannelMessage[] @relation("channelmessage")
+
   createdAt DateTime @default(now())
 }
 
 model ChannelMessage {
   id        String   @id @default(uuid())
   content   String
-  author User @relation(name: "channelmessage", fields: [authorID], references: [id], onDelete: Cascade)
+  author ChannelMember @relation(name: "channelmessage", fields: [authorID], references: [id], onDelete: Cascade)
 	reciver Channel @relation(fields: [reciverID], references: [id], onDelete: Cascade)
 	reciverID String
 	authorID String

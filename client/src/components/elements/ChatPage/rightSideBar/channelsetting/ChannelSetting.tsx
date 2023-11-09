@@ -5,7 +5,7 @@ import Image from 'next/image'
 import channelconfig from "../../../../../../assets/icons/channelconf.svg"
 import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
-import { Channel } from '@/utils/types/chat/ChatTypes'
+import { Channel, ChannelMember } from '@/utils/types/chat/ChatTypes'
 import ModalWraper from '../../ModalWraper'
 import ChangePassword from '../channelconfiguration/ChangePassword'
 import leavechannel from "../../../../../../assets/icons/leavechannel.svg"
@@ -30,14 +30,13 @@ export default function ChannelSetting() {
         { src: leavechannel, alt: "Leave Channel", Componenent: ChangePassword },
 
     ]
-    
+    const channelmember: ChannelMember = useSelector((state:any) => state.chat.ChannelMember)
    
     return <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7'>
 
         <InvitePeople />
         <LeaveChannel />
-        <DeletChannel />
-        
+        {channelmember && (channelmember.role === "OWNER")  && <DeletChannel />}
         {/* {CtrlImages.map((data: any) => {
             if (channelinfo.type != 'PROTECTED' && (data.alt == "Change Channel Password" || data.alt == "Remove Channel Password")){}
             else if (channelinfo.type == 'PROTECTED' && data.alt == "Set Channel Password" ){}

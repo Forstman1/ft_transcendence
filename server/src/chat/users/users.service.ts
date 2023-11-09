@@ -18,7 +18,7 @@ export class UsersService {
             return error
         }
     }
-    
+     
     async listUsers(){
         try {
             const listusers = await this.prisma.user.findMany({

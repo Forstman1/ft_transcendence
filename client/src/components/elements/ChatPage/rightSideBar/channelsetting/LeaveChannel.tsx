@@ -6,7 +6,7 @@ import ModalWraper from '../../ModalWraper'
 import Image from 'next/image'
 import invite from "../../../../../../assets/icons/invite.svg"
 import { Channel } from '@/utils/types/chat/ChatTypes'
-import { setChannels } from '@/redux/slices/chat/ChatSlice'
+import { setChannel } from '@/redux/slices/chat/ChatSlice'
 import leavechannel from "../../../../../../assets/icons/leavechannel.svg"
 
 
@@ -15,66 +15,26 @@ import leavechannel from "../../../../../../assets/icons/leavechannel.svg"
 function Componenent({ onClose }: any) {
 
 
-    const channelName = useSelector((state: any) => state.chat.selectedChannelorUser)
+
+    const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
     const userId = useSelector((state: any) => state.userID.user)
-    const toast = useToast()
     const dispatch = useDispatch()
+    const socket = useSelector((state: any) => state.channelChatSocket.socket)
 
 
 
-    const leave = useMutation<any, Error, any>((variables) => fetch('http://127.0.0.1:3001/channel/leavechannel', {
-        method: 'DELETE',
-        body: JSON.stringify(variables),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then((response) => {
-        return response.json()
-    }).catch((error) => {
-        return error
-    }))
-
-
-    const fetchData = async () => {
-        const fetchChannels = await fetch('http://127.0.0.1:3001/channel/getallchannels/' + userId)
-        const response = await fetchChannels.json()
-        if (response.length > 0) {
-            const allchannels: Channel[] = response
-            dispatch(setChannels(allchannels))
-            return allchannels;
-        }
-
-    }
-
-
+    
     const onSubmit = async () => {
-        const leaves = await leave.mutateAsync({ 
-            channelName: channelName.name, 
-            userId: userId 
-        })
-        console.log(leaves.status)
+        
+        socket.emit('leaveChannel', {
+            channelId: channel.id,
+            userId: userId,
+        });
 
-        if (leaves.status == "you are owner of the channel") {
-            toast({
-                title: leaves.status,
-                position: `bottom-right`,
-                status: "error",
-                isClosable: true,
-            })
-            onClose()
-            return
-        }
-        toast({
-            title: leaves.status,
-            description: "You have left the channel",
-            position: `bottom-right`,
-            status: "success",
-            isClosable: true,
-        })
-        fetchData()
+        dispatch(setChannel(null))
+        
         onClose()
     }
-
 
 
     return (
@@ -114,10 +74,7 @@ export default function LeaveChannel() {
 
 
 
-    const data =  { src: leavechannel, alt: "Leave Channel" }
-
-
-
+    const data = { src: leavechannel, alt: "Leave Channel" }
 
     return (<Box className='flex items-center gap-6 w-[220px]'
         key={data.alt}

@@ -14,11 +14,7 @@ import {
   InputRightElement,
   Box,
   Avatar,
-<<<<<<< HEAD
-  Spinner
-=======
   Spinner,
->>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
 } from "@chakra-ui/react";
 import Image from "next/image";
 import { Search2Icon } from "@chakra-ui/icons";
@@ -27,17 +23,9 @@ import Lottie from "lottie-react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store/store";
-<<<<<<< HEAD
-import {
-  setSocketState,
-} from "@/redux/slices/socket/globalSocketSlice";
-import { useAppSelector } from "@/redux/store/store";
-import { useState, useEffect} from "react";
-=======
 import { setSocketState } from "@/redux/slices/socket/globalSocketSlice";
 import { useAppSelector } from "@/redux/store/store";
 import { useState, useEffect } from "react";
->>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
 
 type Props = {
   onClose: () => void;
@@ -48,14 +36,10 @@ export default function GameSearchFriend({ onClose }: Props) {
   const dispatch = useDispatch<AppDispatch>();
   const socket = useAppSelector((state) => state.globalSocketReducer);
   const [socketRoomId, setSocketRoomId] = useState<string>("");
-<<<<<<< HEAD
-  const friendId = socket.playerId === 1 ? 2 : 1;
-=======
   const friendId =
     socket.playerId === "18717cab-8acf-412f-ae09-c1d310529c40"
       ? "ba1e3254-5201-4abf-973e-30a10c0ba527"
       : "18717cab-8acf-412f-ae09-c1d310529c40";
->>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
   const modalData = useAppSelector((state) => state.gameReducer);
   const [isInvited, setIsInvited] = useState<boolean>(false);
 
@@ -63,43 +47,24 @@ export default function GameSearchFriend({ onClose }: Props) {
 
   socket.socket?.on("playGame", () => {
     router.push("/gamePage/gameFriendPage");
-<<<<<<< HEAD
-  }
-  );
-=======
   });
->>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
 
   //---------------------------------------------------
 
   socket.socket?.on("friendDenyInvitation", () => {
     setIsInvited(false);
-<<<<<<< HEAD
-  }
-  );
-=======
   });
->>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
 
   //---------------------------------------------------
 
   useEffect(() => {
-<<<<<<< HEAD
-    if(socketRoomId !== ""){
-=======
     if (socketRoomId !== "") {
->>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
       inviteFriend();
     }
   }, [socketRoomId]);
 
   useEffect(() => {
-<<<<<<< HEAD
-    if(isInvited)
-    {
-=======
     if (isInvited) {
->>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
       setTimeout(() => {
         setIsInvited(false);
         socket.socket?.emit("leaveRoom", socketRoomId);
@@ -189,22 +154,6 @@ export default function GameSearchFriend({ onClose }: Props) {
               <h1 className="text-lg font-bold">UserName</h1>
             </div>
             {!isInvited ? (
-<<<<<<< HEAD
-            <Button
-              colorScheme="teal"
-              variant="outline"
-              leftIcon={
-                <Image src={StartGame} alt="StartGame" width={20} height={20} />
-              }
-              onClick={() => handleInviteClick()}
-            >
-              Invite
-            </Button>
-            ) : (
-              <Spinner color='green' emptyColor='gray.200' />
-            )
-            }
-=======
               <Button
                 colorScheme="teal"
                 variant="outline"
@@ -223,7 +172,6 @@ export default function GameSearchFriend({ onClose }: Props) {
             ) : (
               <Spinner color="green" emptyColor="gray.200" />
             )}
->>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
           </Box>
         </div>
       </ModalBody>

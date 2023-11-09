@@ -25,11 +25,7 @@ export default function AddToChannelComponent() {
   const toast = useToast()
 
 
-
-
-  useEffect(() => {
-
-   async function fetchChannels() {
+  async function fetchChannels() {
 
     const [api1, api2] = await Promise.all([
       fetch('http://127.0.0.1:3001/channel/getallchannels/' + userId),
@@ -51,6 +47,10 @@ export default function AddToChannelComponent() {
       setChannels(res)
 
     }
+
+  useEffect(() => {
+
+   
     setIsOpened(false)
     setChosen("Channels")
     fetchChannels()
@@ -85,8 +85,13 @@ export default function AddToChannelComponent() {
           height: 100,
         }
       })
+      setIsOpened(false)
+      setChosen("Channels")
       return ;
     }
+    setIsOpened(false)
+    setChosen("Channels")
+    fetchChannels()
     onClose();
     toast({
       title: "User added to channel",

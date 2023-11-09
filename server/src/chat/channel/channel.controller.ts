@@ -31,33 +31,38 @@ export class ChannelController {
 
     @Put('/changepassword')
     changepassword(@Body() body: ChangePassword){
-        return this.channelservice.changepassword(body.channelName, body.userId, body.currentpassword, body.newpassword)
+        return this.channelservice.changepassword(body.channelId, body.userId, body.currentpassword, body.newpassword)
     }
 
 
     @Post('/setpassword')
     setpassword(@Body() body:any) {
-        return this.channelservice.setpassword(body.channelName, body.userId, body.password)
+        return this.channelservice.setpassword(body.channelId, body.userId, body.password)
     }
 
     @Delete('/removepassword')
     removepassword(@Body() body: any) {
-        return this.channelservice.removepassword(body.channelName, body.userId)
+        return this.channelservice.removepassword(body.channelId, body.userId)
     }
 
     @Put('/setadministrator')
     setAdministrator(@Body() body: any){
-        return this.channelservice.setAdministrator(body.channelName, body.userIdOwner, body.userIdadministrateur)
+        return this.channelservice.setAdministrator(body.channelId, body.userIdOwner, body.userIdadministrateur)
     }
 
     @Delete('/removeadministrator')
     removeAdministrator(@Body() body: any){
-        return this.channelservice.removeAdministrator(body.channelName, body.userIdOwner, body.userIdadministrateur)
+        return this.channelservice.removeAdministrator(body.channelId, body.userIdOwner, body.userIdadministrateur)
     }
 
     @Post('/invitemember')
     inviteMember(@Body() body: any){
         return this.channelservice.inviteMember(body.channelName, body.userIdOwner, body.userIdMember)
+    }
+
+    @Post('/enterchannel')
+    enterchannel(@Body() body: any){
+        return this.channelservice.enterchannel(body.channelName, body.userId)
     }
     
     @Get('/getallmembers/:id')
@@ -86,4 +91,10 @@ export class ChannelController {
     getallchannelsapp(@Param('tofound') tofound: string) {
         return this.channelservice.getallchannelsapp(tofound)
     }
+
+    @Get('/getallpublicandprivatechannels/')
+    getallpublicandprivatechannels() {
+        return this.channelservice.getallpublicandprivatechannels()
+    }
+
 }

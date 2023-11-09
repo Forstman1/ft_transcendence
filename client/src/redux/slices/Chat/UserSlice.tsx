@@ -5,9 +5,19 @@ let playerId: string | null = null;
 
 function assignPlayerId() {
   if (playerId === null) {
-    const id1 = "017f0e35-e3ef-4f1c-82df-2963ed430e67";
-    const id2 = "7b71c1b5-49a4-4c2f-8bd7-cb0bcbc87398";
-    playerId = Math.floor(Math.random() * 11) > 5 ? id1 : id2;
+    const id1 = "2e11da2d-deb1-47aa-afef-88197d3648ba";
+    const id2 = "2e11da2d-deb1-47aa-afef-88197d3648ba";
+    const id3 = "2e11da2d-deb1-47aa-afef-88197d3648ba";
+
+    
+    const randomNumber = Math.floor(Math.random() * 3);
+    if (randomNumber === 0) {
+      playerId = id1;
+    } else if (randomNumber === 1) {
+      playerId = id2;
+    } else {
+      playerId = id3;
+    }
     console.log(`user ID assigned: ${playerId}`);
   }
 }

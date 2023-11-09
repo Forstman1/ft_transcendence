@@ -34,7 +34,7 @@ function Componenent({ onClose }: any) {
 
 
                 const filteredUsers = users.filter((user: any) => {
-                    return user.role !== "MEMBER" && user.role !== "OWNER";
+                    return user.role !== "OWNER";
                 });
 
 
@@ -45,17 +45,17 @@ function Componenent({ onClose }: any) {
                     listedusers.push(channelmember.userId)
                 })
 
-                // fetch users data from the array listedusers
+
                 const usersDataPromises = listedusers.map(async (userId: string) => {
                     const userResponse = await fetch('http://127.0.0.1:3001/users/getuser/' + userId);
                     const userData = await userResponse.json();
                     return userData;
-                });
+                  });
+            
+                  const usersData = await Promise.all(usersDataPromises);
 
-                const usersData = await Promise.all(usersDataPromises);
 
-
-                setUsers(usersData);
+                  setUsers(usersData);
 
             } catch (error) {
                 console.error('Error fetching users and channel Admins:', error);
@@ -77,22 +77,26 @@ function Componenent({ onClose }: any) {
 
     const onSubmit = async () => {
 
-        socket.emit('removeadministrator', {
-            channelId: channel.id,
-            userId: userId,
-            adminId: selectedOption.id
-        })
+
+        // socket.emit('removeadministrator', {
+        //     channelId: channel.id,
+        //     userId: userId,
+        //     adminId: selectedOption.id
+        // })
         onClose()
-    }
+
+
+    
+}
 
 
     return (
-        <div>
-            <h1 className=' font-thin text-xl text-red-700 pt-3'>
-                Select a Admin to remove from the channel
-            </h1>
-
-            <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
+    <div>
+        <h1 className=' font-thin text-xl text-red-700 pt-3'>
+            Select a Member to remove from the channel
+        </h1>
+        
+        <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
 
                 {users.map((data: User) => {
                     return <Usercard
@@ -104,30 +108,30 @@ function Componenent({ onClose }: any) {
                 })}
 
             </div>
-            <ModalFooter>
-                <Button
-                    colorScheme="red"
-                    variant="outline"
-                    mr={10}
-                    onClick={onClose}
-                >
-                    Close
-                </Button>
-                <Button
-                    colorScheme="green"
-                    variant="outline"
-                    ml={10}
-                    onClick={() => {
-                        onSubmit()
-                    }}
-                >
-                    Confirm
-                </Button>
-            </ModalFooter></div>)
+        <ModalFooter>
+        <Button
+            colorScheme="red"
+            variant="outline"
+            mr={10}
+            onClick={onClose}
+        >
+            Close
+        </Button>
+        <Button
+            colorScheme="green"
+            variant="outline"
+            ml={10}
+            onClick={() => {
+                onSubmit()
+            }}
+        >
+            Confirm
+        </Button>
+    </ModalFooter></div>)
 }
 
 
-export default function RemoveChannelAdmin() {
+export default function RemoveMember() {
 
 
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -135,7 +139,7 @@ export default function RemoveChannelAdmin() {
 
 
 
-    const data = { src: Ban, alt: "Remove Channel Admin" }
+    const data = { src: Ban, alt: "Remove Channel Member" }
 
 
     return (<Box className='flex items-center gap-6 w-[220px]'
@@ -147,7 +151,7 @@ export default function RemoveChannelAdmin() {
         >
             {data.alt}
         </Text>
-        <ModalWraper isOpen={isOpen} onClose={onClose} imageAlt={imageAlt} Componenent={() => <Componenent onClose={onClose} />} />
+        <ModalWraper isOpen={isOpen} onClose={onClose} imageAlt={imageAlt} Componenent={() => <Componenent onClose={onClose}/>} />
 
     </Box>)
 }
