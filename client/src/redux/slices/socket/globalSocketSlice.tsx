@@ -41,7 +41,7 @@ const initialState: GlobalSocketState = {
 };
 
 socket.emit("createRoomNotification", { userId: playerId }, (data: any) => {
-  // console.log("hello: " + data);
+  console.log("hello: " + data);
 });
 
 const globalSocketSlice = createSlice({

@@ -1,7 +1,6 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import React, { useRef, useEffect, useState} from "react";
+import React, { useRef, useEffect, useState, use} from "react";
 import { PageWrapper } from "../../animationWrapper/pageWrapper";
 import Countdown from "../ui/Countdown";
 import GameHeader from "../ui/GameFriendHeader";
@@ -72,18 +71,26 @@ export default function GameFriendPage() {
   const [userPoints, setUserPoints] = useState<number>(0);
   const [gamePause, setGamePause] = useState<boolean>(false);
   const [hasInitialized, setHasInitialized] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  if (mounted) {
+    window?.addEventListener('offline', () => {
+      if (
+        socket &&
+        socket.io &&
+        socket.io.engine &&
+        socket.io.engine.transport
+      ) {
+        socket.io.engine.transport.close()
+      }
+    })
+    
+  }
+     
 
-  window.addEventListener('offline', () => {
-    if (
-      socket &&
-      socket.io &&
-      socket.io.engine &&
-      socket.io.engine.transport
-    ) {
-      socket.io.engine.transport.close()
-    }
-  })
-
+  
+useEffect(() => {
+  setMounted(true);
+}, []);
 
   //--------------------------------Socket Code logic-------------------------------------------
 

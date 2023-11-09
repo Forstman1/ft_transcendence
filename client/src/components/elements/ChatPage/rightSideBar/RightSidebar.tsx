@@ -79,7 +79,7 @@ export default function RightSidebar() {
         <Avatar src={User.avatar} className='m-7 h-[130px] w-[130px] drop-shadow-[2px_2px_0_rgba(18,18,18,0.50)] border border-black' />
         <Box className='bg-black justify-start flex items-center rounded text-white w-[200px] h-[45px] drop-shadow-[2px_2px_0_rgba(18,18,18,0.50)]'>
           <Box className='AvatarBadge w-[25px] h-[25px] rounded-full bg-green-600 mx-5' />
-          <Text className='text-3xl'>Available</Text>
+          <Text className='text-3xl'>{User.isOnline} </Text>
         </Box>
       </Box>
       <hr className='bg-black h-[2px] mx-10' />

@@ -3,12 +3,13 @@ import { Body, Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { UsersService } from './users/users.service';
 import {MessageService} from './message/message.service'
+import { Prisma } from '@prisma/client';
 
 
 
 @WebSocketGateway({namespace: '/chat'}) 
 export class ChatGateway implements OnGatewayInit , OnGatewayConnection {
-  constructor(private messageService: MessageService, private userService: UsersService) { }
+  constructor( private userService: UsersService) { }
   @WebSocketServer()
   server: Server;
 
@@ -19,35 +20,23 @@ export class ChatGateway implements OnGatewayInit , OnGatewayConnection {
       this.logger.log(`Initialized`)
   }
 
-  async handleConnection(socket: Socket): Promise<void> {
+  async handleConnection(client: Socket, ...args: any[]){
 
-    this.logger.log(`Socket connected: ${socket.id}`)
-    const chatList = await this.userService.getChatList({ id: socket.handshake.auth.id });
-    const rooms = await this.userService.getRooms({ id: socket.handshake.auth.id });
+    this.logger.log(`Socket connected: ${client.handshake.auth.id}`)
+    const chatList = await this.userService.getChatList(client.handshake.auth.id);
+    this.logger.log (await this.userService.getRooms({ id: client.handshake.auth.id }))
+    const rooms = await this.userService.getRooms({ id: client.handshake.auth.id });
     for (const room of rooms) {
-      socket.join(room);
+      client.join(room);
     }
-    socket.emit(`updateChatList`, chatList);
+    this.logger.log(chatList)
+    client.emit(`updateChatList`, chatList);
   }
 
-  async handleDisconnect(socket: Socket): Promise<void> {
+  async handleDisconnect(socket: Socket) {
     // await this.userService.removeFromAllRooms(socket.id)
     this.logger.log(`Socket disconnected: ${socket.id}`)
   }
-
-  // @SubscribeMessage(`chat`)
-  // async handleMessage(
-  //   @MessageBody()
-  //   payload: Message
-  // ): Promise<void> {
-  //   try {
-  //     const { Message } = payload;
-  //     console.log(room.name)
-  //     this.server.to(room.name).emit(`chat`, Message);
-  //   } catch (error) {
-  //     console.error(`Error in sending message`, error);
-  //   }
-  // }
 
   //!---------------Notification room------------------------!//
 
@@ -97,10 +86,12 @@ export class ChatGateway implements OnGatewayInit , OnGatewayConnection {
   async updateChatList(
     @ConnectedSocket() client: Socket,
     @MessageBody() friendID: string,
-  ): Promise<void> { 
-    console.log(`--------------updateChatList------------------`)
-    await this.userService.addToChat({ id: client.handshake.auth.id }, { id: friendID });
-    const friedList = await this.userService.getChatList({ id: client.handshake.auth.id });
+  ): Promise<any> { 
+
+    await this.userService.addToChat(client.handshake.auth.id, friendID);
+    this.logger.log(`updateChatList`)
+    const friedList = await this.userService.getChatList(client.handshake.auth.id);
+    this.logger.log(`updateChatList2`) 
     client.emit(`updateChatList`, friedList);
   }
 
@@ -108,14 +99,39 @@ export class ChatGateway implements OnGatewayInit , OnGatewayConnection {
   async sendPrivateMessage(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: {reciverId: string, message: string},
-  ): Promise<void> {
+  ): Promise<any> {
     try {
+      this.logger.log(`sendPrivateMessage`)
       const room = await this.userService.getRoom(client.handshake.auth.id, data.reciverId);
       const message = await this.userService.createMessage({ authorName: client.handshake.auth.id, reciverID: room, content: data.message })
-      this.server.to(room).emit(`receivedMessage`, {message});
-      // console.log(`the message is ` + message);
+      this.server.to(room).emit(`receivedPrivateMessage`, { message });
+      this.logger.log(`Message sent to room `)
     } catch (error) {
+
       console.error(`Error in sending private message`, error);
+
     }
   }
+
+  @SubscribeMessage(`sendFreindRequest`)
+  async sendFreindRequest(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { friendId: string},
+  ): Promise<any> {
+    try {
+
+      const friendSocket = this.connectedUsers[data.friendId]
+      const User: Prisma.UserWhereUniqueInput = { id: client.handshake.auth.id };
+      const friend: Prisma.UserWhereUniqueInput = { id: data.friendId };
+      const user = this.logger.log(await this.userService.sendFriendRequest(User, friend))
+      if (friendSocket) {
+        this.server.to(friendSocket.id).emit(`receivedFreindRequest`, { user: user });
+        // friendSocket.emit(`receivedFreindRequest`, { friendId: client.handshake.auth.id });
+      }
+      //! send to notification room
+    } catch (error) {
+      console.error(`Error in sending freind request`, error);
+    }
+   }
+  
 }

@@ -2,7 +2,7 @@ import { Avatar, Input } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import Lottie from "lottie-react";
 import animationData from "../../../../../client/assets/animations/animation_typing.json";
-import arrow from "../../../../../client/assets/icons/arrow.svg";
+import arrow from "../../../../assets/icons/arrow.svg";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
@@ -66,8 +66,7 @@ export default function ChatWindow() {
   const { LeftClice } = useSelector((state: any) => state.mobile);
   const { RightClice } = useSelector((state: any) => state.mobile);
   const [user, setUser]: any = useState();
-  const chatSocket = useAppSelector((state) => state.socket);
-  const { socket } = chatSocket;
+  const socket = useSelector((state: any) => state.socket.socket)
 
 
   // const socket = useSelector((state: any) => state.channelChatSocket.socket);
@@ -127,6 +126,7 @@ export default function ChatWindow() {
 
       reciverId: selected.id,
       message: data.newmessage,
+      
     });
 
 
@@ -149,7 +149,19 @@ export default function ChatWindow() {
    };
  }, [selected]);
   
-  useEffect(() => { })
+  useEffect(() => {
+    
+    socket.on("receivedPrivateMessage", (data: any) => {
+      console.log("waslat chi7aja", data.message);
+
+        dispatch(addMessage(data.message));
+
+    });
+    return () => {
+  socket.off("receivedPrivateMessage");
+};
+
+  }, [selected]);
 
 
   const HideMobileSideBars = () => {
@@ -165,8 +177,8 @@ export default function ChatWindow() {
       >
         {messages.length != 0 &&
           messages.map((message: ChannelMessage, index: number) => {
-            if (message.authorName === user.username) {
-              return <Own_Message key={index} message={message} user={user} />;
+            if (message.authorName === message.authorID) {
+              return <Own_Message key={index} message={message} user={message.authorName} />;
             }
             return (
               <Message_other

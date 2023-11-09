@@ -52,20 +52,43 @@ export class UsersService {
     }
 
     //!---------------FriendRequest------------------------!//
-    async sendFriendRequest(id: Prisma.UserWhereUniqueInput, friendId: Prisma.UserWhereUniqueInput): Promise<User | string> { 
+    
+    async sendFriendRequest(User: Prisma.UserWhereUniqueInput , Friend: Prisma.UserWhereUniqueInput): Promise<User | string> { 
         try {
+
             const user = await this.prisma.user.findUnique({
-                where: id
+                where: {
+                    id: User.id
+                }
             })
             const friend = await this.prisma.user.findUnique({
-                where: friendId
+                where: {
+                    id: Friend.id
+                }
             })
+            const friendRequest = await this.prisma.friendRequest.findFirst({
+                where: {
+                    OR: [
+                        {
+                            fromUserId: user.id,
+                            toUserId: friend.id,
+                        },
+                        {
+                            fromUserId: friend.id,
+                            toUserId: user.id,
+                        }
+                    ]
+                }
+            })
+            if (friendRequest)
+                return `Friend request already sent`
             if (!user) {
                 return 'User not found'
             }
             if (!friend) {
                 return 'Friend not found'
             }
+
             await this.prisma.friendRequest.create({
                 data: {
                     fromUserId: user.id,
@@ -73,11 +96,13 @@ export class UsersService {
                     status: 'pending'
                 }
             })
+            return user
         }
         catch (error) {
             return `${error} could not send friend request`
         }
     }
+
     async acceptFriendRequest(id: Prisma.UserWhereUniqueInput, friendId: Prisma.UserWhereUniqueInput): Promise<User | string> {
     try {
         const user = await this.prisma.user.findUnique({
@@ -230,34 +255,35 @@ export class UsersService {
         }
     }
 
-    async getChatList(id: string | Prisma.UserWhereUniqueInput): Promise<User[] | string> {
+    async getChatList(id: string): Promise<User[] | string> {
         try {
-            if (typeof id === 'string')
-                id = { id }
-            const user = await this.prisma.user.findUnique({
-                where:
-                    { id: id.id },
+            const chatList = await this.prisma.user.findUnique({
+                where: {
+                    id: id
+                },
                 include: {
                     chatWith: true
-                }  
-            });
-            if (user)
-                return user.chatWith
+                }
+
+            })
+            if (chatList)
+                return chatList.chatWith
             else
                 return 'User not found'
         }
-        catch (error) {
+        catch (error)
+        {
             return `${error} could not retrieve chat list`;
-            }
+        }
     }
 
-    async addToChat(User: Prisma.UserWhereUniqueInput, friendId: Prisma.UserWhereUniqueInput): Promise<User | string> { 
-        try { 
+    async addToChat(User: string, friendId: string): Promise<string> { 
+        
             const user = await this.prisma.user.findUnique({
-                where: {id: User.id}
+                where: {id: User}
             })
             const friend = await this.prisma.user.findUnique({
-                where: {id: friendId.id}
+                where: {id: friendId}
             })
             if (!user) {
                 return 'User not found'
@@ -265,21 +291,17 @@ export class UsersService {
             if (!friend) {
                 return 'Friend not found'
             }
-            
             await this.prisma.user.update({
-                where: { id: user.id },
+                where: { id: User },
                 data: {
                     chatWith: {
                         connect: {
-                            id: friend.id
+                            id: friendId
                         }
                     }
                 }
             })
-        }
-        catch (error) {
-            return `${error} could not add to chat`
-        }
+        return `User added to chat list`
     }
 
 
@@ -412,67 +434,5 @@ export class UsersService {
         }
         return
     }
-    
-    // async addRoom(roomName: string, host: user): Promise<void> {
-    //     await this.rooms.push({name: roomName, host, users: [host]})
-    // }
-    // async getRoomByName(roomName: string): Promise<number> {
-    //     const roomIndex =  this.rooms.findIndex((room) => room?.name === roomName)
-    //     return roomIndex
-    // }
 
-    // async getRoomHost(roomName: string): Promise<user> {
-    //     const roomIndex = await this.getRoomByName(roomName)
-    //     return this.rooms[roomIndex].host
-    // }
-
-    // async addUserToRoom(roomName:string, user: user) : Promise<void> {
-    //     const roomIndex = await this.getRoomByName(roomName)
-    //     const host = await this.getRoomHost(roomName)
-    //     if(roomIndex !== -1) {
-    //         this.rooms[roomIndex].users.push(user)
-    //     }
-    //     if (host.id === user.socketID) {
-    //         this.rooms[roomIndex].host.socketID = user.socketID
-    //     }
-    //     else {
-    //         await this.addRoom(roomName, host)
-    //     }
-    // }
-
-
-    // async getRoomsBySocketID(socketID: string): Promise<Room[]> {
-
-    //     const room = this.rooms?.filter((room) => {
-    //         const found = room.users.find((user) => {user.socketID === socketID})
-    //         if (found) 
-    //             return found
-    //     })
-    //     return room
-    // }
-
-    // async removeRoom(roomName: string): Promise<void> {
-    //     const findRoom = await this.getRoomByName(roomName)
-    //     if (findRoom !== -1) {
-    //       this.rooms = this.rooms.filter((room) => room.name !== roomName)
-    //     }
-    // }
-
-    // async removeUserFromRoom(roomName: string, socketID): Promise<void> {
-    //     const room = await this.getRoomByName(roomName)
-    //     this.rooms[room].users = this.rooms[room].users.filter((user) => user.socketID !== socketID)
-    //     if (this.rooms[room].users.length === 0) {
-    //       await this.removeRoom(roomName)
-    //     }
-    // }
-
-    // async removeFromAllRooms(socketID: string) {
-    //     const rooms = await this.getRoomsBySocketID(socketID)
-    //     if (rooms) {
-    //         for(const room of rooms) {
-    //             await this.removeUserFromRoom(room.name, socketID)
-    //         }
-    //     }
-    // }
- 
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { Box, Button, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
 import { useMutation } from 'react-query'
 import { useDispatch, useSelector } from 'react-redux'

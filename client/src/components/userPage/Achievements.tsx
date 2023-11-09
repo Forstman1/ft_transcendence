@@ -7,6 +7,7 @@ import achvmt3 from '@/../public/Achievements/three.png'
 import achvmt4 from '@/../public/Achievements/four.png'
 import achvmt5 from '@/../public/Achievements/five.png'
 import achvmt6 from '@/../public/Achievements/six.png'
+import Image from 'next/image'
 // import achvmt5 from '@/../public/Achievements/drawer.svg'
 // import achvmt7 from '@/../public/Achievements/legend.svg'
 // import achvmt10 from '@/../public/Achievements/king.svg'
@@ -75,7 +76,7 @@ export default function Achievements() {
                         <Tooltip label={item.title} placement='right' bg='black'>
                             <div className={`h-24 w-24 border-2 rounded-full overflow-hidden text-center ${item.locked ? 'filter grayscale blur-sm': null}`}>
                                 {/* <div className=" filter grayscale contrast-75"> */}
-                                    <img src={item.imageSrc} alt={item.title}  className="w-full h-full object-cover " />
+                                    <Image src={item.imageSrc} alt={item.title}  className="w-full h-full object-cover " />
                                 {/* </div> */}
                             </div>
                         </Tooltip>

@@ -15,7 +15,7 @@ export interface LayoutProps{
     children: ReactNode;
 }
 
-export const Layout: FC<LayoutProps> = ({children}) => {
+const Layout: FC<LayoutProps> = ({children}) => {
 
     // const [User, setUser] = useState()
     // const router = useRouter();

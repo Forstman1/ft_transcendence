@@ -253,29 +253,6 @@ export const animate = (
   setBall((prevBall) => ({ ...prevBall, x: newBallX, y: newBallY }));
 };
 
-<<<<<<< HEAD
-// export const handelGameStatic = (
-//   setRobotScore: React.Dispatch<React.SetStateAction<number>>,
-//   setUserScore: React.Dispatch<React.SetStateAction<number>>,
-//   leftScore: number,
-//   rightScore: number,
-//   gameMatches: number
-// ) => {
-
-//   if (gameMatches === 0){
-//     if (leftScore > rightScore){
-//       setRobotScore((prev) => prev + 1);
-//     }
-//     else if (leftScore < rightScore){
-//       setUserScore((prev) => prev + 1);
-//     }
-//     else {
-//       setRobotScore((prev) => prev + 1);
-//       setUserScore((prev) => prev + 1);
-//     }
-//   }
-// }
-=======
 export function throttle({ func, delay }: throttleProps) {
   let lastCall = 0;
   return function (...args: any) {
@@ -287,4 +264,3 @@ export function throttle({ func, delay }: throttleProps) {
   };
 }
 
->>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c

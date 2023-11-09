@@ -80,7 +80,7 @@ export default function Newmessage({ isOpen, onClose}: Props) {
     const toast = useToast();
     const [selectedOption, setSelectedOption]: any = useState('');
     
-    const id = `4a4dcd15-0432-4fe4-8b73-dbab2af36a38`; //! should be changed to the real user id
+    const id = `1a5a7646-7e73-46ad-9c75-d1cd16f0818a`; //! should be changed to the real user id
     
     const {data, isLoading, error} = useQuery({
         queryKey: ["userData"],
@@ -99,14 +99,10 @@ export default function Newmessage({ isOpen, onClose}: Props) {
 
     const handleSubmit = async () => {
 
-        try {
-            
+        try { 
             socket?.emit(`updateChatList`, selectedOption.id)
-        
             socket?.emit(`createRoom`, {userId: id, reciverId: selectedOption.id }, (data: any) => {
-
-             })
-            
+            })
             onClose();
         } catch (error) {
             console.error("Failed to add friend:", error);

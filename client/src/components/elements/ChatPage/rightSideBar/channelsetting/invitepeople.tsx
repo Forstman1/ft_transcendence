@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Avatar, AvatarBadge, Box, Button, ModalFooter, Radio, Text, useDisclosure, useToast } from '@chakra-ui/react'
+import React, { useEffect, useState } from 'react'
+import {  Box, Button, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
 import { useMutation } from 'react-query'
 import { useSelector } from 'react-redux'
 import ModalWraper from '../../ModalWraper'

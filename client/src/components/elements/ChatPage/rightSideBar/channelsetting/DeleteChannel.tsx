@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { Box, Button, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
 import { useMutation } from 'react-query'
 import { useDispatch, useSelector } from 'react-redux'
@@ -6,7 +6,6 @@ import ModalWraper from '../../ModalWraper'
 import Image from 'next/image'
 import { Channel } from '@/utils/types/chat/ChatTypes'
 import { setChannels } from '@/redux/slices/chat/ChatSlice'
-import leavechannel from "../../../../../../assets/icons/leavechannel.svg"
 import Ban from "../../../../../../assets/icons/Ban.svg"
 
 

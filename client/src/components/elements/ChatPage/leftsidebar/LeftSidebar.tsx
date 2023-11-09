@@ -15,8 +15,10 @@ import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { ChatSocketState } from '@/redux/slices/socket/chatSocketSlice';
 import { RootState } from '@/redux/store/store';
-import { setChannels,  setTheUser } from '@/redux/slices/chat/ChatSlice';
-import axios from "axios";
+import { setChannels, setTheUser } from '@/redux/slices/chat/ChatSlice';
+import { addMessage } from "@/redux/slices/chat/ChatSlice";
+
+
 import { useQuery, useQueryClient } from "react-query";
 import { useAppSelector } from '@/redux/store/store';
 
@@ -66,26 +68,28 @@ function Usercard(props: any) {
 
 export default function LeftSidebar() {
 
-
   const chatSocket = useAppSelector((state) => state.socket);
   const { socket, userID } = chatSocket;
   const dispatch = useDispatch()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [ChannelOrUser, setChannelOrUser] = useState(false)
   const channels = useSelector((state: any) => state.chat.channels)
-  const userId = useSelector((state: any) => state.userID.user);
   const { MidleClice } = useSelector((state: any) => state.mobile)
   const { LeftClice } = useSelector((state: any) => state.mobile)
   const { RightClice } = useSelector((state: any) => state.mobile)
   const queryClient = useQueryClient();
-  const [data, setData] = useState<User[]>([]);
+  const [Users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
   
-    socket?.on(`updateChatList`, async (date: any) => {
-      console.log(`reseving the updateChatList`)
-      setData(date);
+    socket?.on(`updateChatList`, async (Users: any) => {
+
+      setUsers(Users);
+      dispatch(setTheUser(Users[0]));
+      // dispatch(addMessage(Users[0].roomMembers[0].messages));/
+     
     });
+
   }, [socket]);
 
   const sidebar = {
@@ -121,7 +125,7 @@ export default function LeftSidebar() {
     >
         <Search
           channels={channels}
-          users={data} 
+          users={Users} 
         />
 
         <div className='w-[80%] flex justify-between items-center border-b-black border-b-2 mt-[20px]'>
@@ -145,7 +149,7 @@ export default function LeftSidebar() {
 
         <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
         {
-          data.map((userData: any) => (
+          Users.map((userData: any) => (
             <Usercard
               key={userData.username}
               data={userData}
