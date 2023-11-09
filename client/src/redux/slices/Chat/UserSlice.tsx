@@ -5,9 +5,9 @@ let playerId: string | null = null;
 
 function assignPlayerId() {
   if (playerId === null) {
-    const id1 = "b33f65a5-2ccc-4a21-9646-104c2c76b8de";
-    const id2 = "d06d1685-8fcb-49af-b4a0-f444f5e029ec";
-    const id3 = "d4a9b548-46c6-44d9-9146-ce0ac1231695";
+    const id1 = "2e11da2d-deb1-47aa-afef-88197d3648ba";
+    const id2 = "2e11da2d-deb1-47aa-afef-88197d3648ba";
+    const id3 = "2e11da2d-deb1-47aa-afef-88197d3648ba";
 
     
     const randomNumber = Math.floor(Math.random() * 3);

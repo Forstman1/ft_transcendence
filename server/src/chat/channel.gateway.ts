@@ -52,7 +52,7 @@ export class ChatGateway2 implements OnGatewayConnection, OnGatewayDisconnect, O
   @SubscribeMessage('sendMessage')
   async sendMessage(@ConnectedSocket() client: Socket, @MessageBody() data: any): Promise<any> {
 
-
+    console.log(data.message)
     const channel: any = await this.channelService.getchannelinfo(data.channelId);
     const user = await this.userService.getUser(data.userId);
 
@@ -60,7 +60,7 @@ export class ChatGateway2 implements OnGatewayConnection, OnGatewayDisconnect, O
       const channelMessage = await this.messageService.createmessage({ content: data.message, userId: data.userId, reciverId: data.channelId });
 
       if (channelMessage) {
-        this.server.to(`${channel.id}`).emit('receivedMessage', { channelId: data.channelId, message: channelMessage });
+        this.server.to(channel.id).emit('receivedMessage', { channelId: data.channelId, message: channelMessage });
       }
     }
 
@@ -71,10 +71,26 @@ export class ChatGateway2 implements OnGatewayConnection, OnGatewayDisconnect, O
   async createChannel(@ConnectedSocket() client: Socket, @MessageBody() data: any): Promise<any> {
     console.log('createChannel ', data);
 
+    try {
+
+    const user = await this.userService.getUser(data.userId);
+
     const channel: any = await this.channelService.createchannel(data);
 
-    client.join(channel.id);
+    if (channel.status === "channel created") {
+      
+      client.join(channel.id);
+      this.server.to(channel.id).emit('channelCreated', { channelId: channel.id, message: "Channel Created", userId: data.userId, channel: channel.channel });
+    }
+    else {
+      this.server.to(client.id).emit('channelCreated', { channelId: data.channelId, message: channel.status });
+    }
 
+    } catch (error)
+    {
+      this.server.to(client.id).emit('channelCreated', { channelId: data.channelId, message: "channel doesn't exist" });
+      console.log(error);
+    }
   }
 
   @SubscribeMessage('enterChannel')
@@ -87,9 +103,12 @@ export class ChatGateway2 implements OnGatewayConnection, OnGatewayDisconnect, O
     
     
     if (channel && user) {
-      channel = this.channelService.enterchannel(channel.name, data.userId);
+      channel = await this.channelService.enterchannel(channel.name, data.userId);
       client.join(channel.id);
       this.server.to(channel.id).emit('channelEntered', { channelId: data.channelId, message: user.username + " entered the channel", userId: data.userId, channel: channel });
+    }
+    else {
+      this.server.to(client.id).emit('channelEntered', { channelId: data.channelId, message: "channel doesn't exist" });
     }
 
   }

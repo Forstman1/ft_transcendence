@@ -101,6 +101,7 @@ export default function ChatWindow() {
 
 
   const handleNewMessage = async (data: any) => {
+    
     if (data.newmessage.trim() === '')
       return;
 
@@ -117,7 +118,7 @@ export default function ChatWindow() {
   };
 
 
-  const getMessages = useMutation<any, Error, any>((variables) =>
+  const getMessages: any = useMutation<any, Error, any>((variables) =>
     fetch('http://127.0.0.1:3001/message/getmessages/' + variables.channelId).then((response) => {
       return response.json()
 
@@ -129,22 +130,32 @@ export default function ChatWindow() {
 
 
   useEffect(() => {
+
     const fetchMessages = async () => {
-      const messages: ChannelMessage[] = await getMessages.mutateAsync({
+      let messages: ChannelMessage[] = await getMessages.mutateAsync({
         channelId: selected?.id,
       })
       if (messages.length != 0) {
         dispatch(setMessages(messages))
       }
+      else
+        dispatch(setMessages([]))
     }
-    if (selected)
+    if (selected && selected.id != null)
       fetchMessages()
+
     socket.on('receivedMessage', (data: any) => {
-
-      if (selected?.id === data.channelId) {
-        dispatch(addMessage(data.message));
+      if ('name' in selected)
+      {
+        if (selected?.id === data.channelId) {
+          dispatch(addMessage(data.message));
+        }
       }
+      else
+      {
 
+      }
+      
     });
 
 
@@ -165,12 +176,12 @@ export default function ChatWindow() {
       <div className=' flex flex-col gap-[10px] overflow-y-scroll z-0 h-[91%] ' ref={chatContainer}>
 
 
-        {messages && messages.length != 0 && messages.map((message: ChannelMessage, index: number) => {
+        {(messages && messages.length != 0) && (messages.map((message: ChannelMessage, index: number) => {
           if (message.authorName === user.username) {
             return <Own_Message key={index} message={message} user={user} />
           }
           return <Message_other key={index} usermessage={message} message={message.content} sender={message.authorName} time={message.createdAt} />
-        })}
+        }))}
 
         {/* 
         <div className='w-full flex   items-baseline gap-[5px]  pl-[15px] h-[100px] mb-[5px]'  >

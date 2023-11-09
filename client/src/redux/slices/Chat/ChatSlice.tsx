@@ -25,9 +25,9 @@ type ChatState = {
     name: 'chat',
     initialState,
     reducers: {
-      setChannel: (state, action) => {
+      setChannel:  (state, action) => {
         state.selectedChannelorUser = action.payload
-        state.messages = []
+        // state.messages = []
       },
       setChannelMember: (state, action) => {
         state.ChannelMember = action.payload

@@ -7,7 +7,7 @@ import Newchannel from './newchannel';
 import Hashtag from './hatshtag';
 import Newmessage from './newmessage';
 import Search from './search';
-import { Channel } from '@/utils/types/chat/ChatTypes';
+import { Channel, ChannelMember } from '@/utils/types/chat/ChatTypes';
 import { useDispatch, useSelector } from 'react-redux';
 import { User } from '@/utils/types/chat/ChatTypes';
 import { Box, Flex } from '@chakra-ui/layout';
@@ -15,7 +15,8 @@ import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { ChatSocketState } from '@/redux/slices/socket/chatSocketSlice';
 import { RootState } from '@/redux/store/store';
-import { addMessage, setChannel, setChannelMember, setChannels, setTheUser } from '@/redux/slices/chat/ChatSlice';
+import { addMessage, setChannel, setChannelMember, setChannels, setMessages, setNewChannel, setTheUser } from '@/redux/slices/chat/ChatSlice';
+import { useMutation } from 'react-query';
 
 
 function Usercard(props: any) {
@@ -90,11 +91,13 @@ export default function LeftSidebar() {
   const socket = useSelector((state: any) => state.channelChatSocket.socket)
 
 
+
   useEffect(() => {
-
-
     socket.emit('getChannelsFirstTime', { userId: userId })
+  }, [])
 
+
+  useEffect(() => {
 
     socket.on('getChannelsFirstTime', (data: any) => {
       console.log(data)
@@ -106,17 +109,49 @@ export default function LeftSidebar() {
           userId: userId,
         })
       });
-
       dispatch(setChannels(allchannels))
+    })
+
+    socket.on('channelCreated', (data: any) => {
+
+      if (data.message === "Channel Created") {
+
+        console.log(data.channel, " ana hna 1")
+        dispatch(setChannel(data.channel))
+        console.log(data.channel.channelMember)
+        if (data.channel.channelMember) {
+          data.channel.channelMember.map((data1: any) => {
+            if (data1.userId === userId)
+              dispatch(setChannelMember(data1))
+          })
+        }
+        dispatch(setNewChannel(data.channel))
+        
+        toast({
+          title: data.message,
+          status: "success",
+          position: `bottom-right`,
+          isClosable: true,
+        })
+        return;
+      }
+      else {
+        toast({
+          title: data.message,
+          status: "error",
+          position: `bottom-right`,
+          isClosable: true,
+        })
+        return;
+      }
 
     })
 
+
     socket.on('allchannels', (data: any) => {
-      console.log(data)
       const allchannels: Channel[] = data.channels
 
       allchannels.map((channel: Channel) => {
-        console.log("ana hna", selected, channel.id)
         if (selected?.id === channel.id) {
           dispatch(setChannel(channel))
         }
@@ -125,8 +160,20 @@ export default function LeftSidebar() {
 
     })
 
-    socket.on('channelEntered', (data: any) => {
-      console.log(data)
+
+    socket.on('channelEntered', async (data: any) => {
+
+
+      if (data.status === "channel doesn't exist") {
+        toast({
+          title: data.status,
+          status: "success",
+          position: `bottom-right`,
+          isClosable: true,
+        })
+        return;
+      }
+
       if (data.userId === userId) {
         toast({
           title: "you joined the channel",
@@ -134,8 +181,25 @@ export default function LeftSidebar() {
           position: `bottom-right`,
           isClosable: true,
         })
+
+        socket.emit('joinChannel', {
+          channelId: data.channel.id,
+          userId: userId,
+        })
+        console.log(data.channel)
+
         dispatch(setChannel(data.channel))
-        socket.emit('getChannels', { userId: userId }) 
+
+        if (selected?.id === data.channel.id) {
+
+          if (selected.channelMember) {
+            selected.channelMember.map((data1: any) => {
+              if (data1.userId === userId)
+                dispatch(setChannelMember(data1))
+            })
+          }
+        }
+        socket.emit('getChannels', { userId: userId })
       }
       else {
         toast({
@@ -146,9 +210,9 @@ export default function LeftSidebar() {
         })
       }
     })
-    
+
+
     socket.on('channelLeft', (data: any) => {
-      console.log(data)
       if (data.userId === userId) {
         toast({
           title: "you left the channel",
@@ -156,6 +220,8 @@ export default function LeftSidebar() {
           position: `bottom-right`,
           isClosable: true,
         })
+        dispatch(setChannel(null))
+        dispatch(setMessages([]))
       }
       else {
         toast({
@@ -190,7 +256,6 @@ export default function LeftSidebar() {
       }
     })
     socket.on('setAdministrator', (data: any) => {
-      console.log(data)
       if (data.status === "This member can't be set as an administrator.") {
         toast({
           title: data.status,
@@ -215,7 +280,6 @@ export default function LeftSidebar() {
     })
 
     socket.on('removeAdministrator', (data: any) => {
-      console.log(data)
       if (data.status === "This member can't be removed as an administrator.") {
         toast({
           title: data.status,
@@ -242,7 +306,6 @@ export default function LeftSidebar() {
     })
 
     socket.on('removeMember', (data: any) => {
-      console.log(data)
       if (data.status === "This member can't be removed.") {
         toast({
           title: data.status,
@@ -262,7 +325,7 @@ export default function LeftSidebar() {
         })
       }
       if (data.userId === userId) {
-        
+
         dispatch(setChannel(null))
       }
 
@@ -289,8 +352,7 @@ export default function LeftSidebar() {
         })
         socket.emit('getChannels', { userId: userId })
       }
-      else
-      {
+      else {
         toast({
           title: data.status,
           position: `bottom-right`,
@@ -323,8 +385,7 @@ export default function LeftSidebar() {
         })
         socket.emit('getChannels', { userId: userId })
       }
-      else
-      {
+      else {
         toast({
           title: data.status,
           position: `bottom-right`,
@@ -335,8 +396,7 @@ export default function LeftSidebar() {
       }
     })
     socket.on('changepassword', (data: any) => {
-      if (data.status === "Password is changed")
-      {
+      if (data.status === "Password is changed") {
         toast({
           title: data.status,
           position: `bottom-right`,
@@ -347,8 +407,7 @@ export default function LeftSidebar() {
         socket.emit('getChannels', { userId: userId })
 
       }
-      else
-      {
+      else {
         toast({
           title: data.status,
           position: `bottom-right`,
@@ -370,6 +429,8 @@ export default function LeftSidebar() {
       socket.off('setpassword');
       socket.off('removepassword');
       socket.off('changepassword');
+      socket.off('channelEntered');
+      socket.off('channelCreated');
     }
   }, [selected])
 
@@ -416,7 +477,7 @@ export default function LeftSidebar() {
       <div className='flex h-[400px] flex-col w-full mt-[30px] items-center gap-6 overflow-y-scroll'>
 
         {channels && channels.length != 0 && channels.map((data: Channel, id: number) => {
-          // console.log(data)
+
           if (data.name)
             return <Hashtag key={id} data={data} />
         })}

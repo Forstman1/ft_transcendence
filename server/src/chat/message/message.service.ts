@@ -23,6 +23,14 @@ export class MessageService {
                 id: messageInfo.reciverId,
             }
         })
+        const channelmember = await this.prisma.channelMember.findMany({
+            where: {
+                channelId: messageInfo.reciverId,
+                userId: user.id,
+            }
+        })
+        if (!channelmember)
+            return {status: "couldn't find channelmember"}
         if (!channel)
             return {status: "couldn't find channel"}
         
@@ -31,7 +39,7 @@ export class MessageService {
                 content: messageInfo.content,
                 authorName: user.username,
                 reciverID: channel.id,
-                authorID: user.id,
+                authorID: channelmember[0].id,
             }
         })
         return message

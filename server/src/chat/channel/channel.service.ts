@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateChannelDto } from './dtos';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon2 from 'argon2';
-import { tr } from '@faker-js/faker';
+
 
 
 
@@ -23,7 +23,7 @@ export class ChannelService {
 
       const hash = await argon2.hash(channelData.password);
 
-      const channel = await this.prisma.channel.create({
+      let channel = await this.prisma.channel.create({
         data: {
           name: channelData.channelName,
           type:
@@ -58,9 +58,19 @@ export class ChannelService {
         console.log('no user to own the channel');
         return { status: "this user couldn't be found" };
       }
+      channel = await this.prisma.channel.findUnique({
+        where: {
+          id: channel.id,
+        },
+        include: {
+          channelMember: true,
+        },
+      });
 
       console.log('creating new channel');
-      return channel;
+      return {channel: channel, status: "channel created"};
+
+
     } catch (error) {
       return "couldn' create channel";
     }
@@ -637,19 +647,26 @@ export class ChannelService {
 
 
   async getchannelmemberinfo(channelId: string, userId: string) {
-    const channel = await this.prisma.channel.findUnique({
-      where: {
-        id: channelId,
-      },
-    });
-    const channelmembers = await this.prisma.channelMember.findMany({
-      where: {
-        userId: userId,
-        channel: channel,
-      },
-    });
-    const channelmember = channelmembers[0];
-    return channelmember;
+    try {
+      const channel = await this.prisma.channel.findUnique({
+        where: {
+          id: channelId,
+        },
+      });
+      const channelmembers = await this.prisma.channelMember.findMany({
+        where: {
+          userId: userId,
+          channelId: channelId,
+        },
+      });
+      const channelmember = channelmembers[0];
+      return channelmember;
+
+    }
+    catch (error) {
+      console.error('Error getting channel member info:', error);
+      return { status: 'Error getting channel member info' };
+    }
   }
   
   async getallchannelsapp(tofound: string)
@@ -658,8 +675,11 @@ export class ChannelService {
       where: {
         name: {
           contains: tofound,
-        },
-      }
+        }
+      },
+      include: {
+        channelMember: true,
+      },
     });
     return channels;
   }
