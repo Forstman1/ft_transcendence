@@ -83,9 +83,9 @@ export default function LeftSidebar() {
   useEffect(() => {
   
     socket?.on(`updateChatList`, async (Users: any) => {
-
-      setUsers(Users);
-      dispatch(setTheUser(Users[0]));
+      // console.log(Users)
+      // setUsers(Users);
+      // dispatch(setTheUser(Users[0]));
       // dispatch(addMessage(Users[0].roomMembers[0].messages));/
      
     });

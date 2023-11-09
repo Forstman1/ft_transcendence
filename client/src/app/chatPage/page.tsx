@@ -72,7 +72,6 @@ export default function ChatPage() {
   return (
     <div className="Chat_sub_div2 flex flex-grow w-full ">
       <ChatWindow />
-      
       {selected !== null && 'username' in selected ? (
         <RightSidebar />
       ) : selected !== null && 'type' in selected ? (
