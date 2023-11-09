@@ -71,12 +71,13 @@ async function seedDatabase() {
   }
 
   // Create fake channel messages
+  const channelMembers = await prisma.channelMember.findMany();
   for (let i = 0; i < NUM_CHANNEL_MESSAGES; i++) {
     await prisma.channelMessage.create({
       data: {
         content: faker.lorem.sentence(),
         authorID: faker.helpers.arrayElement(users).id,
-        reciverID: faker.helpers.arrayElement(channels).id,
+        reciverID: faker.helpers.arrayElement(channelMembers).id,
         authorName: faker.person.firstName(),
       },
     });

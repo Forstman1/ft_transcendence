@@ -79,8 +79,8 @@ export class ChatGateway2 implements OnGatewayConnection, OnGatewayDisconnect, O
 
     if (channel.status === "channel created") {
       
-      client.join(channel.id);
-      this.server.to(channel.id).emit('channelCreated', { channelId: channel.id, message: "Channel Created", userId: data.userId, channel: channel.channel });
+      client.join(channel.channel.id);
+      this.server.to(channel.channel.id).emit('channelCreated', { channelId: channel.id, message: "Channel Created", userId: data.userId, channel: channel.channel });
     }
     else {
       this.server.to(client.id).emit('channelCreated', { channelId: data.channelId, message: channel.status });
