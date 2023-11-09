@@ -34,6 +34,7 @@ model User {
 
   channelMember ChannelMember[]
   games     GameHistory[]
+  userGamesXp   Int      @default(0)
 
   friends  User[] @relation("friends")
   friendOf User[] @relation("friends")
@@ -91,6 +92,7 @@ model GameHistory {
   opponentScore Int
   rounds    Int
   matches   Int
+  xp        Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

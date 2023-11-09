@@ -7,6 +7,7 @@ export interface GlobalSocketState {
   isOwner: boolean;
   roomId: string;
   playerId?: string | null;
+  friendId?: string | null;
 }
 
 const initialState: GlobalSocketState = {
@@ -15,6 +16,7 @@ const initialState: GlobalSocketState = {
   isOwner: false,
   roomId: "",
   playerId: "",
+  friendId: "",
 };
 
 const globalSocketSlice = createSlice({

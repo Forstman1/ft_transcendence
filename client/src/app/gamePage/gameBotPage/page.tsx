@@ -34,6 +34,7 @@ import {
   initialRightPaddle,
   initialGameEndStatic,
 } from "@/utils/constants/game/GameConstants";
+import Footer from "@/components/elements/Footer/Footer";
 
 export default function GameBotPage() {
   let gameSettings = useAppSelector((state) => state.gameReducer);
@@ -185,38 +186,34 @@ export default function GameBotPage() {
   }, [canvasSize, ball, loading]);
 
   const handleCountdownEnd = () => {
+    setKeysPressed({});
     setGameStarted(true);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === " ") {
+      event.preventDefault();
+      setGamePause((prevGamePause) => !prevGamePause);
+    } else {
+      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: true }));
+    }
+  };
+
+  const handleKeyUp = (event: KeyboardEvent) => {
+      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: false }));
   };
 
   useEffect(() => {
     if (!gameStarted || gameEnded) return;
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === " ") {
-        event.preventDefault();
-        setGamePause((prevGamePause) => !prevGamePause);
-      } else {
-        setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: true }));
-      }
-    };
-
-    const handleKeyUp = (event: KeyboardEvent) => {
-      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: false }));
-    };
-
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
-
-    if (!gameStarted) {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("keyup", handleKeyUp);
-    }
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);
     };
-  }, [gamePause, gameEnded, ball, gameStarted]);
+  }, [ball, gameStarted]);
 
   //---------------------------------------------------------------------------
 
@@ -373,6 +370,7 @@ export default function GameBotPage() {
                 </div>
               </div>
             </div>
+            <Footer />
           </div>
         </motion.div>
       )}
