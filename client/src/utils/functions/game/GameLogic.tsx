@@ -86,7 +86,7 @@ export const draw = (
   // Draw the ball
   context.fillStyle = balColor;
   context.beginPath();
-  context.ellipse(ball.x, ball.y, scaledRadius, ball.radius, 0, 0, Math.PI * 2);
+  context.arc(ball.x, ball.y, scaledRadius, 0, 2 * Math.PI);
   context.fill();
 
   // Draw the rounded rectangles

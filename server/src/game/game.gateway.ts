@@ -37,7 +37,7 @@ export class GameGateway {
     });
   }
 
-  // ---------------- sendGameData
+  // ---------------- sendGameData------------------------------------------
   @SubscribeMessage('sendGameData')
   sendGameData(@Body() data): void {
     try {
@@ -63,7 +63,7 @@ export class GameGateway {
     }
   }
 
-  // ---------------- updatePaddles
+  // ---------------- updatePaddles------------------------------------------
   @SubscribeMessage('updatePaddles')
   updatePaddles(@Body() data): void {
     try {
@@ -73,7 +73,7 @@ export class GameGateway {
     }
   }
 
-  // ---------------- endGame
+  // ---------------- endGame------------------------------------------------
   @SubscribeMessage('endGame')
   endGame(@ConnectedSocket() client: Socket, @Body() roomId: string): void {
     try {
@@ -90,20 +90,20 @@ export class GameGateway {
     }
   }
 
-  // ---------------- pauseGame
+  // ---------------- pauseGame----------------------------------------------
   @SubscribeMessage('pauseGame')
   pauseGame(@Body() roomId: string): void {
     console.log('-----------------pauseGame-----------------');
     this.gameService.setRoomPause(roomId, true);
   }
 
-  // ---------------- resumeGame
+  // ---------------- resumeGame---------------------------------------------
   @SubscribeMessage('resumeGame')
   resumeGame(@Body() roomId: string): void {
     this.gameService.setRoomPause(roomId, false);
   }
 
-  // ---------------- createRoomNotifacaion
+  // ---------------- createRoomNotifacaion----------------------------------
   @SubscribeMessage('createRoomNotification')
   createRoomNotifacation(
     @ConnectedSocket() client: Socket,
@@ -120,7 +120,7 @@ export class GameGateway {
     }
   }
 
-  // ---------------- createRoom
+  // ---------------- createRoom---------------------------------------------
   @SubscribeMessage('createRoom')
   createRoom(@ConnectedSocket() client: Socket): string {
     try {
@@ -136,8 +136,7 @@ export class GameGateway {
     }
   }
 
-  // ---------------- inviteFriend
-
+  // ---------------- inviteFriend-------------------------------------------
   @SubscribeMessage('inviteFriend')
   async inviteFriend(
     @ConnectedSocket() client: Socket,
@@ -162,9 +161,10 @@ export class GameGateway {
           if (this.gameService.checkFriendIsInOtherRoom(friendUserId)) {
             client.emit('friendIsInRoom');
           } else if (friendSocket) {
+            const friendId = client.handshake.auth.id;
             this.server
               .to(friendUserId)
-              .emit('room-invitation', { roomId, modalData });
+              .emit('room-invitation', { roomId, modalData, friendId });
           }
         } else {
           console.error('Room is full. Cannot invite more players.');
@@ -177,7 +177,7 @@ export class GameGateway {
     }
   }
 
-  //-------------acceptInvitation
+  //-------------acceptInvitation--------------------------------------------
   @SubscribeMessage('acceptInvitation')
   acceptInvitation(
     @ConnectedSocket() client: Socket,
@@ -201,14 +201,14 @@ export class GameGateway {
     }
   }
 
-  //-------------denyInvitation
+  //-------------denyInvitation----------------------------------------------
   @SubscribeMessage('denyInvitation')
   denyInvitation(
     @ConnectedSocket() client: Socket,
     @Body() data: { roomId: string },
   ): void {
     try {
-      this.server.sockets.in(data.roomId).emit('friendDenyInvitation');
+      this.server.sockets.in(data.roomId).emit('friendDenyInvitation', client.handshake.auth.id);
       this.gameService.resetGameDate(data.roomId);
       this.gameService.deleteRoom(data.roomId);
       this.server.in(data.roomId).socketsLeave(data.roomId);
@@ -218,7 +218,7 @@ export class GameGateway {
     }
   }
 
-  //-------------leaveRoom
+  //-------------leaveRoom---------------------------------------------------
   @SubscribeMessage('leaveRoom')
   leaveRoom(@ConnectedSocket() client: Socket, @Body() roomId: string): void {
     try {
@@ -230,7 +230,7 @@ export class GameGateway {
     }
   }
 
-  //-------------addPlayerToQueue
+  //-------------addPlayerToQueue--------------------------------------------
   @SubscribeMessage('addPlayerToQueue')
   addPlayerToQueue(@ConnectedSocket() client: Socket): void {
     try {
@@ -257,7 +257,7 @@ export class GameGateway {
     }
   }
 
-  //-------------getGameHistory
+  //-------------getGameHistory----------------------------------------------
   @SubscribeMessage('CreateGameHistory')
   async postGameHistory(
     @ConnectedSocket() client: Socket,
@@ -274,6 +274,34 @@ export class GameGateway {
       return this.gameService.createGameHistory(data, opponentId);
     } catch (error) {
       console.error('Error in CreateGameHistory:', error);
+    }
+  }
+
+  //-------------getMyFriends------------------------------------------------
+  @SubscribeMessage('GetMyFriends')
+  async getMyFriends(@ConnectedSocket() client: Socket): Promise<void> {
+    try {
+      console.log('-----------------GetMyFriends-----------------');
+      const userId = client.handshake.auth.id;
+      const friends = await this.gameService.getMyFriends(userId);
+      return friends;
+    } catch (error) {
+      console.error('Error in GetMyFriends:', error);
+    }
+  }
+
+  @SubscribeMessage('SearchFriend')
+  async searchFriend(
+    @ConnectedSocket() client: Socket,
+    @Body() data: { username: string },
+  ): Promise<void> {
+    try {
+      console.log('-----------------SearchFriend-----------------');
+      const userId = client.handshake.auth.id;
+      const friends = await this.gameService.searchFriend(userId, data.username);
+      return friends;
+    } catch (error) {
+      console.error('Error in SearchFriend:', error);
     }
   }
 }

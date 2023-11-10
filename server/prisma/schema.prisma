@@ -11,27 +11,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
-
 model User {
-  id                String            @id @default(uuid())
-  username          String            @unique
-  email             String            @unique
-  fullname          String
+  id                String       @id @default(uuid())
+  username          String       @unique
+  email             String       @unique
+  fullname          String       
+  coalitionUrl      String?
   avatarURL         String            @default("https://iintra.freekb.es/imgs/user.png")
   coalitionURL      String            @default("https://profile.intra.42.fr/assets/coalitions/factionless-05b8cd65bda8f5eaf56ecf1d16493f41908801cfd66aa97fb27c9611064f4f36.svg")
   coalitionColor    String            @default("#292d39")
-  isOnline          Boolean           @default(false)
   twoFactorEnabled  Boolean           @default(false)
   twoFactorSecret   String?
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  usersmessages1    UserMessage[]     @relation("Author")
-  usersmessages2    UserMessage[]     @relation("Reciver")
-  channelmessages   ChannelMessage[]
-  channelMember     ChannelMember[]
-  games             GameHistory[]
+  isOnline          Boolean     @default(false)
+  hasTwoFA          Boolean     @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  usersmessages1 UserMessage[] @relation("Author")
+  usersmessages2 UserMessage[] @relation("Reciver")
+
+  channelmessages ChannelMessage[]
+
+  channelMember ChannelMember[]
+  games     GameHistory[]
+  userGamesXp   Int      @default(0)
+
+  friends  User[] @relation("friends")
+  friendOf User[] @relation("friends")
+
 }
 
 model Channel {
@@ -75,7 +82,6 @@ model UserMessage {
 }
 
 
-
 model GameHistory {
   id        String   @id @default(uuid())
   user      User     @relation(fields: [userId], references: [id])
@@ -86,6 +92,7 @@ model GameHistory {
   opponentScore Int
   rounds    Int
   matches   Int
+  xp        Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

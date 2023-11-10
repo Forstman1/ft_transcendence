@@ -21,8 +21,7 @@ import LodingAnimation from "../../../assets/animations/loadingAnimation.json";
 import Lottie from "lottie-react";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import GameInstruction from "./ui/GameInstruction";
-import RestrictedRoute from "@/components/RestrictedRoute";
-import { useRouter as useNextRouter } from 'next/router';
+import Footer from "@/components/elements/Footer/Footer";
 
 export default function GamePage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -80,17 +79,27 @@ export default function GamePage() {
   }
 
   return (
-    <RestrictedRoute>
-      <PageWrapper>
-        {isLoading && (
-          <div className="absolute top-0 left-0 w-full h-full z-20 bg-black opacity-50">
-            <Lottie
-              animationData={LodingAnimation}
-              className="absolute inset-0 w-full h-full z-10"
-            />
-          </div>
-        )}
-        <div className="relative flex flex-row h-full justify-center items-center mx-[10%] z-0 ">
+    <PageWrapper>
+      {isLoading && (
+        <div className="absolute top-0 left-0 w-full h-full z-20 bg-black opacity-50">
+          <Lottie
+            animationData={LodingAnimation}
+            className="absolute inset-0 w-full h-full z-10"
+          />
+        </div>
+      )}
+      <div className="relative flex flex-row h-screen justify-center items-center mx-[10%] z-0 ">
+        <div
+          className={`${
+            breakpoint === "base" ? "absolute" : "flex"
+          } flex-col justify-center items-center  P-20 space-y-6 z-10`}
+        >
+          <Text className=" flex text-emerald-300 font-bold text-2xl">
+            EXPLORE THE GAME
+          </Text>
+          <Text className=" flex text-black font-bold text-6xl">
+            It&apos;s time to enjoy the game
+          </Text>
           <div
             className={`${breakpoint === "base" ? "absolute" : "flex"
               } flex-col justify-center items-center  P-20 space-y-6 z-10`}
@@ -177,12 +186,29 @@ export default function GamePage() {
             />
           </motion.div>
         </div>
-        <GameModesModal
-          isOpen={isOpen}
-          onClose={onClose}
-          gameType={gameType as "bot" | "friend"}
-        />
-      </PageWrapper>
-    </RestrictedRoute>
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ rotate: 360, scale: 1 }}
+          transition={{
+            type: "spring",
+            stiffness: 260,
+            damping: 20,
+          }}
+        >
+          <Lottie
+            animationData={animationData}
+            className={`w-full h-[900px] border-2 border-white rounded-[100%] shadow-xl min-w-[370px] ${
+              breakpoint === "base" ? "opacity-20" : ""
+            }`}
+          />
+        </motion.div>
+      </div>
+      <GameModesModal
+        isOpen={isOpen}
+        onClose={onClose}
+        gameType={gameType as "bot" | "friend"}
+      />
+      <Footer />
+    </PageWrapper>
   );
 }

@@ -32,8 +32,24 @@ import { HamburgerIcon } from '@chakra-ui/icons';
 import WavesDivider from 'assets/icons/wavesOpacity.svg';
 import Logo from 'assets/icons/Logo.svg';
 import LoginThumbnail from 'assets/icons/Auth/undraw_my_password_re_ydq7.svg';
-import DefaultUserStoreData from '@/redux/slices/authUser/authUserSlice'
-import { UserState } from '@/redux/slices/authUser/authUserSlice';
+import { io } from "socket.io-client";
+import { setSocketState } from "@/redux/slices/socket/globalSocketSlice";
+import { initialState as DefaultUserStoreData, UserState } from "@/redux/slices/authUser/authUserSlice";
+
+const CreatGameGlobalSocket = (user: any) => {
+  console.log("CreatGameGlobalSocket user: ", user);
+  const socket = io(process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001', {
+    transports: ["websocket"],
+    upgrade: false,
+    auth: {
+      id: user.id,
+    },
+  });
+  socket.emit("createRoomNotification", { userId: user.id }, (data: any) => {
+    console.log("createGameRoomNotification: " + data);
+  });
+  return socket;
+}
 
 /* --------------------------------------------------- AuthButtons -------------------------------------------------- */
 
@@ -307,6 +323,16 @@ export default function Navbar() {
     if (!isLoading && !isError) {
       setUserNotAuthenticated(false);
       dispatch(updateUser({isAuthenticated: true, ...data}));
+      const gameSocket = CreatGameGlobalSocket(data);
+      // for game page
+      dispatch(setSocketState({
+        socket: gameSocket,
+        socketId: gameSocket.id,
+        isOwner: false,
+        roomId: "",
+        playerId: "",
+      }));
+      // for game page
     } else {
       setUserNotAuthenticated(true);
       dispatch(updateUser(DefaultUserStoreData));

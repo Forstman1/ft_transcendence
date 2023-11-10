@@ -31,6 +31,7 @@ import {
   initialRightPaddle,
   initialGameEndStatic,
 } from "@/utils/constants/game/GameConstants";
+import Footer from "@/components/elements/Footer/Footer";
 
 
 export default function GameFriendPage() {
@@ -207,23 +208,30 @@ export default function GameFriendPage() {
     if (socketState.isOwner) {
       userScore = rightScore;
       opponentScore = leftScore;
-    }
-    else {
+    } else {
       userScore = leftScore;
       opponentScore = rightScore;
     }
+    const status = socketState.isOwner ? gameEndStatic.user : gameEndStatic.bot;
+    let xp = 0;
+    if (status === "WIN") {
+      xp = gameSettings.mode === "EASY" ? 10 : gameSettings.mode === "MEDIUM" ? 20 : 30;
+    } else if (status === "DRAW") {
+      xp = gameSettings.mode === "EASY" ? 5 : gameSettings.mode === "MEDIUM" ? 10 : 15;
+    }
     const data: any = {
       userId: socketState.playerId,
-      status: socketState.isOwner ? gameEndStatic.user : gameEndStatic.bot,
+      status: status,
       userScore: userScore,
       opponentScore: opponentScore,
       rounds: gameSettings.rounds,
       matches: gameSettings.matches,
       roomId: roomId,
+      xp: xp,
     };
 
     await socket?.emit("CreateGameHistory", data);
-  }
+  };
 
   //----------------------------------------------------------------------------------------------
   useEffect(() => {
@@ -328,28 +336,28 @@ export default function GameFriendPage() {
   }, [canvasSize, ball]);
 
   const handleCountdownEnd = () => {
+    setKeysPressed({});
     setGameStarted(true);
   };
 
   //---------------------------------------------------------------------------
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === " ") {
+      event.preventDefault();
+      setGamePause((prevGamePause) => !prevGamePause);
+    } else {
+      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: true }));
+    }
+  };
+
+  const handleKeyUp = (event: KeyboardEvent) => {
+    setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: false }));
+  };
+
+  
   useEffect(() => {
-    
-    
     if (!gameStarted || gameEnded) return;
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === " ") {
-        event.preventDefault();
-        setGamePause((prevGamePause) => !prevGamePause);
-      } else {
-        setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: true }));
-      }
-    };
-  
-    const handleKeyUp = (event: KeyboardEvent) => {
-      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: false }));
-    };
-  
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
   
@@ -424,7 +432,7 @@ export default function GameFriendPage() {
                   gameStarted={gameStarted}
                   gameMode="FRIEND"
                 />
-                <div className="flex flex-col space-y-10 w-full mx-[10%] h-full justify-center items-center mt-[100px]" >
+                <div className="flex flex-col space-y-10 w-full mx-[10%] h-screen justify-center items-center" >
                   <GameHeader leftScore={leftScore} rightScore={rightScore} />
                   <div
                     id="canvas-container"
@@ -475,6 +483,7 @@ export default function GameFriendPage() {
                   </div>
                 </div>
               </div>
+              <Footer />
             </div>
         </motion.div>
     </PageWrapper>

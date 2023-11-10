@@ -13,7 +13,6 @@ import { usePathname } from "next/navigation";
 import { QueryClient, QueryClientProvider } from 'react-query'
 import GameNotification from "./gamePage/gameNotification/page";
 import { extendTheme } from '@chakra-ui/react'
-import Footer from "@/components/elements/Footer/Footer";
 
 const breakpoints = {
   'base': '0px',
@@ -51,16 +50,16 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geo.className} h-screen`}>
         <ReduxProvider>
-          <CacheProvider>
-            <QueryClientProvider client={queryClient}>
-              <ChakraProvider theme={theme}>
-                {isloading ? <SplashScreen finishLoading={() => setIsLoading(false)} /> :
-                  <>
-                    <GameNotification />
-                    <Navbar />
-                    {children}
-                    {/* <Footer /> */}
-                  </>
+            <CacheProvider>
+              <QueryClientProvider client={queryClient}>
+              <ChakraProvider>
+                {isloading ? <SplashScreen  finishLoading={() => setIsLoading(false)}/> :
+                <>
+                  <GameNotification />
+                  <Navbar />
+
+                  {children}
+                </>
                 }
               </ChakraProvider>
             </QueryClientProvider>

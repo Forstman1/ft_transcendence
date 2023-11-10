@@ -34,6 +34,7 @@ import {
   initialRightPaddle,
   initialGameEndStatic,
 } from "@/utils/constants/game/GameConstants";
+import Footer from "@/components/elements/Footer/Footer";
 
 export default function GameBotPage() {
   let gameSettings = useAppSelector((state) => state.gameReducer);
@@ -70,6 +71,7 @@ export default function GameBotPage() {
   const [botPoints, setBotPoints] = useState<number>(0);
   const [userPoints, setUserPoints] = useState<number>(0);
   const [gamePause, setGamePause] = useState<boolean>(false);
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -184,38 +186,34 @@ export default function GameBotPage() {
   }, [canvasSize, ball, loading]);
 
   const handleCountdownEnd = () => {
+    setKeysPressed({});
     setGameStarted(true);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === " ") {
+      event.preventDefault();
+      setGamePause((prevGamePause) => !prevGamePause);
+    } else {
+      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: true }));
+    }
+  };
+
+  const handleKeyUp = (event: KeyboardEvent) => {
+      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: false }));
   };
 
   useEffect(() => {
     if (!gameStarted || gameEnded) return;
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === " ") {
-        event.preventDefault();
-        setGamePause((prevGamePause) => !prevGamePause);
-      } else {
-        setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: true }));
-      }
-    };
-
-    const handleKeyUp = (event: KeyboardEvent) => {
-      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: false }));
-    };
-
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
-
-    if (!gameStarted) {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("keyup", handleKeyUp);
-    }
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);
     };
-  }, [gamePause, gameEnded, ball, gameStarted]);
+  }, [ball, gameStarted]);
 
   //---------------------------------------------------------------------------
 
@@ -304,7 +302,7 @@ export default function GameBotPage() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
-          <div className="flex-col w-full">
+          <div className="flex-col w-full ">
             <div className="flex flex-row">
               <GameSideBar
                 tableResults={tableResults}
@@ -314,7 +312,7 @@ export default function GameBotPage() {
                 gameStarted={gameStarted}
                 gameMode="BOT"
               />
-              <div className="flex flex-col space-y-10 w-full mx-[10%] h-full justify-center items-center mt-[100px]">
+              <div className="flex flex-col space-y-10 w-full mx-[10%] h-screen justify-center items-center">
                 <GameHeader leftScore={leftScore} rightScore={rightScore} />
                 <div
                   id="canvas-container"
@@ -372,6 +370,7 @@ export default function GameBotPage() {
                 </div>
               </div>
             </div>
+            <Footer />
           </div>
         </motion.div>
       )}
