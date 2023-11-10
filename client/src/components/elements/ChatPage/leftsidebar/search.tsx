@@ -33,6 +33,7 @@ function Usercard(props: any) {
         setSelectedOption(user);
     };
 
+    const dispatch = useDispatch()
 
 
     return (
@@ -93,16 +94,16 @@ export default function Search() {
     const [search, setSearch] = useState('');
     const [allSearchChannels, setAllSearchChannels]: any = useState([])
     const [allSearchUsers, setAllSearchUsers]: any = useState([])
+
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     const channels = useSelector((state: any) => state.chat.channels)
-    const selected = useSelector((state: any) => state.chat.selectedChannelorUser)
 
     const [selectedOption, setSelectedOption]: any = useState();
     const dispatch = useDispatch()
     const toast = useToast()
-    const userId = useSelector((state: any) => state.userID.user)
-    const socket = useSelector((state: any) => state.channelChatSocket.socket)
+    const userId = useSelector((state: any) => state.socket.userID)
+    const socket = useSelector((state: any) => state.socket.socket)
     const [wrongpassowrd, setWrongpassowrd] = useState(false);
     const [openSearch, setOpenSearch] = useState(false);
     const { handleSubmit, register, reset } = useForm<any>();
@@ -122,12 +123,12 @@ export default function Search() {
             return res.json()
         }).catch((err) => console.log(err)))
 
-    const listusers = useMutation<any, Error, any>(() =>
-        fetch('http://127.0.0.1:3001/users/listusers').then((res) => {
+    const listusers = useMutation<any, Error, any>((variables) =>
+        fetch('http://127.0.0.1:3001/users/listusers/' + userId).then((res) => {
             return res.json()
         }).catch((err) => console.log(err)))
 
-    const listchannels = useMutation<any, Error, any>(() =>
+    const listchannels = useMutation<any, Error, any>((variables) =>
         fetch('http://127.0.0.1:3001/channel/getallpublicandprivatechannels').then((res) => {
             return res.json()
         }).catch((err) => console.log(err)))
@@ -138,7 +139,6 @@ export default function Search() {
     const handleSearchClick = async () => {
 
         if (search.trim() === "") {
-
             const searchchannelarray = await listchannels.mutateAsync({})
             const searchuserarray = await listusers.mutateAsync({})
             setAllSearchChannels(searchchannelarray)
@@ -204,8 +204,7 @@ export default function Search() {
             return channel.id
         })
 
-        if (newchannels.includes(selectedOption.id))
-        {
+        if (newchannels.includes(selectedOption.id)) {
             dispatch(setChannel(selectedOption))
             if (selectedOption.channelMember) {
                 selectedOption.channelMember.map((data1: any) => {
@@ -249,7 +248,7 @@ export default function Search() {
                 else {
 
                     dispatch(setChannel(selectedOption))
-                    
+
                     if (selectedOption.channelMember) {
                         selectedOption.channelMember.map((data1: any) => {
                             if (data1.userId === userId)
@@ -363,6 +362,9 @@ export default function Search() {
                                 setSelectedOption={setSelectedOption}
                             />)
                         })}
+                        {/* {allSearchUsers.map((users: User, id: number) => {
+                            return (<Usercard key={id} user={users}/>)
+                        })} */}
                     </div>
                 </ModalBody>
                 <ModalCloseButton />

@@ -19,68 +19,67 @@ import { addMessage, setChannel, setChannelMember, setChannels, setMessages, set
 import { useMutation } from 'react-query';
 
 
+import { useQuery, useQueryClient } from "react-query";
+import { useAppSelector } from '@/redux/store/store';
+
 function Usercard(props: any) {
 
-  const { user } = useSelector((state: any) => state.userID)
+  const { user } = useSelector((state: any) => state.socket.userID)
   const socket = useSelector((state: RootState) => state.socket.socket)
-
-  const dispatch = useDispatch()
-
   const scroolToRef = useRef<HTMLDivElement>(null)
-
+  const dispatch = useDispatch();
 
 
   const onSubmited = () => {
-    socket?.emit('message', 'hello')
-    dispatch(setTheUser(props.data))
-  }
+    
+    dispatch(setTheUser(props.data));
+    
+};
 
-
-  let pathname: string = '';
-
-
-
+  
   return (
+  
+  <Box ref={scroolToRef} className='flex justify-between items-center cursor-pointer m-2 ml-0 p-2 rounded-md active:bg-zinc-300'
+    onClick={() => onSubmited()}
+  {...(user === props.data.id ? scroolToRef.current?.scrollIntoView({ block: 'nearest', inline: 'start' }) && {bg: 'bg-zinc-300'} : {})}
 
-    <Box ref={scroolToRef} className='flex justify-between items-center cursor-pointer m-2 ml-0 p-2 rounded-md active:bg-zinc-300'
-      onClick={() => onSubmited()}
-      {...(user === props.data.id ? scroolToRef.current?.scrollIntoView({ block: 'nearest', inline: 'start' }) && { bg: 'bg-zinc-300' } : {})}
+  >
+    <div> 
+      <Avatar className='custom-shadow border-[1px] border-black' boxSize={14} src={props.data.avatar}>
+        <AvatarBadge className='custom-shadow border-[1px] border-black' boxSize={4} bg='green.500' />
+      </Avatar>
 
-    >
-      <div>
-        <Avatar className='custom-shadow border-[1px] border-black' boxSize={14} src={props.data.avatar}>
-          <AvatarBadge className='custom-shadow border-[1px] border-black' boxSize={4} bg='green.500' />
-        </Avatar>
+    </div>
 
-      </div>
+    <div className='ml-[7px] flex flex-col  text-left w-[60%] justify-around'>
+      <div className='text-[22px] font-bold'>{props.data.username} </div>
+      <div className='text-gray-400 text-[12px] font-medium	'>ok, see you tomorrow </div>
+    </div>
 
-      <div className='ml-[7px] flex flex-col  text-left w-[60%] justify-around'>
-        <div className='text-[22px] font-bold'>{props.data.username} </div>
-        <div className='text-gray-400 text-[12px] font-medium	'>ok, see you tomorrow </div>
-      </div>
+    <div className='flex flex-col items-center text-center '>
+      <div className='text-[13px] text-gray-400'>06:49 pm </div>
+      <div className='rounded-full bg-black w-5 h-5 flex items-center justify-center text-[20px] text-white'>3 </div>
+    </div>
 
-      <div className='flex flex-col items-center text-center '>
-        <div className='text-[13px] text-gray-400'>06:49 pm </div>
-        <div className='rounded-full bg-black w-5 h-5 flex items-center justify-center text-[20px] text-white'>3 </div>
-      </div>
-
-    </Box>)
+  </Box>)
 }
 
 
 
 export default function LeftSidebar() {
 
-
-
-
-  let [users, setNewUsers]: any = useState([])
+  const chatSocket = useAppSelector((state) => state.socket);
+  const { socket, userID } = chatSocket;
   const dispatch = useDispatch()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [ChannelOrUser, setChannelOrUser] = useState(false)
   const channels = useSelector((state: any) => state.chat.channels)
+
+  const queryClient = useQueryClient();
+  const [Users, setUsers] = useState<User[]>([]);
+  
   const selected = useSelector((state: any) => state.chat.selectedChannelorUser)
-  const userId = useSelector((state: any) => state.userID.user);
+  const userId = useSelector((state: any) => state.socket.userID);
   const toast = useToast()
 
 
@@ -88,23 +87,36 @@ export default function LeftSidebar() {
   const { LeftClice } = useSelector((state: any) => state.mobile)
   const { RightClice } = useSelector((state: any) => state.mobile)
 
-  const socket = useSelector((state: any) => state.channelChatSocket.socket)
+
+  useEffect(() => {
+  
+    socket?.on(`updateChatList`, async (Users: any) => {
+      // console.log(Users)
+      setUsers(Users);
+      // dispatch(setTheUser(Users[0]));
+      // dispatch(addMessage(Users[0].roomMembers[0].messages));/
+     
+    });
+
+  }, [socket]);
+
+  // const socket = useSelector((state: any) => state.socket.socket)
 
 
 
   useEffect(() => {
-    socket.emit('getChannelsFirstTime', { userId: userId })
+    socket?.emit('getChannelsFirstTime', { userId: userId })
   }, [])
 
 
   useEffect(() => {
 
-    socket.on('getChannelsFirstTime', (data: any) => {
+    socket?.on('getChannelsFirstTime', (data: any) => {
       console.log(data)
       const allchannels: Channel[] = data.channels
 
       allchannels.map((channel: Channel) => {
-        socket.emit('joinChannel', {
+        socket?.emit('joinChannel', {
           channelId: channel.id,
           userId: userId,
         })
@@ -112,7 +124,7 @@ export default function LeftSidebar() {
       dispatch(setChannels(allchannels))
     })
 
-    socket.on('channelCreated', (data: any) => {
+    socket?.on('channelCreated', (data: any) => {
 
       if (data.message === "Channel Created") {
 
@@ -148,7 +160,7 @@ export default function LeftSidebar() {
     })
 
 
-    socket.on('allchannels', (data: any) => {
+    socket?.on('allchannels', (data: any) => {
       const allchannels: Channel[] = data.channels
 
       allchannels.map((channel: Channel) => {
@@ -161,7 +173,7 @@ export default function LeftSidebar() {
     })
 
 
-    socket.on('channelEntered', async (data: any) => {
+    socket?.on('channelEntered', async (data: any) => {
 
 
       if (data.status === "channel doesn't exist") {
@@ -182,7 +194,7 @@ export default function LeftSidebar() {
           isClosable: true,
         })
 
-        socket.emit('joinChannel', {
+        socket?.emit('joinChannel', {
           channelId: data.channel.id,
           userId: userId,
         })
@@ -199,7 +211,7 @@ export default function LeftSidebar() {
             })
           }
         }
-        socket.emit('getChannels', { userId: userId })
+        socket?.emit('getChannels', { userId: userId })
       }
       else {
         toast({
@@ -212,7 +224,7 @@ export default function LeftSidebar() {
     })
 
 
-    socket.on('channelLeft', (data: any) => {
+    socket?.on('channelLeft', (data: any) => {
       if (data.userId === userId) {
         toast({
           title: "you left the channel",
@@ -233,7 +245,7 @@ export default function LeftSidebar() {
       }
     })
 
-    socket.on('channelDeleted', (data: any) => {
+    socket?.on('channelDeleted', (data: any) => {
       if (data.status == "You are not owner of the channel") {
 
         toast({
@@ -255,7 +267,7 @@ export default function LeftSidebar() {
         dispatch(setChannel(null))
       }
     })
-    socket.on('setAdministrator', (data: any) => {
+    socket?.on('setAdministrator', (data: any) => {
       if (data.status === "This member can't be set as an administrator.") {
         toast({
           title: data.status,
@@ -279,7 +291,7 @@ export default function LeftSidebar() {
       }
     })
 
-    socket.on('removeAdministrator', (data: any) => {
+    socket?.on('removeAdministrator', (data: any) => {
       if (data.status === "This member can't be removed as an administrator.") {
         toast({
           title: data.status,
@@ -305,7 +317,7 @@ export default function LeftSidebar() {
       }
     })
 
-    socket.on('removeMember', (data: any) => {
+    socket?.on('removeMember', (data: any) => {
       if (data.status === "This member can't be removed.") {
         toast({
           title: data.status,
@@ -331,7 +343,7 @@ export default function LeftSidebar() {
 
     })
 
-    socket.on('setpassword', (data: any) => {
+    socket?.on('setpassword', (data: any) => {
       if (data.status === "You are not owner or admin of the channel") {
         toast({
           title: data.status,
@@ -363,7 +375,7 @@ export default function LeftSidebar() {
       }
     })
 
-    socket.on('removepassword', (data: any) => {
+    socket?.on('removepassword', (data: any) => {
 
       if (data.status === "You are not owner or admin of the channel") {
         toast({
@@ -383,7 +395,7 @@ export default function LeftSidebar() {
           duration: 3000,
           isClosable: true,
         })
-        socket.emit('getChannels', { userId: userId })
+        socket?.emit('getChannels', { userId: userId })
       }
       else {
         toast({
@@ -395,7 +407,7 @@ export default function LeftSidebar() {
         })
       }
     })
-    socket.on('changepassword', (data: any) => {
+    socket?.on('changepassword', (data: any) => {
       if (data.status === "Password is changed") {
         toast({
           title: data.status,
@@ -404,7 +416,7 @@ export default function LeftSidebar() {
           duration: 3000,
           isClosable: true,
         })
-        socket.emit('getChannels', { userId: userId })
+        socket?.emit('getChannels', { userId: userId })
 
       }
       else {
@@ -419,18 +431,18 @@ export default function LeftSidebar() {
     })
 
     return () => {
-      socket.off('getChannelsFirstTime');
-      socket.off('channelLeft');
-      socket.off('allchannels');
-      socket.off('channelDeleted');
-      socket.off('setAdministrator');
-      socket.off('removeAdministrator');
-      socket.off('removeMember');
-      socket.off('setpassword');
-      socket.off('removepassword');
-      socket.off('changepassword');
-      socket.off('channelEntered');
-      socket.off('channelCreated');
+      socket?.off('getChannelsFirstTime');
+      socket?.off('channelLeft');
+      socket?.off('allchannels');
+      socket?.off('channelDeleted');
+      socket?.off('setAdministrator');
+      socket?.off('removeAdministrator');
+      socket?.off('removeMember');
+      socket?.off('setpassword');
+      socket?.off('removepassword');
+      socket?.off('changepassword');
+      socket?.off('channelEntered');
+      socket?.off('channelCreated');
     }
   }, [selected])
 
@@ -489,17 +501,18 @@ export default function LeftSidebar() {
         <div onClick={() => { onOpen(), setChannelOrUser(false) }} className='cursor-pointer'><Icon boxSize={10} as={SmallAddIcon} /></div>
       </div>
 
-      <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
-
-        {users.map((data: User) => {
-          return <Usercard
-            key={data.username}
-            data={data}
-          />
-        })}
-
-      </div>
-      {ChannelOrUser === true ? <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
+        {
+          Users.map((userData: User, id: number) => (
+            <Usercard
+              key={id}
+              data={userData}
+            />
+          ))
+        }
+  
+        </div>
+        {ChannelOrUser === true ? <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <Newchannel isOpen={isOpen}
           onClose={onClose}
           channels={channels}
@@ -508,8 +521,6 @@ export default function LeftSidebar() {
       </Modal> : <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <Newmessage isOpen={isOpen}
           onClose={onClose}
-          setNewUsers={setNewUsers}
-          users={users}
         />
       </Modal>}
     </Box>

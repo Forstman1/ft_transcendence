@@ -19,7 +19,7 @@ export default function AddToChannelComponent() {
 
   const [isOpened, setIsOpened] = useState(false)
   const [Chosen, setChosen] = useState("Channels")
-  const userId = useSelector((state: any) => state.userID.user)
+  const userId = useSelector((state: any) => state.socket.userID)
   const userSelected = useSelector((state: any) => state.chat.selectedChannelorUser)
   const [channels, setChannels]: any = useState([])
   const toast = useToast()
@@ -188,8 +188,8 @@ export default function AddToChannelComponent() {
                   },
                 }}
               >
-                {channels.map((channel: Channel) =>
-                  <li className=' cursor-pointer text-black font-bold' onClick={() => { setChosen(channel.name); setIsOpened(false) }}>
+                {channels.map((channel: Channel, id: number) =>
+                  <li key={id} className=' cursor-pointer text-black font-bold' onClick={() => { setChosen(channel.name); setIsOpened(false) }}>
                     {channel.name}
                   </li>
                 )}

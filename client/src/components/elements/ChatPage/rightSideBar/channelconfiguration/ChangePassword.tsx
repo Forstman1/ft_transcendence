@@ -23,8 +23,8 @@ function Componenent({ onClose }: any) {
   const handleClick = () => setShow(!show)
   const toast = useToast()
   const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
-  const userId = useSelector((state: any) => state.userID.user)
-  const socket = useSelector((state: any) => state.channelChatSocket.socket)
+  const userId = useSelector((state: any) => state.socket.userID)
+  const socket = useSelector((state: any) => state.socket.socket)
 
 
 

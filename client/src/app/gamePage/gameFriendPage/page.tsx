@@ -1,7 +1,6 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import React, { useRef, useEffect, useState} from "react";
+import React, { useRef, useEffect, useState, use} from "react";
 import { PageWrapper } from "../../animationWrapper/pageWrapper";
 import Countdown from "../ui/Countdown";
 import GameHeader from "../ui/GameFriendHeader";
@@ -9,9 +8,12 @@ import Image from "next/image";
 import { useAppSelector } from "@/redux/store/store";
 import GameSideBar from "../ui/GameSideBar";
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
 import LoadingScreen from "@/components/elements/loadingScreen/LoadingScreen";
 =======
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
 import { motion } from "framer-motion";
 import GameEndStatic from "../ui/GameEndStatic";
 import { BackgroundsImg } from "@/utils/constants/game/GameConstants";
@@ -37,9 +39,12 @@ import {
 } from "@/utils/constants/game/GameConstants";
 
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
 // let clientId: string;
 =======
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
 
 export default function GameFriendPage() {
   let gameSettings = useAppSelector((state) => state.gameReducer);
@@ -52,20 +57,28 @@ export default function GameFriendPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [keysPressed, setKeysPressed] = useState<Record<string, boolean>>({});
 <<<<<<< HEAD
+  const [canvasSize, setCanvasSize] = useState(initialCanvasSize);
+=======
+<<<<<<< HEAD
   const canvasSize = initialCanvasSize;
 =======
   const [canvasSize, setCanvasSize] = useState(initialCanvasSize);
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
   const initialBallState: Ball = {
     x: canvasSize.width / 2,
     y: canvasSize.height / 2,
     speedX: initialBallSpeed,
     speedY: initialBallSpeed,
 <<<<<<< HEAD
+    radius: Math.floor(canvasSize.height / 55),
+=======
+<<<<<<< HEAD
     radius: Math.floor((canvasSize.width + canvasSize.height) / 150),
 =======
     radius: Math.floor(canvasSize.height / 55),
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
   };
   const leftPaddleRef = useRef<Rectangle>(initialLeftPaddle);
   const rightPaddleRef = useRef<Rectangle>(initialRightPaddle);
@@ -88,13 +101,36 @@ export default function GameFriendPage() {
   const [userPoints, setUserPoints] = useState<number>(0);
   const [gamePause, setGamePause] = useState<boolean>(false);
   const [hasInitialized, setHasInitialized] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  if (mounted) {
+    window?.addEventListener('offline', () => {
+      if (
+        socket &&
+        socket.io &&
+        socket.io.engine &&
+        socket.io.engine.transport
+      ) {
+        socket.io.engine.transport.close()
+      }
+    })
+    
+  }
+     
+
+  
+useEffect(() => {
+  setMounted(true);
+}, []);
 
 <<<<<<< HEAD
   //--------------------------------Socket Code logic-------------------------------------------
 
+
   useEffect(() => {
 
     if (socket !== null && roomId !== "") {
+<<<<<<< HEAD
+=======
       console.log("socket is not null");
 =======
   window.addEventListener('offline', () => {
@@ -116,6 +152,7 @@ export default function GameFriendPage() {
 
     if (socket !== null && roomId !== "") {
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
       let prevLeftScore = 0;
       let prevRightScore = 0;
       
@@ -126,10 +163,14 @@ export default function GameFriendPage() {
           speedX: (data.ball.speedX * canvasSize.width) / 100,
           speedY: (data.ball.speedY * canvasSize.height) / 100,
 <<<<<<< HEAD
+          radius: (data.ball.radius * canvasSize.height) / 100,
+=======
+<<<<<<< HEAD
           radius: (data.ball.radius * Math.max(canvasSize.width, canvasSize.height)) / 100,
 =======
           radius: (data.ball.radius * canvasSize.height) / 100,
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
         });
         setLeftPaddle({
           x: (data.leftPaddle.x * canvasSize.width) / 100,
@@ -167,13 +208,19 @@ export default function GameFriendPage() {
   }, [socketState]);
 
 <<<<<<< HEAD
+  //----------------------------------------------------------------------------------------------
+=======
+<<<<<<< HEAD
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
   const closeSocketConnection = () => {
     if (socket) {
-      socket.emit("endGame", roomId);
-      socket.off("GetGameData");
+        socket.emit("endGame", roomId);
     }
   };
 
+<<<<<<< HEAD
+  //----------------------------------------------------------------------------------------------
+=======
 =======
   //----------------------------------------------------------------------------------------------
   const closeSocketConnection = () => {
@@ -184,6 +231,7 @@ export default function GameFriendPage() {
 
   //----------------------------------------------------------------------------------------------
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
   useEffect(() => {
     if (gameStarted && !hasInitialized && roomId !== "") {
       const initCanvasData = {
@@ -193,10 +241,14 @@ export default function GameFriendPage() {
           speedX: (initialBallState.speedX * 100) / canvasSize.width,
           speedY: (initialBallState.speedY * 100) / canvasSize.height,
 <<<<<<< HEAD
+          radius: (Math.floor(canvasSize.height / 55) * 100) / canvasSize.height,
+=======
+<<<<<<< HEAD
           radius: (Math.floor((canvasSize.width + canvasSize.height) / 150) / Math.max(canvasSize.width, canvasSize.height)) * 100,
 =======
           radius: (Math.floor(canvasSize.height / 55) * 100) / canvasSize.height,
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
           maxBallSpeed: (maxBallSpeed * 100) / canvasSize.width,
         },
         leftPaddle: {
@@ -218,10 +270,15 @@ export default function GameFriendPage() {
   }, [gameStarted, hasInitialized]);
 
 <<<<<<< HEAD
+
+  //-------------------------------Update Paddles----------------------------------------------
+=======
+<<<<<<< HEAD
 =======
 
   //-------------------------------Update Paddles----------------------------------------------
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
   useEffect(() => {
     if (roomId !== "") {
     const canvasData: CanvasData = {
@@ -239,16 +296,55 @@ export default function GameFriendPage() {
       },
     };
 <<<<<<< HEAD
+      socket?.emit("updatePaddles", {canvasData, roomId});
+=======
+<<<<<<< HEAD
     
     socket?.emit("updatePaddles", {canvasData, roomId});
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
     }
    }, [leftPaddle, rightPaddle]);
 
+   //-------------------------------Post Game History----------------------------------------------
+
+  
+  const PostGameHistory = async () => {
+
+    let userScore = 0;
+    let opponentScore = 0;
+    if (socketState.isOwner) {
+      userScore = rightScore;
+      opponentScore = leftScore;
+    }
+    else {
+      userScore = leftScore;
+      opponentScore = rightScore;
+    }
+    const data: any = {
+      userId: socketState.playerId,
+      status: socketState.isOwner ? gameEndStatic.user : gameEndStatic.bot,
+      userScore: userScore,
+      opponentScore: opponentScore,
+      rounds: gameSettings.rounds,
+      matches: gameSettings.matches,
+      roomId: roomId,
+    };
+
+    await socket?.emit("CreateGameHistory", data);
+  }
+
+  //----------------------------------------------------------------------------------------------
   useEffect(() => {
     if (roomId == "") return;
-    if (gameEnded){
-      closeSocketConnection();
+    if (gameEnded) {
+      PostGameHistory().then(() => {
+          closeSocketConnection();
+      });
     }
+<<<<<<< HEAD
+    if (!socketState.isOwner) return;
+    if (!gameStarted && !gameEnded ) {
+=======
     if (!gameStarted && !gameEnded) {
 =======
       socket?.emit("updatePaddles", {canvasData, roomId});
@@ -294,6 +390,7 @@ export default function GameFriendPage() {
     if (!socketState.isOwner) return;
     if (!gameStarted && !gameEnded ) {
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
       socket?.emit("pauseGame", roomId);
     }
     else if (gameStarted && !gameEnded) {
@@ -303,6 +400,9 @@ export default function GameFriendPage() {
 
 <<<<<<< HEAD
 =======
+<<<<<<< HEAD
+=======
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
   useEffect(() => {
     socket?.on("friendExitGame", () => {
       if (socketState.isOwner) {
@@ -323,7 +423,10 @@ export default function GameFriendPage() {
     };
   }, [socket]);
   
+<<<<<<< HEAD
+=======
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
   //----------------------------------end Socket code Logic-----------------------------------------
 
   useEffect (() => {
@@ -386,28 +489,37 @@ export default function GameFriendPage() {
 
   //---------------------------------------------------------------------------
 <<<<<<< HEAD
-
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === " ") {
-      event.preventDefault();
-      setGamePause((prevGamePause) => !prevGamePause);
-    } else {
-      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: true }));
-    }
-  };
-  
-  const handleKeyUp = (event: KeyboardEvent) => {
-    setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: false }));
-  };
-
   useEffect(() => {
-    if (!gameStarted) return;
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp)
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
+    
+    
+    if (!gameStarted || gameEnded) return;
+=======
+<<<<<<< HEAD
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === " ") {
+        event.preventDefault();
+        setGamePause((prevGamePause) => !prevGamePause);
+      } else {
+        setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: true }));
+      }
     };
+  
+    const handleKeyUp = (event: KeyboardEvent) => {
+      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: false }));
+    };
+  
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keyup", handleKeyUp);
+  
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keyup", handleKeyUp);
+    };
+<<<<<<< HEAD
+  }, [gameStarted, gameEnded, ball]);
+=======
   }, [gameStarted]);
 =======
   useEffect(() => {
@@ -437,6 +549,7 @@ export default function GameFriendPage() {
     };
   }, [gameStarted, gameEnded, ball]);
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
 
   //---------------------------------------------------------------------------
   
@@ -482,10 +595,14 @@ export default function GameFriendPage() {
       draw(canvasRef.current!, context, leftPaddle, rightPaddle, ball, gameSettings);
   
 <<<<<<< HEAD
+  }, [keysPressed, canvasSize, ball, gameStarted, gameEnded]);
+=======
+<<<<<<< HEAD
   }, [canvasSize, ball, gameStarted, gameEnded]);
 =======
   }, [keysPressed, canvasSize, ball, gameStarted, gameEnded]);
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
 
   //---------------------------------------------------------------------------
 
@@ -512,6 +629,12 @@ export default function GameFriendPage() {
                   <div
                     id="canvas-container"
 <<<<<<< HEAD
+                    className="relative flex items-center bg-background-primary rounded-lg h-[50vh] w-full max-w-[1200px]"
+                  >
+                    <div className="absolute top-0 left-0 w-full h-full rounded-lg z-10">
+                      {!gameStarted && !gameEnded  && (
+=======
+<<<<<<< HEAD
                     className="relative flex items-center bg-background-primary rounded-lg h-[55vh] w-full max-w-[1200px]"
                   >
                     <div className="absolute top-0 left-0 w-full h-full rounded-lg z-10">
@@ -522,6 +645,7 @@ export default function GameFriendPage() {
                     <div className="absolute top-0 left-0 w-full h-full rounded-lg z-10">
                       {!gameStarted && !gameEnded  && (
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
                         <div className="w-full h-full">
                           <Countdown
                             seconds={3}
@@ -538,9 +662,13 @@ export default function GameFriendPage() {
                               opponent={gameEndStatic.bot}
                               user={gameEndStatic.user}
 <<<<<<< HEAD
+                              isFriendMode={true}
+=======
+<<<<<<< HEAD
 =======
                               isFriendMode={true}
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
                             />
                           </div>
                         </>

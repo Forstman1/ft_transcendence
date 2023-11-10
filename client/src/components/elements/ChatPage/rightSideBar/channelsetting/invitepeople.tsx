@@ -15,8 +15,8 @@ function Componenent({ onClose }: any) {
     const [users, setUsers] = useState<any[]>([])
 
     const [selectedOption, setSelectedOption]: any = useState('');
-    const channelName = useSelector((state: any) => state.chat.selectedChannelorUser)
-    const userId = useSelector((state: any) => state.userID.user)
+    const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
+    const userId = useSelector((state: any) => state.socket.userID)
     const toast = useToast()
 
 
@@ -32,14 +32,12 @@ function Componenent({ onClose }: any) {
         const fetchUsers = async () => {
           try {
             const [usersResponse, membersResponse] = await Promise.all([
-              fetch('http://127.0.0.1:3001/users/listusers').then((api) => api.json()),
-              fetch(`http://127.0.0.1:3001/channel/getallmembers/${channelName.id}`).then((api) => api.json())
+              fetch('http://127.0.0.1:3001/users/listusers/' + userId).then((api) => api.json()),
+              fetch('http://127.0.0.1:3001/channel/getallmembers/' + channel.id).then((api) => api.json())
             ]);
       
-            // Extract the member userIds to improve filtering efficiency
             const memberUserIds = membersResponse.map((member: any) => member.userId);
       
-            // Filter users who are not the current user and are not already members of the channel
             const filteredUsers = usersResponse.filter((user: any) => {
               return user.id !== userId && !memberUserIds.includes(user.id);
             });
@@ -80,7 +78,7 @@ function Componenent({ onClose }: any) {
 
 
         const response = await Invite.mutateAsync({
-            channelName: channelName.name, 
+            channelName: channel.name, 
             userIdOwner: userId,
             userIdMember: selectedOption.id
         })

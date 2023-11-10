@@ -37,22 +37,31 @@ import {
 <<<<<<< HEAD
 
 
+<<<<<<< HEAD
+
+
+=======
 =======
 
 
 
 
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
 export default function GameBotPage() {
   let gameSettings = useAppSelector((state) => state.gameReducer);
   appliyGameMode(gameSettings);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [keysPressed, setKeysPressed] = useState<Record<string, boolean>>({});
 <<<<<<< HEAD
+  const [canvasSize, setCanvasSize] = useState(initialCanvasSize);
+=======
+<<<<<<< HEAD
   const canvasSize = initialCanvasSize;
 =======
   const [canvasSize, setCanvasSize] = useState(initialCanvasSize);
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
   const leftRectangleRef = useRef<Rectangle>(initialLeftPaddle);
   const rightRectangleRef = useRef<Rectangle>(initialRightPaddle);
   const initialBallState: Ball = {
@@ -85,6 +94,9 @@ export default function GameBotPage() {
 
 <<<<<<< HEAD
 =======
+<<<<<<< HEAD
+=======
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
   useEffect(() => {
     const handleResize = () => {
       const aspectRatioWidth = 16;
@@ -143,7 +155,10 @@ export default function GameBotPage() {
     };
   }, []);
 
+<<<<<<< HEAD
+=======
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
   //---------------------------------------------------------------------------
 
   useEffect (() => {
@@ -234,10 +249,14 @@ export default function GameBotPage() {
       document.removeEventListener("keyup", handleKeyUp);
     };
 <<<<<<< HEAD
+  }, [gamePause, gameEnded, ball, gameStarted]);
+=======
+<<<<<<< HEAD
   }, [gameStarted, gamePause, gameEnded]);
 =======
   }, [gamePause, gameEnded, ball, gameStarted]);
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
 
   //---------------------------------------------------------------------------
 

@@ -22,14 +22,20 @@ const GameFriendHeader = ({
         >
           <div className="flex flex-row items-center space-x-5">
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
             <Avatar size="lg" />
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
             <Text
               className={`font-bold text-2xl ${getTextColor(
                 gameSettings
-              )} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
+                )} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] max-xl:hidden`}
             >
               Friend
             </Text>
+<<<<<<< HEAD
+              <Avatar size="lg" />
+=======
 =======
             <Text
               className={`font-bold text-2xl ${getTextColor(
@@ -40,6 +46,7 @@ const GameFriendHeader = ({
             </Text>
               <Avatar size="lg" />
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
           </div>
           <div className="flex flex-row items-center space-x-10">
             <Text
@@ -66,13 +73,19 @@ const GameFriendHeader = ({
           </div>
           <div className="flex flex-row items-center space-x-5">
 <<<<<<< HEAD
+            <Avatar size="lg" />
+=======
+<<<<<<< HEAD
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
             <Text
               className={`font-bold text-2xl ${getTextColor(
                 gameSettings
-              )} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
+              )} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] max-xl:hidden`}
             >
               UserName
             </Text>
+<<<<<<< HEAD
+=======
             <Avatar size="lg" />
 =======
             <Avatar size="lg" />
@@ -84,6 +97,7 @@ const GameFriendHeader = ({
               UserName
             </Text>
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
           </div>
         </div>
       ) : (
@@ -95,10 +109,14 @@ const GameFriendHeader = ({
               className={`font-bold text-2xl ${getTextColor(
                 gameSettings
 <<<<<<< HEAD
+              )} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] max-xl:hidden`}
+=======
+<<<<<<< HEAD
               )} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
 =======
               )} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] max-xl:hidden`}
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
             >
               UserName
             </Text>
@@ -133,10 +151,14 @@ const GameFriendHeader = ({
               className={`font-bold text-2xl ${getTextColor(
                 gameSettings
 <<<<<<< HEAD
+              )} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] max-xl:hidden`}
+=======
+<<<<<<< HEAD
               )} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
 =======
               )} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] max-xl:hidden`}
 >>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
             >
               Friend
             </Text>

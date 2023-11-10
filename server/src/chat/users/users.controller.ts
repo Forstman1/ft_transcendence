@@ -1,22 +1,52 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { Prisma } from '@prisma/client';
 
 
-@Controller('users')
+@Controller(`users`)
 export class UsersController {
 
     constructor(private readonly usersService: UsersService) {}
-    @Get('/listusers')
-    listusers(@Body() Body) {
-        return this.usersService.listUsers()
+
+    @Get(`friends/:id`)
+    async listFriends(@Param() id: Prisma.UserWhereUniqueInput) { 
+        return await this.usersService.listFriends(id)
     }
-    @Get('/adduser')
-    adduser(@Body() body) {
-        return this.usersService.add(body)
+
+
+    @Get(`:id`)
+    async getUser(@Param() id: Prisma.UserWhereUniqueInput) {
+        return await this.usersService.getUser(id)
     }
+
+    @Get(`chatList/:id`)
+    async getChatList(@Param() id: string) {
+        return await this.usersService.getChatList(id)
+    }
+    
+    @Post(`sendFriendRequest/:id`)
+    async sendFriendRequest(@Param() id: Prisma.UserWhereUniqueInput, @Body() friendId: Prisma.UserWhereUniqueInput) {
+
+    }
+
+    @Post(`addToChat/:id`)
+    async addToChat(@Param() id: string, @Body() friendId: string) {
+        return await this.usersService.addToChat(id, friendId)
+    }
+
+    @Post(`aceptFriendRequest/:id`)
+    async acceptFriendRequest(@Param() id: Prisma.UserWhereUniqueInput, @Body() friendId: Prisma.UserWhereUniqueInput) {
+        return await this.usersService.acceptFriendRequest(id, friendId)
+    }
+    @Get('/listusers/:id')
+    listusers(@Param('id') id: string) {
+        return this.usersService.listUsers(id)
+    }
+
+    
     @Get('/getuser/:id')
     getuser(@Param('id') id: string) {
-        return this.usersService.getUser(id)
+        return this.usersService.getUserbyId(id)
     }
 
     @Get('/getusers/:tofound')

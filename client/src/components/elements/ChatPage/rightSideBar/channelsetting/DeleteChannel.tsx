@@ -16,11 +16,11 @@ function Componenent({ onClose }: any) {
 
 
     const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
-    const userId = useSelector((state: any) => state.userID.user)
+    const userId = useSelector((state: any) => state.socket.userID)
     const toast = useToast()
     const dispatch = useDispatch()
 
-    const socket = useSelector((state: any) => state.channelChatSocket.socket)
+    const socket = useSelector((state: any) => state.socket.socket)
     
 
     // const deleteChannel = useMutation<any, Error, any>((variables) => fetch('http://127.0.0.1:3001/channel/deleteChannel', {

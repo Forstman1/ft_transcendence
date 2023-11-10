@@ -15,9 +15,9 @@ function Componenent({ onClose }: any) {
     const [selectedOption, setSelectedOption]: any = useState('');
     const [users, setUsers] = useState<any[]>([])
     const toast = useToast()
-    const userId = useSelector((state: any) => state.userID.user)
+    const userId = useSelector((state: any) => state.socket.userID)
     const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
-    const socket = useSelector((state: any) => state.channelChatSocket.socket)
+    const socket = useSelector((state: any) => state.socket.socket)
 
 
     const handleOptionChange = (newValue: any) => {
@@ -130,7 +130,6 @@ function Componenent({ onClose }: any) {
 
 
 export default function SetChannelAdmin() {
-
 
 
     const { isOpen, onOpen, onClose } = useDisclosure()

@@ -17,9 +17,9 @@ function Componenent({ onClose }: any) {
 
 
     const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
-    const userId = useSelector((state: any) => state.userID.user)
+    const userId = useSelector((state: any) => state.socket.userID)
     const dispatch = useDispatch()
-    const socket = useSelector((state: any) => state.channelChatSocket.socket)
+    const socket = useSelector((state: any) => state.socket.socket)
 
 
 

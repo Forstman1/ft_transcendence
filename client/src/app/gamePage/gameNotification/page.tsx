@@ -1,3 +1,4 @@
+"use client";
 import { useToast, Alert, AlertIcon, Box, Button } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useAppSelector } from "@/redux/store/store";

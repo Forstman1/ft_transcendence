@@ -37,32 +37,27 @@ export class ChannelController {
 
     @Post('/setpassword')
     setpassword(@Body() body:any) {
-        return this.channelservice.setpassword(body.channelId, body.userId, body.password)
+        return this.channelservice.setpassword(body.channelName, body.userId, body.password)
     }
 
     @Delete('/removepassword')
     removepassword(@Body() body: any) {
-        return this.channelservice.removepassword(body.channelId, body.userId)
+        return this.channelservice.removepassword(body.channelName, body.userId)
     }
 
     @Put('/setadministrator')
     setAdministrator(@Body() body: any){
-        return this.channelservice.setAdministrator(body.channelId, body.userIdOwner, body.userIdadministrateur)
+        return this.channelservice.setAdministrator(body.channelName, body.userIdOwner, body.userIdadministrateur)
     }
 
     @Delete('/removeadministrator')
     removeAdministrator(@Body() body: any){
-        return this.channelservice.removeAdministrator(body.channelId, body.userIdOwner, body.userIdadministrateur)
+        return this.channelservice.removeAdministrator(body.channelName, body.userIdOwner, body.userIdadministrateur)
     }
 
     @Post('/invitemember')
     inviteMember(@Body() body: any){
         return this.channelservice.inviteMember(body.channelName, body.userIdOwner, body.userIdMember)
-    }
-
-    @Post('/enterchannel')
-    enterchannel(@Body() body: any){
-        return this.channelservice.enterchannel(body.channelName, body.userId)
     }
     
     @Get('/getallmembers/:id')
@@ -86,15 +81,13 @@ export class ChannelController {
         return this.channelservice.getchannelmemberinfo(channelId, userId)
     }
 
-
     @Get('/getallchannelsapp/:tofound')
     getallchannelsapp(@Param('tofound') tofound: string) {
         return this.channelservice.getallchannelsapp(tofound)
     }
 
-    @Get('/getallpublicandprivatechannels/')
-    getallpublicandprivatechannels() {
+    @Get('/getallpublicandprivatechannels')
+    getallpublicandprivatechannels(){
         return this.channelservice.getallpublicandprivatechannels()
     }
-
 }

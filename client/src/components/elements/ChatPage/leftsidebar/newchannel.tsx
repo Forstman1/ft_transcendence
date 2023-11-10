@@ -46,8 +46,8 @@ export default function Newchannel({ isOpen, onClose, channels }: Props) {
   const [show, setShow] = React.useState(false)
   const handleClick = () => setShow(!show)
   const dispatch = useDispatch()
-  const userId = useSelector((state: any) => state.userID.user)
-  const socket = useSelector((state: any) => state.channelChatSocket.socket)
+  const userId = useSelector((state: any) => state.socket.userID)
+  const socket = useSelector((state: any) => state.socket.socket)
 
   const createchannel = useMutation<any, Error, ChannelValues>((variables) =>
     fetch('http://127.0.0.1:3001/channel/createchannel', {

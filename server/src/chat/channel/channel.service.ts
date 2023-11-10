@@ -5,7 +5,6 @@ import * as argon2 from 'argon2';
 
 
 
-
 @Injectable()
 export class ChannelService {
   constructor(private prisma: PrismaService) {}
@@ -431,7 +430,6 @@ export class ChannelService {
     const channelowner = channelmembers[0];
     delete channelmembers[0];
 
-
     try {
       const channelmembers = await this.prisma.channelMember.findMany({
         where: {
@@ -600,7 +598,6 @@ export class ChannelService {
   
 
   async deleteChannel(channelName: string, userId: string) {
-
     const channel = await this.prisma.channel.findUnique({
       where: {
         name: channelName,

@@ -18,7 +18,7 @@ import { LockIcon, SmallAddIcon } from "@chakra-ui/icons";
 import { useMutation } from "react-query";
 import { setChannel, setChannelMember, setMessages } from "@/redux/slices/chat/ChatSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { Channel, ChannelMember, ChannelMessage } from "@/utils/types/chat/ChatTypes";
+import { Channel, ChannelMessage } from "@/utils/types/chat/ChatTypes";
 
 
 
@@ -34,8 +34,8 @@ export default function Hashtag(props: any) {
 
     let { id, name, type }: Channel = props.data;
     let data: Channel = props.data;
+    const userId = useSelector((state: any) => state.chat.userId)
 
-    const userId = useSelector((state: any) => state.userID.user)
     const dispatch = useDispatch()
     const toast = useToast()
 
@@ -115,7 +115,6 @@ export default function Hashtag(props: any) {
                 height: 100,
             }
         })
-
         info.password = "";
         reset({ password: "" })
         onClose();

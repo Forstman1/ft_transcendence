@@ -9,22 +9,25 @@ export type Channel = {
 
 
 export type User = {
-    id: String
-    username: String
-    email: String
-    fullname: String
-    avatar: String
-    isOnline: Boolean
+    id:                string
+    socketID:          string  
+    username:          string      
+    email:             string      
+    fullname:          string       
+    avatar:            string
+    isOnline:          Boolean
 }
 
-// export type Message = {
-//     id: string;
-//     content: string;
-//     reciverID: string;
-//     authorID: string;
-//     authorName: string
-//     createdAt: Date;
-// }
+
+export type UserMessage = {
+    id: string;
+    content: string;
+    reciverID: string;
+    authorID: string;
+    roomID: string;
+    authorName: string
+    createdAt: Date;
+}
 
 export type ChannelMessage = {
     id: string

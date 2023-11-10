@@ -35,7 +35,6 @@ export default function RightSidebarChannel() {
 
 
 
-
   const sidebar = {
     open: (height = 1000) => ({
       // width: "375px",

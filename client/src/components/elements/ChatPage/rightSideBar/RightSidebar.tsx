@@ -1,6 +1,6 @@
 "use client"
 
-import React, { RefObject, useEffect } from 'react'
+import React, { RefObject, use, useEffect } from 'react'
 import { Text, Avatar, Box } from '@chakra-ui/react'
 import Image from 'next/image'
 import Profile from '../../../../../assets/icons/Profile.svg'
@@ -22,8 +22,7 @@ import AddToChannelComponent from './AddToChannelComponent'
 export default function RightSidebar() {
 
   
-  // const { MidleClice } = useSelector((state: any) => state.mobile)
-  // const { LeftClice } = useSelector((state: any) => state.mobile)
+
   const { RightClice } = useSelector((state: any) => state.mobile)
   const isDesktop = useMediaQuery("(min-width: 1000px)")
 
@@ -31,12 +30,16 @@ export default function RightSidebar() {
   const dispatch = useDispatch()
   const User = useSelector((state: any) => state.chat.selectedChannelorUser)
 
+  
+  useEffect(() => {
+    if (isDesktop[0]) {
+      dispatch(setRight(true))
+      dispatch(setMidle(true))
+      dispatch(setLeft(true))
+    }
+  } , [isDesktop])
 
-  if(isDesktop[0]) {
-    dispatch(setRight(true))
-    dispatch(setMidle(true))
-    dispatch(setLeft(true))
-  }
+
 
 
   const sidebar = {
@@ -77,7 +80,7 @@ export default function RightSidebar() {
         <Avatar src={User.avatar} className='m-7 h-[130px] w-[130px] drop-shadow-[2px_2px_0_rgba(18,18,18,0.50)] border border-black' />
         <Box className='bg-black justify-start flex items-center rounded text-white w-[200px] h-[45px] drop-shadow-[2px_2px_0_rgba(18,18,18,0.50)]'>
           <Box className='AvatarBadge w-[25px] h-[25px] rounded-full bg-green-600 mx-5' />
-          <Text className='text-3xl'>Available</Text>
+          <Text className='text-3xl'>{User.isOnline} </Text>
         </Box>
       </Box>
       <hr className='bg-black h-[2px] mx-10' />

@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateMessageDto } from './dto';
-import { UsersService } from 'src/users/users.service';
+import { MessageDto } from '../users/dtos/user.dto';
+
+
 
 @Injectable()
 export class MessageService {
 
-    constructor (private prisma: PrismaService, private userService: UsersService){}
+    constructor (private prisma: PrismaService){}
 
     async createmessage(messageInfo: CreateMessageDto) {
         
@@ -46,7 +48,7 @@ export class MessageService {
     }
 
 
-    async getMessages(channelId: string) {
+    async getMessagesChannel(channelId: string) {
 
 
         const channel = await this.prisma.channel.findUnique({
@@ -77,5 +79,41 @@ export class MessageService {
 
     async getDMMessages() {
         
+    }
+
+    async getMessagesUsers(userId: string, reciverId: string): Promise<MessageDto[] | string> {
+        try {
+            const user = await this.prisma.user.findUnique({
+                where: {
+                    id: userId
+                }
+            });
+            const reciver = await this.prisma.user.findUnique({
+                where: {
+                    id: reciverId
+                }
+            });
+            if (!user || !reciver)
+                return 'User not found'
+            
+            const DMroom = await this.prisma.dMRoom.findFirst({
+                where: {
+                    roomMembers: {
+                        every: {
+                            id: {
+                                in: [user.id, reciver.id]
+                            }
+                        }
+                    },
+                },
+                include: {
+                    roomMessages: true,
+                }
+            })
+            return DMroom.roomMessages
+        }
+        catch (error) {
+            return `${error} could not retrieve messages`
+        }
     }
 }
