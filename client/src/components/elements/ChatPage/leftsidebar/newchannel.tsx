@@ -13,7 +13,7 @@ import {
     ModalCloseButton,
 } from '@chakra-ui/react'
 import { useForm } from "react-hook-form"
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from 'react-query';
 import { Channel } from '@/utils/types/chat/ChatTypes';
 import { useDispatch, useSelector } from 'react-redux';
 import { setChannel, setNewChannel } from '@/redux/slices/chat/ChatSlice';

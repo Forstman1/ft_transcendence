@@ -1,6 +1,6 @@
 'use client';
 
-import React from "react";
+import React, { useEffect } from "react";
 import { PageWrapper } from "../../animationWrapper/pageWrapper";
 import {
   Center,
@@ -12,7 +12,7 @@ import {
   PinInput,
   PinInputField
 } from '@chakra-ui/react'
-import { useMutation } from "@tanstack/react-query";
+import { useMutation } from "react-query";
 import { useState } from 'react';
 import { verify2FA } from "@/utils/functions/auth/fetchingUserData";
 
@@ -22,7 +22,11 @@ export default function TwoFactorAuthPage() {
     mutationFn: verify2FA,
     mutationKey: ['verify2FA'],
   });
-
+  useEffect(() => {
+    if (isSuccess) {
+      console.log('2FA verified');
+    }
+  }, [isSuccess]);
   return (
     <PageWrapper>
       <Flex
@@ -50,14 +54,12 @@ export default function TwoFactorAuthPage() {
             <Center>
               <HStack>
                 <PinInput otp mask size='lg' onChange={(value) => setOtp(value)}>
-                  <PinInputField key="pin-input-field-0" />
-                  <PinInputField key="pin-input-field-1" />
-                  <PinInputField key="pin-input-field-2" />
-                  <PinInputField key="pin-input-field-3" />
-                  <PinInputField key="pin-input-field-4" />
-                  <PinInputField key="pin-input-field-5" />
-                  <PinInputField key="pin-input-field-6" />
-                  <PinInputField key="pin-input-field-7" />
+                  <PinInputField id="pin-input-field-0" key="pin-input-field-0" />
+                  <PinInputField id="pin-input-field-1" key="pin-input-field-1" />
+                  <PinInputField id="pin-input-field-2" key="pin-input-field-2" />
+                  <PinInputField id="pin-input-field-3" key="pin-input-field-3" />
+                  <PinInputField id="pin-input-field-4" key="pin-input-field-4" />
+                  <PinInputField id="pin-input-field-5" key="pin-input-field-5" />
                 </PinInput>
               </HStack>
             </Center>

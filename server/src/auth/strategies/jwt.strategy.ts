@@ -4,6 +4,8 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UserService } from 'src/user/user.service';
 import { UnauthorizedException } from '@nestjs/common';
 import { User } from '@prisma/client';
+import { Request } from 'express';
+import { Console } from 'console';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -15,6 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       ]),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET,
+      passReqToCallback: true,
     });
   }
 
@@ -30,11 +33,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     return null;
   }
 
-  async validate(payload: any): Promise<{ id: string }> {
+  async validate(request: Request, payload: any): Promise<{ id: string }> {
+    if (payload.isTwoFA_Token &&
+      (request.method !== 'POST'
+      || request.url !== '/auth/2fa/verify'
+      || request.body?.twoFactorAuthCode === undefined)
+      ) {
+      throw new UnauthorizedException('Two-factor Authentication Required');
+    }
     const user: User = await this.userService.findUser({
       id: payload.id,
     });
-    if (user.twoFactorEnabled && !payload.twoFASuccess) {
+    if (!payload.isTwoFA_Token && user.twoFactorEnabled && !payload.twoFASuccess) {
       throw new UnauthorizedException('Two-factor Authentication Required');
     }
     return { id: payload.id };

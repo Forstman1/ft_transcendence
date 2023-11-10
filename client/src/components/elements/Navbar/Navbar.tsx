@@ -17,11 +17,11 @@ import {
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
-import { useQuery } from '@tanstack/react-query';
-import { fetchUserProfile } from '../../../utils/functions/auth/fetchingUserData';
+import { useQuery } from 'react-query';
+import { fetchUserProfile } from '@/utils/functions/auth/fetchingUserData';
 import {
   AuthButtonsList, NAVBAR_ITEMS, AuthButtonObj
-} from '../../../utils/constants/auth/AuthConstants';
+} from '@/utils/constants/auth/AuthConstants';
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from '@/redux/slices/authUser/authUserSlice';
 
@@ -32,11 +32,13 @@ import { HamburgerIcon } from '@chakra-ui/icons';
 import WavesDivider from 'assets/icons/wavesOpacity.svg';
 import Logo from 'assets/icons/Logo.svg';
 import LoginThumbnail from 'assets/icons/Auth/undraw_my_password_re_ydq7.svg';
+import DefaultUserStoreData from '@/redux/slices/authUser/authUserSlice'
+import { UserState } from '@/redux/slices/authUser/authUserSlice';
 
 /* --------------------------------------------------- AuthButtons -------------------------------------------------- */
 
 
-function AuthButtons() {
+export function AuthButtons() {
   return (
     <Flex className='w-full flex-row flex-wrap justify-center gap-4'>
       {AuthButtonsList.map((button: AuthButtonObj, index: number) => {
@@ -72,12 +74,12 @@ function AuthButtons() {
 
 /* --------------------------------------------------- SignupButton -------------------------------------------------- */
 
-export function SignupButton({ onClick, customClasses }: { onClick: () => void, customClasses: string }) {
+export function SignupButton({ onClick }: { onClick: () => void }) {
   return (
     <motion.div>
       <Button
         as='a'
-        className={`cursor-pointer w-16 h-6 text-xl md:w-24 md:h-10 md:text-2xl ${customClasses}`}
+        className={`cursor-pointer w-16 h-6 text-xl md:w-24 md:h-10 md:text-2xl`}
         backgroundColor='whiteAlpha.900' color='blackAlpha.900'
         border='1px' borderColor='whiteAlpha.900' rounded='sm'
         boxShadow='0.2rem 0.2rem 0rem 0rem rgb(150,150,150)'
@@ -98,12 +100,6 @@ export function SignupButton({ onClick, customClasses }: { onClick: () => void, 
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 export function UserProfileNavbarBadge() {
-  interface UserState {
-    username: string;
-    email: string;
-    avatarUrl: string;
-    isOnline: boolean;
-  }
   const data = useSelector((state: { authUser: UserState }) => state.authUser);
   return (
     <Flex alignItems='center' gap={5} flexDirection='row-reverse'>
@@ -128,7 +124,7 @@ export function UserProfileNavbarBadge() {
               <Center>
                 <Avatar size={'2xl'} src={data.avatarUrl}>
                   <AvatarBadge
-                    boxSize='2em'
+                    boxSize='1em'
                     borderColor={data.isOnline ? 'green.100' : 'red.100'}
                     bg={data.isOnline ? 'green.500' : 'red.500'}
                   />
@@ -136,7 +132,7 @@ export function UserProfileNavbarBadge() {
               </Center>
               <br />
               <Center>
-                <p className='text-xl'>{data.username}</p>
+                <p className='text-2xl font-bold'>{data.username}</p>
               </Center>
               <br />
               <MenuDivider />
@@ -151,18 +147,9 @@ export function UserProfileNavbarBadge() {
   );
 }
 
-export function UserProfileSkelletonBadge() {
-  return (
-    <Flex alignItems='center' gap={5}>
-      <Skeleton height='24px' width='100px' />
-      <SkeletonCircle size='12' />
-    </Flex>
-  );
-}
-
 /* ------------------------------------------------------------------------------------------------------------------ */
 
-export function SignupForm() {
+export function SignupModal () {
   const OverlayOne = () => (
     <ModalOverlay
       bg='blackAlpha.300'
@@ -174,7 +161,7 @@ export function SignupForm() {
   return (
     <>
       <motion.div>
-        <SignupButton customClasses="" onClick={() => {
+        <SignupButton onClick={() => {
           setOverlay(<OverlayOne />);
           onOpen();
         }} />
@@ -204,7 +191,7 @@ export function SignupForm() {
 
             <ModalFooter>
               <Text m='auto' align='center'>
-                BTW, we&apos;re about 2 steal all ur infos
+                BTW, we&apos;re about 2 steal all ur creds
                 <br />
                 Happy Gaming 😊
               </Text>
@@ -317,11 +304,12 @@ export default function Navbar() {
     };
   }, [refetch, refreshInterval]);
   useEffect(() => {
-    if (isLoading || isError) {
-      setUserNotAuthenticated(true);
-    } else {
+    if (!isLoading && !isError) {
       setUserNotAuthenticated(false);
-      dispatch(updateUser(data));
+      dispatch(updateUser({isAuthenticated: true, ...data}));
+    } else {
+      setUserNotAuthenticated(true);
+      dispatch(updateUser(DefaultUserStoreData));
     }
   }, [data, dispatch, isError, isLoading]);
 
@@ -358,7 +346,7 @@ export default function Navbar() {
           justifyContent='center'
           alignItems='center'
         >
-          {userNotAuthenticated == false ? <UserProfileNavbarBadge /> : <SignupForm />}
+          {userNotAuthenticated == false ? <UserProfileNavbarBadge /> : <SignupModal />}
         </Flex>
 
       </Flex>
