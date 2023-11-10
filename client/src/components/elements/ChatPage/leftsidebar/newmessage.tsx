@@ -20,7 +20,7 @@ import {
     Radio
 } from '@chakra-ui/react'
 import { User } from '@/utils/types/chat/ChatTypes';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setTheUser, } from '@/redux/slices/chat/ChatSlice';
 import { useQuery, useMutation } from 'react-query';
 import axios from 'axios';
@@ -80,7 +80,8 @@ export default function Newmessage({ isOpen, onClose}: Props) {
     const toast = useToast();
     const [selectedOption, setSelectedOption]: any = useState('');
     
-    const id = `1a5a7646-7e73-46ad-9c75-d1cd16f0818a`; //! should be changed to the real user id
+    // const id = `1a5a7646-7e73-46ad-9c75-d1cd16f0818a`; //! should be changed to the real user id
+    const id = useSelector((state: any) => state.socket.userID);
     
     const {data, isLoading, error} = useQuery({
         queryKey: ["userData"],

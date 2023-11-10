@@ -41,7 +41,6 @@ model User {
   friendRequestsReceived FriendRequest[] @relation("ReceivedFriendRequests")
 
   channelMember ChannelMember[]
-  channelmessages ChannelMessage[] @relation("channelmessage")
   
   roomMember      DMRoom[] @relation("rooms")
   roomMessage     UserMessage[]    @relation("roommessage")
@@ -60,6 +59,9 @@ model FriendRequest {
   status    String   // You can use this to track the status of the request (e.g., "pending," "accepted," "rejected")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+
+
 }
 
 model Channel {
@@ -90,19 +92,22 @@ model ChannelMember {
   role     Role @default(MEMBER)
   channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
   user    User  @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  channelmessages ChannelMessage[] @relation("channelmessage")
+
   createdAt DateTime @default(now())
 }
 
 model ChannelMessage {
   id        String   @id @default(uuid())
   content   String
-  author User @relation(name: "channelmessage", fields: [authorID], references: [id], onDelete: Cascade)
+  author ChannelMember @relation(name: "channelmessage", fields: [authorID], references: [id], onDelete: Cascade)
 	reciver Channel @relation(fields: [reciverID], references: [id], onDelete: Cascade)
 	reciverID String
 	authorID String
   authorName String
   createdAt DateTime @default(now())
 }
+
 model UserMessage {
   id        String   @id @default(uuid())
   content   String

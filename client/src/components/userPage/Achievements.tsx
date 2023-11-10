@@ -76,7 +76,7 @@ export default function Achievements() {
                         <Tooltip label={item.title} placement='right' bg='black'>
                             <div className={`h-24 w-24 border-2 rounded-full overflow-hidden text-center ${item.locked ? 'filter grayscale blur-sm': null}`}>
                                 {/* <div className=" filter grayscale contrast-75"> */}
-                                    <Image src={item.imageSrc} alt={item.title}  className="w-full h-full object-cover " />
+                                    <img src={item.imageSrc} alt={item.title}  className="w-full h-full object-cover " />
                                 {/* </div> */}
                             </div>
                         </Tooltip>

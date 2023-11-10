@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React from 'react'
+=======
+
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
 import type { Metadata } from 'next'
 
 

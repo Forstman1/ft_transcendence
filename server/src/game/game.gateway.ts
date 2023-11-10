@@ -107,7 +107,7 @@ export class GameGateway {
     @Body() data: { userId: string },
   ): string {
     try {
-      // console.log('-----------------createRoomNotifacation-----------------');
+      console.log('-----------------createRoomNotifacation-----------------');
       const userId = data.userId;
       client.join(userId);
       this.connectedUsers[userId] = client;
@@ -271,7 +271,7 @@ export class GameGateway {
       console.log('CreateGameHistory opponentId:', opponentId);
       console.log('CreateGameHistory userId:', userId);
       console.log('CreateGameHistory data:', data);
-      // return this.gameService.createGameHistory(data, opponentId);
+      return this.gameService.createGameHistory(data, opponentId);
     } catch (error) {
       console.error('Error in CreateGameHistory:', error);
     }

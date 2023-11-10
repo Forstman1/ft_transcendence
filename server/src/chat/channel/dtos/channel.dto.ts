@@ -27,7 +27,7 @@ export class ChangePassword {
 
     @IsNotEmpty()
     @IsString()
-    channelName:string
+    channelId:string
 
     @IsNotEmpty()
     @IsString()

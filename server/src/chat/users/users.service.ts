@@ -36,12 +36,12 @@ export class UsersService {
         }
     }
 
-    async listUsers(id: Prisma.UserWhereUniqueInput): Promise<User[] | string> {
+    async listUsers(id: string): Promise<User[] | string> {
         try {
             return await this.prisma.user.findMany({
                 where: {
                     NOT: {
-                        id: id.id
+                        id: id
                     }
                 }
             })
@@ -397,6 +397,28 @@ export class UsersService {
             return `can't get rooms`
         }
     }
+     
+    // async listUsers(){
+    //     try {
+    //         const rooms = await this.prisma.dMRoom.findMany({
+    //             where: {
+    //                 roomMembers: {
+    //                     some: {
+    //                         id: userId.id
+    //                     }
+    //                 }
+    //             },
+    //             select: {
+    //                 id: true,
+    //             }
+    //         })
+    //         const roomsId = rooms.map((room) => room.id)
+    //         return roomsId;
+    //     }
+    //     catch (error) {
+    //         return `can't get rooms`
+    //     }
+    // }
 
     //!---------------Message Storing------------------------!//
 
@@ -435,4 +457,34 @@ export class UsersService {
         return
     }
 
+    async getUserbyId(id: string){
+        try {
+            const getuser = await this.prisma.user.findUnique({
+                where: {
+                    id: id
+                }
+            })
+            return getuser
+        }
+        catch(error){
+            return error
+        }
+    }
+
+
+    async getuserstofound(tofound: string){
+        try {
+            const getuserstofound = await this.prisma.user.findMany({
+                where: {
+                    username: {
+                        contains: tofound
+                    }
+                }
+            })
+            return getuserstofound
+        }
+        catch(error){
+            return error
+        }
+    }
 }

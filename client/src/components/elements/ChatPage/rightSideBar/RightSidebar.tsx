@@ -1,6 +1,6 @@
 "use client"
 
-import React, { RefObject, useEffect } from 'react'
+import React, { RefObject, use, useEffect } from 'react'
 import { Text, Avatar, Box } from '@chakra-ui/react'
 import Image from 'next/image'
 import Profile from '../../../../../assets/icons/Profile.svg'
@@ -13,6 +13,7 @@ import UserControls from './UserControls'
 import { useSelector, useDispatch } from 'react-redux'
 import { useMediaQuery } from '@chakra-ui/react'
 import { setLeft, setMidle, setRight } from '@/redux/slices/chat/MobileSlice'
+import AddToChannelComponent from './AddToChannelComponent'
 
 
 
@@ -21,8 +22,7 @@ import { setLeft, setMidle, setRight } from '@/redux/slices/chat/MobileSlice'
 export default function RightSidebar() {
 
   
-  // const { MidleClice } = useSelector((state: any) => state.mobile)
-  // const { LeftClice } = useSelector((state: any) => state.mobile)
+
   const { RightClice } = useSelector((state: any) => state.mobile)
   const isDesktop = useMediaQuery("(min-width: 1000px)")
 
@@ -31,14 +31,15 @@ export default function RightSidebar() {
   const User = useSelector((state: any) => state.chat.selectedChannelorUser)
 
   
+  useEffect(() => {
+    if (isDesktop[0]) {
+      dispatch(setRight(true))
+      dispatch(setMidle(true))
+      dispatch(setLeft(true))
+    }
+  } , [isDesktop])
 
-  if (isDesktop[0]) {
-    
-    dispatch(setRight(true))
-    dispatch(setMidle(true))
-    dispatch(setLeft(true))
 
-  }
 
 
   const sidebar = {
@@ -120,6 +121,7 @@ export default function RightSidebar() {
       </Box>
       <hr className='bg-black h-[2px] mx-10' />
       <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7'>
+        <AddToChannelComponent />
         <ChannelMemberActions />
       </Box>
     </Box>

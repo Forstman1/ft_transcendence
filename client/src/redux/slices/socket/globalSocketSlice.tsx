@@ -9,7 +9,7 @@ function assignPlayerId() {
     const id1 = "18717cab-8acf-412f-ae09-c1d310529c40";
     const id2 = "ba1e3254-5201-4abf-973e-30a10c0ba527";
     playerId = Math.floor(Math.random() * 11) > 5 ? id1 : id2;
-    // console.log(`Player ID assigned: ${playerId}`);
+    console.log(`Player ID assigned: ${playerId}`);
   }
 }
 

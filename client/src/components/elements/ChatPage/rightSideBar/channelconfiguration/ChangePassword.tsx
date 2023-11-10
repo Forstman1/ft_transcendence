@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Box, Button, Input, InputGroup, InputRightElement, ModalBody, ModalCloseButton, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
-import { useMutation } from 'react-query'
 import { useSelector } from 'react-redux'
 import Image from 'next/image'
 import ModalWraper from '../../ModalWraper'
@@ -10,13 +9,11 @@ import channelconfig from "../../../../../../assets/icons/channelconf.svg"
 
 
 
-
-type Change_Password = {
+interface Change_Password {
   current_password: string,
   new_password: string,
   confirm_password: string
 }
-
 
 
 function Componenent({ onClose }: any) {
@@ -25,36 +22,22 @@ function Componenent({ onClose }: any) {
   const [show, setShow] = useState(false)
   const handleClick = () => setShow(!show)
   const toast = useToast()
-  const channelName = useSelector((state: any) => state.chat.selectedChannelorUser)
-  const userId = useSelector((state: any) => state.userID.user)
+  const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
+  const userId = useSelector((state: any) => state.socket.userID)
+  const socket = useSelector((state: any) => state.socket.socket)
 
 
-  const reset = useMutation<any, Error, any>((variables) =>
-    fetch('http://127.0.0.1:3001/channel/changepassword', {
-      method: "PUT",
-      body: JSON.stringify(variables),
-      headers: {
-        "content-type": "application/json",
-      }
-    }).then((response) => {
-      return response.json()
-
-    }).catch((error) => {
-      return error
-    })
-  )
 
   const resetpassword = async (data: Change_Password) => {
+
     if (data.confirm_password === data.new_password) {
-      console.log(channelName)
-      const response = await reset.mutateAsync({
-        channelName: channelName.name,
-        userId,
+      socket.emit('changepassword', {
+        channelId: channel.id,
+        userId: userId,
         currentpassword: data.current_password,
-        newpassword: data.confirm_password,
-      })
-      // if (response.stat)
-      console.log(response)
+        newpassword: data.new_password,
+      });
+      onClose()
     }
     else {
       toast({
@@ -68,7 +51,12 @@ function Componenent({ onClose }: any) {
         }
       })
     }
+
+
   }
+
+
+
   return (<form onSubmit={handleSubmit(resetpassword)} className='flex gap-5 flex-col' >
     <Text>Current Password</Text>
     <InputGroup size='md'>
@@ -129,18 +117,7 @@ function Componenent({ onClose }: any) {
         variant="outline"
         ml={10}
         type='submit'
-        onClick={() => {
-          toast({
-            title: "Password has been changed",
-            position: `bottom-right`,
-            status: 'success',
-            duration: 1000,
-            containerStyle: {
-              width: 300,
-              height: 100,
-            }
-          })
-        }}
+  
       >
         Confirm
       </Button>
@@ -156,8 +133,8 @@ export default function ChangePassword() {
 
 
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const data = { src: channelconfig, alt: "Change Channel Password" }
   const [imageAlt, setImageAlt] = useState('');
+  const data = { src: channelconfig, alt: "Change Channel Password" }
 
 
 
@@ -172,7 +149,7 @@ export default function ChangePassword() {
       >
         {data.alt}
       </Text>
-      <ModalWraper isOpen={isOpen} onClose={onClose} imageAlt={imageAlt} Componenent={Componenent} />
+      <ModalWraper isOpen={isOpen} onClose={onClose} imageAlt={imageAlt} Componenent={() => <Componenent onClose={onClose} />} />
     </Box>
   )
 }

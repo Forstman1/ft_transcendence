@@ -4,7 +4,7 @@ export type Channel = {
     id: string;
     name: string;
     type: string;
-    channelMembers: ChannelMember[];
+    channelMember: ChannelMember[];
 };
 
 
@@ -25,6 +25,7 @@ export type UserMessage = {
     reciverID: string;
     authorID: string;
     roomID: string;
+    authorName: string
     createdAt: Date;
 }
 
