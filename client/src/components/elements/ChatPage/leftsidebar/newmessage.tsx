@@ -80,13 +80,13 @@ export default function Newmessage({ isOpen, onClose}: Props) {
     const toast = useToast();
     const [selectedOption, setSelectedOption]: any = useState('');
     
-    const id = `1a5a7646-7e73-46ad-9c75-d1cd16f0818a`; //! should be changed to the real user id
+   
     
     const {data, isLoading, error} = useQuery({
         queryKey: ["userData"],
         queryFn: async () => {
             const { data } = await axios.get(`http://localhost:3001/users/friends/${id}`)
-            console.log(data)
+           
             return data
         }
     })
@@ -98,7 +98,6 @@ export default function Newmessage({ isOpen, onClose}: Props) {
     };
 
     const handleSubmit = async () => {
-
         try { 
             socket?.emit(`updateChatList`, selectedOption.id)
             socket?.emit(`createRoom`, {userId: id, reciverId: selectedOption.id }, (data: any) => {

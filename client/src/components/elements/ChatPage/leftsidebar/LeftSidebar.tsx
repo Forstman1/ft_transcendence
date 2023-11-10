@@ -84,9 +84,9 @@ export default function LeftSidebar() {
   
     socket?.on(`updateChatList`, async (Users: any) => {
       // console.log(Users)
-      // setUsers(Users);
+      setUsers(Users);
       // dispatch(setTheUser(Users[0]));
-      // dispatch(addMessage(Users[0].roomMembers[0].messages));/
+      // dispatch(addMessage(Users[0].roomMembers[0].messages));
      
     });
 

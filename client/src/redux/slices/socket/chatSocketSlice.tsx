@@ -5,11 +5,11 @@ let userId: string | null = null
 
 function assignuserId() {
     if (userId === null) {
-        const id1 = "1a5a7646-7e73-46ad-9c75-d1cd16f0818a";
-        userId = id1;
-        // const id2 = "4a4dcd15-0432-4fe4-8b73-dbab2af36a38";
-        // userId = Math.floor(Math.random() * 11) > 5 ? id1 : id2;
-        // console.log(`User ID assigned: ${userId}`);
+        const id1 = "06b25f1c-12bb-44b6-8ae0-470d9745e317"; 
+        const id2 = "318708af-f9dc-4264-aeac-46f8b8fa3990";
+        // userId = id1;
+        userId = Math.floor(Math.random() * 11) > 5 ? id1 : id2;
+        console.log(`User ID assigned: ${userId}`);
 }
 
 }

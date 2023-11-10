@@ -1,8 +1,9 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
 import { PageWrapper } from "../animationWrapper/pageWrapper";
 import Image from "next/image";
-import { Box, useMediaQuery } from "@chakra-ui/react";
+import { Box, useMediaQuery, useToast, Alert, AlertIcon, Button } from "@chakra-ui/react";
+import { useEffect } from "react";
 import RightSidebar from "@/components/elements/ChatPage/rightSideBar/RightSidebar";
 import ChatWindow from "@/components/elements/ChatPage/ChatWindow";
 import RightSidebarChannel from "@/components/elements/ChatPage/rightSideBar/RightSideBarChannel";
@@ -10,7 +11,10 @@ import { Channel, User } from "@/utils/types/chat/ChatTypes";
 import { setLeft, setMidle, setRight } from "@/redux/slices/chat/MobileSlice";
 import { motion } from 'framer-motion'
 import { useDispatch, useSelector } from "react-redux";
-import { UseSelector } from "react-redux/es/hooks/useSelector";
+import acceptIcon from "../../../assets/icons/accept.svg";
+import denyIcon from "../../../assets/icons/deny.svg";
+
+
 
 
 
@@ -26,6 +30,7 @@ export default function ChatPage() {
   const isDesktop = useMediaQuery("(min-width: 1000px)")
   const dispatch = useDispatch()
   const selected: Channel | User | null = useSelector((state: any) => state.chat.selectedChannelorUser);
+  const toast = useToast();
   useEffect(() => {
    
   if (isDesktop[0]) {
@@ -35,17 +40,69 @@ export default function ChatPage() {
   }
 }, [isDesktop]);
 
-  // useEffect(() => {
-    
-  //   socket.on(`receivedFreindRequest`, (user: User) => {
-  //     console.log(user)
-  //   });
+  useEffect(() => {
 
-  //   return () => {
-  //     socket.off(`receivedFreindRequest`)
-  //   }
+    const handleFriendInvitation = (data: {
+      user: User;
+    }) => {
+      toast({
+  position: "top-right",
+  duration: 9000,
+  isClosable: true,
+  render: ({ onClose }) => (
+    <motion.div
+      initial={{ opacity: 0, x: "50%" }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.5, delay: 0.5 }}
+    >
+      <Alert
+        status="success"
+        variant="top-accent"
+        className=" space-x-2 border-white"
+      >
+        <AlertIcon />
+        <Box flex="1">
+          <strong>Friend Request Notification</strong>
+          <p>Do you want to be a friend with ${data.user.fullname} </p>
+        </Box>
+        <Button
+          variant="outline"
+          colorScheme="blue"
+          onClick={() => {
+            // acceptInvitation(data.roomId, data.modalData);
+            // onClose();
+          }}
+          leftIcon={
+            <Image src={acceptIcon} alt="accept" width={20} />}
+        >
+          ACCEPT
+        </Button>
+        <Button
+          variant="outline"
+          colorScheme="red"
+          onClick={() => {
+            // denyInvitation(data.roomId);
+            onClose();
+          }}
+          leftIcon={<Image src={denyIcon} alt="deny" width={20} />}
+        >
+          DENY
+        </Button>
+      </Alert>
+    </motion.div>
+  ),
+});
+
+
+      
+     }
     
-  // }, [socket])
+    socket.on(`receivedFreindRequest`, handleFriendInvitation);
+    return () => {
+      socket.off(`receivedFreindRequest`)
+    }
+    
+  }, [socket])
   
   const sidebar = {
     open: (height = 1000) => ({

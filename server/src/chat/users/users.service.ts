@@ -435,4 +435,39 @@ export class UsersService {
         return
     }
 
+    async getMessages(userId: string, reciverId: string): Promise<MessageDto[] | string> {
+        try {
+            const user = await this.prisma.user.findUnique({
+                where: {
+                    id: userId
+                }
+            });
+            const reciver = await this.prisma.user.findUnique({
+                where: {
+                    id: reciverId
+                }
+            });
+            if (!user || !reciver)
+                return 'User not found'
+            
+            const DMroom = await this.prisma.dMRoom.findFirst({
+                where: {
+                    roomMembers: {
+                        every: {
+                            id: {
+                                in: [user.id, reciver.id]
+                            }
+                        }
+                    },
+                },
+                include: {
+                    roomMessages: true,
+                }
+            })
+            return DMroom.roomMessages
+        }
+        catch (error) {
+            return `${error} could not retrieve messages`
+        }
+    }
 }

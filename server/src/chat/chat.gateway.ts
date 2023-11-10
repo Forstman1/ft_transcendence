@@ -24,13 +24,13 @@ export class ChatGateway implements OnGatewayInit , OnGatewayConnection {
 
     this.logger.log(`Socket connected: ${client.handshake.auth.id}`)
     const chatList = await this.userService.getChatList(client.handshake.auth.id);
-    this.logger.log (await this.userService.getRooms({ id: client.handshake.auth.id }))
+    this.logger.log(`user Id is ` + client.handshake.auth.id)
     const rooms = await this.userService.getRooms({ id: client.handshake.auth.id });
     for (const room of rooms) {
       client.join(room);
     }
-    this.logger.log(chatList)
-    client.emit(`updateChatList`, chatList);
+    if (chatList)
+      client.emit(`updateChatList`, chatList);
   }
 
   async handleDisconnect(socket: Socket) {
@@ -98,7 +98,7 @@ export class ChatGateway implements OnGatewayInit , OnGatewayConnection {
   @SubscribeMessage(`sendPrivateMessage`)
   async sendPrivateMessage(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: {reciverId: string, message: string},
+    @MessageBody() data: { reciverId: string, message: string },
   ): Promise<any> {
     try {
       this.logger.log(`sendPrivateMessage`)
@@ -112,6 +112,21 @@ export class ChatGateway implements OnGatewayInit , OnGatewayConnection {
 
     }
   }
+  @SubscribeMessage(`getPrivateMessages`)
+  async getPrivateMessages(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: {reciverId: string},
+   ) : Promise < any > {
+    try {
+        
+        const Messages = await this.userService.getMessages(client.handshake.auth.id, data.reciverId);
+      
+    }
+      catch(error) { }
+  }
+  
+
+  //!---------------Frien Request------------------------!//
 
   @SubscribeMessage(`sendFreindRequest`)
   async sendFreindRequest(
@@ -123,7 +138,7 @@ export class ChatGateway implements OnGatewayInit , OnGatewayConnection {
       const friendSocket = this.connectedUsers[data.friendId]
       const User: Prisma.UserWhereUniqueInput = { id: client.handshake.auth.id };
       const friend: Prisma.UserWhereUniqueInput = { id: data.friendId };
-      const user = this.logger.log(await this.userService.sendFriendRequest(User, friend))
+      const user = await this.userService.sendFriendRequest(User, friend)
       if (friendSocket) {
         this.server.to(friendSocket.id).emit(`receivedFreindRequest`, { user: user });
         // friendSocket.emit(`receivedFreindRequest`, { friendId: client.handshake.auth.id });

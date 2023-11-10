@@ -83,6 +83,25 @@ export default function ChatWindow() {
   //   fetchData();
   // }, []);
 
+
+  useEffect(() => {
+  
+    socket?.emit(`getPrivateMessages`, {
+      reciverId: `ba47c5fe-a25c-4a0b-a9b5-3eec61747add`
+      
+    });
+    socket?.on("receivedPrivateMessages", (data: any) => {
+      console.log("waslat chi7aja", data.Messages);
+      
+      // dispatch(addMessage(data.message));
+    }, [selected]);
+    return () => {
+      socket?.off("getPrivateMessages");
+      socket?.off("receivedPrivateMessages");
+    }
+}, [socket]);
+
+
   const scrollToBottom = () => {
     if (chatContainer.current) {
       chatContainer.current.scrollTop = chatContainer.current.scrollHeight;
@@ -92,23 +111,6 @@ export default function ChatWindow() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  const createMessage = useMutation<any, Error, any>((variables) =>
-    fetch("http://127.0.0.1:3001/message/createmessage", {
-      method: "POST",
-      body: JSON.stringify(variables),
-      headers: {
-        "content-type": "application/json",
-      },
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .catch((error) => {
-        return error;
-      })
-  );
-
   
 
   const handleNewMessage = async (data: any) => {
