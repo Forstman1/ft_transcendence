@@ -28,7 +28,7 @@ export class GithubStrategy extends PassportStrategy(Strategy) {
       throw new ServiceUnavailableException("Couldn't retrieve data from API");
     }
     try {
-      let generatedUsername: string = profile._json.login;
+      let generatedUsername: string = profile?._json?.login;
       let usernameExists: boolean = true;
       while (usernameExists) {
         const userFound = await this.userService.findUser({
@@ -43,15 +43,14 @@ export class GithubStrategy extends PassportStrategy(Strategy) {
 
       const user: UserDto = {
         username: generatedUsername,
-        email: profile._json.email,
-        fullname: profile.displayName,
+        email: profile?._json?.email,
+        fullname: profile?.displayName,
         avatarURL: profile?._json?.avatar_url,
         coalitionURL: undefined,
         coalitionColor: undefined,
       };
       return user;
     } catch (error) {
-      console.error(error);
       throw new InternalServerErrorException('Internal Server Error');
     }
   }

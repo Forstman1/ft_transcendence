@@ -19,7 +19,7 @@ import { setModal } from "@/redux/slices/game/gameModalSlice";
 import { useRouter } from "next/navigation";
 import LodingAnimation from "../../../assets/animations/loadingAnimation.json";
 import Lottie from "lottie-react";
-import {InfoOutlineIcon} from "@chakra-ui/icons";
+import { InfoOutlineIcon } from "@chakra-ui/icons";
 import GameInstruction from "./ui/GameInstruction";
 import Footer from "@/components/elements/Footer/Footer";
 
@@ -101,8 +101,18 @@ export default function GamePage() {
             It&apos;s time to enjoy the game
           </Text>
           <div
-            className={`flex flex-col justify-center items-center  space-y-6  mx-auto w-[400px] p-10`}
+            className={`${breakpoint === "base" ? "absolute" : "flex"
+              } flex-col justify-center items-center  P-20 space-y-6 z-10`}
           >
+            <Text className=" flex text-emerald-300 font-bold text-2xl">
+              EXPLORE THE GAME
+            </Text>
+            <Text className=" flex text-black font-bold text-6xl">
+              It&apos;s time to enjoy the game
+            </Text>
+            <div
+              className={`flex flex-col justify-center items-center  space-y-6  mx-auto w-[400px] p-10`}
+            >
               <Button
                 className="rounded-full"
                 colorScheme="teal"
@@ -131,7 +141,7 @@ export default function GamePage() {
                 Training Mode
               </Button>
               <Button
-                className="rounded-full"  
+                className="rounded-full"
                 colorScheme="teal"
                 variant="outline"
                 size="lg"
@@ -143,22 +153,38 @@ export default function GamePage() {
               >
                 Matchmaking
               </Button>
+            </div>
+            <div className="flex flex-row justify-center items-center space-x-2">
+              <Text className="text-black font-bold text-2xl">
+                Game Instructions?
+              </Text>
+              <Button
+                colorScheme="teal"
+                variant="outline"
+                size="sm"
+                leftIcon={<InfoOutlineIcon />}
+                onClick={() => setIsGameInstructionOpen(true)}
+              >
+                Learn
+              </Button>
+            </div>
+            <GameInstruction isOpen={isGameInstructionOpen} onClose={() => setIsGameInstructionOpen(false)} />
           </div>
-          <div className="flex flex-row justify-center items-center space-x-2">
-            <Text className="text-black font-bold text-2xl">
-              Game Instructions?
-            </Text>
-            <Button
-              colorScheme="teal"
-              variant="outline"
-              size="sm"
-              leftIcon={<InfoOutlineIcon />}
-              onClick={() => setIsGameInstructionOpen(true)}
-            >
-              Learn
-            </Button>
-          </div>
-          <GameInstruction isOpen={isGameInstructionOpen} onClose={() => setIsGameInstructionOpen(false)} />
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ rotate: 360, scale: 1 }}
+            transition={{
+              type: "spring",
+              stiffness: 260,
+              damping: 20,
+            }}
+          >
+            <Lottie
+              animationData={animationData}
+              className={`w-full h-[900px] border-2 border-white rounded-[100%] shadow-xl min-w-[370px] ${breakpoint === "base" ? "opacity-20" : ""
+                }`}
+            />
+          </motion.div>
         </div>
         <motion.div
           initial={{ scale: 0 }}

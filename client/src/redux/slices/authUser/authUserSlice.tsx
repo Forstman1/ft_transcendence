@@ -4,10 +4,21 @@
 
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
-  username: "",
-  email: "",
-  avatarUrl: "",
+export interface UserState {
+  isAuthenticated: boolean,
+  userId: string,
+  username: string,
+  email: string,
+  avatarUrl: string,
+  isOnline: boolean,
+};
+
+export const initialState = {
+  isAuthenticated: false,
+  userId: null,
+  username: null,
+  email: null,
+  avatarUrl: null,
   isOnline: false,
 };
 
@@ -16,6 +27,8 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     updateUser: (state, action) => {
+      state.isAuthenticated = action?.payload?.isAuthenticated;
+      state.userId = action?.payload?.userId
       state.username = action.payload?.username
       state.email = action.payload?.email
       state.avatarUrl = action.payload?.avatarUrl
