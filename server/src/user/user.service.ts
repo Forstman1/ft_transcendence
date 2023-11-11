@@ -42,13 +42,15 @@ export class UserService {
     const generatedTwoFactorSecret = twoFactorStatus
       ? authenticator.generateSecret()
       : null;
-    return this.prismaService.user.update({
+      console.log(generatedTwoFactorSecret);
+      const user: User | null = await this.prismaService.user.update({
       where: userInput,
       data: {
         twoFactorEnabled: twoFactorStatus,
         twoFactorSecret: generatedTwoFactorSecret,
       },
     });
+    return user;
   }
 
   /* ------------------------------------------------------------------------------------------------------------------ */

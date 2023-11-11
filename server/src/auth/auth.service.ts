@@ -15,24 +15,8 @@ export class AuthService {
 
   /* ------------------------------------------------------------------------------------------------------------------ */
 
-  twoFACookieOptions = {
-    httpOnly: true,
-    secure: false,
-    sameSite: 'lax',
-    domain: `${process.env.DOMAIN_NAME}`,
-    path: '/auth/2fa/verify',
-    expires: new Date(Date.now() + 300000), // expies in 5 minutes
-    maxAge: 300000,
-  };
-
-  /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-
   cookieOptions = {
     httpOnly: true,
-    secure: false, // TODO Later set to true when deploying to production (requires SSL/HTTPS)
-    sameSite: 'lax',
-    domain: `${process.env.DOMAIN_NAME}`,
-    path: '/',
     expires: new Date(Date.now() + 3600000),
     maxAge: 3600000,
   };
@@ -57,6 +41,7 @@ export class AuthService {
     const payload = {
       id: user.id,
       TwoFA_Success: false,
+      isTwoFA_Token: true,
     };
     return this.jwtService.sign(payload);
   }
@@ -71,6 +56,7 @@ export class AuthService {
     const payload = {
       id: user.id,
       TwoFA_Success: false,
+      isTwoFA_Token: false,
     };
     return this.jwtService.sign(payload);
   }
@@ -84,6 +70,7 @@ export class AuthService {
     const payload = {
       id: user.id,
       TwoFA_Success: true,
+      isTwoFA_Token: false,
     };
     return this.jwtService.sign(payload);
   }

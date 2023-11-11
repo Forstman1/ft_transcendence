@@ -57,9 +57,9 @@ export class AuthController {
       ) {
         const tempToken = await this.authService.issueTemporaryToken(req.user);
         await res.cookie(
-          'two_factor_auth_token',
+          'access_token',
           tempToken,
-          this.authService.twoFACookieOptions,
+          this.authService.cookieOptions,
         );
         return res.redirect(process.env.CLIENT_URL + '2fa/verify');
       } else {
@@ -99,9 +99,9 @@ export class AuthController {
       ) {
         const tempToken = await this.authService.issueTemporaryToken(req.user);
         await res.cookie(
-          'two_factor_auth_token',
+          'access_token',
           tempToken,
-          this.authService.twoFACookieOptions,
+          this.authService.cookieOptions,
         );
         return res.redirect(process.env.CLIENT_URL + '2fa/verify');
       }
@@ -140,9 +140,9 @@ export class AuthController {
       ) {
         const tempToken = await this.authService.issueTemporaryToken(req.user);
         await res.cookie(
-          'two_factor_auth_token',
+          'access_token',
           tempToken,
-          this.authService.twoFACookieOptions,
+          this.authService.cookieOptions,
         );
         return res.redirect(process.env.CLIENT_URL + '2fa/verify');
       }
@@ -163,7 +163,7 @@ export class AuthController {
   @Post('2fa/enable')
   @UseGuards(JwtAuthGuard)
   async enableTwoFaAuth(@Req() req) {
-    const user: User | null = await this.userService.findUser({
+    let user: User | null = await this.userService.findUser({
       id: req.user.id,
     });
     if (user.twoFactorEnabled === true) {
@@ -171,10 +171,10 @@ export class AuthController {
         'Two-factor authentication already enabled',
       );
     }
-    await this.userService.updateUserTwoFactorStatus({ id: user.id }, true);
-    const twoFactorOtpAuthUrl =
-      await this.authService.generateTwoFactorOtpAuthUrl(user);
-    return { twoFactorOtpAuthUrl };
+    user = await this.userService.updateUserTwoFactorStatus({ id: user.id }, true);
+    const twoFactorOtpAuthUrl = await this.authService.generateTwoFactorOtpAuthUrl(user);
+    const twoFA_QRCode = await this.authService.generateQrCodeDataURL(twoFactorOtpAuthUrl);
+    return { twoFA_QRCode };
   }
 
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -223,7 +223,7 @@ export class AuthController {
       throw new BadRequestException('Invalid two-factor authentication code');
     }
     const access_token = await this.authService.loginWithTwoFactorAuth(user);
-    await res.clearCookie('two_factor_auth_token');
+    await res.clearCookie('access_token');
     await res.cookie(
       'access_token',
       access_token,
@@ -244,6 +244,7 @@ export class AuthController {
       throw new BadRequestException('User not found');
     }
     return {
+      userId: user.id,
       username: user.username,
       email: user.email,
       avatarUrl: user.avatarURL,

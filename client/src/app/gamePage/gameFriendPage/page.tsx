@@ -220,7 +220,7 @@ export default function GameFriendPage() {
       xp = gameSettings.mode === "EASY" ? 5 : gameSettings.mode === "MEDIUM" ? 10 : 15;
     }
     const data: any = {
-      userId: socketState.playerId,
+      userId: socket?.auth?.id,
       status: status,
       userScore: userScore,
       opponentScore: opponentScore,
