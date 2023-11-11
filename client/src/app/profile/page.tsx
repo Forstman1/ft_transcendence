@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 
 
 export default function userPage() {
-    const username = useSelector((state:any) => state.authUser.username)
+    const username = useSelector((state:any) => state.authUser.id)
     const router = useRouter();
   
     useEffect(() => {

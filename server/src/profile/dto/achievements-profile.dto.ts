@@ -3,8 +3,8 @@ export class achievements {
     Bronze: boolean;
     Silver: boolean;
     Gold: boolean;
-    Platinium: boolean;
-    Emirald: boolean;
+    Platinum: boolean;
+    Emerald: boolean;
     Hamas: boolean;
 
 }

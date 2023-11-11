@@ -10,9 +10,22 @@ import { AuthGuard } from '@nestjs/passport';
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
-  @Get('id')
-  getAchievements(@Param('id') id: string) {
-    return this.profileService.findAll(id);
+  @Get('achievements/:id')
+  async getUserAchievements(@Param('id') id: string): Promise<any> {
+    const gameHistory = await this.profileService.findGameHistory(id);
+  
+    if (!gameHistory) {
+      // Handle error or return appropriate response
+      return { error: 'Failed to fetch game history data.' };
+    }
+    const userAchievements = this.profileService.determineAchievements(gameHistory);
+    return userAchievements;
+  }
+
+  @Get('activitieshistory/:id')
+  async getChartData(@Param('id') id: string): Promise<any> {
+    const chartData = await this.profileService.calculateChartData(id);
+    return chartData;
   }
 
 }
