@@ -246,8 +246,8 @@ export class GameGateway {
         player1.join(roomId);
         player2.join(roomId);
         this.gameService.addPlayerToRoom(roomId, player2.id);
-        player1.emit('setIsOwner', { isOwner: true, roomId });
-        player2.emit('setIsOwner', { isOwner: false, roomId });
+        player1.emit('setIsOwner', { isOwner: true, roomId, opponentId: player2.handshake.auth.id });
+        player2.emit('setIsOwner', { isOwner: false, roomId, opponentId: player1.handshake.auth.id });
         this.server.to(roomId).emit('playGame');
         delete this.gameQueue[queue[0]];
         delete this.gameQueue[queue[1]];
@@ -302,6 +302,20 @@ export class GameGateway {
       return friends;
     } catch (error) {
       console.error('Error in SearchFriend:', error);
+    }
+  }
+
+  @SubscribeMessage('getOpponentData')
+  async getOpponentData(
+    @ConnectedSocket() client: Socket,
+    @Body() data: { opponentId: string },
+  ): Promise<void> {
+    try {
+      console.log('-----------------getOpponentData-----------------');
+      const opponentData = await this.gameService.getOpponentData(data.opponentId);
+      return opponentData;
+    } catch (error) {
+      console.error('Error in getOpponentData:', error);
     }
   }
 }
