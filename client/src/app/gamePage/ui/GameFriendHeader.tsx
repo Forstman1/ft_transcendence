@@ -37,7 +37,7 @@ const GameFriendHeader = ({
             >
               {opponentData.username}
             </Text>
-              <Avatar size="lg" src={opponentData?.avatarUrl || ""} />
+              <Avatar size="lg" src={opponentData?.avatarURL || ""} />
           </div>
           <div className="flex flex-row items-center space-x-10">
             <Text
@@ -111,7 +111,7 @@ const GameFriendHeader = ({
             </Text>
           </div>
           <div className="flex flex-row items-center space-x-5">
-            <Avatar size="lg" src={opponentData?.avatarUrl || ""} />
+            <Avatar size="lg" src={opponentData?.avatarURL || ""} />
             <Text
               className={`font-bold text-2xl ${getTextColor(
                 gameSettings

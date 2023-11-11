@@ -63,7 +63,7 @@ export class GameGateway {
               .to(data.roomId)
               .emit('GetGameData', this.gameService.getUpdateData(data.roomId));
           }
-        }, 20);
+        }, 15);
       }
     } catch (error) {
       console.error('Error in sendGameData:', error);
