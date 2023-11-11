@@ -28,7 +28,7 @@ const breakpoints = {
   '6xl': '2880px',
 }
 
-const theme = extendTheme({ breakpoints })
+// const theme = extendTheme({ breakpoints })
 
 const geo = Geo({
   subsets: ['latin'],
