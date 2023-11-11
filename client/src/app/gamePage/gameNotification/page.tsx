@@ -175,7 +175,6 @@ export default function GameNotification() {
     dispatch(
       setSocketState({
         socket: socket.socket,
-        socketId: socket.socketId,
         isOwner: false,
         roomId: roomId,
         friendId: friendId,

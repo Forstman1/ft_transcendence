@@ -42,10 +42,10 @@ const CreatGameGlobalSocket = (user: any) => {
     transports: ["websocket"],
     upgrade: false,
     auth: {
-      id: user.id,
+      id: user.userId,
     },
   });
-  socket.emit("createRoomNotification", { userId: user.id }, (data: any) => {
+  socket.emit("createRoomNotification", { userId: user.userId }, (data: any) => {
     console.log("createGameRoomNotification: " + data);
   });
   return socket;
@@ -327,10 +327,8 @@ export default function Navbar() {
       // for game page
       dispatch(setSocketState({
         socket: gameSocket,
-        socketId: gameSocket.id,
         isOwner: false,
         roomId: "",
-        playerId: "",
       }));
       // for game page
     } else {
