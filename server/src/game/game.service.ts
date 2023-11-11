@@ -399,4 +399,15 @@ export class GameService {
     });
     return opponentData;
   }
+
+  //----------------------------------------------------
+  updateUserIsOnline = async (userId: string, isOnline: boolean): Promise<void> => {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        isOnline,
+      },
+    });
+    return;
+  }
 }
