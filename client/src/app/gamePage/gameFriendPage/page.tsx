@@ -44,7 +44,7 @@ export default function GameFriendPage() {
   appliyGameMode(gameSettings);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [keysPressed, setKeysPressed] = useState<Record<string, boolean>>({});
-  const [canvasSize, setCanvasSize] = useState(initialCanvasSize);
+  const canvasSize = initialCanvasSize;
   const initialBallState: Ball = {
     x: canvasSize.width / 2,
     y: canvasSize.height / 2,

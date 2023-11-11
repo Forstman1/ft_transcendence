@@ -1,4 +1,4 @@
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import { configureStore} from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import gameReducer from "../slices/game/gameModalSlice";
 import authUserReducer from "../slices/authUser/authUserSlice";
