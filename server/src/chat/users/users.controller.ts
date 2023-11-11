@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Prisma } from '@prisma/client';
 
@@ -38,4 +38,23 @@ export class UsersController {
     async acceptFriendRequest(@Param() id: Prisma.UserWhereUniqueInput, @Body() friendId: Prisma.UserWhereUniqueInput) {
         return await this.usersService.acceptFriendRequest(id, friendId)
     }
+    @Get('/listusers/:id')
+    listusers(@Param('id') id: string) {
+        return this.usersService.listUsers(id)
+    }
+
+    
+    @Get('/getuser/:id')
+    getuser(@Param('id') id: string) {
+        return this.usersService.getUserbyId(id)
+    }
+
+    @Get('/getusers/:tofound')
+    getuserstofound(@Param('tofound') tofound: string) {
+        return this.usersService.getuserstofound(tofound)
+    }
+    // @Get()
+    // hello(){
+    //     return("hello world")
+    // }
 }

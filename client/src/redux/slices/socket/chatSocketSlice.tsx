@@ -1,12 +1,16 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { data } from "autoprefixer";
+import { stat } from "fs";
+import { ACTION } from "next/dist/client/components/app-router-headers";
+import { dash } from "radash";
 import { io, Socket } from "socket.io-client";
 
 let userId: string | null = null
 
 function assignuserId() {
     if (userId === null) {
-        const id1 = "06b25f1c-12bb-44b6-8ae0-470d9745e317"; 
-        const id2 = "318708af-f9dc-4264-aeac-46f8b8fa3990";
+        const id1 = "515253a4-90d8-474e-8fa7-01ae83c04d20"; 
+        const id2 = "56d81659-4dfd-487a-8e63-1ecdb37d752b";
         // userId = id1;
         userId = Math.floor(Math.random() * 11) > 5 ? id1 : id2;
         console.log(`User ID assigned: ${userId}`);
@@ -22,6 +26,14 @@ const socket = io('http://localhost:3001/chat', {
         id: userId,
     },
 })
+
+socket.on('connect', () => {
+    console.log('chat user connected')
+})
+
+// socket.emit(`createRoom`, {userId: userId}, (data: any) => {
+    
+// })
 
 export interface ChatSocketState {
     socket: Socket | null;
@@ -39,7 +51,7 @@ const initialState: ChatSocketState = {
 }
 
 
-socket.emit(`createNotificationRoom`, { userId: userId });
+// socket.emit(`createNotificationRoom`, { userId: userId });
 
 
 const chatSocketSlice = createSlice({

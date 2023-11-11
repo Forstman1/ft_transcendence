@@ -2,14 +2,15 @@
 
 import { PageWrapper } from "../animationWrapper/pageWrapper";
 import Image from "next/image";
-import { Box, useMediaQuery, useToast, Alert, AlertIcon, Button } from "@chakra-ui/react";
-import { useEffect } from "react";
+import { Box, useMediaQuery, useToast, Alert, AlertIcon, Button, Flex } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import LeftSidebar from "@/components/elements/ChatPage/leftsidebar/LeftSidebar";
 import RightSidebar from "@/components/elements/ChatPage/rightSideBar/RightSidebar";
-import ChatWindow from "@/components/elements/ChatPage/ChatWindow";
 import RightSidebarChannel from "@/components/elements/ChatPage/rightSideBar/RightSideBarChannel";
 import { Channel, User } from "@/utils/types/chat/ChatTypes";
 import { setLeft, setMidle, setRight } from "@/redux/slices/chat/MobileSlice";
 import { motion } from 'framer-motion'
+import ChatWindow from "@/components/elements/ChatPage/ChatWindow";
 import { useDispatch, useSelector } from "react-redux";
 import acceptIcon from "../../../assets/icons/accept.svg";
 import denyIcon from "../../../assets/icons/deny.svg";
@@ -21,12 +22,16 @@ import denyIcon from "../../../assets/icons/deny.svg";
 
 
 export default function ChatPage() {
+  const [RightIsOpen, setRightIsOpen] = useState(false);
+  const [LeftIsOpen, setLeftIsOpen] = useState(false);
 
 
   const { LeftClice } = useSelector((state: any) => state.mobile);
   const { RightClice } = useSelector((state: any) => state.mobile);
   const { MidleClice } = useSelector((state: any) => state.mobile);
   const socket = useSelector((state: any) => state.socket.socket);
+
+
   const isDesktop = useMediaQuery("(min-width: 1000px)")
   const dispatch = useDispatch()
   const selected: Channel | User | null = useSelector((state: any) => state.chat.selectedChannelorUser);
@@ -39,6 +44,9 @@ export default function ChatPage() {
     dispatch(setLeft(true));
   }
 }, [isDesktop]);
+
+
+
 
   useEffect(() => {
 
@@ -104,6 +112,18 @@ export default function ChatPage() {
     
   }, [socket])
   
+
+
+  useEffect(() => {
+    if(isDesktop[0]) {
+      dispatch(setRight(true))
+      dispatch(setMidle(true))
+      dispatch(setLeft(true))
+    }
+  }, [isDesktop])
+
+  
+  
   const sidebar = {
     open: (height = 1000) => ({
       // width: "375px",
@@ -129,6 +149,7 @@ export default function ChatPage() {
   return (
     <div className="Chat_sub_div2 flex flex-grow w-full ">
       <ChatWindow />
+      
       {selected !== null && 'username' in selected ? (
         <RightSidebar />
       ) : selected !== null && 'type' in selected ? (

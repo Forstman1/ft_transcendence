@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateMessageDto } from './dto';
+import { MessageDto } from '../users/dtos/user.dto';
+import { UserMessage } from '@prisma/client';
 
 
 
@@ -24,6 +26,14 @@ export class MessageService {
                 id: messageInfo.reciverId,
             }
         })
+        const channelmember = await this.prisma.channelMember.findMany({
+            where: {
+                channelId: messageInfo.reciverId,
+                userId: user.id,
+            }
+        })
+        if (!channelmember)
+            return {status: "couldn't find channelmember"}
         if (!channel)
             return {status: "couldn't find channel"}
         
@@ -32,14 +42,15 @@ export class MessageService {
                 content: messageInfo.content,
                 authorName: user.username,
                 reciverID: channel.id,
-                authorID: user.id,
+                authorID: channelmember[0].id,
             }
         })
         return message
     }
 
 
-    async getMessages(channelId: string) {
+    async getMessagesChannel(channelId: string) {
+
 
         const channel = await this.prisma.channel.findUnique({
             where: {
@@ -49,7 +60,8 @@ export class MessageService {
                 channelmessages: true,
             }
         })
-
+        if (!channel.channelmessages)
+            return []
         return channel.channelmessages
     }
 
@@ -65,5 +77,49 @@ export class MessageService {
             return {status: "couldn't find user"}
         return user;
     }
-   
+
+    async getDMMessages() {
+        
+    }
+
+    async getMessagesUsers(userId: string, reciverId: string): Promise<UserMessage[] | string> {
+        try { 
+            const user = await this.prisma.user.findUnique({
+                where: {
+                    id: userId
+                }
+            });
+            const reciver = await this.prisma.user.findUnique({
+                where: {
+                    id: reciverId
+                }
+            });
+            if (!user || !reciver)
+                return 'User not found'
+            
+            // const DMroom = await this.prisma.dMRoom.findFirst({
+            //     where: {
+            //         roomMembers: {
+            //             every: {
+            //                 id: {
+            //                     in: [user.id, reciver.id]
+            //                 }
+            //             }
+            //         },
+            //     },
+            //     include: {
+            //         roomMessages: true,
+            //     }
+            // })
+            // console.log(DMroom.roomMessages)
+            // if (!DMroom.roomMessages)
+            //     return []
+            // return DMroom.roomMessages
+            return []
+        }
+        catch (error) {
+            
+            return `${error} could not retrieve messages`
+        }
+    }
 }

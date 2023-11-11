@@ -1,7 +1,7 @@
 "use client";
 
 import { Search2Icon,} from '@chakra-ui/icons';
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import React, { useState } from 'react'
 import {
     useToast,
     InputRightElement,
@@ -19,12 +19,10 @@ import {
     ModalCloseButton,
     Radio
 } from '@chakra-ui/react'
-import { User } from '@/utils/types/chat/ChatTypes';
-import { useDispatch } from 'react-redux';
-import { setTheUser, } from '@/redux/slices/chat/ChatSlice';
-import { useQuery, useMutation } from 'react-query';
+import { useDispatch, useSelector } from 'react-redux';
+import { useQuery } from 'react-query';
 import axios from 'axios';
-import { useAppSelector } from '@/redux/store/store';
+
 
 
 
@@ -74,19 +72,17 @@ function Usercard(props: any) {
 
 export default function Newmessage({ isOpen, onClose}: Props) {
     
-    const chatSocket = useAppSelector((state) => state.socket);
-    const {socket} = chatSocket;
+    const socket = useSelector((state: any) => state.socket.socket)
     const dispatch = useDispatch();
     const toast = useToast();
     const [selectedOption, setSelectedOption]: any = useState('');
-    
-   
+    const id = useSelector((state: any) => state.socket.userID);
     
     const {data, isLoading, error} = useQuery({
         queryKey: ["userData"],
         queryFn: async () => {
             const { data } = await axios.get(`http://localhost:3001/users/friends/${id}`)
-           
+           console.log("data", data)
             return data
         }
     })
@@ -100,8 +96,7 @@ export default function Newmessage({ isOpen, onClose}: Props) {
     const handleSubmit = async () => {
         try { 
             socket?.emit(`updateChatList`, selectedOption.id)
-            socket?.emit(`createRoom`, {userId: id, reciverId: selectedOption.id }, (data: any) => {
-            })
+            socket?.emit(`createRoom`, {userId: id, reciverId: selectedOption.id })
             onClose();
         } catch (error) {
             console.error("Failed to add friend:", error);

@@ -64,36 +64,46 @@ function Componenent({ onClose }: any) {
     const [users, setUsers] = useState<any[]>([])
     const toast = useToast()
     const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
-
+    const userId = useSelector((state: any) => state.socket.userID);
+    const socket = useSelector((state: any) => state.socket.socket)
 
 
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            try {
+        socket.emit('getmembers', { channelId: channel.id })
 
-                const usersResponse = await fetch('http://127.0.0.1:3001/channel/getallmembers/' + channel.id)
-                const users1: ChannelMember[] = await usersResponse.json()
+        socket.on('allmembers', (data: any) => {
+            console.log(data.members)
+            setUsers(data.members);
 
-
-
-                setUsers(users1);
-
-            } catch (error) {
-                console.error('Error fetching users and channel Admins:', error);
-                toast({
-                    title: 'Error fetching users and channel Admins',
-                    position: `bottom-right`,
-                    status: 'error',
-                    duration: 1000,
-                    containerStyle: {
-                        bottom: 90,
-                        right: 30,
-                    },
-                });
-            }
+        })
+        return () => {
+            socket.off('allmembers')
         }
-        fetchUsers()
+
+        // const fetchUsers = async () => {
+        //     try {
+
+        //         const usersResponse = await fetch('http://127.0.0.1:3001/channel/getallmembers/' + channel.id)
+        //         const users1: ChannelMember[] = await usersResponse.json()
+
+        //         setUsers(users1);
+
+        //     } catch (error) {
+        //         console.error('Error fetching users and channel Admins:', error);
+        //         toast({
+        //             title: 'Error fetching users and channel Admins',
+        //             position: `bottom-right`,
+        //             status: 'error',
+        //             duration: 1000,
+        //             containerStyle: {
+        //                 bottom: 90,
+        //                 right: 30,
+        //             },
+        //         });
+        //     }
+        // }
+        // fetchUsers()
     }, [])
 
 

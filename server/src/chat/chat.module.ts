@@ -11,6 +11,6 @@ import { MessageService } from './message/message.service';
 @Module({
   imports: [UsersModule, ChannelModule, MessageModule],
   controllers: [],
-  providers: [ChatGateway, UsersService, PrismaService, MessageService],
+  providers: [ChatGateway],
 })
 export class ChatModule {}

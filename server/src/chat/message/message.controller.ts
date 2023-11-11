@@ -14,7 +14,13 @@ export class MessageController {
 
     @Get('/getmessages/:id')
     getMessages(@Param('id') id: string) {
-        return this.messageService.getMessages(id)
+        return this.messageService.getMessagesChannel(id)
+    }
+
+    @Get('/getMessagesUsers/:userId/:reciverId')
+    async getMessagesUsers(@Param('userId') userId: string, @Param('reciverId') reciverId: string) {
+        console.log( await this.messageService.getMessagesUsers(userId, reciverId))
+        return this.messageService.getMessagesUsers(userId, reciverId)
     }
 
     @Get('/getuserinfo/:id')

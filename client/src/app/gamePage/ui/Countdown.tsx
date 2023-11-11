@@ -67,7 +67,15 @@ const Countdown = ({
               </Text>
             </div>
             <Text
+<<<<<<< HEAD
               className={` text-[100px] font-bold opacity-90 -mt-[100px] ${getTextColor2(
+=======
+<<<<<<< HEAD
+              className={` text-[200px] font-bold opacity-90 -mt-[100px] ${getTextColor2(
+=======
+              className={` text-[100px] font-bold opacity-90 -mt-[100px] ${getTextColor2(
+>>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
+>>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
                 gameSettings
               )}`}
             >
