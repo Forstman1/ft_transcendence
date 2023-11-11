@@ -152,7 +152,7 @@ export function UserProfileNavbarBadge() {
               </Center>
               <br />
               <MenuDivider />
-              <MenuItem as='a' href='#'>Profile</MenuItem>
+              <MenuItem as='a' href={`/profile/${data.userId}`}>Profile</MenuItem>
               <MenuItem as='a' href='#'>Settings</MenuItem>
               <MenuDivider />
               <MenuItem color={'red.500'} as='a' href={`${process.env.NEXT_PUBLIC_SERVER_URL}auth/logout`}>Logout</MenuItem>
