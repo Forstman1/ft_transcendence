@@ -45,6 +45,13 @@ const CreatGameGlobalSocket = (user: any) => {
     auth: {
       id: user.userId,
     },
+  //   transportOptions: {
+  //     polling: {
+  //       extraHeaders: {
+  //           Authorization: `Bearer ${user.accessToken}`,
+  //       }
+  //     }
+  // }
   });
   socket.emit("createRoomNotification", { userId: user.userId }, (data: any) => {
     console.log("createGameRoomNotification: " + data);

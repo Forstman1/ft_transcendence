@@ -34,7 +34,6 @@ import {
   initialRightPaddle,
   initialGameEndStatic,
 } from "@/utils/constants/game/GameConstants";
-import Footer from "@/components/elements/Footer/Footer";
 
 export default function GameBotPage() {
   let gameSettings = useAppSelector((state) => state.gameReducer);
@@ -370,7 +369,6 @@ export default function GameBotPage() {
                 </div>
               </div>
             </div>
-            <Footer />
           </div>
         </motion.div>
       )}
