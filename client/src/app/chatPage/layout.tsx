@@ -29,7 +29,7 @@ const Layout: FC<LayoutProps> = ({children}) => {
     // })
     return(
         <>
-            <Flex className="Chat_Parent h-[calc(100vh_-_170px)] md:h-[calc(100vh_-_90px)]">
+            <Flex className="Chat_Parent  h-full">
                 <LeftSidebar />
                 <div className="Chat_sub_div1 flex-grow flex">
                     {children}

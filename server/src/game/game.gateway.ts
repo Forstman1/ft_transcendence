@@ -17,7 +17,6 @@ export class GameGateway {
 
   constructor(private readonly gameService: GameService) {}
 
-  private interval: NodeJS.Timeout | null = null;
   private isPaused = false;
   private readonly connectedUsers: { [userId: string]: Socket } = {};
   private readonly gameQueue: { [userId: string]: Socket } = {};
@@ -56,7 +55,7 @@ export class GameGateway {
       this.isAllReady[data.roomId] += 1;
       if (this.isAllReady[data.roomId] === 2) {
         this.isAllReady[data.roomId] = 0;
-        this.interval = setInterval(() => {
+        setInterval(() => {
           const getRoom = this.gameService.getRoom(data.roomId);
           const room = this.server.sockets.adapter.rooms.get(data.roomId);
 
