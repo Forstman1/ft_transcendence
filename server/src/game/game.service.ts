@@ -384,4 +384,31 @@ export class GameService {
     });
     return friends;
   }
+
+  //----------------------------------------------------
+  getOpponentData = async (opponentId: string): Promise<any> => {
+    const opponentData = await this.prisma.user.findUnique({
+      where: { id: opponentId },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        fullname: true,
+        avatarURL: true,
+        isOnline: true,
+      },
+    });
+    return opponentData;
+  }
+
+  //----------------------------------------------------
+  updateUserIsOnline = async (userId: string, isOnline: boolean): Promise<void> => {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        isOnline,
+      },
+    });
+    return;
+  }
 }

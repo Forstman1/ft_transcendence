@@ -1,19 +1,64 @@
 "use client"
 
+<<<<<<< HEAD
 import React, { useEffect } from "react";
 import DesktopGamePreview from "../../assets/icons/pongDesktopImage.svg";
 import MobileGamePreview from "../../assets/icons/pongMobileImage.svg";
 import GamePreviewDesktop from "../../assets/icons/pongDesktopImage.svg";
 import GamePreviewMobile from "../../assets/icons/Frame 70.svg";
+=======
+import React from "react";
+>>>>>>> bf26fe93415a48e2bd527d4fb8088e4086d52ff5
 import Image from "next/image";
-import { Box, Center, Button } from "@chakra-ui/react";
-import { PageWrapper } from "./animationWrapper/pageWrapper";
-import PageDivider from "../../assets/icons/wavesOpacityInversed.svg"
+import { useRouter } from "next/navigation";
+import {
+  Flex,
+  Box,
+  Center,
+  Button,
+  Text,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalOverlay,
+  Modal,
+  useDisclosure,
+  Stack,
+} from "@chakra-ui/react";
+import { PageWrapper } from "@/app/animationWrapper/pageWrapper";
+import { motion } from "framer-motion";
+import { AuthButtons } from "@/components/elements/Navbar/Navbar";
+import LoginThumbnail from 'assets/icons/Auth/undraw_my_password_re_ydq7.svg';
+import { useSelector } from "react-redux";
+import { UserState } from "@/redux/slices/authUser/authUserSlice";
 
-export function CustomButton(props: any) {
-  const primaryColor = props.inverseColor ? "neutral-950" : "neutral-50";
-  const secondaryColor = props.inverseColor ? "neutral-50" : "neutral-950";
-  const borderColor = props.borderColor ? "neutral-950" : "neutral-50";
+import GamePreviewDesktop from "assets/icons/pongDesktopImage.svg";
+import GamePreviewMobile from "assets/icons/Frame 70.svg";
+import PageDivider1 from "assets/icons/wavesOpacityInversed.svg";
+import PageDivider2 from "assets/icons/waves.svg"
+
+
+export function CustomButton(
+  {
+    inverseColorProp,
+    borderColorProp,
+    propOnClick,
+    children
+  }:
+  {
+    inverseColorProp: boolean,
+    borderColorProp: boolean,
+    propOnClick: () => void,
+    children: React.ReactNode
+  }
+  ) {
+  const primaryColor = inverseColorProp ? "neutral-950" : "neutral-50";
+  const secondaryColor = inverseColorProp ? "neutral-50" : "neutral-950";
+  const borderColor = borderColorProp ? "neutral-950" : "neutral-50";
+  const shadowColor = borderColorProp ? "rgb(60,60,60)" : "rgb(195,195,195)";
+
   return (
     <Button
       className={`
@@ -22,27 +67,163 @@ export function CustomButton(props: any) {
         h-8  md:h-10 lg:h-10 xl:h-12 2xl:h-12
         border-2 border-${borderColor} text-${secondaryColor} bg-${primaryColor}
       `}
-      as='a' href={props.href}
+      as='button'
       size='lg' rounded='sm'
-      boxShadow='0.4rem 0.4rem 0rem 0rem rgb(60,60,60)'
+      boxShadow={`0.4rem 0.4rem 0rem 0rem ${shadowColor}`}
       fontWeight='semibold'
       _hover={{}}
       _active={{
         transform: 'translate(0.4rem, 0.4rem)',
-        boxShadow: '0rem 0rem 0rem 0rem rgb(60,60,60)',
+        boxShadow: `0rem 0rem 0rem 0rem ${shadowColor}}`,
       }}
+      onClick={propOnClick}
     >
       <Center>
-        {props.children}
+        {children}
       </Center>
     </Button>
+  )
+}
+
+export function SignupModal (props: any) {
+  const OverlayOne = () => (
+    <ModalOverlay
+      bg='blackAlpha.300'
+      backdropFilter='blur(10px) hue-rotate(90deg)'
+    />
+  )
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [overlay, setOverlay] = React.useState(<OverlayOne />)
+  return (
+    <>
+      <motion.div>
+        <CustomButton {...props} propOnClick={() => {
+          setOverlay(<OverlayOne />);
+          onOpen();
+        }}>
+          Sign Up
+        </CustomButton>
+
+        <Modal isCentered isOpen={isOpen} onClose={onClose}>
+          {overlay}
+          <ModalContent>
+
+            <ModalHeader>
+              <Stack align={'center'}>
+                <Text className='text-5xl text-center font-bold'>
+                  Sign up
+                </Text>
+                <Text className='text-lg text-center text-neutral-600'>
+                  to enjoy all of our cool features ✌️
+                </Text>
+                <Image src={LoginThumbnail} alt='Login Thumbnail' className='hidden md:block w-full max-w-[14rem]' />
+              </Stack>
+            </ModalHeader>
+            <ModalCloseButton />
+
+            <ModalBody >
+              <Stack spacing={3}>
+                <AuthButtons />
+              </Stack>
+            </ModalBody>
+
+            <ModalFooter>
+              <Text m='auto' align='center'>
+                BTW, we&apos;re about 2 steal all ur creds
+                <br />
+                Happy Gaming 😊
+              </Text>
+            </ModalFooter>
+
+          </ModalContent>
+        </Modal>
+      </motion.div>
+    </>
   )
 }
 
 // TODO add a custom cursor for the whole website
 // TODO add a custom favicon
 
+const Footer: React.FC = () => {
+  const textSize = [
+    'xs', 'sm', 'md', 'lg', 'xl', 'xl', '2xl', '2xl', '2xl', '3xl', '3xl'
+  ];
+  return (
+    <footer className="w-full relative -mt-5 md:-mt-10 z-10">
+      <Box className="w-full h-5 md:h-10">
+        <Image src={PageDivider2} alt="Footer Divider" className="transform rotate-180 w-full h-full" />
+      </Box>
+      <Flex
+        justifyContent="space-between"
+        alignItems="center"
+        flexDirection="row"
+        width="full" height="full"
+        className="grid-cols-3 md:justify-between h-16 md:h-24 bg-white"
+      >
+        <div className="h-full w-1/3 flex items-center justify-center">
+          {/* Content for the first column, which is none for the moment */}
+        </div>
+        <div className="h-full w-1/3 flex items-center justify-center">
+          <Text textAlign={"center"} fontSize={textSize}>
+            Copyright © 2023 Pong Inc. All Rights Reserved
+          </Text>
+        </div>
+        <div className="h-full w-1/3 flex items-center justify-center">
+          <Text textAlign={"center"} fontSize={textSize}>
+            Made with ❤️
+          </Text>
+        </div>
+      </Flex>
+    </footer>
+  );
+};
+
+export function GoToProfileButton(
+  {
+    inverseColorProp,
+    borderColorProp,
+  }:
+  {
+    inverseColorProp: boolean,
+    borderColorProp: boolean,
+  })
+  {
+  const router = useRouter();
+  const primaryColor = inverseColorProp ? "neutral-950" : "neutral-50";
+  const secondaryColor = inverseColorProp ? "neutral-50" : "neutral-950";
+  const borderColor = borderColorProp ? "neutral-950" : "neutral-50";
+  const shadowColor = borderColorProp ? "rgb(60,60,60)" : "rgb(195,195,195)";
+
+  return (
+    <Button
+      className={`
+        text-xl lg:text-2xl 4xl:text-3xl
+        w-20 md:w-24 lg:w-24 xl:w-28 2xl:w-36
+        h-8  md:h-10 lg:h-10 xl:h-12 2xl:h-12
+        border-2 border-${borderColor} text-${secondaryColor} bg-${primaryColor}
+      `}
+      as='button'
+      size='lg' rounded='sm'
+      boxShadow={`0.4rem 0.4rem 0rem 0rem ${shadowColor}`}
+      fontWeight='semibold'
+      _hover={{}}
+      _active={{
+        transform: 'translate(0.4rem, 0.4rem)',
+        boxShadow: `0rem 0rem 0rem 0rem ${shadowColor}}`,
+      }}
+      onClick={() => router.push('/profile')}
+    >
+      <Center>
+        Profile
+      </Center>
+    </Button>
+  )
+}
+
 export default function Home() {
+  const data = useSelector((state: { authUser: UserState }) => state.authUser);
+  const router = useRouter();
   return (
     <PageWrapper>
       <div
@@ -74,7 +255,7 @@ export default function Home() {
           <div>
             <p
               className="text-neutral-950 text-center
-              text-3xl sm:text-6xl 
+              text-4xl sm:text-6xl 
               xl:text-5xl 2xl:text-5xl 3xl:text-6xl 4xl:text-7xl 5xl:text-8xl 6xl:text-9xl"
             >
               The Legacy PONG Game
@@ -102,18 +283,16 @@ export default function Home() {
             deflecting a small ball and preventing it from<br className="hidden xl:block" /> breaching their territory.
           </p>
           <div className="flex flex-row justify-evenly gap-6">
-            <CustomButton href="#0" inverseColor={true} borderColor={true}>
+            <CustomButton inverseColorProp={true} borderColorProp={true} propOnClick={() => router.push('/gamePage')}>
               Play!
             </CustomButton>
-            <CustomButton href="#0" inverseColor={false} borderColor={true}>
-              Sign Up
-            </CustomButton>
+            { data.isAuthenticated ? <GoToProfileButton inverseColorProp={false} borderColorProp={true} /> : <SignupModal inverseColorProp={false} borderColorProp={true} />}
           </div>
         </div>
       </div>
 
       <Box className="w-full h-5 md:h-10 z-10 relative">
-        <Image src={PageDivider} alt="Page Divider" className="w-full h-full" />
+        <Image src={PageDivider1} alt="Page Divider" className="w-full h-full" />
       </Box>
 
       <div
@@ -134,17 +313,16 @@ export default function Home() {
           <div>
             <p
               className="text-neutral-50 text-center
-              sm:text-4xl md:text-6xl 
+              text-4xl sm:text-6xl 
               xl:text-5xl 2xl:text-5xl 3xl:text-6xl 4xl:text-7xl 5xl:text-8xl 6xl:text-9xl"
             >
-              The Legacy PONG Game
+              Just like the Original
             </p>
             <p
               className="text-neutral-200 text-center
-              sm:text-2xl md:text-4xl
-              text-3xl xl:text-3xl 2xl:text-3xl 3xl:text-4xl 4xl:text-5xl 5xl:text-6xl 6xl:text-7xl"
+              text-xl sm:text-2xl md:text-4xl xl:text-3xl 2xl:text-3xl 3xl:text-4xl 4xl:text-5xl 5xl:text-6xl 6xl:text-7xl"
             >
-              as never seen before
+              even with the same theme
             </p>
           </div>
           <div
@@ -163,12 +341,10 @@ export default function Home() {
             deflecting a small ball and preventing it from<br className="hidden xl:block" /> breaching their territory.
           </p>
           <div className="flex flex-row justify-evenly gap-6">
-            <CustomButton href="#0" inverseColor={false} borderColor={false}>
+            <CustomButton inverseColorProp={false} borderColorProp={false} propOnClick={() => router.push('/gamePage')}>
               Play!
             </CustomButton>
-            <CustomButton href="#0" inverseColor={true} borderColor={false}>
-              Sign Up
-            </CustomButton>
+            { data.isAuthenticated ? <GoToProfileButton inverseColorProp={true} borderColorProp={false} /> : <SignupModal inverseColorProp={true} borderColorProp={false} />}
           </div>
         </div>
         <div
@@ -185,6 +361,7 @@ export default function Home() {
         </div>
       </div>
 
+      <Footer />
 
     </PageWrapper>
   );
