@@ -1,8 +1,4 @@
 "use client";
-<<<<<<< HEAD
-=======
-
->>>>>>> bf26fe93415a48e2bd527d4fb8088e4086d52ff5
 import { useToast, Alert, AlertIcon, Box, Button } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useAppSelector } from "@/redux/store/store";

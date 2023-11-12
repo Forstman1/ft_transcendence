@@ -1,9 +1,5 @@
-<<<<<<< HEAD
 `use client`;
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-=======
-import { configureStore} from "@reduxjs/toolkit";
->>>>>>> bf26fe93415a48e2bd527d4fb8088e4086d52ff5
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import gameReducer from "../slices/game/gameModalSlice";
 import authUserReducer from "../slices/authUser/authUserSlice";

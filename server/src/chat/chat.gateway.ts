@@ -38,7 +38,7 @@ export class ChatGateway implements OnGatewayInit , OnGatewayConnection {
       client.join(room);
     }
     this.logger.log(chatList)
-    client.emit(`updateChatList`, chatList);
+    client.emit(`updateChatList`, chatList); 
   }
 
   async handleDisconnect(socket: Socket) {

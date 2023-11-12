@@ -10,15 +10,12 @@ import { Channel, User } from "@/utils/types/chat/ChatTypes";
 import { setLeft, setMidle, setRight } from "@/redux/slices/chat/MobileSlice";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
-<<<<<<< HEAD
 import { UseSelector } from "react-redux/es/hooks/useSelector";
 import ChatWindow from "@/components/elements/ChatPage/ChatWindow";
-
-
-
-=======
 import RestrictedRoute from "@/components/RestrictedRoute";
->>>>>>> bf26fe93415a48e2bd527d4fb8088e4086d52ff5
+
+
+
 
 export default function ChatPage() {
   const [RightIsOpen, setRightIsOpen] = useState(false);
@@ -30,25 +27,12 @@ export default function ChatPage() {
   const { MidleClice } = useSelector((state: any) => state.mobile);
   const socket = useSelector((state: any) => state.socket.socket);
 
-  const isDesktop = useMediaQuery("(min-width: 1000px)");
-  const dispatch = useDispatch();
 
-<<<<<<< HEAD
   const isDesktop = useMediaQuery("(min-width: 1000px)")
   const dispatch = useDispatch()
   const selected: Channel | User | null = useSelector((state: any) => state.chat.selectedChannelorUser);
 
 
-=======
-  const selected: Channel | User | null = useSelector(
-    (state: any) => state.chat.selectedChannelorUser
-  );
-  if (isDesktop[0]) {
-    dispatch(setRight(true));
-    dispatch(setMidle(true));
-    dispatch(setLeft(true));
-  }
->>>>>>> bf26fe93415a48e2bd527d4fb8088e4086d52ff5
 
 
   // useEffect(() => {

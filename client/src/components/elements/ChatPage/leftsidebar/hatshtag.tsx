@@ -34,7 +34,7 @@ export default function Hashtag(props: any) {
 
     let { id, name, type }: Channel = props.data;
     let data: Channel = props.data;
-    const userId = useSelector((state: any) => state.chat.userId)
+    const userId = useSelector((state: any) => state.socket.userID)
 
     const dispatch = useDispatch()
     const toast = useToast()

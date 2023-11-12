@@ -35,6 +35,7 @@ import LoginThumbnail from 'assets/icons/Auth/undraw_my_password_re_ydq7.svg';
 import { io } from "socket.io-client";
 import { setSocketState } from "@/redux/slices/socket/globalSocketSlice";
 import { initialState as DefaultUserStoreData, UserState } from "@/redux/slices/authUser/authUserSlice";
+import { setChatSocketState } from '@/redux/slices/socket/chatSocketSlice';
 
 const CreatGameGlobalSocket = (user: any) => {
   console.log("CreatGameGlobalSocket user: ", user);
@@ -48,6 +49,23 @@ const CreatGameGlobalSocket = (user: any) => {
   socket.emit("createRoomNotification", { userId: user.userId }, (data: any) => {
     console.log("createGameRoomNotification: " + data);
   });
+  return socket;
+}
+
+const CreatChatGlobalSocket = (user: any) => {
+  console.log("CreatChatGlobalSocket user: ", user);
+
+  const socket = io('http://localhost:3001/chat', {
+    transports: ["websocket"],
+    upgrade: false,
+    auth: {
+      id: user.userId,
+    },
+  });
+
+  socket?.emit(`createRoom`, { userId: user.userId }, (data: any) => {
+    console.log(`the data returned is ` + data)
+  })
   return socket;
 }
 
@@ -120,44 +138,44 @@ export function UserProfileNavbarBadge() {
   return (
     <Flex alignItems='center' gap={5} flexDirection='row-reverse'>
       <Box flexShrink={0}>
-          <Menu>
-            <MenuButton
-              as={Button}
-              rounded={'full'}
-              variant={'link'}
-              cursor={'pointer'}
-              minW={0}>
-              <Avatar size='lg' src={data.avatarUrl}>
+        <Menu>
+          <MenuButton
+            as={Button}
+            rounded={'full'}
+            variant={'link'}
+            cursor={'pointer'}
+            minW={0}>
+            <Avatar size='lg' src={data.avatarUrl}>
+              <AvatarBadge
+                boxSize='1em'
+                borderColor={data.isOnline ? 'green.100' : 'red.100'}
+                bg={data.isOnline ? 'green.500' : 'red.500'}
+              />
+            </Avatar>
+          </MenuButton>
+          <MenuList alignItems={'center'}>
+            <br />
+            <Center>
+              <Avatar size={'2xl'} src={data.avatarUrl}>
                 <AvatarBadge
                   boxSize='1em'
                   borderColor={data.isOnline ? 'green.100' : 'red.100'}
                   bg={data.isOnline ? 'green.500' : 'red.500'}
                 />
               </Avatar>
-            </MenuButton>
-            <MenuList alignItems={'center'}>
-              <br />
-              <Center>
-                <Avatar size={'2xl'} src={data.avatarUrl}>
-                  <AvatarBadge
-                    boxSize='1em'
-                    borderColor={data.isOnline ? 'green.100' : 'red.100'}
-                    bg={data.isOnline ? 'green.500' : 'red.500'}
-                  />
-                </Avatar>
-              </Center>
-              <br />
-              <Center>
-                <p className='text-2xl font-bold'>{data.username}</p>
-              </Center>
-              <br />
-              <MenuDivider />
-              <MenuItem as='a' href='#'>Profile</MenuItem>
-              <MenuItem as='a' href='#'>Settings</MenuItem>
-              <MenuDivider />
-              <MenuItem color={'red.500'} as='a' href={`${process.env.NEXT_PUBLIC_SERVER_URL}auth/logout`}>Logout</MenuItem>
-            </MenuList>
-          </Menu>
+            </Center>
+            <br />
+            <Center>
+              <p className='text-2xl font-bold'>{data.username}</p>
+            </Center>
+            <br />
+            <MenuDivider />
+            <MenuItem as='a' href='#'>Profile</MenuItem>
+            <MenuItem as='a' href='#'>Settings</MenuItem>
+            <MenuDivider />
+            <MenuItem color={'red.500'} as='a' href={`${process.env.NEXT_PUBLIC_SERVER_URL}auth/logout`}>Logout</MenuItem>
+          </MenuList>
+        </Menu>
       </Box>
     </Flex>
   );
@@ -165,7 +183,7 @@ export function UserProfileNavbarBadge() {
 
 /* ------------------------------------------------------------------------------------------------------------------ */
 
-export function SignupModal () {
+export function SignupModal() {
   const OverlayOne = () => (
     <ModalOverlay
       bg='blackAlpha.300'
@@ -322,8 +340,14 @@ export default function Navbar() {
   useEffect(() => {
     if (!isLoading && !isError) {
       setUserNotAuthenticated(false);
-      dispatch(updateUser({isAuthenticated: true, ...data}));
+      dispatch(updateUser({ isAuthenticated: true, ...data }));
       const gameSocket = CreatGameGlobalSocket(data);
+      const chatSocket = CreatChatGlobalSocket(data);
+      dispatch(setChatSocketState({
+        socket: chatSocket,
+        roomId: "",
+        userID: data.userId,
+      }));
       // for game page
       dispatch(setSocketState({
         socket: gameSocket,

@@ -1,7 +1,7 @@
 "use client";
 
 import { Search2Icon,} from '@chakra-ui/icons';
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import React, { useState } from 'react'
 import {
     useToast,
     InputRightElement,
@@ -19,10 +19,8 @@ import {
     ModalCloseButton,
     Radio
 } from '@chakra-ui/react'
-import { User } from '@/utils/types/chat/ChatTypes';
 import { useDispatch, useSelector } from 'react-redux';
-import { setTheUser, } from '@/redux/slices/chat/ChatSlice';
-import { useQuery, useMutation } from 'react-query';
+import { useQuery } from 'react-query';
 import axios from 'axios';
 import { useAppSelector } from '@/redux/store/store';
 
@@ -30,11 +28,9 @@ import { useAppSelector } from '@/redux/store/store';
 
 
 type Props = {
-
     isOpen: boolean;
     onClose: () => void;
 };
-
 
 
 function Usercard(props: any) {
@@ -52,7 +48,7 @@ function Usercard(props: any) {
         
     <div onClick={handleChange} className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md'>
         <div>
-            <Avatar boxSize={12} src={data.avatar}>
+            <Avatar boxSize={12} src={data?.avatarURL}>
                 <AvatarBadge boxSize={6} bg='green' />
             </Avatar>
         </div>
@@ -80,7 +76,6 @@ export default function Newmessage({ isOpen, onClose}: Props) {
     const toast = useToast();
     const [selectedOption, setSelectedOption]: any = useState('');
     
-    // const id = `1a5a7646-7e73-46ad-9c75-d1cd16f0818a`; //! should be changed to the real user id
     const id = useSelector((state: any) => state.socket.userID);
     
     const {data, isLoading, error} = useQuery({

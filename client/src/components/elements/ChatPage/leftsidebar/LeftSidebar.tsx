@@ -45,7 +45,7 @@ function Usercard(props: any) {
 
   >
     <div> 
-      <Avatar className='custom-shadow border-[1px] border-black' boxSize={14} src={props.data.avatar}>
+      <Avatar className='custom-shadow border-[1px] border-black' boxSize={14} src={props.data.avatarURL}>
         <AvatarBadge className='custom-shadow border-[1px] border-black' boxSize={4} bg='green.500' />
       </Avatar>
 

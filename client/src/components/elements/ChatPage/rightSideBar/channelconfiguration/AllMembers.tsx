@@ -43,7 +43,7 @@ function Usercard(props: any) {
 
         <div className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md '>
             <div>
-                <Avatar boxSize={12} src={user.avatar}>
+                <Avatar boxSize={12} src={user?.avatarURL}>
                     <AvatarBadge boxSize={6} bg='green' />
                 </Avatar>
             </div>
