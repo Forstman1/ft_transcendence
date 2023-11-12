@@ -203,7 +203,7 @@ export class ChatGateway implements OnGatewayInit , OnGatewayConnection {
     console.log('createChannel ', data);
 
     try {
-
+      console.log(client.handshake.auth.id)
     const user = await this.userService.getUser(data.userId);
 
     const channel: any = await this.channelService.createchannel(data);

@@ -1,7 +1,5 @@
 import { Avatar, Input } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
-import Lottie from "lottie-react";
-import animationData from "../../../../../client/assets/animations/animation_typing.json";
 import arrow from "../../../../assets/icons/arrow.svg";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
@@ -39,6 +37,7 @@ import { setMessages } from '@/redux/slices/chat/ChatSlice';
     useEffect(() => {
       const fetchData = async () => {
 
+        console.log("usermessage.authorID ", usermessage.authorID)
         const fetchuser = await fetch('http://127.0.0.1:3001/users/getuser/' + usermessage.authorID)
         const response = await fetchuser.json()
         setUser(response)

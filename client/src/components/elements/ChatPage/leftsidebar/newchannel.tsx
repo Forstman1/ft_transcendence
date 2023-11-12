@@ -42,28 +42,13 @@ export default function Newchannel({ isOpen, onClose, channels }: Props) {
 
   const { handleSubmit, register, watch } = useForm<ChannelValues>();
   const [dup, setDup] = useState(false);
-  const toast = useToast()
 
   const [show, setShow] = React.useState(false)
   const handleClick = () => setShow(!show)
-  const dispatch = useDispatch()
   const userId = useSelector((state: any) => state.socket.userID)
   const socket = useSelector((state: any) => state.socket.socket)
 
-  const createchannel = useMutation<any, Error, ChannelValues>((variables) =>
-    fetch('http://127.0.0.1:3001/channel/createchannel', {
-      method: "POST",
-      body: JSON.stringify(variables),
-      headers: {
-        "content-type": "application/json",
-      }
-    }).then((response) => {
-      return response.json()
 
-    }).catch((error) => {
-      return error
-    })
-  )
 
   const onSubmit = async (data: ChannelValues) => {
 
@@ -82,64 +67,7 @@ export default function Newchannel({ isOpen, onClose, channels }: Props) {
     })
     
     onClose();
-    
-    // let channel: Channel;
-    // try {
-    //   const newchannel = await createchannel.mutateAsync({
-    //     channelName: data.channelName,
-    //     type: data.type,
-    //     password: data.password,
-    //     userId: data.userId
-    //   })
 
-    //   data.type = data.type.toUpperCase()
-    //   if (newchannel.status)
-    //     throw newchannel.status;
-    //   channel = newchannel
-
-
-    // } catch (error) {
-    //   console.log(error)
-    //   toast({
-    //     title: "couldn't create channel",
-    //     position: `bottom-right`,
-    //     status: 'error',
-    //     duration: 1000,
-    //     containerStyle: {
-    //       width: 300,
-    //       height: 100,
-    //     }
-    //   })
-    //   return;
-    // }
-
-
-    // toast({
-    //   title: "Channel Created",
-    //   position: `bottom-right`,
-    //   status: 'success',
-    //   duration: 1000,
-    //   containerStyle: {
-    //     width: 300,
-    //     height: 100,
-    //   }
-    // })
-
-
-
-    // dispatch(setChannel(channel))
-    // console.log(channel.channelMember)
-    // if (channel.channelMember) {
-    //   channel.channelMember.map((data1: any) => {
-    //     if (data1.userId === userId)
-    //       dispatch(setChannelMember(data1))
-    //   })
-    // }
-    // dispatch(setNewChannel(channel))
-    // socket.emit('joinChannel', {
-    //   channelId: channel.id,
-    //   userId: userId,
-    // })
 
   };
 

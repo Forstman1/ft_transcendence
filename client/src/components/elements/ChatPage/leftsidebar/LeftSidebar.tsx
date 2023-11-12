@@ -75,7 +75,6 @@ export default function LeftSidebar() {
   const [ChannelOrUser, setChannelOrUser] = useState(false)
   const channels = useSelector((state: any) => state.chat.channels)
 
-  const queryClient = useQueryClient();
   const [Users, setUsers] = useState<User[]>([]);
   
   const selected = useSelector((state: any) => state.chat.selectedChannelorUser)
