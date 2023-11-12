@@ -24,7 +24,6 @@ import LodingAnimation from "../../../assets/animations/loadingAnimation.json";
 import Lottie from "lottie-react";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 import GameInstruction from "./ui/GameInstruction";
-import Footer from "@/components/elements/Footer/Footer";
 import RestrictedRoute from "@/components/RestrictedRoute";
 
 export default function GamePage() {
@@ -194,7 +193,6 @@ export default function GamePage() {
           onClose={onClose}
           gameType={gameType as "bot" | "friend"}
         />
-        <Footer />
       </PageWrapper>
     </RestrictedRoute>
   );
