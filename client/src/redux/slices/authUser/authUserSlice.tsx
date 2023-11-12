@@ -11,7 +11,7 @@ export interface UserState {
   email: string,
   avatarUrl: string,
   isOnline: boolean,
-};
+}
 
 export const initialState = {
   isAuthenticated: false,

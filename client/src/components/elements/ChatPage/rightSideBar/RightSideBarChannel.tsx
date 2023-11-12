@@ -34,11 +34,6 @@ export default function RightSidebarChannel() {
   const channel: Channel = useSelector((state:any) => state.chat.selectedChannelorUser)
 
 
-  // if(isDesktop[0]) {
-  //   dispatch(setRight(true))
-  //   dispatch(setMidle(true))
-  //   dispatch(setLeft(true))
-  // }
 
   const sidebar = {
     open: (height = 1000) => ({

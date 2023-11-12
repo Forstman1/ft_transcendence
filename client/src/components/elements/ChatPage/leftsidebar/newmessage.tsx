@@ -1,10 +1,16 @@
 "use client";
 
-import { Search2Icon, SearchIcon, SmallAddIcon } from '@chakra-ui/icons';
-import { Avatar, AvatarBadge, Box, Button, FormControl, FormLabel, Icon, Input, InputGroup, InputLeftElement, InputRightElement, Select, useToast } from '@chakra-ui/react';
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { Search2Icon,} from '@chakra-ui/icons';
+import React, { useState } from 'react'
 import {
-    Modal,
+    useToast,
+    InputRightElement,
+    InputLeftElement,
+    InputGroup,
+    Input,
+    Button,
+    AvatarBadge,
+    Avatar,
     ModalOverlay,
     ModalContent,
     ModalHeader,
@@ -13,26 +19,18 @@ import {
     ModalCloseButton,
     Radio
 } from '@chakra-ui/react'
-import { User } from '@/utils/types/chat/ChatTypes';
-// import { setToTrue, setToFalse } from '@/redux/slices/chat/chatSlice';
-import { useSelector, useDispatch } from 'react-redux';
-import { setUser } from '@/redux/slices/chat/ChatSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { useQuery } from 'react-query';
+import axios from 'axios';
+import { useAppSelector } from '@/redux/store/store';
+
+
 
 
 type Props = {
-
     isOpen: boolean;
     onClose: () => void;
-    setNewUsers: Dispatch<SetStateAction<User[]>>;
-    users: User[]
 };
-
-
-// const getUsers = async() => {
-
-//     const res = await fetch('http://localhost:3001/users')
-//     return res.json()
-// }
 
 
 function Usercard(props: any) {
@@ -50,7 +48,7 @@ function Usercard(props: any) {
         
     <div onClick={handleChange} className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md'>
         <div>
-            <Avatar boxSize={12} src={data.avatar}>
+            <Avatar boxSize={12} src={data?.avatarURL}>
                 <AvatarBadge boxSize={6} bg='green' />
             </Avatar>
         </div>
@@ -70,28 +68,24 @@ function Usercard(props: any) {
 }
 
 
-
-export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Props) {
-
-
-    const users1: User[] = []
-    const url = 'http://localhost:3001/users/listusers';
-    const [Users, setUsers]: any = useState([])
-    const [selectedOption, setSelectedOption]: any = useState('');
-    const toast = useToast()
+export default function Newmessage({ isOpen, onClose}: Props) {
     
-    useEffect(() => {
-        
-        async function fetchData () {
-            const api = await fetch(url)
-            const response = await api.json()
-            if (response)
-            {
-                setUsers(response)
-            }
+    const chatSocket = useAppSelector((state) => state.socket);
+    const {socket} = chatSocket;
+    const dispatch = useDispatch();
+    const toast = useToast();
+    const [selectedOption, setSelectedOption]: any = useState('');
+    
+    const id = useSelector((state: any) => state.socket.userID);
+    
+    const {data, isLoading, error} = useQuery({
+        queryKey: ["userData"],
+        queryFn: async () => {
+            const { data } = await axios.get(`http://localhost:3001/users/friends/${id}`)
+            console.log(data)
+            return data
         }
-        fetchData()
-    }, [])
+    })
 
     const handleOptionChange = (newValue: any) => {
 
@@ -99,33 +93,18 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
 
     };
 
-    const dispatch = useDispatch()
+    const handleSubmit = async () => {
 
-
-    const handleSubmit = () => {
-
-        if (!users.find(user => user.username === selectedOption.username)) {
-            
-            let user: User = {
-                
-                ...selectedOption
-                
-            }
-            setNewUsers([user, ...users])
-            dispatch(setUser(user))
+        try { 
+            socket?.emit(`updateChatList`, selectedOption.id)
+            socket?.emit(`createRoom`, {userId: id, reciverId: selectedOption.id }, (data: any) => {
+            })
+            onClose();
+        } catch (error) {
+            console.error("Failed to add friend:", error);
         }
-        else {
-            let user: User = {
-                ...selectedOption
-            }
-            dispatch(setUser(user))
-        }
-        onClose()
-    }
-
-    function display(Users: User) {
-
-    }
+    };
+    
 
     return (
 
@@ -154,7 +133,6 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
                                 variant="outline"
                                 h="2rem"
                                 size="sm"
-                            // onClick={handleSearchClick}
                             >
                                 Search
                             </Button>
@@ -164,21 +142,24 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
                             placeholder="Search for a friend"
                             height={12}
                             borderEndEndRadius={0}
-                        // value={search}
-                        // onChange={handleChange}
                         />
                     </InputGroup>
 
-                    <div className=' mt-[20px] flex  justify-between md:h-[400px] h-[200px] flex-col overflow-y-scroll'>
-                        {Users.map((data: any) => {
-                            return <Usercard
-                                key={data.username}
-                                data={data}
-                                selectedOption={selectedOption}
-                                onOptionChange={handleOptionChange}
-                            />
-                        })}
-
+                    <div className=' mt-[20px] flex md:h-[400px] h-[200px] flex-col overflow-y-scroll'>
+                        {isLoading ? (
+                            <p>Loading...</p>
+                        ) : error ? (
+                                <p>Error loading data.</p>
+                            ) : data ? (
+                                    data.map((userData: any) => (
+                                        <Usercard
+                                        key={userData.username}
+                                        data={userData}
+                                        selectedOption={selectedOption}
+                                        onOptionChange={handleOptionChange}
+                                        />
+                                    ))
+                        ) : null}
                     </div>
                 </ModalBody>
                 <ModalCloseButton />
@@ -197,16 +178,17 @@ export default function Newmessage({ isOpen, onClose, setNewUsers, users }: Prop
                         ml={10}
 
                         onClick={() => {
+                            handleSubmit();
                             onClose(); toast({
                                 title: "DM added",
                                 position: `bottom-right`,
                                 status: 'success',
-                                duration: 1000,
+                                duration: 900,
                                 containerStyle: {
                                     width: 300,
                                     height: 100,
                                 }
-                            }); handleSubmit()
+                            }); 
                         }}
                     >
                         Confirm

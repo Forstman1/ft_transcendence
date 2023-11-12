@@ -111,4 +111,4 @@ export default function ModalWraper({ isOpen, onClose, imageAlt, Componenent }: 
       </ModalContent>
     </Modal>
   )
-};
+}

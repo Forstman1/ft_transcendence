@@ -13,7 +13,7 @@ import invite from "../../../../../../assets/icons/invite.svg"
 function Usercard(props: any) {
 
 
-    const { data } = props;
+    const  data:ChannelMember  = props.data;
     const [user, setUser] = useState<any>({})
 
     function cutString(str: string, maxLength: number): string {
@@ -43,7 +43,7 @@ function Usercard(props: any) {
 
         <div className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md '>
             <div>
-                <Avatar boxSize={12} src={user.avatar}>
+                <Avatar boxSize={12} src={user?.avatarURL}>
                     <AvatarBadge boxSize={6} bg='green' />
                 </Avatar>
             </div>
@@ -64,41 +64,46 @@ function Componenent({ onClose }: any) {
     const [users, setUsers] = useState<any[]>([])
     const toast = useToast()
     const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
-
+    const userId = useSelector((state: any) => state.socket.userID);
+    const socket = useSelector((state: any) => state.socket.socket)
 
 
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            try {
+        socket.emit('getmembers', { channelId: channel.id })
 
-                const usersResponse = await fetch('http://127.0.0.1:3001/channel/getallmembers/' + channel.id)
-                const users: ChannelMember[] = await usersResponse.json()
+        socket.on('allmembers', (data: any) => {
+            console.log(data.members)
+            setUsers(data.members);
 
-
-                let listedusers: any = []
-
-                users.map((channelmember: ChannelMember) => {
-                    listedusers.push(channelmember.userId)
-                })
-
-                setUsers(users);
-
-            } catch (error) {
-                console.error('Error fetching users and channel Admins:', error);
-                toast({
-                    title: 'Error fetching users and channel Admins',
-                    position: `bottom-right`,
-                    status: 'error',
-                    duration: 1000,
-                    containerStyle: {
-                        bottom: 90,
-                        right: 30,
-                    },
-                });
-            }
+        })
+        return () => {
+            socket.off('allmembers')
         }
-        fetchUsers()
+
+        // const fetchUsers = async () => {
+        //     try {
+
+        //         const usersResponse = await fetch('http://127.0.0.1:3001/channel/getallmembers/' + channel.id)
+        //         const users1: ChannelMember[] = await usersResponse.json()
+
+        //         setUsers(users1);
+
+        //     } catch (error) {
+        //         console.error('Error fetching users and channel Admins:', error);
+        //         toast({
+        //             title: 'Error fetching users and channel Admins',
+        //             position: `bottom-right`,
+        //             status: 'error',
+        //             duration: 1000,
+        //             containerStyle: {
+        //                 bottom: 90,
+        //                 right: 30,
+        //             },
+        //         });
+        //     }
+        // }
+        // fetchUsers()
     }, [])
 
 
@@ -113,7 +118,7 @@ function Componenent({ onClose }: any) {
 
             <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll '>
 
-                {users.map((data: User, id: number) => {
+                {users.map((data: any, id: number) => {
                     return <Usercard
 
                         key={id}
