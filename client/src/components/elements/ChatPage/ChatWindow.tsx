@@ -47,7 +47,7 @@ import { setMessages } from '@/redux/slices/chat/ChatSlice';
     }, [])
 
 
-    return (<div className='w-full flex gap-[5px]  items-baseline  pl-[15px] z-0'>
+    return (<div className='w-full flex gap-[5px]  items-baseline  pl-[15px] z-0 '>
       <Avatar className='custom-shadow' boxSize={12} src={user?.avatarURL} />
 
       <div className="bg-white border-2 border-black rounded-2xl custom-shadow  rounded-tl-none pl-[10px] w-[50%]">
@@ -228,7 +228,7 @@ import { setMessages } from '@/redux/slices/chat/ChatSlice';
 
 
     return (
-      <div className='justify-between flex-col gap-[10px] w-full h-full'>
+      <div className='justify-between flex-col gap-[10px] w-full h-full pt-[120px]'>
         <div className=' flex flex-col gap-[10px] overflow-y-scroll z-0 h-[91%] ' ref={chatContainer}>
 
 
