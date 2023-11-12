@@ -15,18 +15,25 @@ import {
 import { useMutation } from "react-query";
 import { useState } from 'react';
 import { verify2FA } from "@/utils/functions/auth/fetchingUserData";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export default function TwoFactorAuthPage() {
+  const route = useRouter();
   const [otp, setOtp] = useState('');
-  const { isError, isSuccess, mutate } = useMutation({
+  const { mutate } = useMutation({
     mutationFn: verify2FA,
     mutationKey: ['verify2FA'],
-  });
-  useEffect(() => {
-    if (isSuccess) {
-      console.log('2FA verified');
+    onError: (error: any) => {
+      toast.error(error.response.data.message);
+    },
+    onSuccess: (response) => {
+      toast.success(response.data);
+      setTimeout(() => {
+        route.push('/');
+      }, 2000);
     }
-  }, [isSuccess]);
+  });
   return (
     <PageWrapper>
       <Flex
@@ -53,7 +60,7 @@ export default function TwoFactorAuthPage() {
           <FormControl isRequired>
             <Center>
               <HStack>
-                <PinInput otp mask size='lg' onChange={(value) => setOtp(value)}>
+                <PinInput otp size='lg' onChange={(value) => setOtp(value)}>
                   <PinInputField id="pin-input-field-0" key="pin-input-field-0" />
                   <PinInputField id="pin-input-field-1" key="pin-input-field-1" />
                   <PinInputField id="pin-input-field-2" key="pin-input-field-2" />
@@ -71,8 +78,6 @@ export default function TwoFactorAuthPage() {
             >
               Verify
             </Button>
-            {isError && <div className="text-red-600">Verification failed. Please try again.</div>}
-            {isSuccess && <div className="text-green-600">Verification successful!</div>}
           </Stack>
         </Stack>
       </Flex>

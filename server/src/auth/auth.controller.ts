@@ -8,6 +8,7 @@ import {
   UseGuards,
   BadRequestException,
   UnauthorizedException,
+  HttpCode,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { AuthService } from './auth.service';
@@ -27,11 +28,10 @@ export class AuthController {
   /* ------------------------------------------------------------------------------------------------------------------ */
 
   @Get('logout')
-  @UseGuards(JwtAuthGuard)
   async handleLogout(@Res({ passthrough: true }) res) {
     await res.cookie('access_token', '', { expires: new Date() });
     await res.clearCookie('access_token');
-    return res.redirect(process.env.CLIENT_URL);
+    res.status(200).send('Logged out');
   }
 
   /* ------------------------------------------------------------------------------------------------------------------ */
@@ -61,20 +61,21 @@ export class AuthController {
           tempToken,
           this.authService.cookieOptions,
         );
-        return res.redirect(process.env.CLIENT_URL + '2fa/verify');
+        return res.redirect(process.env.CLIENT_URL + '/2fa/verify');
       } else {
-        throw error;
+        return res.redirect(process.env.CLIENT_URL + `?logged=false&amp;error=true`);
       }
     }
     if (access_token === undefined) {
-      throw new InternalServerErrorException("Couldn't generate access token");
+      return res.redirect(process.env.CLIENT_URL + `?logged=false&amp;error=true`);
     }
+    await res.clearCookie('access_token');
     await res.cookie(
       'access_token',
       access_token,
       this.authService.cookieOptions,
     );
-    return res.redirect(process.env.CLIENT_URL);
+    return res.redirect(process.env.CLIENT_URL + `?logged=true`);
   }
 
   /* ------------------------------------------------------------------------------------------------------------------ */
@@ -89,9 +90,18 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
   async handleGoogleCallback(@Req() req, @Res({ passthrough: true }) res) {
-    let access_token: string;
     try {
-      access_token = await this.authService.login(req.user);
+      const access_token: string = await this.authService.login(req.user);
+      if (access_token === undefined) {
+        return res.redirect(process.env.CLIENT_URL + `?logged=false&amp;error=true`);
+      }
+      await res.clearCookie('access_token');
+      await res.cookie(
+        'access_token',
+        access_token,
+        this.authService.cookieOptions,
+      );
+      return res.redirect(process.env.CLIENT_URL + `?logged=true`);
     } catch (error) {
       if (
         error instanceof UnauthorizedException &&
@@ -103,18 +113,11 @@ export class AuthController {
           tempToken,
           this.authService.cookieOptions,
         );
-        return res.redirect(process.env.CLIENT_URL + '2fa/verify');
+        return res.redirect(process.env.CLIENT_URL + '/2fa/verify');
+      } else {
+        return res.redirect(process.env.CLIENT_URL + `?logged=false&amp;error=true`);
       }
     }
-    if (access_token === undefined) {
-      throw new InternalServerErrorException("Couldn't generate access token");
-    }
-    await res.cookie(
-      'access_token',
-      access_token,
-      this.authService.cookieOptions,
-    );
-    return res.redirect(process.env.CLIENT_URL);
   }
 
   /* ------------------------------------------------------------------------------------------------------------------ */
@@ -144,18 +147,21 @@ export class AuthController {
           tempToken,
           this.authService.cookieOptions,
         );
-        return res.redirect(process.env.CLIENT_URL + '2fa/verify');
+        return res.redirect(process.env.CLIENT_URL + '/2fa/verify');
+      } else {
+        return res.redirect(process.env.CLIENT_URL + `?logged=false&amp;error=true`);
       }
     }
     if (access_token === undefined) {
-      throw new InternalServerErrorException("Couldn't generate access token");
+      return res.redirect(process.env.CLIENT_URL + `?logged=false&amp;error=true`);
     }
+    await res.clearCookie('access_token');
     await res.cookie(
       'access_token',
       access_token,
       this.authService.cookieOptions,
     );
-    return res.redirect(process.env.CLIENT_URL);
+    return res.redirect(process.env.CLIENT_URL + `?logged=true`);
   }
 
   /* ------------------------------------------------------------------------------------------------------------------ */
@@ -191,13 +197,14 @@ export class AuthController {
       );
     }
     await this.userService.updateUserTwoFactorStatus({ id: user.id }, false);
+    await res.clearCookie('access_token');
     const access_token = this.authService.login(user);
     await res.cookie(
       'access_token',
       access_token,
       this.authService.cookieOptions,
     );
-    return { message: 'Two-factor authentication disabled' };
+    res.status(200).send('Two-factor authentication disabled');
   }
 
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -222,14 +229,14 @@ export class AuthController {
     if (isTwoFaAuthCodeValid === false) {
       throw new BadRequestException('Invalid two-factor authentication code');
     }
-    const access_token = await this.authService.loginWithTwoFactorAuth(user);
     await res.clearCookie('access_token');
+    const access_token = await this.authService.loginWithTwoFactorAuth(user);
     await res.cookie(
       'access_token',
       access_token,
       this.authService.cookieOptions,
     );
-    return { message: 'Two-factor authentication successful' };
+    res.status(200).send('Two-factor authentication successful');
   }
 
   /* ------------------------------------------------------------------------------------------------------------------ */

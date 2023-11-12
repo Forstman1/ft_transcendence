@@ -5,8 +5,8 @@ import authUserReducer from "../slices/authUser/authUserSlice";
 import globalSocketReducer  from '../slices/socket/globalSocketSlice';
 import mobileReducer from "../slices/chat/MobileSlice";
 import chatSocketReducer from "@/redux/slices/socket/chatSocketSlice";
-import chatSlice from '../slices/chat/ChatSlice'
-import userReducer from '../slices/chat/UserSlice'
+import chatSlice from '../slices/Chat/ChatSlice'
+import userReducer from '../slices/Chat/UserSlice'
 
 
 export const store = configureStore({
