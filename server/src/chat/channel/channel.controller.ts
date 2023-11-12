@@ -91,3 +91,4 @@ export class ChannelController {
         return this.channelservice.getallpublicandprivatechannels()
     }
 }
+ 

@@ -107,6 +107,7 @@ export default function GameNotification() {
     const handleRoomInvitation = (data: {
       roomId: string;
       modalData: GameModalState;
+      friendId: string;
     }) => {
       toast({
         position: "top-right",
@@ -132,7 +133,7 @@ export default function GameNotification() {
                 variant="outline"
                 colorScheme="blue"
                 onClick={() => {
-                  acceptInvitation(data.roomId, data.modalData);
+                  acceptInvitation(data.roomId, data.modalData, data.friendId);
                   onClose();
                 }}
                 leftIcon={<Image src={acceptIcon} alt="accept" width={20} />}
@@ -159,18 +160,18 @@ export default function GameNotification() {
     socket.socket?.on("room-invitation", handleRoomInvitation);
     socket.socket?.on("friendDenyInvitation", handelDenyInvitation);
     socket.socket?.on("frinedIsInGame", handelfrinedIsInGame);
-    socket.socket?.on("friendExitGame", friendExitGame);
+    socket.socket?.on("friendExitGame2", friendExitGame);
 
     return () => {
       socket.socket?.off("room-invitation", handleRoomInvitation);
       socket.socket?.off("friendDenyInvitation", handelDenyInvitation);
       socket.socket?.off("frinedIsInGame", handelfrinedIsInGame);
-      socket.socket?.off("friendExitGame", friendExitGame);
+      socket.socket?.off("friendExitGame2", friendExitGame);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket.socket, toast]);
 
-  const acceptInvitation = (roomId: string, modalData: GameModalState) => {
+  const acceptInvitation = (roomId: string, modalData: GameModalState, friendId: string) => {
     dispatch(setModal(modalData));
     dispatch(
       setSocketState({
@@ -178,6 +179,7 @@ export default function GameNotification() {
         socketId: socket.socketId,
         isOwner: false,
         roomId: roomId,
+        friendId: friendId,
       })
     );
     socket.socket?.emit("acceptInvitation", { roomId: roomId });

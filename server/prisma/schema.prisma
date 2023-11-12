@@ -11,19 +11,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
-
 model User {
-  id                String       @id @default(uuid())
+  id                String       @id @default(uuid()) @unique
   username          String       @unique
   email             String       @unique
   fullname          String       
-  avatar            String?
   coalitionUrl      String?
-  coalitionColor    String?
-  accessToken       String
-  refreshToken      String
+  avatarURL         String            @default("https://iintra.freekb.es/imgs/user.png")
+  coalitionURL      String            @default("https://profile.intra.42.fr/assets/coalitions/factionless-05b8cd65bda8f5eaf56ecf1d16493f41908801cfd66aa97fb27c9611064f4f36.svg")
+  coalitionColor    String            @default("#292d39")
+  twoFactorEnabled  Boolean           @default(false)
+  twoFactorSecret   String?
   isOnline          Boolean     @default(false)
   hasTwoFA          Boolean     @default(false)
   // isBlocked          Boolean     @default(false)
@@ -46,6 +44,9 @@ model User {
   roomMessage     UserMessage[]    @relation("roommessage")
 
   games     GameHistory[]
+  userGamesXp   Int      @default(0)
+
+
 
 }
 
@@ -120,7 +121,6 @@ model UserMessage {
 }
 
 
-
 model GameHistory {
   id        String   @id @default(uuid())
   user      User     @relation(fields: [userId], references: [id])
@@ -131,6 +131,7 @@ model GameHistory {
   opponentScore Int
   rounds    Int
   matches   Int
+  xp        Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

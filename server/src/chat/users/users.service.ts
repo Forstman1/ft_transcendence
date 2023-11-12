@@ -457,7 +457,7 @@ export class UsersService {
         return
     }
 
-    async getUserbyId(id: string){
+    async getUserbyId(id: string){ 
         try {
             const getuser = await this.prisma.user.findUnique({
                 where: {

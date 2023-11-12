@@ -21,6 +21,7 @@ import LodingAnimation from "../../../assets/animations/loadingAnimation.json";
 import Lottie from "lottie-react";
 import {InfoOutlineIcon} from "@chakra-ui/icons";
 import GameInstruction from "./ui/GameInstruction";
+import Footer from "@/components/elements/Footer/Footer";
 
 export default function GamePage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -80,14 +81,14 @@ export default function GamePage() {
   return (
     <PageWrapper>
       {isLoading && (
-        <div className="absolute top-0 left-0 w-full h-screen z-20 bg-black opacity-50">
+        <div className="absolute top-0 left-0 w-full h-full z-20 bg-black opacity-50">
           <Lottie
             animationData={LodingAnimation}
             className="absolute inset-0 w-full h-full z-10"
           />
         </div>
       )}
-      <div className="relative flex flex-row h-full justify-center items-center mx-[10%] z-0 ">
+      <div className="relative flex flex-row h-screen justify-center items-center mx-[10%] z-0 ">
         <div
           className={`${
             breakpoint === "base" ? "absolute" : "flex"
@@ -156,18 +157,6 @@ export default function GamePage() {
             >
               Learn
             </Button>
-            <Button
-              colorScheme="teal"
-              variant="outline"
-              size="lg"
-              width={300}
-              leftIcon={
-                <Image src={Gamepad} alt="Gamepad" width={25} height={25} />
-              }
-              onClick={handleMatchmakingClick}
-            >
-              Play with a random player
-            </Button>
           </div>
           <GameInstruction isOpen={isGameInstructionOpen} onClose={() => setIsGameInstructionOpen(false)} />
         </div>
@@ -193,6 +182,7 @@ export default function GamePage() {
         onClose={onClose}
         gameType={gameType as "bot" | "friend"}
       />
+      <Footer />
     </PageWrapper>
   );
 }

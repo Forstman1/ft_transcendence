@@ -239,21 +239,6 @@ import { setMessages } from '@/redux/slices/chat/ChatSlice';
             return <Message_other key={index} usermessage={message} message={message.content} sender={message.authorName} time={message.createdAt} />
           }))}
 
-          {/* 
-        <div className='w-full flex   items-baseline gap-[5px]  pl-[15px] h-[100px] mb-[5px]'  >
-          <Avatar className='custom-shadow' boxSize={12} />
-
-
-          <div className='bg-white border-2 border-black rounded-2xl custom-shadow flex rounded-tl-none p-[5px] ' >
-            <div className='h-[15px]'></div>
-            <Lottie
-              className=' w-[50px] h-[30px]'
-              animationData={animationData}
-              loop={true}
-              autoplay={true}
-            />
-          </div>
-        </div> */}
         </div>
         <form onSubmit={handleSubmit(handleNewMessage)} className='h-[55px] mb-[15px] flex justify-around items-center'>
           <Input {...register("newmessage")} className='bg-[#D9D9D9] border-2 rounded-ld w-[90%] border-black h-[100%]' placeholder='Type your message here ...'

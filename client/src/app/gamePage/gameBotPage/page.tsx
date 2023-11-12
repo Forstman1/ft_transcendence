@@ -13,7 +13,7 @@ import LoadingScreen from "@/components/elements/loadingScreen/LoadingScreen";
 import { motion } from "framer-motion";
 import GameEndStatic from "../ui/GameEndStatic";
 import { BackgroundsImg } from "@/utils/constants/game/GameConstants";
-import { Text} from "@chakra-ui/react";
+import { Text } from "@chakra-ui/react";
 import {
   animate,
   appliyGameMode,
@@ -34,34 +34,14 @@ import {
   initialRightPaddle,
   initialGameEndStatic,
 } from "@/utils/constants/game/GameConstants";
-<<<<<<< HEAD
+import Footer from "@/components/elements/Footer/Footer";
 
-
-<<<<<<< HEAD
-
-
-=======
-=======
-
-
-
-
->>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
->>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
 export default function GameBotPage() {
   let gameSettings = useAppSelector((state) => state.gameReducer);
   appliyGameMode(gameSettings);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [keysPressed, setKeysPressed] = useState<Record<string, boolean>>({});
-<<<<<<< HEAD
   const [canvasSize, setCanvasSize] = useState(initialCanvasSize);
-=======
-<<<<<<< HEAD
-  const canvasSize = initialCanvasSize;
-=======
-  const [canvasSize, setCanvasSize] = useState(initialCanvasSize);
->>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
->>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
   const leftRectangleRef = useRef<Rectangle>(initialLeftPaddle);
   const rightRectangleRef = useRef<Rectangle>(initialRightPaddle);
   const initialBallState: Ball = {
@@ -92,17 +72,14 @@ export default function GameBotPage() {
   const [userPoints, setUserPoints] = useState<number>(0);
   const [gamePause, setGamePause] = useState<boolean>(false);
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
->>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
+
   useEffect(() => {
     const handleResize = () => {
       const aspectRatioWidth = 16;
       const aspectRatioHeight = 9;
-      const newCanvasWidth = window.innerWidth;
-      const newCanvasHeight = (newCanvasWidth / aspectRatioWidth) * aspectRatioHeight;
+      const newCanvasWidth = window?.innerWidth;
+      const newCanvasHeight =
+        (newCanvasWidth / aspectRatioWidth) * aspectRatioHeight;
 
       setCanvasSize({
         width: newCanvasWidth,
@@ -148,42 +125,36 @@ export default function GameBotPage() {
 
     const handleResizeThrottled = throttle({ func: handleResize, delay: 200 });
 
-    window.addEventListener("resize", handleResizeThrottled);
+    window?.addEventListener("resize", handleResizeThrottled);
 
     return () => {
-      window.removeEventListener("resize", handleResizeThrottled);
+      window?.removeEventListener("resize", handleResizeThrottled);
     };
   }, []);
 
-<<<<<<< HEAD
-=======
->>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
->>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
   //---------------------------------------------------------------------------
 
-  useEffect (() => {
+  useEffect(() => {
     if (RoundNumber == gameSettings.rounds && gameMatches == 0) {
-      if (leftScore > rightScore){
+      if (leftScore > rightScore) {
         setGameEndStatic({
           bot: "WIN",
-          user: "LOSE"
+          user: "LOSE",
         });
-      }
-      else if (leftScore < rightScore){
+      } else if (leftScore < rightScore) {
         setGameEndStatic({
           bot: "LOSE",
-          user: "WIN"
+          user: "WIN",
         });
-      }
-      else {
+      } else {
         setGameEndStatic({
           bot: "DRAW",
-          user: "DRAW"
+          user: "DRAW",
         });
       }
       setGameEnded(true);
     }
-    if (gameMatches == 0){
+    if (gameMatches == 0) {
       setTableResults((prev) => [
         ...prev,
         {
@@ -198,11 +169,9 @@ export default function GameBotPage() {
       setBotPoints(0);
       setUserPoints(0);
     }
-
   }, [leftScore, rightScore]);
 
   //---------------------------------------------------------------------------
-
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -217,52 +186,40 @@ export default function GameBotPage() {
   }, [canvasSize, ball, loading]);
 
   const handleCountdownEnd = () => {
+    setKeysPressed({});
     setGameStarted(true);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === " ") {
+      event.preventDefault();
+      setGamePause((prevGamePause) => !prevGamePause);
+    } else {
+      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: true }));
+    }
+  };
+
+  const handleKeyUp = (event: KeyboardEvent) => {
+      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: false }));
   };
 
   useEffect(() => {
     if (!gameStarted || gameEnded) return;
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === " ") {
-        event.preventDefault();
-        setGamePause((prevGamePause) => !prevGamePause);
-      } else {
-        setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: true }));
-      }
-    };
-  
-    const handleKeyUp = (event: KeyboardEvent) => {
-      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: false }));
-    };
-  
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
 
-    if (!gameStarted) {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("keyup", handleKeyUp);
-    }
-  
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);
     };
-<<<<<<< HEAD
-  }, [gamePause, gameEnded, ball, gameStarted]);
-=======
-<<<<<<< HEAD
-  }, [gameStarted, gamePause, gameEnded]);
-=======
-  }, [gamePause, gameEnded, ball, gameStarted]);
->>>>>>> 81be3256bc5ca9d530b11b0e3dedc3d40a21fe3c
->>>>>>> 6c16c6a341267544ba4723ed722ea6fa711c003e
+  }, [ball, gameStarted]);
 
   //---------------------------------------------------------------------------
 
   useEffect(() => {
     if (gamePause || !gameStarted || gameEnded) return;
-  
+
     const speed = RecSpeed;
 
     if (keysPressed["ArrowUp"]) {
@@ -274,55 +231,67 @@ export default function GameBotPage() {
     if (keysPressed["ArrowDown"]) {
       setRightRectangle((prev) => ({
         ...prev,
-        y: Math.min(
-          canvasSize.height - prev.height,
-          prev.y + speed
-        ),
+        y: Math.min(canvasSize.height - prev.height, prev.y + speed),
       }));
     }
 
     const context = canvasRef.current?.getContext("2d");
     if (context)
-      draw(canvasRef.current!, context, leftRectangle, rightRectangle, ball, gameSettings);
-  
+      draw(
+        canvasRef.current!,
+        context,
+        leftRectangle,
+        rightRectangle,
+        ball,
+        gameSettings
+      );
   }, [keysPressed, canvasSize, ball, gameStarted, gameEnded]);
 
   //---------------------------------------------------------------------------
 
   useEffect(() => {
-
     if (gamePause || !gameStarted || gameEnded) return;
-    
- 
-      const animationFrameId = requestAnimationFrame(() => {
-        animate(
-          setBall,
-          leftRectangle,
-          rightRectangle,
-          ball,
-          canvasSize,
-          setRightScore,
-          setLeftScore,
-          setGameMatches,
-          setBotPoints,
-          setUserPoints,
-        );
 
-        botMove(ball, leftRectangle, canvasSize.height, prevErrorRef, setLeftRectangle);
-      });
-  
-      const botInterval = setInterval(() => {
-        botMove(ball, leftRectangle, canvasSize.height, prevErrorRef, setLeftRectangle);
-      }, 200);
-  
-      return () => {
-        cancelAnimationFrame(animationFrameId);
-        clearInterval(botInterval);
-      };
+    const animationFrameId = requestAnimationFrame(() => {
+      animate(
+        setBall,
+        leftRectangle,
+        rightRectangle,
+        ball,
+        canvasSize,
+        setRightScore,
+        setLeftScore,
+        setGameMatches,
+        setBotPoints,
+        setUserPoints
+      );
+
+      botMove(
+        ball,
+        leftRectangle,
+        canvasSize.height,
+        prevErrorRef,
+        setLeftRectangle
+      );
+    });
+
+    const botInterval = setInterval(() => {
+      botMove(
+        ball,
+        leftRectangle,
+        canvasSize.height,
+        prevErrorRef,
+        setLeftRectangle
+      );
+    }, 200);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      clearInterval(botInterval);
+    };
   }, [ball, gameStarted, canvasSize, gamePause, gameEnded]);
 
   //---------------------------------------------------------------------------
-
 
   return (
     <PageWrapper>
@@ -333,75 +302,76 @@ export default function GameBotPage() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
-            <div className="flex-col w-full">
-              <div className="flex flex-row">
-                <GameSideBar
-                  tableResults={tableResults}
-                  gamePause={gamePause}
-                  setGamePause={setGamePause}
-                  gameEnded={gameEnded}
-                  gameStarted={gameStarted}
-                  gameMode="BOT"
-                />
-                <div className="flex flex-col space-y-10 w-full mx-[10%] h-full justify-center items-center mt-[100px]">
-                  <GameHeader leftScore={leftScore} rightScore={rightScore} />
-                  <div
-                    id="canvas-container"
-                    className="relative flex items-center bg-background-primary rounded-lg h-[50vh] w-full max-w-[1200px]"
-                  >
-                    <div className="absolute top-0 left-0 w-full h-full rounded-lg z-10">
-                      {gamePause && !gameEnded && (
-                        <div className="flex justify-center w-full h-full bg-black opacity-50 rounded-lg z-10">
-                          <Text className="text-white text-4xl font-semibold">
-                            Pause
-                          </Text>
-                        </div>
-                      )}
-                      {!gameStarted && !gameEnded && (
+          <div className="flex-col w-full ">
+            <div className="flex flex-row">
+              <GameSideBar
+                tableResults={tableResults}
+                gamePause={gamePause}
+                setGamePause={setGamePause}
+                gameEnded={gameEnded}
+                gameStarted={gameStarted}
+                gameMode="BOT"
+              />
+              <div className="flex flex-col space-y-10 w-full mx-[10%] h-screen justify-center items-center">
+                <GameHeader leftScore={leftScore} rightScore={rightScore} />
+                <div
+                  id="canvas-container"
+                  className="relative flex items-center bg-background-primary rounded-lg h-[50vh] w-full max-w-[1200px]"
+                >
+                  <div className="absolute top-0 left-0 w-full h-full rounded-lg z-10">
+                    {gamePause && !gameEnded && (
+                      <div className="flex justify-center w-full h-full bg-black opacity-50 rounded-lg z-10">
+                        <Text className="text-white text-4xl font-semibold">
+                          Pause
+                        </Text>
+                      </div>
+                    )}
+                    {!gameStarted && !gameEnded && (
+                      <div className="w-full h-full">
+                        <Countdown
+                          seconds={3}
+                          onCountdownEnd={handleCountdownEnd}
+                          RoundNumber={RoundNumber}
+                          gamePause={gamePause}
+                        />
+                      </div>
+                    )}
+                    {gameEnded && (
+                      <>
                         <div className="w-full h-full">
-                          <Countdown
-                            seconds={3}
-                            onCountdownEnd={handleCountdownEnd}
-                            RoundNumber={RoundNumber}
-                            gamePause={gamePause}
+                          <GameEndStatic
+                            opponent={gameEndStatic.bot}
+                            user={gameEndStatic.user}
+                            isFriendMode={false}
                           />
                         </div>
-                      )}
-                      {gameEnded && (
-                        <>
-                          <div className="w-full h-full">
-                            <GameEndStatic
-                              opponent={gameEndStatic.bot}
-                              user={gameEndStatic.user}
-                              isFriendMode={false}
-                            />
-                          </div>
-                        </>
-                      )}
-                    </div>
-                    <div className="relative w-full h-full">
-                      {gameSettings.backgroundImg !== -1 && (
-                        <Image
-                          src={BackgroundsImg[gameSettings.backgroundImg].src}
-                          alt="Background"
-                          className={`object-cover w-full h-full rounded-lg opacity-60 ${gameSettings.playgroundtheme.playgroundColor}}`}
-                        />
-                      )}
-                      <canvas
-                        ref={canvasRef}
-                        width={canvasSize.width}
-                        height={canvasSize.height}
-                        className={`w-full h-full rounded-lg absolute top-0 left-0 ${
-                          gameSettings.backgroundImg === -1
-                            ? gameSettings.playgroundtheme.playgroundColor
-                            : ""
-                        }`}
+                      </>
+                    )}
+                  </div>
+                  <div className="relative w-full h-full">
+                    {gameSettings.backgroundImg !== -1 && (
+                      <Image
+                        src={BackgroundsImg[gameSettings.backgroundImg].src}
+                        alt="Background"
+                        className={`object-cover w-full h-full rounded-lg opacity-60 ${gameSettings.playgroundtheme.playgroundColor}}`}
                       />
-                    </div>
+                    )}
+                    <canvas
+                      ref={canvasRef}
+                      width={canvasSize.width}
+                      height={canvasSize.height}
+                      className={`w-full h-full rounded-lg absolute top-0 left-0 ${
+                        gameSettings.backgroundImg === -1
+                          ? gameSettings.playgroundtheme.playgroundColor
+                          : ""
+                      }`}
+                    />
                   </div>
                 </div>
               </div>
             </div>
+            <Footer />
+          </div>
         </motion.div>
       )}
     </PageWrapper>

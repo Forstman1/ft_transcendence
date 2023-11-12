@@ -36,12 +36,11 @@ export default function GameSearchFriend({ onClose }: Props) {
   const dispatch = useDispatch<AppDispatch>();
   const socket = useAppSelector((state) => state.globalSocketReducer);
   const [socketRoomId, setSocketRoomId] = useState<string>("");
-  const friendId =
-    socket.playerId === "18717cab-8acf-412f-ae09-c1d310529c40"
-      ? "ba1e3254-5201-4abf-973e-30a10c0ba527"
-      : "18717cab-8acf-412f-ae09-c1d310529c40";
+  const [friendId, setFriendId] = useState<string>("");
   const modalData = useAppSelector((state) => state.gameReducer);
-  const [isInvited, setIsInvited] = useState<boolean>(false);
+  const [myFriends, setMyFriends] = useState<any[]>([]);
+  const [friendInviteIData, setFriendInviteIData] = useState<any[]>([]);
+  const [searchInput, setSearchInput] = useState<string>("");
 
   //-------------------playGame------------------------
 
@@ -51,11 +50,31 @@ export default function GameSearchFriend({ onClose }: Props) {
 
   //---------------------------------------------------
 
-  socket.socket?.on("friendDenyInvitation", () => {
-    setIsInvited(false);
+  socket.socket?.on("friendDenyInvitation", (friendId: string) => {
+    setFriendInviteIData((prev) => {
+      return prev.map((friend) => {
+        if (friend.id === friendId) {
+          friend.isInvited = false;
+        }
+        return friend;
+      });
+    });
   });
 
   //---------------------------------------------------
+
+  useEffect(() => {
+    socket.socket?.emit("GetMyFriends", (data: any) => {
+      data.friends.map((friend: any) => {
+        setFriendInviteIData((prev) => [
+          ...prev,
+          { id: friend.id, isInvited: false },
+        ]);
+      }
+      );
+      setMyFriends(data.friends);
+    });
+  }, []);
 
   useEffect(() => {
     if (socketRoomId !== "") {
@@ -63,25 +82,11 @@ export default function GameSearchFriend({ onClose }: Props) {
     }
   }, [socketRoomId]);
 
-  useEffect(() => {
-    if (isInvited) {
-      setTimeout(() => {
-        setIsInvited(false);
-        socket.socket?.emit("leaveRoom", socketRoomId);
-      }, 10000);
-    }
-  }, [isInvited]);
-
   //-----------------------------------------------
 
-  const handleSearchClick = () => {
-    console.log("searching for a friend");
-  };
-
-  //-----------------------------------------------
-
-  const createRoom = async () => {
+  const createRoom = async (friendId: string) => {
     await socket.socket?.emit("createRoom", (RoomId: any) => {
+      setFriendId(friendId);
       dispatchData(RoomId);
     });
   };
@@ -105,6 +110,7 @@ export default function GameSearchFriend({ onClose }: Props) {
         socketId: socket.socketId,
         isOwner: true,
         roomId: RoomId,
+        friendId: friendId,
       })
     );
     setSocketRoomId(RoomId);
@@ -112,10 +118,47 @@ export default function GameSearchFriend({ onClose }: Props) {
 
   //-----------------------------------------------
 
-  const handleInviteClick = async () => {
-    await createRoom();
-    setIsInvited(true);
+  const handleInviteClick = async (friendId: string) => {
+    await createRoom(friendId);
+    setFriendInviteIData((prev) => 
+      prev.map((friend) => {
+        if (friend.id === friendId) {
+          friend.isInvited = true;
+        }
+        return friend;
+      })
+    );
+
+      setTimeout(() => {
+        setFriendInviteIData((prev) => 
+          prev.map((friend) => {
+            if (friend.id === friendId) {
+              friend.isInvited = false;
+            }
+            return friend;
+          })
+        );
+        socket.socket?.emit("leaveRoom", socketRoomId);
+      }, 10000);
   };
+
+  const handleSearchClick = () => {
+    console.log('searchInput: ', searchInput);
+    if (searchInput !== "") {
+      socket.socket?.emit("SearchFriend", {username: searchInput}, (data: any) => {
+        setMyFriends(data.friends);
+      });
+    }
+  }
+
+  const handelSearchInputChange = (e: any) => {
+    setSearchInput(e.target.value);
+    if (e.target.value === "") {
+      socket.socket?.emit("GetMyFriends", (data: any) => {
+        setMyFriends(data.friends);
+      });
+    }
+  }
 
   return (
     <ModalContent className="relative rounded-2xl">
@@ -145,34 +188,47 @@ export default function GameSearchFriend({ onClose }: Props) {
             placeholder="Search for a friend"
             height={12}
             borderEndEndRadius={0}
+            onChange={(e) => handelSearchInputChange(e)}
           />
         </InputGroup>
         <div className="flex w-full h-[300px]  flex-col  overflow-y-scroll">
-          <Box className="flex w-[95%] p-2 flex-row justify-between items-center border-2 border-gray-300 rounded-lg  mt-5">
-            <div className="flex flex-row items-center space-x-5">
-              <Avatar size="md" />
-              <h1 className="text-lg font-bold">UserName</h1>
-            </div>
-            {!isInvited ? (
-              <Button
-                colorScheme="teal"
-                variant="outline"
-                leftIcon={
-                  <Image
-                    src={StartGame}
-                    alt="StartGame"
-                    width={20}
-                    height={20}
-                  />
-                }
-                onClick={() => handleInviteClick()}
+          {myFriends.length > 0 ? (
+            myFriends.map((friend, index) => (
+              <Box
+                key={friend.id}
+                className="flex w-[95%] p-2 flex-row justify-between items-center border-2 border-gray-300 rounded-lg  mt-5"
               >
-                Invite
-              </Button>
-            ) : (
-              <Spinner color="green" emptyColor="gray.200" />
-            )}
-          </Box>
+                <div className="flex flex-row items-center space-x-5">
+                  <Avatar size="md" src={friend.avatar} />
+                  <h1 className="text-lg font-bold">{friend.username}</h1>
+                </div>
+                {!friendInviteIData[index].isInvited ? (
+                  <Button
+                    key={friend.id}
+                    colorScheme="teal"
+                    variant="outline"
+                    leftIcon={
+                      <Image
+                        src={StartGame}
+                        alt="StartGame"
+                        width={20}
+                        height={20}
+                      />
+                    }
+                    onClick={() => handleInviteClick(friend.id)}
+                  >
+                    Invite
+                  </Button>
+                ) : (
+                  <Spinner key={friend.id} color="green" emptyColor="gray.200" />
+                )}
+              </Box>
+            ))
+          ) : (
+            <div className="flex w-full h-[300px] justify-center items-center">
+              <h1 className="text-lg font-bold">No Friends</h1>
+            </div>
+          )}
         </div>
       </ModalBody>
 

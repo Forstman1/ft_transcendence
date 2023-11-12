@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+// import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateMessageDto } from './dto';
 import { MessageDto } from '../users/dtos/user.dto';
 
 
+import { UserService } from 'src/user/user.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class MessageService {
 
-    constructor (private prisma: PrismaService){}
+    constructor (private prisma: PrismaService, private userService: UserService){}
 
     async createmessage(messageInfo: CreateMessageDto) {
         
