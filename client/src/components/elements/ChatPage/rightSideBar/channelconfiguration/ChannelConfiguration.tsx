@@ -1,4 +1,5 @@
-import React, {  } from 'react'
+
+import React from 'react'
 import { Box } from '@chakra-ui/react'
 import ChangePassword from './ChangePassword'
 import { useSelector } from 'react-redux'
@@ -8,6 +9,7 @@ import SetChannelPassword from './SetChannelPassword'
 import SetChannelAdmin from './SetChannelAdmin'
 import RemoveChannelAdmin from './RemoveChannelAdmin'
 import AllMembers from './AllMembers'
+import RemoveMember from './RemoveMember'
 
 
 export default function ChannelConfiguration() {
@@ -15,20 +17,18 @@ export default function ChannelConfiguration() {
     const channelinfo: Channel = useSelector((state:any) => state.chat.selectedChannelorUser)
     const channelmember: ChannelMember = useSelector((state:any) => state.chat.ChannelMember)
 
-
     return <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7'>
 
         
         <AllMembers />
-        {channelinfo.type != 'PUBLIC' && <ChangePassword />}
-        {channelinfo.type != 'PUBLIC' && <RemovePassword />}
-        {channelinfo.type != 'PROTECTED' && <SetChannelPassword />}
+        {channelinfo.type != 'PUBLIC'&& ( channelmember && (channelmember.role === "ADMIN" || channelmember.role === "OWNER")) && <ChangePassword />}
+        {channelinfo.type != 'PUBLIC' && ( channelmember && (channelmember.role === "ADMIN" || channelmember.role === "OWNER")) && <RemovePassword />}
+        {channelinfo.type != 'PROTECTED' && ( channelmember && (channelmember.role === "ADMIN" || channelmember.role === "OWNER")) && <SetChannelPassword />}
         {channelmember && (channelmember.role === "ADMIN" || channelmember.role === "OWNER") && <SetChannelAdmin />}
-        {channelmember && ( channelmember.role === "OWNER") && <RemoveChannelAdmin />}
+        {channelmember && ( channelmember.role === "OWNER" || channelmember.role === "ADMIN")&& <RemoveChannelAdmin />}
+        {channelmember && ( channelmember.role === "OWNER" || channelmember.role === "ADMIN" ) && <RemoveMember />}
 
-       
 
     </Box>
 }
-
 

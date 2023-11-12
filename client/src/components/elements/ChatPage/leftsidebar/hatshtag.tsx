@@ -31,11 +31,13 @@ export default function Hashtag(props: any) {
     const [wrongpassowrd, setWrongpassowrd] = useState(false);
     const [show, setShow] = React.useState(false)
     const handleShow = () => setShow(!show)
+
     let { id, name, type }: Channel = props.data;
     let data: Channel = props.data;
-    const toast = useToast()
-    const userId = useSelector((state: any) => state.chat.userId)
+    const userId = useSelector((state: any) => state.socket.userID)
+
     const dispatch = useDispatch()
+    const toast = useToast()
 
 
     const checkpassword = useMutation<any, Error, any>((variables) =>
@@ -51,46 +53,24 @@ export default function Hashtag(props: any) {
         }).catch((error) => {
             return error
         }))
+        
 
-    const getchannelmember = useMutation<any, Error, any>((variables) =>
-        fetch('http://127.0.0.1:3001/channel/getchannelmemberinfo/' + variables.channelId + '/' + variables.userId).then((response) => {
-            return response.json()
-        }
-        ).catch((error) => {
-            return error
-        }))
-
-    const getMessages = useMutation<any, Error, any>((variables) =>
-        fetch('http://127.0.0.1:3001/message/getmessages/' + variables.channelId ).then((response) => {
-            return response.json()
-
-        }).catch((error) => {
-            return error
-        }))
 
 
     const handleClick = async () => {
+        
         if (props.data.type === 'PROTECTED') {
             setWrongpassowrd(false)
             onOpen()
         }
         else {
-
             dispatch(setChannel(data))
-            console.log("ana hna")
-            const messages: ChannelMessage[] = await getMessages.mutateAsync({
-                channelId: id,
-            })
-            if (messages) {
-                dispatch(setMessages(messages))
-            }
-            const channelmember = await getchannelmember.mutateAsync({
-                channelId: id,
-                userId
-            })
-            if (channelmember) {
-                console.log(channelmember)
-                dispatch(setChannelMember(channelmember))
+            if (data.channelMember)
+            {
+                data.channelMember.map((data) => {
+                    if (data.userId === userId)
+                        dispatch(setChannelMember(data))
+                })
             }
             toast({
                 title: name,
@@ -112,17 +92,18 @@ export default function Hashtag(props: any) {
             channelName: name,
             password: info.password
         })
-        console.log(check)
+        
         if (check.status === "wrong password") {
             setWrongpassowrd(true)
             return;
         }
         dispatch(setChannel(data))
-        const messages = await getMessages.mutateAsync({
-            channelId: id,
-        })
-        if (messages) {
-            dispatch(setMessages(messages))
+        if (data.channelMember)
+        {
+            data.channelMember.map((data1) => {
+                if (data1.userId === userId)
+                    dispatch(setChannelMember(data1))
+            })
         }
         toast({
             title: name,

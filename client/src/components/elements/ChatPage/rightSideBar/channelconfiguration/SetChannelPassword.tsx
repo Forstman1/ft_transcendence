@@ -1,13 +1,10 @@
 import React, { useState } from 'react'
 import { Box, Button, Input, InputGroup, InputRightElement, ModalBody, ModalCloseButton, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
-import { useMutation } from 'react-query'
-import { useDispatch, useSelector } from 'react-redux'
+import {  useSelector } from 'react-redux'
 import ModalWraper from '../../ModalWraper'
 import channelconfig from "../../../../../../assets/icons/channelconf.svg"
 import Image from 'next/image'
 import { useForm } from 'react-hook-form'
-import { setChannel, setChannels } from '@/redux/slices/chat/ChatSlice'
-import { Channel } from '@/utils/types/chat/ChatTypes'
 
 
 
@@ -26,70 +23,20 @@ type Change_Password = {
     const [show, setShow] = useState(false)
     const handleClick = () => setShow(!show)
     const toast = useToast()
-    const channelName = useSelector((state: any) => state.chat.selectedChannelorUser)
-    const userId = useSelector((state: any) => state.chat.userId)
-    const dispatch = useDispatch()
-  
-    const newpassword = useMutation<any, Error, any>((variables) =>
-      fetch('http://127.0.0.1:3001/channel/setpassword', {
-        method: "POST",
-        body: JSON.stringify(variables),
-        headers: {
-          "content-type": "application/json",
-        }
-      }).then((response) => {
-        return response.json()
-  
-      }).catch((error) => {
-        return error
-      })
-    )
-    const fetchData = async () => {
-      const fetchChannels = await fetch('http://127.0.0.1:3001/channel/getallchannels/' + userId)
-      const response = await fetchChannels.json()
-      if (response.length > 0)
-      {
-        const allchannels: Channel[] = response
-        console.log(allchannels)
-        dispatch(setChannels(allchannels))
-        return allchannels;
-      }
+    const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
+    const userId = useSelector((state: any) => state.socket.userID)
 
-    }
+    const socket = useSelector((state: any) => state.socket.socket)
+
+  
+ 
     const setpassword = async (data: Change_Password) => {
         
       if (data.confirm_password === data.new_password) {
-        console.log(channelName)
-        const response = await newpassword.mutateAsync({ channelName: channelName.name, userId, password: data.new_password })
-        if (response.status === "you are not owner of the channel") {
-          toast({
-            title: "You are not owner of the channel",
-            position: `bottom-right`,
-            status: 'error',
-            duration: 1000,
-            containerStyle: {
-              width: 300,
-              height: 100,
-            }
-          })
-        }
-        else {
-          toast({
-            title: "Password has been set",
-            position: `bottom-right`,
-            status: 'success',
-            duration: 1000,
-            containerStyle: {
-              width: 300,
-              height: 100,
-            }
-          })
-          dispatch(setChannel(response))
-          fetchData()
-        }
 
-        
-        console.log(response)
+        socket.emit('setpassword', { channelId: channel.id, userId, password: data.new_password })
+        onClose()
+
       }
       else {
         toast({
@@ -162,9 +109,6 @@ type Change_Password = {
 export default function SetChannelPassword() {
 
 
-    const toast = useToast()
-    const channelName = useSelector((state: any) => state.chat.selectedChannelorUser)
-    const userId = useSelector((state: any) => state.chat.userId)
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [imageAlt, setImageAlt] = useState('');
 
@@ -182,7 +126,7 @@ export default function SetChannelPassword() {
         >
             {data.alt}
         </Text>
-        <ModalWraper isOpen={isOpen} onClose={onClose} imageAlt={imageAlt} Componenent={Componenent} />
+        <ModalWraper isOpen={isOpen} onClose={onClose} imageAlt={imageAlt} Componenent={() => <Componenent onClose={onClose} />} />
 
     </Box>)
 }

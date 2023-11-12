@@ -5,54 +5,63 @@ import { ACTION } from "next/dist/client/components/app-router-headers";
 import { dash } from "radash";
 import { io, Socket } from "socket.io-client";
 
-let userId: number | null = null
+let userId: string | null = null
+// 
+// function assignuserId() {
+//     if (userId === null) {
+//         const id1 = "e188fbcb-b026-43d1-95d4-21c3ec2a42ec";
+//         userId = id1;
+// }
 
-function assignuserId() {
-    if (userId === null) {
-        userId = Math.floor(Math.random() * 3) + 1;
-        // console.log(`user ID is: ${userId}`)
-    }
-}
+// }
 
-assignuserId()
+// assignuserId()
 
-const socket = io('http://localhost:3001/chat', {
-    transports: ['websocket'],
-    auth: {
-        id: userId,
-    },
-})
+// const socket = io('http://localhost:3001/chat', {
+//     transports: ['websocket'],
+//     auth: {
+//         id: userId,
+//     },
+// })
 
-socket.on('connect', () => {
-    console.log('chat user connected')
-})
+// socket.on('connect', () => {
+//     console.log('chat user connected')
+// })
 
-socket.emit(`createRoom`, {userId: userId}, (data: any) => {
-    console.log(`the data returned is ` + data)
-})
+
 
 export interface ChatSocketState {
     socket: Socket | null;
-
+    socketId: string;
+    roomID: string;
+    userID?: string | null;
 }
 
 
 const initialState: ChatSocketState = {
-    socket: socket,
+    socket: null,
+    socketId: "",
+    roomID: "",
+    userID: "",
 }
+
+
+// socket.emit(`createNotificationRoom`, { userId: userId });
+
 
 const chatSocketSlice = createSlice({
     name: "chatSocket",
     initialState,
     reducers: {
-        setSocketState(state, action) {
-            state.socket = action.payload;
+        setChatSocketState(state, action) {
+            state.socket = action.payload.socket;
+            state.userID = action.payload.userID;
         },
-        getSocketState(state) {
+        getChatSocketState(state) {
             return state;
         }
     }
 })
 
-export const {getSocketState, setSocketState} = chatSocketSlice.actions;
+export const {getChatSocketState, setChatSocketState} = chatSocketSlice.actions;
 export default chatSocketSlice.reducer;

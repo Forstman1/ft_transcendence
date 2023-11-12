@@ -1,18 +1,18 @@
 
 import { faker } from '@faker-js/faker';
 import { PrismaClient } from '@prisma/client';
-// import * as argon2 from 'argon2';
+import * as argon2 from 'argon2';
 
 
 const prisma = new PrismaClient();
 
 
 
-// const NUM_USERS = 10;
-// const NUM_CHANNELS = 5;
-// const NUM_CHANNEL_MEMBERS = 20;
-// const NUM_CHANNEL_MESSAGES = 50;
-// const NUM_USER_MESSAGES = 50;
+const NUM_USERS = 10;
+const NUM_CHANNELS = 5;
+const NUM_CHANNEL_MEMBERS = 20;
+const NUM_CHANNEL_MESSAGES = 50;
+const NUM_USER_MESSAGES = 50;
 
 
 // async function seedDatabase() {
@@ -94,13 +94,82 @@ const prisma = new PrismaClient();
 //   }
 // }
 
-// seedDatabase()
-//   .catch((error) => {
-//     console.error('Error seeding database:', error);
-//   })
-//   .finally(async () => {
-//     await prisma.$disconnect();
-//   });
+
+async function seedDatabase() {
+  const numberOfUsers = 2;
+  const password = await argon2.hash('password');
+  // create users
+  for (let numUser = 0; numUser < numberOfUsers; numUser++) {
+    await prisma.user.create({
+      data: {
+        username: faker.internet.userName(),
+        email: faker.internet.email(),
+        fullname: faker.internet.userName(),
+        avatarURL: faker.image.avatar(),
+        isOnline: faker.datatype.boolean(),
+        hasTwoFA: faker.datatype.boolean(),
+      },
+    });
+  }
+
+  // Create fake channels
+  for (let i = 0; i < NUM_CHANNELS; i++) {
+    await prisma.channel.create({
+      data: {
+        name: faker.word.adjective(),
+        type: faker.helpers.arrayElement(['PUBLIC', 'PRIVATE', 'PROTECTED']),
+      },
+    });
+  }
+
+  // Create fake channel members
+  const users = await prisma.user.findMany();
+  const channels = await prisma.channel.findMany();
+  for (let i = 0; i < NUM_CHANNEL_MEMBERS; i++) {
+    await prisma.channelMember.create({
+      data: {
+        channelId: faker.helpers.arrayElement(channels).id,
+        userId: faker.helpers.arrayElement(users).id,
+        role: faker.helpers.arrayElement(['ADMIN', 'OWNER', 'MEMBER']),
+      },
+    });
+  }
+
+  // Create fake channel messages
+  const channelMembers = await prisma.channelMember.findMany();
+  for (let i = 0; i < NUM_CHANNEL_MESSAGES; i++) {
+    await prisma.channelMessage.create({
+      data: {
+        content: faker.lorem.sentence(),
+        authorID: faker.helpers.arrayElement(users).id,
+        reciverID: faker.helpers.arrayElement(channelMembers).id,
+        authorName: faker.person.firstName(),
+      },
+    });
+  }
+
+  // Create fake user messages
+  for (let i = 0; i < NUM_USER_MESSAGES; i++) {
+    const sender = faker.helpers.arrayElement(users);
+    const receiver = faker.helpers.arrayElement(users.filter((user) => user.id !== sender.id));
+    await prisma.userMessage.create({
+      data: {
+        content: faker.lorem.sentence(),
+        authorID: sender.id,
+        reciverID: receiver.id,
+        authorName: sender.fullname,
+      },
+    });
+  }
+}
+
+seedDatabase()
+  .catch((error) => {
+    console.error('Error seeding database:', error);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
 
 
 

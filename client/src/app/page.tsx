@@ -1,6 +1,8 @@
 "use client"
 
-import React from "react";
+import React, { useEffect } from "react";
+import DesktopGamePreview from "../../assets/icons/pongDesktopImage.svg";
+import MobileGamePreview from "../../assets/icons/pongMobileImage.svg";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
