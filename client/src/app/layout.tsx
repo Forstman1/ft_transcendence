@@ -48,7 +48,7 @@ export default function RootLayout({
   const [isloading, setIsLoading] = React.useState(isHome);
   return (
     <html lang="en">
-      <body className={`${geo.className} h-screen`}>
+      <body className={`${geo.className} h-screen w-full`}>
         <ReduxProvider>
             <CacheProvider>
               <QueryClientProvider client={queryClient}>

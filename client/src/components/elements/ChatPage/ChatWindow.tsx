@@ -28,6 +28,42 @@ import { setMessages } from '@/redux/slices/chat/ChatSlice';
 //     fetchData();
 //   }, []);
 
+function formatTimeAgo(timestamp:any) {
+
+  const currentTime: any = Date.now();
+  const timeDiff = currentTime - timestamp;
+
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+  const week = 7 * day;
+  const month = 30 * day;
+  const year = 365 * day;
+
+  if (timeDiff < minute) {
+    const seconds = Math.floor(timeDiff / 1000);
+    return `${seconds} seconds ago`;
+  } else if (timeDiff < hour) {
+    const minutes = Math.floor(timeDiff / minute);
+    return `${minutes} minutes ago`;
+  } else if (timeDiff < day) {
+    const hours = Math.floor(timeDiff / hour);
+    return `${hours} hours ago`;
+  } else if (timeDiff < week) {
+    const days = Math.floor(timeDiff / day);
+    return `${days} days ago`;
+  } else if (timeDiff < month) {
+    const weeks = Math.floor(timeDiff / week);
+    return `${weeks} weeks ago`;
+  } else if (timeDiff < year) {
+    const months = Math.floor(timeDiff / month);
+    return `${months} months ago`;
+  } else {
+    const years = Math.floor(timeDiff / year);
+    return `${years} years ago`;
+  }
+}
+
   function Message_other({ usermessage, message, sender, time }: any) {
 
     const [user, setUser]: any = useState()
@@ -38,20 +74,24 @@ import { setMessages } from '@/redux/slices/chat/ChatSlice';
       const fetchData = async () => {
 
         console.log("usermessage.authorID ", usermessage.authorID)
-        const fetchuser = await fetch('http://127.0.0.1:3001/users/getuser/' + usermessage.authorID)
+        const fetchmember = await fetch('http://127.0.0.1:3001/channel/getmember/' + usermessage.authorID)
+        const member = await fetchmember.json()
+        const fetchuser = await fetch('http://127.0.0.1:3001/users/getuser/' + member.userId)
         const response = await fetchuser.json()
         setUser(response)
       }
       fetchData()
     }, [])
-
+    const format_time =  formatTimeAgo(time)
 
     return (<div className='w-full flex gap-[5px]  items-baseline  pl-[15px] z-0 '>
-      <Avatar className='custom-shadow' boxSize={12} src={user?.avatarURL} />
-
-      <div className="bg-white border-2 border-black rounded-2xl custom-shadow  rounded-tl-none pl-[10px] w-[50%]">
+      <Avatar className='custom-shadow2' boxSize={12} src={user?.avatarURL} />
+      <div className='flex flex-col w-[50%]'>
+        <div>{time}</div>
+      <div className="bg-white border-2 border-black rounded-2xl custom-shadow2  rounded-tl-none pl-[10px] w-[50%]">
         <div className="text-[#B4B4B4]">{sender}</div>
         <div>{message}</div>
+      </div>
       </div>
     </div>
     );
@@ -253,3 +293,12 @@ import { setMessages } from '@/redux/slices/chat/ChatSlice';
       </div>
     )
   }
+
+
+
+
+
+
+
+
+

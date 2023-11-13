@@ -699,4 +699,19 @@ export class ChannelService {
     return channels;
   }
 
+
+  async getmember(id: string) {
+    try {
+      const channelmember = await this.prisma.channelMember.findUnique({
+        where: {
+          id: id,
+        },
+      });
+      return channelmember;
+    } catch (error) {
+      console.error('Error getting channel member:', error);
+      return { status: 'Error getting channel member' };
+    }
+  
+  }
 }

@@ -82,7 +82,7 @@ export default function ChatPage() {
 
   return (
     <RestrictedRoute>
-      <div className="Chat_sub_div2 flex flex-grow w-full ">
+      <div className=" flex flex-grow ">
         <ChatWindow />
 
         {selected !== null && "username" in selected ? (

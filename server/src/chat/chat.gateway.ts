@@ -230,7 +230,7 @@ export class ChatGateway implements OnGatewayInit , OnGatewayConnection {
     let channel: any = await this.channelService.getchannelinfo(data.channelId);
     const user: any = await this.userService.getUser(data.userId);
 
-
+ 
     
     
     if (channel && user) {

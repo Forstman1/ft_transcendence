@@ -119,9 +119,7 @@ function Componenent({ onClose }: any) {
                     colorScheme="green"
                     variant="outline"
                     ml={10}
-                    onClick={() => {
-                        onSubmit()
-                    }}
+                    onClick={onSubmit}
                 >
                     Confirm
                 </Button>

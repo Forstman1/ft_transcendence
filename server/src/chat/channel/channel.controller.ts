@@ -90,5 +90,10 @@ export class ChannelController {
     getallpublicandprivatechannels(){
         return this.channelservice.getallpublicandprivatechannels()
     }
+
+    @Get('/getmember/:id')
+    getmember(@Param('id') id: string){
+        return this.channelservice.getmember(id)
+    }
 }
  
