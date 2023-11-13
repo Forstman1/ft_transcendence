@@ -29,9 +29,13 @@ export class AuthController {
 
   @Get('logout')
   async handleLogout(@Res({ passthrough: true }) res) {
-    await res.cookie('access_token', '', { expires: new Date() });
-    await res.clearCookie('access_token');
-    res.status(200).send('Logged out');
+    try {
+      await res.cookie('access_token', '', { expires: new Date() });
+      await res.clearCookie('access_token');
+      res.status(200).send('Logged out');
+    } catch (error) {
+      res.status(500).send('Internal server error');
+    }
   }
 
   /* ------------------------------------------------------------------------------------------------------------------ */
@@ -47,35 +51,26 @@ export class AuthController {
   @Get('intra/callback')
   @UseGuards(IntraAuthGuard)
   async handleIntraCallback(@Req() req, @Res({ passthrough: true }) res) {
-    let access_token: string;
     try {
-      access_token = await this.authService.login(req.user);
+      const access_token: string = await this.authService.login(req.user);
+      if (!access_token) {
+        res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
+      }
+      await res.clearCookie('access_token');
+      await res.cookie('access_token', access_token, this.authService.cookieOptions);
+      res.redirect(encodeURI(process.env.CLIENT_URL + '/?logged=true'));
     } catch (error) {
-      if (
-        error instanceof UnauthorizedException &&
-        error.message === 'Two-factor Authentication Required'
-      ) {
+      if (error instanceof UnauthorizedException && error.message === 'Two-factor Authentication Required') {
         const tempToken = await this.authService.issueTemporaryToken(req.user);
-        await res.cookie(
-          'access_token',
-          tempToken,
-          this.authService.cookieOptions,
-        );
-        return res.redirect(process.env.CLIENT_URL + '/2fa/verify');
+        if (!tempToken) {
+          res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
+        }
+        await res.cookie('access_token', tempToken, this.authService.cookieOptions);
+        res.redirect(encodeURI(process.env.CLIENT_URL + '/2fa/verify'));
       } else {
-        return res.redirect(process.env.CLIENT_URL + `?logged=false&amp;error=true`);
+        res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
       }
     }
-    if (access_token === undefined) {
-      return res.redirect(process.env.CLIENT_URL + `?logged=false&amp;error=true`);
-    }
-    await res.clearCookie('access_token');
-    await res.cookie(
-      'access_token',
-      access_token,
-      this.authService.cookieOptions,
-    );
-    return res.redirect(process.env.CLIENT_URL + `?logged=true`);
   }
 
   /* ------------------------------------------------------------------------------------------------------------------ */
@@ -85,6 +80,7 @@ export class AuthController {
   handleGoogleLogin() {
     return { message: 'Login initiated' };
   }
+
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
   @Get('google/callback')
@@ -92,30 +88,22 @@ export class AuthController {
   async handleGoogleCallback(@Req() req, @Res({ passthrough: true }) res) {
     try {
       const access_token: string = await this.authService.login(req.user);
-      if (access_token === undefined) {
-        return res.redirect(process.env.CLIENT_URL + `?logged=false&amp;error=true`);
+      if (!access_token) {
+        res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
       }
       await res.clearCookie('access_token');
-      await res.cookie(
-        'access_token',
-        access_token,
-        this.authService.cookieOptions,
-      );
-      return res.redirect(process.env.CLIENT_URL + `?logged=true`);
+      await res.cookie('access_token', access_token, this.authService.cookieOptions);
+      res.redirect(encodeURI(process.env.CLIENT_URL + '/?logged=true'));
     } catch (error) {
-      if (
-        error instanceof UnauthorizedException &&
-        error.message === 'Two-factor Authentication Required'
-      ) {
+      if (error instanceof UnauthorizedException && error.message === 'Two-factor Authentication Required') {
         const tempToken = await this.authService.issueTemporaryToken(req.user);
-        await res.cookie(
-          'access_token',
-          tempToken,
-          this.authService.cookieOptions,
-        );
-        return res.redirect(process.env.CLIENT_URL + '/2fa/verify');
+        if (!tempToken) {
+          res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
+        }
+        await res.cookie('access_token', tempToken, this.authService.cookieOptions);
+        res.redirect(encodeURI(process.env.CLIENT_URL + '/2fa/verify'));
       } else {
-        return res.redirect(process.env.CLIENT_URL + `?logged=false&amp;error=true`);
+        res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
       }
     }
   }
@@ -133,54 +121,57 @@ export class AuthController {
   @Get('github/callback')
   @UseGuards(GithubAuthGuard)
   async handleGithubCallback(@Req() req, @Res({ passthrough: true }) res) {
-    let access_token: string;
     try {
-      access_token = await this.authService.login(req.user);
+      const access_token: string = await this.authService.login(req.user);
+      if (!access_token) {
+        res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
+      }
+      await res.clearCookie('access_token');
+      await res.cookie('access_token', access_token, this.authService.cookieOptions);
+      res.redirect(encodeURI(process.env.CLIENT_URL + '/?logged=true'));
     } catch (error) {
-      if (
-        error instanceof UnauthorizedException &&
-        error.message === 'Two-factor Authentication Required'
-      ) {
+      if (error instanceof UnauthorizedException && error.message === 'Two-factor Authentication Required') {
         const tempToken = await this.authService.issueTemporaryToken(req.user);
-        await res.cookie(
-          'access_token',
-          tempToken,
-          this.authService.cookieOptions,
-        );
-        return res.redirect(process.env.CLIENT_URL + '/2fa/verify');
+        if (!tempToken) {
+          res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
+        }
+        await res.cookie('access_token', tempToken, this.authService.cookieOptions);
+        res.redirect(encodeURI(process.env.CLIENT_URL + '/2fa/verify'));
       } else {
-        return res.redirect(process.env.CLIENT_URL + `?logged=false&amp;error=true`);
+        res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
       }
     }
-    if (access_token === undefined) {
-      return res.redirect(process.env.CLIENT_URL + `?logged=false&amp;error=true`);
-    }
-    await res.clearCookie('access_token');
-    await res.cookie(
-      'access_token',
-      access_token,
-      this.authService.cookieOptions,
-    );
-    return res.redirect(process.env.CLIENT_URL + `?logged=true`);
   }
 
   /* ------------------------------------------------------------------------------------------------------------------ */
 
   @Post('2fa/enable')
   @UseGuards(JwtAuthGuard)
-  async enableTwoFaAuth(@Req() req) {
-    let user: User | null = await this.userService.findUser({
-      id: req.user.id,
-    });
-    if (user.twoFactorEnabled === true) {
-      throw new BadRequestException(
-        'Two-factor authentication already enabled',
-      );
+  async enableTwoFaAuth(@Req() req, @Res() res) {
+    try {
+      let user: User | null = await this.userService.findUser({ id: req.user.id });
+      if (!user) {
+        res.status(400).send('User not found');
+      } else if (user.twoFactorEnabled === true) {
+        res.status(400).send('Two-factor authentication already enabled');
+      }
+      user = await this.userService.updateUserTwoFactorStatus({ id: user.id }, true);
+      if (!user) {
+        res.status(500).send('Internal server error');
+      }
+      const twoFactorOtpAuthUrl = await this.authService.generateTwoFactorOtpAuthUrl(user);
+      if (!twoFactorOtpAuthUrl) {
+        res.status(500).send('Internal server error');
+      }
+      const twoFA_QRCode = await this.authService.generateQrCodeDataURL(twoFactorOtpAuthUrl);
+      if (!twoFA_QRCode) {
+        res.status(500).send('Internal server error');
+      }
+      res.status(200).json({ qrcode: twoFA_QRCode });
+      
+    } catch (error) {
+      res.status(500).send('Internal server error');
     }
-    user = await this.userService.updateUserTwoFactorStatus({ id: user.id }, true);
-    const twoFactorOtpAuthUrl = await this.authService.generateTwoFactorOtpAuthUrl(user);
-    const twoFA_QRCode = await this.authService.generateQrCodeDataURL(twoFactorOtpAuthUrl);
-    return { twoFA_QRCode };
   }
 
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -188,23 +179,28 @@ export class AuthController {
   @Post('2fa/disable')
   @UseGuards(JwtAuthGuard)
   async disableTwoFaAuth(@Req() req, @Res() res) {
-    const user: User | null = await this.userService.findUser({
-      id: req.user.id,
-    });
-    if (user.twoFactorEnabled === false) {
-      throw new BadRequestException(
-        'Two-factor authentication already disabled',
-      );
+    try {
+      const user: User | null = await this.userService.findUser({
+        id: req.user.id,
+      });
+      if (user === null) {
+        res.status(400).send('User not found');
+      } else if (user === undefined) {
+        res.status(500).send('Internal server error');
+      } else if (user.twoFactorEnabled === false) {
+        res.status(400).send('Two-factor authentication already disabled');
+      }
+      await this.userService.updateUserTwoFactorStatus({ id: user.id }, false);
+      const access_token = this.authService.login(user);
+      if (!access_token) {
+        res.status(500).send('Cannot re-authenticate user, please try again later');
+      }
+      await res.clearCookie('access_token');
+      await res.cookie('access_token', access_token, this.authService.cookieOptions);
+      res.status(200).send('Two-factor authentication disabled');
+    } catch (error) {
+      res.status(500).send('Internal server error');
     }
-    await this.userService.updateUserTwoFactorStatus({ id: user.id }, false);
-    await res.clearCookie('access_token');
-    const access_token = this.authService.login(user);
-    await res.cookie(
-      'access_token',
-      access_token,
-      this.authService.cookieOptions,
-    );
-    res.status(200).send('Two-factor authentication disabled');
   }
 
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -212,50 +208,54 @@ export class AuthController {
   @Post('2fa/verify')
   @UseGuards(JwtAuthGuard)
   async verifyTwoFaAuth(@Req() req, @Res() res) {
-    const user: User | null = await this.userService.findUser({
-      id: req.user.id,
-    });
-    if (user == null) {
-      throw new BadRequestException('User not found');
-    } else if (user.twoFactorEnabled === false) {
-      throw new BadRequestException(
-        'Two-factor authentication not enabled for this user',
+    try {
+      const user: User | null = await this.userService.findUser({ id: req.user.id });
+      if (!user) {
+        res.status(400).send('User not found');
+      } else if (user.twoFactorEnabled === false) {
+        res.status(400).send('Two-factor authentication not enabled for this user');
+      }
+      const isTwoFaAuthCodeValid = await this.authService.isTwoFaAuthCodeValid(
+        req.body.twoFactorAuthCode,
+        user,
       );
+      if (isTwoFaAuthCodeValid === false) {
+        res.status(400).send('Invalid two-factor authentication code');
+      }
+      const access_token = await this.authService.loginWithTwoFactorAuth(user);
+      if (!access_token) {
+        res.status(500).send('Cannot re-authenticate user, please try again later');
+      }
+      await res.clearCookie('access_token');
+      await res.cookie('access_token', access_token, this.authService.cookieOptions);
+      res.status(200).send('Two-factor authentication successful');
+    } catch (error) {
+      res.status(500).send('Internal server error');
     }
-    const isTwoFaAuthCodeValid = await this.authService.isTwoFaAuthCodeValid(
-      req.body.twoFactorAuthCode,
-      user,
-    );
-    if (isTwoFaAuthCodeValid === false) {
-      throw new BadRequestException('Invalid two-factor authentication code');
-    }
-    await res.clearCookie('access_token');
-    const access_token = await this.authService.loginWithTwoFactorAuth(user);
-    await res.cookie(
-      'access_token',
-      access_token,
-      this.authService.cookieOptions,
-    );
-    res.status(200).send('Two-factor authentication successful');
   }
 
   /* ------------------------------------------------------------------------------------------------------------------ */
 
   @Get('user')
   @UseGuards(JwtAuthGuard)
-  async getUser(@Req() req) {
-    const user: User | null = await this.userService.findUser({
-      id: req.user.id,
-    });
-    if (user == null) {
-      throw new BadRequestException('User not found');
+  async getUser(@Req() req, @Res() res) {
+    try {
+      const user: User | null = await this.userService.findUser({
+        id: req.user.id,
+      });
+      if (!user) {
+        res.status(400).send('User not found');
+      }
+      const data = {
+        userId: user.id,
+        username: user.username,
+        email: user.email,
+        avatarUrl: user.avatarURL,
+        isOnline: user.isOnline,
+      };
+      res.status(200).json(data);
+    } catch (error) {
+      res.status(500).send('Internal server error');
     }
-    return {
-      userId: user.id,
-      username: user.username,
-      email: user.email,
-      avatarUrl: user.avatarURL,
-      isOnline: user.isOnline,
-    };
   }
 }
