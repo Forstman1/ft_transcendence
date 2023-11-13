@@ -11,9 +11,9 @@ function assignuserId() {
     if (userId === null) {
         const id1 = "515253a4-90d8-474e-8fa7-01ae83c04d20"; 
         const id2 = "56d81659-4dfd-487a-8e63-1ecdb37d752b";
-        // userId = id1;
         userId = Math.floor(Math.random() * 11) > 5 ? id1 : id2;
         console.log(`User ID assigned: ${userId}`);
+        // userId = id1;
 }
 
 }

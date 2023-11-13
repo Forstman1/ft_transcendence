@@ -36,16 +36,35 @@ export default function ChatPage() {
   const dispatch = useDispatch()
   const selected: Channel | User | null = useSelector((state: any) => state.chat.selectedChannelorUser);
   const toast = useToast();
-  useEffect(() => {
-   
-  if (isDesktop[0]) {
+
+  const handleWindowResize = () => {
+    
+  if (window.innerWidth <= 1024) {
+    dispatch(setRight(false));
+    dispatch(setMidle(false));
+    dispatch(setLeft(false));
+
+  } else {
     dispatch(setRight(true));
     dispatch(setMidle(true));
     dispatch(setLeft(true));
+
   }
-}, [isDesktop]);
+};
+
+useEffect(() => {
+  handleWindowResize();
+  window.addEventListener("resize", handleWindowResize);
+  return () => {
+    window.removeEventListener("resize", handleWindowResize);
+  };
+}, []);
 
 
+
+  socket?.on(`Error`, (errorData: string) => {
+    console.error(errorData);
+  });
 
 
   useEffect(() => {
@@ -110,19 +129,7 @@ export default function ChatPage() {
       socket.off(`receivedFreindRequest`)
     }
     
-  }, [socket])
-  
-
-
-  useEffect(() => {
-    if(isDesktop[0]) {
-      dispatch(setRight(true))
-      dispatch(setMidle(true))
-      dispatch(setLeft(true))
-    }
-  }, [isDesktop])
-
-  
+  }, [socket])  
   
   const sidebar = {
     open: (height = 1000) => ({

@@ -95,8 +95,8 @@ export default function Newmessage({ isOpen, onClose}: Props) {
 
     const handleSubmit = async () => {
         try { 
-            socket?.emit(`updateChatList`, selectedOption.id)
-            socket?.emit(`createRoom`, {userId: id, reciverId: selectedOption.id })
+            socket?.emit(`updateChatList`, {frienID: selectedOption.id})
+            socket?.emit(`createRoom`, {userId: id, frienID: selectedOption.id})
             onClose();
         } catch (error) {
             console.error("Failed to add friend:", error);

@@ -284,8 +284,8 @@ export default function Search() {
         }
         else
         {
-            console.log("selectedOption", selectedOption)
-            socket?.emit(`createRoom`, { userId: id, reciverId: selectedOption.id });
+            socket?.emit(`updateChatList`, {frienID: selectedOption.id})
+            socket?.emit(`createRoom`, { userId: id, frienID: selectedOption.id});
             dispatch(setTheUser(selectedOption))
             onClose()
         }

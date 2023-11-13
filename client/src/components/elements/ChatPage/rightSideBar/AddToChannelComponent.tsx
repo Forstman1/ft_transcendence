@@ -33,17 +33,12 @@ export default function AddToChannelComponent() {
     ]);
 
     const [res1, res2] = await Promise.all([api1.json(), api2.json()]);
-      console.log(res1, 1)
-
-      console.log(res2, 2)
-      
       const res = await res1.filter((channel: any) => {
         return !res2.some((channel2: any) => {
           return channel.name === channel2.name
         }) 
       }
       )
-      console.log(res)
       setChannels(res)
 
     }

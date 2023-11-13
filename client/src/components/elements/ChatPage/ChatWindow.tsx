@@ -167,7 +167,6 @@ import { setMessages } from '@/redux/slices/chat/ChatSlice';
 
       const getUserMessages: any = useMutation<any, Error, any>((variables) =>
         fetch('http://127.0.0.1:3001/message/getMessagesUsers/' + variables.userId + '/' + variables.reciverId).then((response) => {
-          console.log("response", response)
         return response.json()
 
       }).catch((error) => {
@@ -192,7 +191,6 @@ import { setMessages } from '@/redux/slices/chat/ChatSlice';
           userId: userId,
           reciverId: selected?.id
         })
-        console.log("messages", messages)
         if (messages.length != 0) {
           dispatch(setMessages(messages))
         }

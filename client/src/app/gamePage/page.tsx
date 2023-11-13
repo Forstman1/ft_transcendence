@@ -76,7 +76,7 @@ export default function GamePage() {
     setIsLoading(true);
     socket.socket?.emit("addPlayerToQueue");
   }
-
+  
   return (
     <PageWrapper>
       {isLoading && (

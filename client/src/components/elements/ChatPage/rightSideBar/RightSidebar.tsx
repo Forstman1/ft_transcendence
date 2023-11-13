@@ -30,21 +30,8 @@ export default function RightSidebar() {
   const dispatch = useDispatch()
   const User = useSelector((state: any) => state.chat.selectedChannelorUser)
 
-  
-  useEffect(() => {
-    if (isDesktop[0]) {
-      dispatch(setRight(true))
-      dispatch(setMidle(true))
-      dispatch(setLeft(true))
-    }
-  } , [isDesktop])
-
-
-
-
   const sidebar = {
     open: (height = 1000) => ({
-      // width: "375px",
       clipPath: `circle(${height * 2 + 200}px at 90% 90%)`,
       transition: {
         type: "spring",

@@ -487,14 +487,14 @@ export default function LeftSidebar() {
 
         <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
         { 
-        //   Users ? (
-        //   Users.map((userData: User, id: number) => (
-        //     <Usercard
-        //       key={id}
-        //       data={userData}
-        //     />
-        //   ))
-        // ) : null
+          Users ? (
+          Users.map((userData: User, id: number) => (
+            <Usercard
+              key={id}
+              data={userData}
+            />
+          ))
+        ) : null
         }
   
         </div>
