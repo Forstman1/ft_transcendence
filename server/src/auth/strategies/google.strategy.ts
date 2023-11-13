@@ -48,6 +48,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
         avatarURL: profile?._json?.picture,
         coalitionURL: undefined,
         coalitionColor: undefined,
+        coalitionName: undefined,
       };
       return user;
     } catch (error) {

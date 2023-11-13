@@ -17,6 +17,8 @@ import { IntraAuthGuard } from './guards/intra.guard';
 import { GoogleAuthGuard } from './guards/google.guard';
 import { GithubAuthGuard } from './guards/github.guard';
 import { JwtAuthGuard } from './guards/jwt.guard';
+import { TwoFAPinDTO } from './dtos/twofapin.dto';
+import { ValidationError } from 'class-validator';
 
 @Controller('auth')
 export class AuthController {
@@ -209,6 +211,10 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async verifyTwoFaAuth(@Req() req, @Res() res) {
     try {
+      if (!req.body?.twoFactorAuthCode) {
+        res.status(400).send('Two-factor authentication code not provided');
+      }
+      const twofaPin: TwoFAPinDTO = req.body?.twoFactorAuthCode;
       const user: User | null = await this.userService.findUser({ id: req.user.id });
       if (!user) {
         res.status(400).send('User not found');
@@ -216,7 +222,7 @@ export class AuthController {
         res.status(400).send('Two-factor authentication not enabled for this user');
       }
       const isTwoFaAuthCodeValid = await this.authService.isTwoFaAuthCodeValid(
-        req.body.twoFactorAuthCode,
+        twofaPin.pin,
         user,
       );
       if (isTwoFaAuthCodeValid === false) {
@@ -230,6 +236,9 @@ export class AuthController {
       await res.cookie('access_token', access_token, this.authService.cookieOptions);
       res.status(200).send('Two-factor authentication successful');
     } catch (error) {
+      if (error instanceof ValidationError) {
+        res.status(400).send('Invalid two-factor authentication code');
+      }
       res.status(500).send('Internal server error');
     }
   }

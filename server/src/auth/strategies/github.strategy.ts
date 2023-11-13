@@ -48,6 +48,7 @@ export class GithubStrategy extends PassportStrategy(Strategy) {
         avatarURL: profile?._json?.avatar_url,
         coalitionURL: undefined,
         coalitionColor: undefined,
+        coalitionName: undefined,
       };
       return user;
     } catch (error) {
