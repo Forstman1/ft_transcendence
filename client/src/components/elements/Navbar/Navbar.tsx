@@ -8,14 +8,14 @@ import { motion } from 'framer-motion';
 import {
   MenuButton, MenuList, MenuItem, MenuDivider,
   IconButton, Modal, ModalOverlay, ModalContent,
-  Stack, Avatar, AvatarBadge, SkeletonCircle,
+  Stack, Avatar, AvatarBadge,
   Box, Flex, Button, Center, Text, Menu,
   ModalHeader, ModalFooter, ModalBody,
-  ModalCloseButton, Skeleton,
+  ModalCloseButton,
 } from '@chakra-ui/react';
 /* ------------------------------------------------------ Hooks ----------------------------------------------------- */
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
 import { useQuery, useMutation } from 'react-query';
 import { fetchUserProfile, logout } from '@/utils/functions/auth/fetchingUserData';
@@ -24,7 +24,7 @@ import {
 } from '@/utils/constants/auth/AuthConstants';
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from '@/redux/slices/authUser/authUserSlice';
-import { useRouter, redirect } from 'next/navigation';
+import { useRouter} from 'next/navigation';
 
 /* -------------------------------------------------- Remote Assets ------------------------------------------------- */
 import { HamburgerIcon} from '@chakra-ui/icons';
@@ -36,47 +36,53 @@ import LoginThumbnail from 'assets/icons/Auth/undraw_my_password_re_ydq7.svg';
 import { io } from "socket.io-client";
 import { setSocketState } from "@/redux/slices/socket/globalSocketSlice";
 import { initialState as DefaultUserStoreData, UserState } from "@/redux/slices/authUser/authUserSlice";
-import toast from 'react-hot-toast'
 import { setChatSocketState } from '@/redux/slices/socket/chatSocketSlice';
 import Notification from '../Notification/Notification';
 
+let socket1: any = null;
+let socket2: any = null;
+
 const CreatGameGlobalSocket = (user: any) => {
-  console.log("CreatGameGlobalSocket user: ", user);
-  const socket = io(process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001', {
-    transports: ["websocket"],
-    upgrade: false,
-    auth: {
-      id: user.userId,
-    },
-  //   transportOptions: {
-  //     polling: {
-  //       extraHeaders: {
-  //           Authorization: `Bearer ${user.accessToken}`,
-  //       }
-  //     }
-  // }
-  });
-  socket.emit("createRoomNotification", { userId: user.userId }, (data: any) => {
-    console.log("createGameRoomNotification: " + data);
-  });
-  return socket;
-}
+  
+  if (!socket1) {
+    socket1 = io(
+      process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:3001",
+      {
+        transports: ["websocket"],
+        upgrade: false,
+        auth: {
+          id: user.userId,
+        },
+        // extraHeaders: {
+        //   Authorization: `Bearer ${user.accessToken}`,
+        // },
+      }
+    );
+    socket1.emit(
+      "createRoomNotification",
+      { userId: user.userId },
+      (data: any) => {
+        console.log("createGameRoomNotification: " + data);
+      }
+    );
+  }
+  return socket1;
+};
 
 const CreatChatGlobalSocket = (user: any) => {
-  console.log("CreatChatGlobalSocket user: ", user);
-
-  const socket = io('http://localhost:3001/chat', {
-    transports: ["websocket"],
-    upgrade: false,
-    auth: {
-      id: user.userId,
-    },
-  });
-
-  socket?.emit(`createRoom`, { userId: user.userId }, (data: any) => {
-    console.log(`the data returned is ` + data)
-  })
-  return socket;
+  if (!socket2) {
+    socket2 = io("http://localhost:3001/chat", {
+      transports: ["websocket"],
+      upgrade: false,
+      auth: {
+        id: user.userId,
+      },
+    });
+    socket2?.emit(`createRoom`, { userId: user.userId }, (data: any) => {
+      // console.log(`the data returned is ` + data);
+    });
+  }
+  return socket2;
 }
 
 /* --------------------------------------------------- AuthButtons -------------------------------------------------- */

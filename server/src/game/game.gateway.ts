@@ -26,7 +26,6 @@ export class GameGateway {
   handleConnection(@ConnectedSocket() client: Socket) {
     this.server.on('connection', (socket) => {
       console.log('-----------------connection-----------------');
-      console.log('connected userId:', socket.handshake.auth.id);
       const userId = socket.handshake.auth.id;
       this.connectedUsers[userId] = socket;
       this.gameService.updateUserIsOnline(userId, true);
