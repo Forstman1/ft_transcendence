@@ -39,51 +39,38 @@ import { initialState as DefaultUserStoreData, UserState } from "@/redux/slices/
 import { setChatSocketState } from '@/redux/slices/socket/chatSocketSlice';
 import Notification from '../Notification/Notification';
 
-let socket1: any = null;
-let socket2: any = null;
-
 const CreatGameGlobalSocket = (user: any) => {
-  
-  if (!socket1) {
-    socket1 = io(
-      process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:3001",
-      {
-        transports: ["websocket"],
-        upgrade: false,
-        auth: {
-          id: user.userId,
-        },
-        // extraHeaders: {
-        //   Authorization: `Bearer ${user.accessToken}`,
-        // },
-      }
-    );
-    socket1.emit(
-      "createRoomNotification",
-      { userId: user.userId },
-      (data: any) => {
-        console.log("createGameRoomNotification: " + data);
-      }
-    );
-  }
-  return socket1;
-};
+  console.log("CreatGameGlobalSocket user: ", user);
+  const socket = io(process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001', {
+    transports: ["websocket"],
+    upgrade: false,
+    auth: {
+      id: user.userId,
+    },
+  });
+  socket.emit("createRoomNotification", { userId: user.userId }, (data: any) => {
+    console.log("createGameRoomNotification: " + data);
+  });
+  return socket;
+}
 
 const CreatChatGlobalSocket = (user: any) => {
-  if (!socket2) {
-    socket2 = io("http://localhost:3001/chat", {
-      transports: ["websocket"],
-      upgrade: false,
-      auth: {
-        id: user.userId,
-      },
-    });
-    socket2?.emit(`createRoom`, { userId: user.userId }, (data: any) => {
-      // console.log(`the data returned is ` + data);
-    });
-  }
-  return socket2;
+  console.log("CreatChatGlobalSocket user: ", user);
+
+  const socket = io('http://localhost:3001/chat', {
+    transports: ["websocket"],
+    upgrade: false,
+    auth: {
+      id: user.userId,
+    },
+  });
+
+  socket?.emit(`createRoom`, { userId: user.userId }, (data: any) => {
+    console.log(`the data returned is ` + data)
+  })
+  return socket;
 }
+
 
 /* --------------------------------------------------- AuthButtons -------------------------------------------------- */
 // loginWithService

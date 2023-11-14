@@ -12,7 +12,7 @@ export interface UserState {
   avatarUrl: string,
   isOnline: boolean,
   accessToken: string,
-};
+}
 
 export const initialState = {
   isAuthenticated: false,

@@ -26,6 +26,7 @@ export class GameGateway {
   handleConnection(@ConnectedSocket() client: Socket) {
     this.server.on('connection', (socket) => {
       console.log('-----------------connection-----------------');
+      console.log('connection userId:', socket.handshake.auth.id);
       const userId = socket.handshake.auth.id;
       this.connectedUsers[userId] = socket;
       this.gameService.updateUserIsOnline(userId, true);
@@ -45,6 +46,7 @@ export class GameGateway {
   }
 
   // ---------------- sendGameData------------------------------------------
+
   @SubscribeMessage('sendGameData')
   // @UseGuards(JwtAuthGuard)
   sendGameData(@Body() data): void {
@@ -349,6 +351,7 @@ export class GameGateway {
   ): Promise<void> {
     try {
       console.log('-----------------getOpponentData-----------------');
+      console.log('opponentId:', data.opponentId);
       const opponentData = await this.gameService.getOpponentData(
         data.opponentId,
       );
@@ -358,3 +361,4 @@ export class GameGateway {
     }
   }
 }
+
