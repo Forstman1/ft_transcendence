@@ -94,7 +94,6 @@ function Componenent({ onClose }: any) {
 
                 {users.map((data: any, id: number) => {
                     return <Usercard
-
                         key={id}
                         data={data}
                     />

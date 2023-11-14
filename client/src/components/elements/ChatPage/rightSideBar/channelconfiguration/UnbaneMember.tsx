@@ -1,23 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { Avatar, AvatarBadge, Box, Button, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
+import { Box, Button, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
 import { useSelector } from 'react-redux'
 import Image from 'next/image'
 import ModalWraper from '../../ModalWraper'
-import { ChannelMember, User } from '@/utils/types/chat/ChatTypes'
+import {  User } from '@/utils/types/chat/ChatTypes'
 import Usercard from '../channelsetting/UserCard'
-import Mutes from '../../../../../../assets/icons/Mute.svg'
-
-
+import ban from '../../../../../../assets/icons/Ban.svg'
 
 
 
 function Componenent({ onClose }: any) {
 
-    const [show, setShow] = useState(false)
-    const handleClick = () => setShow(!show)
     const toast = useToast()
     const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
-    const userId = useSelector((state: any) => state.socket.userID)
     const socket = useSelector((state: any) => state.socket.socket)
     const [users, setUsers] = useState<any>([])
     const [selectedOption, setSelectedOption]: any = useState('');
@@ -28,57 +23,20 @@ function Componenent({ onClose }: any) {
 
     };
 
-    useEffect(() => {
-        socket.emit('getmembers', { channelId: channel.id })
-
-        socket.on('allmembers', (data: any) => {
-            setUsers(data.members);
-
-        })
-        return () => {
-            socket.off('allmembers')
-        }
-    }, [])
-
 
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-
-                const usersResponse = await fetch('http://127.0.0.1:3001/channel/getallmembers/' + channel.id)
-                const users: ChannelMember[] = await usersResponse.json()
-
-
-                const filteredUsers = users.filter((user: any) => {
-                    return user.role !== "OWNER" && !user.isMuted;
-                });
-
-
-                let listedusers: any = []
-
-
-                filteredUsers.map((channelmember: ChannelMember) => {
-                    listedusers.push(channelmember.userId)
-                })
-
-                const usersDataPromises = listedusers.map(async (userId: string) => {
-                    const userResponse = await fetch('http://127.0.0.1:3001/users/getuser/' + userId);
-                    const userData = await userResponse.json();
-                    return userData;
-                });
-
-                const usersData = await Promise.all(usersDataPromises);
-
-
-                setUsers(usersData);
-
+                const usersResponse = await fetch('http://127.0.0.1:3001/channel/getallbannedmembers/' + channel.id)
+                const users: User[] = await usersResponse.json()
+                setUsers(users);
             } catch (error) {
                 console.error('Error fetching users and channel members:', error);
                 toast({
                     title: 'Error fetching users and channel members',
                     position: `bottom-right`,
                     status: 'error',
-                    duration: 200,
+                    duration: 1000,
                     containerStyle: {
                         bottom: 90,
                         right: 30,
@@ -92,10 +50,9 @@ function Componenent({ onClose }: any) {
 
 
     const onSubmit = async () => {
-        socket?.emit("mutemember", {
+        socket?.emit("unbanmember", {
             channelId: channel.id,
             memberId: selectedOption.id,
-        
         })
         onClose()
     }
@@ -103,7 +60,7 @@ function Componenent({ onClose }: any) {
 
     return (<div className='flex gap-5 flex-col justify-center'  >
         <h1 className=' font-thin text-xl text-red-700 pt-3'>
-            Are you sure you want to mute this member for 5 minutes
+            Are you sure you want to unban this member
         </h1>
         <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
 
@@ -141,16 +98,13 @@ function Componenent({ onClose }: any) {
 
 
 
-export default function MuteMember() {
+export default function UnBanMember() {
 
 
 
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [imageAlt, setImageAlt] = useState('');
-    const data = { src: Mutes, alt: "Mute Member" }
-
-
-
+    const data = { src: ban, alt: "UnBan Members" }
 
     return (
         <Box className='flex items-center gap-6 w-[220px]'

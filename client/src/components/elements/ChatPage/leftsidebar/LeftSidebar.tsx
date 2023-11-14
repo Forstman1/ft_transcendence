@@ -86,7 +86,7 @@ export default function LeftSidebar() {
   const { LeftClice } = useSelector((state: any) => state.mobile)
   const { RightClice } = useSelector((state: any) => state.mobile)
 
-
+  
   useEffect(() => {
   
     socket?.on(`updateChatList`, async (Users: any) => {
@@ -111,10 +111,10 @@ export default function LeftSidebar() {
   useEffect(() => {
 
     socket?.on('getChannelsFirstTime', (data: any) => {
-      console.log(data)
       const allchannels: Channel[] = data.channels
 
       allchannels.map((channel: Channel) => {
+        console.log(channel, " ", userId)
         socket?.emit('joinChannel', {
           channelId: channel.id,
           userId: userId,
@@ -203,7 +203,7 @@ export default function LeftSidebar() {
 
         if (selected?.id === data.channel.id) {
 
-          if (selected.channelMember) {
+          if (selected?.channelMember) {
             selected.channelMember.map((data1: any) => {
               if (data1.userId === userId)
                 dispatch(setChannelMember(data1))
@@ -215,7 +215,7 @@ export default function LeftSidebar() {
       else {
         toast({
           title: data.message,
-          status: "success",
+          status: "error",
           position: `bottom-right`,
           isClosable: true,
         })
@@ -316,31 +316,7 @@ export default function LeftSidebar() {
       }
     })
 
-    socket?.on('removeMember', (data: any) => {
-      if (data.status === "This member can't be removed.") {
-        toast({
-          title: data.status,
-          position: `bottom-right`,
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        })
-      }
-      else {
-        toast({
-          title: data.status,
-          position: `bottom-right`,
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        })
-      }
-      if (data.userId === userId) {
 
-        dispatch(setChannel(null))
-      }
-
-    })
 
     socket?.on('setpassword', (data: any) => {
       if (data.status === "You are not owner or admin of the channel") {
@@ -428,6 +404,106 @@ export default function LeftSidebar() {
         })
       }
     })
+    socket?.on('kickmember', (data: any) => {
+      if (data.status === "you have been kicked from channel")
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        })
+        dispatch(setChannel(null))
+        dispatch(setMessages([]))
+        dispatch(setChannelMember(null))
+      }
+      else
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+    })
+    socket?.on('banmember', (data: any) => {
+      if (data.status === "you have been banned from channel")
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+        dispatch(setChannel(null))
+        dispatch(setMessages([]))
+        dispatch(setChannelMember(null))
+        socket?.emit('getChannels', { userId: userId })
+      }
+      else
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+
+    })
+
+    socket?.on('unbanmember', (data: any) => {
+      if (data.status === "you have been unbanned from channel")
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        })
+        socket?.emit('getChannels', { userId: userId })
+      }
+      else
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+    })
+    socket?.on('inviteMember', (data: any) => {
+      if (data.status === "you have been invited to channel")
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        })
+        socket?.emit('getChannels', { userId: userId })
+
+      }
+      else
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+    })
 
     return () => {
       socket?.off('getChannelsFirstTime');
@@ -436,14 +512,17 @@ export default function LeftSidebar() {
       socket?.off('channelDeleted');
       socket?.off('setAdministrator');
       socket?.off('removeAdministrator');
-      socket?.off('removeMember');
       socket?.off('setpassword');
       socket?.off('removepassword');
       socket?.off('changepassword');
       socket?.off('channelEntered');
       socket?.off('channelCreated');
+      socket?.off('kickmember');
+      socket?.off('banmember');
+      socket?.off('unbanmember');
+      socket?.off('inviteMember');
     }
-  }, [selected])
+  }, [selected, userId])
 
 
 

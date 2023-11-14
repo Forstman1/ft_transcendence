@@ -34,11 +34,11 @@ model User {
 
   chatWith User[] @relation("Chate")
   chatBy User[] @relation("Chate")
-
   friendRequestsSent FriendRequest[] @relation("SentFriendRequests")
   friendRequestsReceived FriendRequest[] @relation("ReceivedFriendRequests")
 
   channelMember ChannelMember[]
+  banedFrom Channel[] @relation("BannedUsers")
   
   roomMember      DMRoom[] @relation("rooms")
   roomMessage     UserMessage[]    @relation("roommessage")
@@ -67,6 +67,7 @@ model Channel {
   name     String @unique
   type     Type @default(PUBLIC)
   channelmessages ChannelMessage[]
+  bannedUsers User[] @relation("BannedUsers")
   password  String?
   channelMember ChannelMember[]
 }

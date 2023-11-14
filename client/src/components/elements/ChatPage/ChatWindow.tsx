@@ -1,4 +1,4 @@
-import { Avatar, Input } from "@chakra-ui/react";
+import { Avatar, Input, Toast, useToast } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import arrow from "../../../../assets/icons/arrow.svg";
 import Image from "next/image";
@@ -82,16 +82,16 @@ function formatTimeAgo(timestamp:any) {
       }
       fetchData()
     }, [])
-    const format_time =  formatTimeAgo(time)
+    
+    const timestamp = Date.parse(time);
+    const formattedTime = formatTimeAgo(timestamp);
 
     return (<div className='w-full flex gap-[5px]  items-baseline  pl-[15px] z-0 '>
       <Avatar className='custom-shadow2' boxSize={12} src={user?.avatarURL} />
-      <div className='flex flex-col w-[50%]'>
-        <div>{time}</div>
       <div className="bg-white border-2 border-black rounded-2xl custom-shadow2  rounded-tl-none pl-[10px] w-[50%]">
+        <div>{formattedTime}</div>
         <div className="text-[#B4B4B4]">{sender}</div>
         <div>{message}</div>
-      </div>
       </div>
     </div>
     );
@@ -101,8 +101,12 @@ function formatTimeAgo(timestamp:any) {
 
   function Own_Message({ message, user }: any) {
 
+    const timestamp = Date.parse(message.createdAt);
+    const formattedTime = formatTimeAgo(timestamp);
+
     return (<div className='w-full flex gap-[5px]   justify-end pr-[15px] items-baseline z-0'>
       <div className='bg-black border-2 border-black rounded-2xl custom-shadow text-white rounded-tr-none justify-start pl-[10px] w-[50%]'>
+        <div>{formattedTime}</div>
         <div className='text-[#B4B4B4]'>{user.username}</div>
         <div>{message.content}</div>
       </div>
@@ -128,7 +132,7 @@ function formatTimeAgo(timestamp:any) {
     const { LeftClice } = useSelector((state: any) => state.mobile)
     const { RightClice } = useSelector((state: any) => state.mobile)
     const [user, setUser]: any = useState()
-
+    const toast = useToast()
     const socket = useAppSelector((state) => state.socket.socket);
     // const socket = useSelector((state: any) => state.socket.socket)
 
@@ -245,6 +249,7 @@ function formatTimeAgo(timestamp:any) {
         fetchUserMessages()
 
       socket?.on('receivedMessage', (data: any) => {
+        console.log("ana hna wsalt message dual channel")
         if (selected?.id === data.channelId) {
           dispatch(addMessage(data.message));
         }
@@ -257,9 +262,19 @@ function formatTimeAgo(timestamp:any) {
 
       });
 
+      socket?.on('sendMessage', (data: any) => {
+        toast({
+          title: data.status,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        })
+      });
+
       return () => {
         socket?.off('receivedMessage');
         socket?.off('receivedPrivateMessage');
+        socket?.off('sendMessage');
       };
     }, [selected]);
 
@@ -267,8 +282,8 @@ function formatTimeAgo(timestamp:any) {
 
 
     return (
-      <div className='justify-between flex-col gap-[10px] w-full h-full pt-[120px]'>
-        <div className=' flex flex-col gap-[10px] overflow-y-scroll z-0 h-[91%] ' ref={chatContainer}>
+      <div className='justify-between flex-col gap-[15px] w-full h-full pt-[120px]'>
+        <div className=' flex flex-col gap-[10px] overflow-y-scroll z-0 h-[95%] ' ref={chatContainer}>
 
 
           {(messages && messages.length != 0) && (messages.map((message: ChannelMessage, index: number) => {

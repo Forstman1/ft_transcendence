@@ -5,7 +5,7 @@ import Image from 'next/image'
 import ModalWraper from '../../ModalWraper'
 import { ChannelMember, User } from '@/utils/types/chat/ChatTypes'
 import Usercard from '../channelsetting/UserCard'
-import Mutes from '../../../../../../assets/icons/Mute.svg'
+import ban from '../../../../../../assets/icons/Ban.svg'
 
 
 
@@ -14,7 +14,6 @@ import Mutes from '../../../../../../assets/icons/Mute.svg'
 function Componenent({ onClose }: any) {
 
     const [show, setShow] = useState(false)
-    const handleClick = () => setShow(!show)
     const toast = useToast()
     const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
     const userId = useSelector((state: any) => state.socket.userID)
@@ -50,7 +49,7 @@ function Componenent({ onClose }: any) {
 
 
                 const filteredUsers = users.filter((user: any) => {
-                    return user.role !== "OWNER" && !user.isMuted;
+                    return user.role !== "OWNER";
                 });
 
 
@@ -78,7 +77,7 @@ function Componenent({ onClose }: any) {
                     title: 'Error fetching users and channel members',
                     position: `bottom-right`,
                     status: 'error',
-                    duration: 200,
+                    duration: 1000,
                     containerStyle: {
                         bottom: 90,
                         right: 30,
@@ -92,18 +91,18 @@ function Componenent({ onClose }: any) {
 
 
     const onSubmit = async () => {
-        socket?.emit("mutemember", {
+        socket?.emit("banmember", {
             channelId: channel.id,
             memberId: selectedOption.id,
-        
         })
+
         onClose()
     }
 
 
     return (<div className='flex gap-5 flex-col justify-center'  >
         <h1 className=' font-thin text-xl text-red-700 pt-3'>
-            Are you sure you want to mute this member for 5 minutes
+            Are you sure you want to ban this member
         </h1>
         <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
 
@@ -141,13 +140,13 @@ function Componenent({ onClose }: any) {
 
 
 
-export default function MuteMember() {
+export default function BanMember() {
 
 
 
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [imageAlt, setImageAlt] = useState('');
-    const data = { src: Mutes, alt: "Mute Member" }
+    const data = { src: ban, alt: "Ban Members" }
 
 
 

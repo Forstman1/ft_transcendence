@@ -18,15 +18,13 @@ function Componenent({ onClose }: any) {
     const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
     const userId = useSelector((state: any) => state.socket.userID)
     const toast = useToast()
-
+    const socket = useSelector((state: any) => state.socket.socket)
 
     const handleOptionChange = (newValue: any) => {
 
         setSelectedOption(newValue);
 
     };
-
-
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -60,52 +58,15 @@ function Componenent({ onClose }: any) {
       
         fetchUsers();
       }, []);
-    const Invite = useMutation<any, Error, any>((variables) => fetch('http://127.0.0.1:3001/channel/invitemember', { 
-        method: "POST",
-        body: JSON.stringify(variables),
-        headers: {
-            "content-type": "application/json",
-        }
-    }).then((response) => {
-        return response.json()
-    }).catch((error) => {
-        return error
-    }))
 
 
 
     async function   onInvite() {
 
 
-        const response = await Invite.mutateAsync({
-            channelName: channel.name, 
-            userIdOwner: userId,
-            userIdMember: selectedOption.id
-        })
-        console.log(response)
-        if (response.status) {
-            toast({
-                title: response.status,
-                position: `bottom-right`,
-                status: 'error',
-                duration: 1000,
-                containerStyle: {
-                    bottom: 90,
-                    right: 30,
-                },
-            })
-            onClose()
-            return;     
-        }
-        toast({
-            title: "User has been invited",
-            position: `bottom-right`,
-            status: 'success',
-            duration: 1000,
-            containerStyle: {
-                bottom: 90,
-                right: 30,
-            },
+        socket?.emit('inviteMember', {
+            channelId: channel.id,
+            memberId: selectedOption.id,
         })
         onClose()
     }

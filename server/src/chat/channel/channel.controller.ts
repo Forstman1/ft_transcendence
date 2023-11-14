@@ -57,7 +57,7 @@ export class ChannelController {
 
     @Post('/invitemember')
     inviteMember(@Body() body: any){
-        return this.channelservice.inviteMember(body.channelName, body.userIdOwner, body.userIdMember)
+        return this.channelservice.inviteMember(body.channelId, body.userIdOwner, body.userIdMember)
     }
     
     @Get('/getallmembers/:id')
@@ -94,6 +94,11 @@ export class ChannelController {
     @Get('/getmember/:id')
     getmember(@Param('id') id: string){
         return this.channelservice.getmember(id)
+    }
+
+    @Get('/getallbannedmembers/:id')
+    getallbannedmembers(@Param('id') id: string){
+        return this.channelservice.getallbannedmembers(id)
     }
 }
  
