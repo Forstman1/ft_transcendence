@@ -15,19 +15,21 @@ export class GithubStrategy extends PassportStrategy(Strategy) {
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
       callbackURL: process.env.GITHUB_REDIRECT_URL,
-      scope: ['read:user'],
+      scope: ['user'],
+      passReqToCallback: true,
     });
   }
 
   async validate(
+    request: any,
     accessToken: string,
     refreshToken: string,
     profile: Profile,
   ): Promise<UserDto> {
-    if (!profile) {
-      throw new ServiceUnavailableException("Couldn't retrieve data from API");
-    }
     try {
+      if (!profile) {
+        throw new ServiceUnavailableException("Couldn't retrieve data from API");
+      }
       let generatedUsername: string = profile?._json?.login;
       let usernameExists: boolean = true;
       while (usernameExists) {
@@ -43,15 +45,16 @@ export class GithubStrategy extends PassportStrategy(Strategy) {
 
       const user: UserDto = {
         username: generatedUsername,
-        email: profile?._json?.email,
+        email: profile?.emails[0]?.value,
         fullname: profile?.displayName,
         avatarURL: profile?._json?.avatar_url,
         coalitionURL: undefined,
         coalitionColor: undefined,
+        coalitionName: undefined,
       };
       return user;
     } catch (error) {
-      throw new InternalServerErrorException('Internal Server Error');
+      request.res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
     }
   }
 }

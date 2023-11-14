@@ -1,10 +1,9 @@
 "use client"
 
 import React, { useEffect } from "react";
-import DesktopGamePreview from "../../assets/icons/pongDesktopImage.svg";
-import MobileGamePreview from "../../assets/icons/pongMobileImage.svg";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter as useRouterNavigation, useSearchParams } from "next/navigation";
+import { useRouter } from "next/router";
 import {
   Flex,
   Box,
@@ -32,6 +31,7 @@ import GamePreviewDesktop from "assets/icons/pongDesktopImage.svg";
 import GamePreviewMobile from "assets/icons/Frame 70.svg";
 import PageDivider1 from "assets/icons/wavesOpacityInversed.svg";
 import PageDivider2 from "assets/icons/waves.svg"
+import { toast } from "react-hot-toast";
 
 
 export function CustomButton(
@@ -183,7 +183,7 @@ export function GoToProfileButton(
     borderColorProp: boolean,
   })
   {
-  const router = useRouter();
+  const router = useRouterNavigation();
   const primaryColor = inverseColorProp ? "neutral-950" : "neutral-50";
   const secondaryColor = inverseColorProp ? "neutral-50" : "neutral-950";
   const borderColor = borderColorProp ? "neutral-950" : "neutral-50";
@@ -215,9 +215,20 @@ export function GoToProfileButton(
   )
 }
 
-export default function Home() {
+export default function Home({ searchParams }: { searchParams: any }) {
   const data = useSelector((state: { authUser: UserState }) => state.authUser);
-  const router = useRouter();
+  const router = useRouterNavigation();
+  useEffect(() => {
+    if (searchParams?.error === 'true') {
+      toast.error('Something wrong happened, please try again later.')
+    } else if (searchParams?.logged === 'true') {
+      toast.success('Welcome back to Pong!')
+    } else if (searchParams?.logged === 'false') {
+      toast.success('You have been logged out successfully.');
+    } else if (searchParams?.unauthorized === 'true') {
+      toast.error('You need to be logged in to access this page.')
+    }
+  }, [])
   return (
     <PageWrapper>
       <div

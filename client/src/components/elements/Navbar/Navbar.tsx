@@ -17,13 +17,14 @@ import {
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
-import { useQuery } from 'react-query';
-import { fetchUserProfile } from '@/utils/functions/auth/fetchingUserData';
+import { useQuery, useMutation } from 'react-query';
+import { fetchUserProfile, logout } from '@/utils/functions/auth/fetchingUserData';
 import {
   AuthButtonsList, NAVBAR_ITEMS, AuthButtonObj
 } from '@/utils/constants/auth/AuthConstants';
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from '@/redux/slices/authUser/authUserSlice';
+import { useRouter, redirect } from 'next/navigation';
 
 /* -------------------------------------------------- Remote Assets ------------------------------------------------- */
 import { HamburgerIcon} from '@chakra-ui/icons';
@@ -35,6 +36,7 @@ import LoginThumbnail from 'assets/icons/Auth/undraw_my_password_re_ydq7.svg';
 import { io } from "socket.io-client";
 import { setSocketState } from "@/redux/slices/socket/globalSocketSlice";
 import { initialState as DefaultUserStoreData, UserState } from "@/redux/slices/authUser/authUserSlice";
+import toast from 'react-hot-toast'
 import { setChatSocketState } from '@/redux/slices/socket/chatSocketSlice';
 import Notification from '../Notification/Notification';
 
@@ -71,7 +73,7 @@ const CreatChatGlobalSocket = (user: any) => {
 }
 
 /* --------------------------------------------------- AuthButtons -------------------------------------------------- */
-
+// loginWithService
 
 export function AuthButtons() {
   return (
@@ -135,7 +137,20 @@ export function SignupButton({ onClick }: { onClick: () => void }) {
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 export function UserProfileNavbarBadge() {
+  const dispatch = useDispatch();
   const data = useSelector((state: { authUser: UserState }) => state.authUser);
+  const router = useRouter();
+  const { mutate } = useMutation({
+    mutationFn: logout,
+    mutationKey: ['logout'],
+    onError: (error: any) => {
+      router.push('/?error=true');
+    },
+    onSuccess: (response) => {
+      dispatch(updateUser(DefaultUserStoreData));
+      router.push('/?logged=false');
+    }
+  });
   return (
     <Flex alignItems='center' gap={5} flexDirection='row-reverse'>
       <Box flexShrink={0}>
@@ -171,10 +186,14 @@ export function UserProfileNavbarBadge() {
             </Center>
             <br />
             <MenuDivider />
-            <MenuItem as='a' href='#'>Profile</MenuItem>
-            <MenuItem as='a' href='#'>Settings</MenuItem>
+            <MenuItem as='a' href='/userPage'>Profile</MenuItem>
+            <MenuItem as='a' href='/settings'>Settings</MenuItem>
             <MenuDivider />
-            <MenuItem color={'red.500'} as='a' href={`${process.env.NEXT_PUBLIC_SERVER_URL}auth/logout`}>Logout</MenuItem>
+            <MenuItem 
+              color={'red.500'} as='a' 
+              href={`${process.env.NEXT_PUBLIC_SERVER_URL}auth/logout`}>
+                Logout
+            </MenuItem>
           </MenuList>
         </Menu>
       </Box>
@@ -325,45 +344,34 @@ const HeaderNavMobile: React.FC = () => {
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 export default function Navbar() {
-  const [userNotAuthenticated, setUserNotAuthenticated] = useState(true);
-  const { data, isLoading, isError, refetch } = useQuery({
+  const dispatch = useDispatch();
+  const [userAuthenticated, setUserAuthenticated] = useState(false);
+  const userData = useQuery({
     queryKey: ['userProfile'],
     queryFn: fetchUserProfile,
-  });
-  const refreshInterval = 5000;
-  const dispatch = useDispatch();
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      refetch();
-    }, refreshInterval);
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [refetch, refreshInterval]);
-  useEffect(() => {
-    if (!isLoading && !isError) {
-      setUserNotAuthenticated(false);
-      dispatch(updateUser({ isAuthenticated: true, ...data }));
-      const gameSocket = CreatGameGlobalSocket(data);
-      const chatSocket = CreatChatGlobalSocket(data);
+    refetchInterval: 5000,
+    useErrorBoundary: false,
+    onError: (err: any) => {
+      setUserAuthenticated(false);
+      dispatch(updateUser(DefaultUserStoreData));
+    },
+    onSuccess: (response: any) => {
+      setUserAuthenticated(true);
+      dispatch(updateUser({ isAuthenticated: true, ...response.data }));
+      const gameSocket = CreatGameGlobalSocket(response.data);
+      const chatSocket = CreatChatGlobalSocket(response.data);
       dispatch(setChatSocketState({
         socket: chatSocket,
         roomId: "",
-        userID: data.userId,
+        userID: response.data.userId,
       }));
-      // for game page
       dispatch(setSocketState({
         socket: gameSocket,
         isOwner: false,
         roomId: "",
       }));
-      // for game page
-    } else {
-      setUserNotAuthenticated(true);
-      dispatch(updateUser(DefaultUserStoreData));
-    }
-  }, [data, dispatch, isError, isLoading]);
-
+    },
+  });
   return (
     <header className="w-screen h-16 md:h-24 bg-neutral-950 fixed top-0 z-50">
       <Flex
@@ -399,7 +407,7 @@ export default function Navbar() {
           justifyContent="center"
           alignItems="center"
         >
-          {userNotAuthenticated == false ? (
+          {userAuthenticated == true ? (
             <div className="flex flex-row gap-6 items-center justify-center">
               <Notification />
               <UserProfileNavbarBadge />

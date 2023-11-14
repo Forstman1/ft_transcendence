@@ -17,8 +17,8 @@ export class AuthService {
 
   cookieOptions = {
     httpOnly: true,
-    expires: new Date(Date.now() + 3600000),
-    maxAge: 3600000,
+    expires: new Date(Date.now() + 86400000), // 1 day
+    maxAge: 86400000,
   };
 
   /* ------------------------------------------------------------------------------------------------------------------ */
