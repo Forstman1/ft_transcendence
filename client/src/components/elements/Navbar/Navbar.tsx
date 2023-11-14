@@ -39,20 +39,13 @@ import { setChatSocketState } from '@/redux/slices/socket/chatSocketSlice';
 import Notification from '../Notification/Notification';
 
 const CreatGameGlobalSocket = (user: any) => {
-  console.log("CreatGameGlobalSocket user: ", user);
   const socket = io(process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001', {
     transports: ["websocket"],
     upgrade: false,
     auth: {
       id: user.userId,
     },
-  //   transportOptions: {
-  //     polling: {
-  //       extraHeaders: {
-  //           Authorization: `Bearer ${user.accessToken}`,
-  //       }
-  //     }
-  // }
+    // withCredentials: true,
   });
   socket.emit("createRoomNotification", { userId: user.userId }, (data: any) => {
     console.log("createGameRoomNotification: " + data);
