@@ -11,6 +11,7 @@ export interface UserState {
   email: string,
   avatarUrl: string,
   isOnline: boolean,
+  accessToken: string,
 };
 
 export const initialState = {
@@ -20,6 +21,7 @@ export const initialState = {
   email: null,
   avatarUrl: null,
   isOnline: false,
+  accessToken: null,
 };
 
 export const userSlice = createSlice({
@@ -33,6 +35,7 @@ export const userSlice = createSlice({
       state.email = action.payload?.email
       state.avatarUrl = action.payload?.avatarUrl
       state.isOnline = action.payload?.isOnline
+      state.accessToken = action.payload?.accessToken
     }
   },
 });

@@ -219,10 +219,14 @@ export default function Home({ searchParams }: { searchParams: any }) {
   const data = useSelector((state: { authUser: UserState }) => state.authUser);
   const router = useRouterNavigation();
   useEffect(() => {
-    if (searchParams?.logged === 'false' && searchParams?.error === 'true') {
+    if (searchParams?.error === 'true') {
       toast.error('Something wrong happened, please try again later.')
     } else if (searchParams?.logged === 'true') {
-      toast.success('Welcome back!')
+      toast.success('Welcome back to Pong!')
+    } else if (searchParams?.logged === 'false') {
+      toast.success('You have been logged out successfully.');
+    } else if (searchParams?.unauthorized === 'true') {
+      toast.error('You need to be logged in to access this page.')
     }
   }, [])
   return (

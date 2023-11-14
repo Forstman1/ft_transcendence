@@ -18,7 +18,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
 import { useQuery, useMutation } from 'react-query';
-import { fetchUserProfile } from '@/utils/functions/auth/fetchingUserData';
+import { fetchUserProfile, logout } from '@/utils/functions/auth/fetchingUserData';
 import {
   AuthButtonsList, NAVBAR_ITEMS, AuthButtonObj
 } from '@/utils/constants/auth/AuthConstants';
@@ -37,8 +37,6 @@ import { io } from "socket.io-client";
 import { setSocketState } from "@/redux/slices/socket/globalSocketSlice";
 import { initialState as DefaultUserStoreData, UserState } from "@/redux/slices/authUser/authUserSlice";
 import toast from 'react-hot-toast'
-import axios from 'axios';
-
 
 const CreatGameGlobalSocket = (user: any) => {
   console.log("CreatGameGlobalSocket user: ", user);
@@ -120,7 +118,20 @@ export function SignupButton({ onClick }: { onClick: () => void }) {
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 export function UserProfileNavbarBadge() {
+  const dispatch = useDispatch();
   const data = useSelector((state: { authUser: UserState }) => state.authUser);
+  const router = useRouter();
+  const { mutate } = useMutation({
+    mutationFn: logout,
+    mutationKey: ['logout'],
+    onError: (error: any) => {
+      router.push('/?error=true');
+    },
+    onSuccess: (response) => {
+      dispatch(updateUser(DefaultUserStoreData));
+      router.push('/?logged=false');
+    }
+  });
   return (
     <Flex alignItems='center' gap={5} flexDirection='row-reverse'>
       <Box flexShrink={0}>
@@ -156,10 +167,14 @@ export function UserProfileNavbarBadge() {
             </Center>
             <br />
             <MenuDivider />
-            <MenuItem as='a' href='#'>Profile</MenuItem>
-            <MenuItem as='a' href='#'>Settings</MenuItem>
+            <MenuItem as='a' href='/userPage'>Profile</MenuItem>
+            <MenuItem as='a' href='/settings'>Settings</MenuItem>
             <MenuDivider />
-            <MenuItem color={'red.500'} as='a' href={`${process.env.NEXT_PUBLIC_SERVER_URL}auth/logout`}>Logout</MenuItem>
+            <MenuItem 
+              color={'red.500'} as='a' 
+              href={`${process.env.NEXT_PUBLIC_SERVER_URL}auth/logout`}>
+                Logout
+            </MenuItem>
           </MenuList>
         </Menu>
       </Box>

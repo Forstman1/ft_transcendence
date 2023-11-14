@@ -18,7 +18,7 @@ const RestrictedRoute = ({ children }: RestrictedRouteProps) => {
   const isAuthorized = useSelector((state: { authUser: UserState }) => state.authUser.isAuthenticated);
   console.log(isAuthorized);
   if (!isAuthorized) {
-    router.push('/');
+    router.push('/?unauthorized=true');
     return null;
   }
   return <>{children}</>;

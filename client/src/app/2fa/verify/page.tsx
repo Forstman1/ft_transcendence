@@ -18,6 +18,7 @@ import { verify2FA } from "@/utils/functions/auth/fetchingUserData";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
+
 export default function TwoFactorAuthPage() {
   const route = useRouter();
   const [otp, setOtp] = useState('');

@@ -34,9 +34,9 @@ export class AuthController {
     try {
       await res.cookie('access_token', '', { expires: new Date() });
       await res.clearCookie('access_token');
-      res.status(200).send('Logged out');
+      res.redirect(encodeURI(process.env.CLIENT_URL + '/?logged=false'));
     } catch (error) {
-      res.status(500).send('Internal server error');
+      res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
     }
   }
 
@@ -261,6 +261,7 @@ export class AuthController {
         email: user.email,
         avatarUrl: user.avatarURL,
         isOnline: user.isOnline,
+        accessToken: req.cookies.access_token,
       };
       res.status(200).json(data);
     } catch (error) {
