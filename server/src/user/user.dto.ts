@@ -42,4 +42,9 @@ export class UserDto {
   @IsHexColor()
   @IsOptional()
   readonly coalitionColor: string;
+
+  @IsString()
+  @IsAlpha()
+  @IsOptional()
+  readonly coalitionName: string;
 }

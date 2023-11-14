@@ -60,7 +60,7 @@ var NUM_USER_MESSAGES = 50;
 // }
 function seedDatabase() {
     return __awaiter(this, void 0, void 0, function () {
-        var numberOfUsers, password, numUser, i, users, channels, i, i, _loop_1, i;
+        var numberOfUsers, password, numUser, i, users, channels, i, channelMembers, i, _loop_1, i;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -130,26 +130,34 @@ function seedDatabase() {
                 case 14:
                     i++;
                     return [3 /*break*/, 12];
-                case 15:
-                    i = 0;
-                    _a.label = 16;
+                case 15: return [4 /*yield*/, prisma.channelMember.findMany({
+                        where: {
+                            channelId: {
+                                in: channels.map(function (channel) { return channel.id; }),
+                            },
+                        },
+                    })];
                 case 16:
-                    if (!(i < NUM_CHANNEL_MESSAGES)) return [3 /*break*/, 19];
+                    channelMembers = _a.sent();
+                    i = 0;
+                    _a.label = 17;
+                case 17:
+                    if (!(i < NUM_CHANNEL_MESSAGES)) return [3 /*break*/, 20];
                     return [4 /*yield*/, prisma.channelMessage.create({
                             data: {
                                 content: faker_1.faker.lorem.sentence(),
                                 authorID: faker_1.faker.helpers.arrayElement(users).id,
-                                reciverID: faker_1.faker.helpers.arrayElement(channels).id,
+                                reciverID: faker_1.faker.helpers.arrayElement(channelMembers).id,
                                 authorName: faker_1.faker.person.firstName(),
                             },
                         })];
-                case 17:
-                    _a.sent();
-                    _a.label = 18;
                 case 18:
-                    i++;
-                    return [3 /*break*/, 16];
+                    _a.sent();
+                    _a.label = 19;
                 case 19:
+                    i++;
+                    return [3 /*break*/, 17];
+                case 20:
                     _loop_1 = function (i) {
                         var sender, receiver;
                         return __generator(this, function (_b) {
@@ -172,17 +180,17 @@ function seedDatabase() {
                         });
                     };
                     i = 0;
-                    _a.label = 20;
-                case 20:
-                    if (!(i < NUM_USER_MESSAGES)) return [3 /*break*/, 23];
-                    return [5 /*yield**/, _loop_1(i)];
+                    _a.label = 21;
                 case 21:
-                    _a.sent();
-                    _a.label = 22;
+                    if (!(i < NUM_USER_MESSAGES)) return [3 /*break*/, 24];
+                    return [5 /*yield**/, _loop_1(i)];
                 case 22:
+                    _a.sent();
+                    _a.label = 23;
+                case 23:
                     i++;
-                    return [3 /*break*/, 20];
-                case 23: return [2 /*return*/];
+                    return [3 /*break*/, 21];
+                case 24: return [2 /*return*/];
             }
         });
     });

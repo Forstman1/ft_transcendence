@@ -1,41 +1,463 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Room, MessageDto } from './dtos/user.dto';
+import { Prisma, User } from '@prisma/client';
+
+
+
 
 
 @Injectable()
 export class UsersService {
-    constructor (private readonly prisma: PrismaService) {}
-    async add(userData) {
-        try {
-            const adduser = await this.prisma.user.findUnique({
-                where : {
-                    id : userData.id
-                }
-            })
-            return adduser
-        }
-        catch(error){
-            return error
-        }
-    }
+    private rooms: Room[]
+    constructor(private readonly prisma: PrismaService) { }
     
-    async listUsers(){
+//!---------------User------------------------!//
+
+    async getUserByUserName(userName: string) {
+
         try {
-            const listusers = await this.prisma.user.findMany({
-                // where: {
-                //     username: {
-                //         contains: data
-                //     }
-                // }
-            })
-            return listusers
-        }
-        catch(error){
-            return error
+            return await this.prisma.user.findUnique({
+                where: { username: userName }
+            });
+        } catch (error) {
+            return `${error} could not find the user`;
         }
     }
 
-    async getUser(id: string){
+    async getUser(id: Prisma.UserWhereUniqueInput): Promise<User | string> {
+        try {
+            return await this.prisma.user.findUnique({
+                where: id
+            });
+        } catch (error) {
+
+            return `${error} could not find the user`;
+        }
+    }
+
+    async listUsers(id: string): Promise<User[] | string> {
+        try {
+            return await this.prisma.user.findMany({
+                where: {
+                    NOT: {
+                        id: id
+                    }
+                }
+            })
+        }
+        catch(error) {
+            return `${error} no Users found`
+        }
+    }
+
+    //!---------------FriendRequest------------------------!//
+    
+    async sendFriendRequest(User: Prisma.UserWhereUniqueInput , Friend: Prisma.UserWhereUniqueInput): Promise<User | string> { 
+        try {
+
+            const user = await this.prisma.user.findUnique({
+                where: {
+                    id: User.id
+                }
+            })
+            const friend = await this.prisma.user.findUnique({
+                where: {
+                    id: Friend.id
+                }
+            })
+            const friendRequest = await this.prisma.friendRequest.findFirst({
+                where: {
+                    OR: [
+                        {
+                            fromUserId: user.id,
+                            toUserId: friend.id,
+                        },
+                        {
+                            fromUserId: friend.id,
+                            toUserId: user.id,
+                        }
+                    ]
+                }
+            })
+            if (friendRequest)
+                return `Friend request already sent`
+            if (!user) {
+                return 'User not found'
+            }
+            if (!friend) {
+                return 'Friend not found'
+            }
+
+            await this.prisma.friendRequest.create({
+                data: {
+                    fromUserId: user.id,
+                    toUserId: friend.id,
+                    status: 'pending'
+                }
+            })
+            return user
+        }
+        catch (error) {
+            return `${error} could not send friend request`
+        }
+    }
+
+    async acceptFriendRequest(id: Prisma.UserWhereUniqueInput, friendId: Prisma.UserWhereUniqueInput): Promise<User | string> {
+    try {
+        const user = await this.prisma.user.findUnique({
+            where: id
+        })
+        const friend = await this.prisma.user.findUnique({
+            where: friendId
+        })
+        if (!user) {
+            return 'User not found'
+        }
+        if (!friend) {
+            return 'Friend not found'
+        }
+        await this.prisma.friendRequest.updateMany({
+            where: {
+                fromUserId: friend.id,
+                toUserId: user.id,
+                status: 'pending'
+            },
+            data: {
+                status: 'accepted'
+            }
+        })
+        await this.prisma.user.update({
+            where: { id: user.id },
+            data: {
+                friends: {
+                    connect: {
+                        id: friend.id
+                    }
+                }
+            }
+        })
+        await this.prisma.user.update({
+            where: { id: friend.id },
+            data: {
+                friends: {
+                    connect: {
+                        id: user.id
+                    }
+                }
+            }
+        })
+    }
+    catch (error) {
+        return `${error} could not accept friend request`
+    }
+    }
+
+
+        async declineFriendRequest(id: Prisma.UserWhereUniqueInput, friendId: Prisma.UserWhereUniqueInput): Promise<User | string> { 
+        try {
+            const user = await this.prisma.user.findUnique({
+                where: id
+            })
+            const friend = await this.prisma.user.findUnique({
+                where: friendId
+            })
+            if (!user) {
+                return 'User not found'
+            }
+            if (!friend) {
+                return 'Friend not found'
+            }
+            await this.prisma.friendRequest.updateMany({
+                where: {
+                    fromUserId: friend.id,
+                    toUserId: user.id,
+                    status: 'pending'
+                },
+                data: {
+                    status: 'declined'
+                }
+            })
+        }
+        catch (error) {
+            return `${error} could not decline friend request`
+        }
+    }
+
+    //!---------------ListofFriend && ChatList------------------------!//
+
+    async UpdateFrindList(user: Prisma.UserWhereUniqueInput) {
+       
+        const friendRequests = await this.prisma.friendRequest.findMany({
+            where: {
+                OR: [
+                    {
+                        fromUserId: user.id,
+                        status: 'accepted'
+                    },
+                    {
+                        toUserId: user.id,
+                        status: 'accepted'
+                    }
+                ]
+            },
+        })
+        for (const friendRequest of friendRequests) {
+            await this.prisma.user.update({
+                where: { id: friendRequest.fromUserId },
+                data: {
+                    friends: {
+                        connect: {
+                            id: friendRequest.toUserId
+                        }
+                    }
+                }
+            })
+            await this.prisma.user.update({
+                where: { id: friendRequest.toUserId },
+                data: {
+                    friends: {
+                        connect: {
+                            id: friendRequest.fromUserId
+                        }
+                    }
+                }
+            })
+        }
+    }
+    
+
+    
+    async listFriends(id: Prisma.UserWhereUniqueInput): Promise<User[] | string> {
+        this.UpdateFrindList(id)
+        try {
+            const user = await this.prisma.user.findUnique({
+                where: {
+                    id: id.id
+                },
+                include: {
+                    friends: {
+                        where: {
+                            chatBy: {
+                                none: {id: id.id},
+                            }
+                        }
+                    }
+                }               
+            });
+            if (user)
+                return user.friends
+            else
+                return 'User not found'
+        }
+        catch (error) {
+        return `${error} could not retrieve friend list`;
+        }
+    }
+
+    async getChatList(id: string): Promise<User[] | string> {
+        try {
+            const chatList = await this.prisma.user.findUnique({
+                where: {
+                    id: id
+                },
+                include: {
+                    chatWith: true
+                }
+
+            })
+            if (chatList)
+                return chatList.chatWith
+            else
+                return 'User not found'
+        }
+        catch (error)
+        {
+            return `${error} could not retrieve chat list`;
+        }
+    }
+
+    async addToChat(User: string, friendId: string): Promise<string> { 
+        
+            const user = await this.prisma.user.findUnique({
+                where: {id: User}
+            })
+            const friend = await this.prisma.user.findUnique({
+                where: {id: friendId}
+            })
+            if (!user) {
+                return 'User not found'
+            }
+            if (!friend) {
+                return 'Friend not found'
+            }
+            await this.prisma.user.update({
+                where: { id: User },
+                data: {
+                    chatWith: {
+                        connect: {
+                            id: friendId
+                        }
+                    }
+                }
+            })
+        return `User added to chat list`
+    }
+
+
+    //!---------------Direct Message room------------------------!//
+    async creatRoom(userId: string, reciverId: string): Promise<string | null> {
+        try {
+            const user1 = await this.prisma.user.findUnique({
+                where: {
+                    id: userId
+                }
+            });
+            const user2 = await this.prisma.user.findUnique({
+                where: {
+                    id: reciverId
+                }
+            });
+            if (!user1 || !user2)
+                return (null);
+            const room = await this.prisma.dMRoom.create({
+                data: {
+                    roomMembers: {
+                        connect: [
+                            { id: user1.id },
+                            {id: user2.id}
+                       ]
+                    }
+                }
+            })
+            return room.id
+        }
+        catch (error) {
+            return 'room created'
+        }
+    }
+
+    async getRoom(userId: string, reciverId: string): Promise<string | null> {
+        try {
+            const user1 = await this.prisma.user.findUnique({
+                where: {
+                    id: userId
+                }
+            });
+            const user2 = await this.prisma.user.findUnique({
+                where: {
+                    id: reciverId
+                }
+            });
+            if (!user1 || !user2)
+                return (null);
+            const room = await this.prisma.dMRoom.findFirst({
+                where: {
+                    roomMembers: {
+                        every: {
+                            id: {
+                                in: [user1.id, user2.id]
+                            }
+                        }
+                    }
+                }
+            })
+            return room.id
+        }
+        catch (error) {
+            return 'room created'
+        }
+    }
+    
+    async getRooms(userId: Prisma.UserWhereUniqueInput): Promise<string[] | string> {
+        const user = await this.prisma.user.findUnique({
+            where: {
+                id: userId.id
+            }
+        })
+        if (!user)
+            return `No such user`
+        try {
+            const rooms = await this.prisma.dMRoom.findMany({
+                where: {
+                    roomMembers: {
+                        some: {
+                            id: userId.id
+                        }
+                    }
+                },
+                select: {
+                    id: true,
+                }
+            })
+            const roomsId = rooms.map((room) => room.id)
+            return roomsId;
+        }
+        catch (error) {
+            return `can't get rooms`
+        }
+    }
+     
+    // async listUsers(){
+    //     try {
+    //         const rooms = await this.prisma.dMRoom.findMany({
+    //             where: {
+    //                 roomMembers: {
+    //                     some: {
+    //                         id: userId.id
+    //                     }
+    //                 }
+    //             },
+    //             select: {
+    //                 id: true,
+    //             }
+    //         })
+    //         const roomsId = rooms.map((room) => room.id)
+    //         return roomsId;
+    //     }
+    //     catch (error) {
+    //         return `can't get rooms`
+    //     }
+    // }
+
+    //!---------------Message Storing------------------------!//
+
+
+
+    async createMessage(messageInfo: MessageDto): Promise<string | MessageDto> {
+        const user = await this.prisma.user.findUnique({
+            where: {
+                id: messageInfo.authorName
+            }
+        })
+        if(!user)
+            return `user Not found`
+        const reciver = await this.prisma.dMRoom.findUnique({
+            where: {
+                id: messageInfo.reciverID
+            }
+        }) 
+        if(!reciver)
+            return `reciver Not found`
+        try { 
+            const message = await this.prisma.userMessage.create({
+                data: {
+                    content: messageInfo.content,
+                    authorName: user.username, 
+                    authorID: user.id,
+                    reciverID: reciver.id,
+                    createdAt: new Date(),
+                }
+            })
+            return message;
+        }
+        catch (error) {
+            return `${error} could not create message`
+        }
+        return
+    }
+
+    async getUserbyId(id: string){ 
         try {
             const getuser = await this.prisma.user.findUnique({
                 where: {
@@ -43,6 +465,23 @@ export class UsersService {
                 }
             })
             return getuser
+        }
+        catch(error){
+            return error
+        }
+    }
+
+
+    async getuserstofound(tofound: string){
+        try {
+            const getuserstofound = await this.prisma.user.findMany({
+                where: {
+                    username: {
+                        contains: tofound
+                    }
+                }
+            })
+            return getuserstofound
         }
         catch(error){
             return error

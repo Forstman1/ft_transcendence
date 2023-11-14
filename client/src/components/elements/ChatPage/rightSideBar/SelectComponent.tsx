@@ -71,8 +71,9 @@ export default function SelectComponent() {
           },
         }}
       >
-        {Channels.map((channel) =>
-          <li className=' cursor-pointer text-black font-bold' onClick={() => { setChosen(channel.name); setIsOpen(false)}}>
+        {Channels.map((channel, idx) =>
+          
+          <li key={idx} className=' cursor-pointer text-black font-bold' onClick={() => { setChosen(channel.name); setIsOpen(false)}}>
             {channel.name}
           </li>
         )}

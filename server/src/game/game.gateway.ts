@@ -6,8 +6,9 @@ import {
 } from '@nestjs/websockets';
 import { GameService } from './game.service';
 import { Server, Socket } from 'socket.io';
-import { Body } from '@nestjs/common';
+import { Body, UseGuards } from '@nestjs/common';
 import { GameModalState, GameHistory } from './dto/create-game.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
 @WebSocketGateway()
 export class GameGateway {
@@ -16,16 +17,15 @@ export class GameGateway {
 
   constructor(private readonly gameService: GameService) {}
 
-  private interval: NodeJS.Timeout | null = null;
   private isPaused = false;
   private readonly connectedUsers: { [userId: string]: Socket } = {};
   private readonly gameQueue: { [userId: string]: Socket } = {};
   private readonly isAllReady: { [roomId: string]: number } = {};
 
+
   handleConnection(@ConnectedSocket() client: Socket) {
     this.server.on('connection', (socket) => {
       console.log('-----------------connection-----------------');
-      console.log('connected userId:', socket.handshake.auth.id);
       const userId = socket.handshake.auth.id;
       this.connectedUsers[userId] = socket;
       this.gameService.updateUserIsOnline(userId, true);
@@ -46,6 +46,7 @@ export class GameGateway {
 
   // ---------------- sendGameData------------------------------------------
   @SubscribeMessage('sendGameData')
+  // @UseGuards(JwtAuthGuard)
   sendGameData(@Body() data): void {
     try {
       this.gameService.resetGameDate(data.roomId);
@@ -53,7 +54,7 @@ export class GameGateway {
       this.isAllReady[data.roomId] += 1;
       if (this.isAllReady[data.roomId] === 2) {
         this.isAllReady[data.roomId] = 0;
-        this.interval = setInterval(() => {
+        setInterval(() => {
           const getRoom = this.gameService.getRoom(data.roomId);
           const room = this.server.sockets.adapter.rooms.get(data.roomId);
 
@@ -72,6 +73,7 @@ export class GameGateway {
 
   // ---------------- updatePaddles------------------------------------------
   @SubscribeMessage('updatePaddles')
+  // @UseGuards(JwtAuthGuard)
   updatePaddles(@Body() data): void {
     try {
       this.gameService.updatePaddles(data.canvasData, data.roomId);
@@ -82,6 +84,7 @@ export class GameGateway {
 
   // ---------------- endGame------------------------------------------------
   @SubscribeMessage('endGame')
+  // @UseGuards(JwtAuthGuard)
   endGame(@ConnectedSocket() client: Socket, @Body() roomId: string): void {
     try {
       console.log('-----------------endGame-----------------');
@@ -99,6 +102,7 @@ export class GameGateway {
 
   // ---------------- pauseGame----------------------------------------------
   @SubscribeMessage('pauseGame')
+  // @UseGuards(JwtAuthGuard)
   pauseGame(@Body() roomId: string): void {
     console.log('-----------------pauseGame-----------------');
     this.gameService.setRoomPause(roomId, true);
@@ -106,12 +110,14 @@ export class GameGateway {
 
   // ---------------- resumeGame---------------------------------------------
   @SubscribeMessage('resumeGame')
+  // @UseGuards(JwtAuthGuard)
   resumeGame(@Body() roomId: string): void {
     this.gameService.setRoomPause(roomId, false);
   }
 
   // ---------------- createRoomNotifacaion----------------------------------
   @SubscribeMessage('createRoomNotification')
+  // @UseGuards(JwtAuthGuard)
   createRoomNotifacation(
     @ConnectedSocket() client: Socket,
     @Body() data: { userId: string },
@@ -128,6 +134,7 @@ export class GameGateway {
 
   // ---------------- createRoom---------------------------------------------
   @SubscribeMessage('createRoom')
+  // @UseGuards(JwtAuthGuard)
   createRoom(@ConnectedSocket() client: Socket): string {
     try {
       console.log('-----------------createRoom-----------------');
@@ -144,6 +151,7 @@ export class GameGateway {
 
   // ---------------- inviteFriend-------------------------------------------
   @SubscribeMessage('inviteFriend')
+  // @UseGuards(JwtAuthGuard)
   async inviteFriend(
     @ConnectedSocket() client: Socket,
     @Body()
@@ -165,7 +173,7 @@ export class GameGateway {
         if (room && room.size < 2) {
           const friendSocket = this.connectedUsers[friendUserId];
           if (this.gameService.checkFriendIsInOtherRoom(friendUserId)) {
-            client.emit('friendIsInRoom');
+            client.emit('frinedIsInGame');
           } else if (friendSocket) {
             const friendId = client.handshake.auth.id;
             this.server
@@ -185,6 +193,7 @@ export class GameGateway {
 
   //-------------acceptInvitation--------------------------------------------
   @SubscribeMessage('acceptInvitation')
+  // @UseGuards(JwtAuthGuard)
   acceptInvitation(
     @ConnectedSocket() client: Socket,
     @Body() data: { roomId: string },
@@ -209,6 +218,7 @@ export class GameGateway {
 
   //-------------denyInvitation----------------------------------------------
   @SubscribeMessage('denyInvitation')
+  // @UseGuards(JwtAuthGuard)
   denyInvitation(
     @ConnectedSocket() client: Socket,
     @Body() data: { roomId: string },
@@ -228,6 +238,7 @@ export class GameGateway {
 
   //-------------leaveRoom---------------------------------------------------
   @SubscribeMessage('leaveRoom')
+  // @UseGuards(JwtAuthGuard)
   leaveRoom(@ConnectedSocket() client: Socket, @Body() roomId: string): void {
     try {
       console.log('-----------------leaveRoom-----------------');
@@ -240,6 +251,7 @@ export class GameGateway {
 
   //-------------addPlayerToQueue--------------------------------------------
   @SubscribeMessage('addPlayerToQueue')
+  // @UseGuards(JwtAuthGuard)
   addPlayerToQueue(@ConnectedSocket() client: Socket): void {
     try {
       console.log('-----------------addPlayerToQueue-----------------');
@@ -275,6 +287,7 @@ export class GameGateway {
 
   //-------------getGameHistory----------------------------------------------
   @SubscribeMessage('CreateGameHistory')
+  // @UseGuards(JwtAuthGuard)
   async postGameHistory(
     @ConnectedSocket() client: Socket,
     @Body() data: GameHistory,
@@ -295,6 +308,7 @@ export class GameGateway {
 
   //-------------getMyFriends------------------------------------------------
   @SubscribeMessage('GetMyFriends')
+  // @UseGuards(JwtAuthGuard)
   async getMyFriends(@ConnectedSocket() client: Socket): Promise<void> {
     try {
       console.log('-----------------GetMyFriends-----------------');
@@ -306,7 +320,9 @@ export class GameGateway {
     }
   }
 
+  //-------------searchFriend------------------------------------------------
   @SubscribeMessage('SearchFriend')
+  // @UseGuards(JwtAuthGuard)
   async searchFriend(
     @ConnectedSocket() client: Socket,
     @Body() data: { username: string },
@@ -324,7 +340,9 @@ export class GameGateway {
     }
   }
 
+  //-------------getOpponentData---------------------------------------------------
   @SubscribeMessage('getOpponentData')
+  // @UseGuards(JwtAuthGuard)
   async getOpponentData(
     @ConnectedSocket() client: Socket,
     @Body() data: { opponentId: string },

@@ -12,6 +12,7 @@ async function bootstrap() {
   app.enableCors({
     origin: "http://localhost:3000",
     methods: ["GET","HEAD","PUT","PATCH","POST","DELETE"],
+    allowedHeaders: 'Content-Type, Accept, Authorization, X-Requested-With, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Access-Control-Allow-Credentials, Access-Control-Allow-Methods',
     credentials: true,
   });
   // app.use(cors()); // already enabled in the previous line, uncomment if the previous one doesn't work as this one
@@ -32,4 +33,5 @@ async function bootstrap() {
 
 // }
 bootstrap();
+
 

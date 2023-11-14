@@ -31,7 +31,6 @@ import {
   initialRightPaddle,
   initialGameEndStatic,
 } from "@/utils/constants/game/GameConstants";
-import Footer from "@/components/elements/Footer/Footer";
 
 
 export default function GameFriendPage() {
@@ -483,7 +482,6 @@ export default function GameFriendPage() {
                   </div>
                 </div>
               </div>
-              <Footer />
             </div>
         </motion.div>
     </PageWrapper>

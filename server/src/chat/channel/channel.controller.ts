@@ -31,7 +31,7 @@ export class ChannelController {
 
     @Put('/changepassword')
     changepassword(@Body() body: ChangePassword){
-        return this.channelservice.changepassword(body.channelName, body.userId, body.currentpassword, body.newpassword)
+        return this.channelservice.changepassword(body.channelId, body.userId, body.currentpassword, body.newpassword)
     }
 
 
@@ -80,4 +80,15 @@ export class ChannelController {
     getchannelmemberinfo(@Param('channelId') channelId: string, @Param('userId') userId: string){
         return this.channelservice.getchannelmemberinfo(channelId, userId)
     }
+
+    @Get('/getallchannelsapp/:tofound')
+    getallchannelsapp(@Param('tofound') tofound: string) {
+        return this.channelservice.getallchannelsapp(tofound)
+    }
+
+    @Get('/getallpublicandprivatechannels')
+    getallpublicandprivatechannels(){
+        return this.channelservice.getallpublicandprivatechannels()
+    }
 }
+ 

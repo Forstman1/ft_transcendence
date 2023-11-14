@@ -8,25 +8,26 @@ import { motion } from 'framer-motion';
 import {
   MenuButton, MenuList, MenuItem, MenuDivider,
   IconButton, Modal, ModalOverlay, ModalContent,
-  Stack, Avatar, AvatarBadge, SkeletonCircle,
+  Stack, Avatar, AvatarBadge,
   Box, Flex, Button, Center, Text, Menu,
   ModalHeader, ModalFooter, ModalBody,
-  ModalCloseButton, Skeleton,
+  ModalCloseButton,
 } from '@chakra-ui/react';
 /* ------------------------------------------------------ Hooks ----------------------------------------------------- */
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
-import { useQuery } from 'react-query';
-import { fetchUserProfile } from '@/utils/functions/auth/fetchingUserData';
+import { useQuery, useMutation } from 'react-query';
+import { fetchUserProfile, logout } from '@/utils/functions/auth/fetchingUserData';
 import {
   AuthButtonsList, NAVBAR_ITEMS, AuthButtonObj
 } from '@/utils/constants/auth/AuthConstants';
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from '@/redux/slices/authUser/authUserSlice';
+import { useRouter} from 'next/navigation';
 
 /* -------------------------------------------------- Remote Assets ------------------------------------------------- */
-import { HamburgerIcon } from '@chakra-ui/icons';
+import { HamburgerIcon} from '@chakra-ui/icons';
 
 /* -------------------------------------------------- Local Assets -------------------------------------------------- */
 import WavesDivider from 'assets/icons/wavesOpacity.svg';
@@ -35,6 +36,8 @@ import LoginThumbnail from 'assets/icons/Auth/undraw_my_password_re_ydq7.svg';
 import { io } from "socket.io-client";
 import { setSocketState } from "@/redux/slices/socket/globalSocketSlice";
 import { initialState as DefaultUserStoreData, UserState } from "@/redux/slices/authUser/authUserSlice";
+import { setChatSocketState } from '@/redux/slices/socket/chatSocketSlice';
+import Notification from '../Notification/Notification';
 
 const CreatGameGlobalSocket = (user: any) => {
   console.log("CreatGameGlobalSocket user: ", user);
@@ -51,8 +54,25 @@ const CreatGameGlobalSocket = (user: any) => {
   return socket;
 }
 
-/* --------------------------------------------------- AuthButtons -------------------------------------------------- */
+const CreatChatGlobalSocket = (user: any) => {
+  console.log("CreatChatGlobalSocket user: ", user);
 
+  const socket = io('http://localhost:3001/chat', {
+    transports: ["websocket"],
+    upgrade: false,
+    auth: {
+      id: user.userId,
+    },
+  });
+
+  socket?.emit(`createRoom`, { userId: user.userId }, (data: any) => {
+    console.log(`the data returned is ` + data)
+  })
+  return socket;
+}
+
+/* --------------------------------------------------- AuthButtons -------------------------------------------------- */
+// loginWithService
 
 export function AuthButtons() {
   return (
@@ -116,48 +136,65 @@ export function SignupButton({ onClick }: { onClick: () => void }) {
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 export function UserProfileNavbarBadge() {
+  const dispatch = useDispatch();
   const data = useSelector((state: { authUser: UserState }) => state.authUser);
+  const router = useRouter();
+  const { mutate } = useMutation({
+    mutationFn: logout,
+    mutationKey: ['logout'],
+    onError: (error: any) => {
+      router.push('/?error=true');
+    },
+    onSuccess: (response) => {
+      dispatch(updateUser(DefaultUserStoreData));
+      router.push('/?logged=false');
+    }
+  });
   return (
     <Flex alignItems='center' gap={5} flexDirection='row-reverse'>
       <Box flexShrink={0}>
-          <Menu>
-            <MenuButton
-              as={Button}
-              rounded={'full'}
-              variant={'link'}
-              cursor={'pointer'}
-              minW={0}>
-              <Avatar size='lg' src={data.avatarUrl}>
+        <Menu>
+          <MenuButton
+            as={Button}
+            rounded={'full'}
+            variant={'link'}
+            cursor={'pointer'}
+            minW={0}>
+            <Avatar size='lg' src={data.avatarUrl}>
+              <AvatarBadge
+                boxSize='1em'
+                borderColor={data.isOnline ? 'green.100' : 'red.100'}
+                bg={data.isOnline ? 'green.500' : 'red.500'}
+              />
+            </Avatar>
+          </MenuButton>
+          <MenuList alignItems={'center'}>
+            <br />
+            <Center>
+              <Avatar size={'2xl'} src={data.avatarUrl}>
                 <AvatarBadge
                   boxSize='1em'
                   borderColor={data.isOnline ? 'green.100' : 'red.100'}
                   bg={data.isOnline ? 'green.500' : 'red.500'}
                 />
               </Avatar>
-            </MenuButton>
-            <MenuList alignItems={'center'}>
-              <br />
-              <Center>
-                <Avatar size={'2xl'} src={data.avatarUrl}>
-                  <AvatarBadge
-                    boxSize='1em'
-                    borderColor={data.isOnline ? 'green.100' : 'red.100'}
-                    bg={data.isOnline ? 'green.500' : 'red.500'}
-                  />
-                </Avatar>
-              </Center>
-              <br />
-              <Center>
-                <p className='text-2xl font-bold'>{data.username}</p>
-              </Center>
-              <br />
-              <MenuDivider />
-              <MenuItem as='a' href={`/profile/${data.userId}`}>Profile</MenuItem>
-              <MenuItem as='a' href='#'>Settings</MenuItem>
-              <MenuDivider />
-              <MenuItem color={'red.500'} as='a' href={`${process.env.NEXT_PUBLIC_SERVER_URL}auth/logout`}>Logout</MenuItem>
-            </MenuList>
-          </Menu>
+            </Center>
+            <br />
+            <Center>
+              <p className='text-2xl font-bold'>{data.username}</p>
+            </Center>
+            <br />
+            <MenuDivider />
+            <MenuItem as='a' href='/userPage'>Profile</MenuItem>
+            <MenuItem as='a' href='/settings'>Settings</MenuItem>
+            <MenuDivider />
+            <MenuItem 
+              color={'red.500'} as='a' 
+              href={`${process.env.NEXT_PUBLIC_SERVER_URL}auth/logout`}>
+                Logout
+            </MenuItem>
+          </MenuList>
+        </Menu>
       </Box>
     </Flex>
   );
@@ -165,7 +202,7 @@ export function UserProfileNavbarBadge() {
 
 /* ------------------------------------------------------------------------------------------------------------------ */
 
-export function SignupModal () {
+export function SignupModal() {
   const OverlayOne = () => (
     <ModalOverlay
       bg='blackAlpha.300'
@@ -230,7 +267,7 @@ const HeaderNavDesktop: React.FC = () => {
   return (
     <nav className='hidden md:block'>
       <motion.div>
-        <Flex color='white' className="grid-cols-3 w-full h-full items-center justify-start space-x-8">
+        <Flex color='white' className="grid-cols-3 w-full h-full items-center justify-between space-x-8">
           {NAVBAR_ITEMS.map((item: {
             text: string,
             href: string
@@ -260,6 +297,7 @@ const HeaderNavDesktop: React.FC = () => {
 }
 
 const HeaderNavMobile: React.FC = () => {
+  let path = usePathname();
   return (
     <Box className='block md:hidden'>
       <Menu>
@@ -285,8 +323,9 @@ const HeaderNavMobile: React.FC = () => {
           }, index: number) => {
             return (
               <MenuItem
-                key={`mobile-navbar-menu-item-${index}`} rounded='md' as={"a"} href={item.href}
-                className='bg-neutral-900 text-neutral-50 border-neutral-950'
+                key={`mobile-navbar-menu-item-${index}`} rounded='md' as={"a"}
+                className={`bg-neutral-900 text-neutral-50 border-neutral-950`}
+                href={item.href}
               >
                 <Text className="text-xl font-semibold">
                   {item.text}
@@ -304,78 +343,85 @@ const HeaderNavMobile: React.FC = () => {
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 export default function Navbar() {
-  const [userNotAuthenticated, setUserNotAuthenticated] = useState(true);
-  const { data, isLoading, isError, refetch } = useQuery({
+  const dispatch = useDispatch();
+  const [userAuthenticated, setUserAuthenticated] = useState(false);
+  const userData = useQuery({
     queryKey: ['userProfile'],
     queryFn: fetchUserProfile,
-  });
-  const refreshInterval = 5000;
-  const dispatch = useDispatch();
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      refetch();
-    }, refreshInterval);
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [refetch, refreshInterval]);
-  useEffect(() => {
-    if (!isLoading && !isError) {
-      setUserNotAuthenticated(false);
-      dispatch(updateUser({isAuthenticated: true, ...data}));
-      const gameSocket = CreatGameGlobalSocket(data);
-      // for game page
+    refetchInterval: 5000,
+    useErrorBoundary: false,
+    onError: (err: any) => {
+      setUserAuthenticated(false);
+      dispatch(updateUser(DefaultUserStoreData));
+    },
+    onSuccess: (response: any) => {
+      setUserAuthenticated(true);
+      dispatch(updateUser({ isAuthenticated: true, ...response.data }));
+      const gameSocket = CreatGameGlobalSocket(response.data);
+      const chatSocket = CreatChatGlobalSocket(response.data);
+      dispatch(setChatSocketState({
+        socket: chatSocket,
+        roomId: "",
+        userID: response.data.userId,
+      }));
       dispatch(setSocketState({
         socket: gameSocket,
         isOwner: false,
         roomId: "",
       }));
-      // for game page
-    } else {
-      setUserNotAuthenticated(true);
-      dispatch(updateUser(DefaultUserStoreData));
-    }
-  }, [data, dispatch, isError, isLoading]);
-
+    },
+  });
   return (
-    <header className='w-screen h-16 md:h-24 bg-neutral-950 fixed top-0 z-50'>
+    <header className="w-screen h-16 md:h-24 bg-neutral-950 fixed top-0 z-50">
       <Flex
-        className='grid-cols-3 justify-around md:justify-between'
-        width='full' height='full'
-        alignItems='center'
-        flexDirection='row'
+        className="grid-cols-3 justify-around md:justify-between"
+        width="full"
+        height="full"
+        alignItems="center"
+        flexDirection="row"
       >
         <Flex
-          key='navbar-menu-item-1'
-          className='h-full col-span-1 order-1 md:order-2 w-1/3 md:w-72 md:mr-auto'
-          justifyContent='center'
-          alignItems='center'
+          key="navbar-menu-item-1"
+          className="h-full col-span-1 order-1 md:order-2 w-1/3 md:w-72 md:mr-auto"
+          justifyContent="center"
+          alignItems="center"
         >
           <HeaderNavMobile />
           <HeaderNavDesktop />
         </Flex>
         <Flex
-          key='navbar-menu-item-2'
-          className='h-full col-span-1 order-2 md:order-1 w-1/3 md:w-56'
-          justifyContent='center'
-          alignItems='center'
+          key="navbar-menu-item-2"
+          className="h-full col-span-1 order-2 md:order-1 w-1/3 md:w-56"
+          justifyContent="center"
+          alignItems="center"
         >
           <Link href="/">
             <Image src={Logo} alt="Website Logo" width={150} height={150} />
-          </Link>,
+          </Link>
+          ,
         </Flex>
         <Flex
-          key='navbar-menu-item-3'
-          className='h-full col-span-1 order-last w-1/3 md:w-72'
-          justifyContent='center'
-          alignItems='center'
+          key="navbar-menu-item-3"
+          className="h-full col-span-1 order-last w-1/3 md:w-72"
+          justifyContent="center"
+          alignItems="center"
         >
-          {userNotAuthenticated == false ? <UserProfileNavbarBadge /> : <SignupModal />}
+          {userAuthenticated == true ? (
+            <div className="flex flex-row gap-6 items-center justify-center">
+              <Notification />
+              <UserProfileNavbarBadge />
+            </div>
+          ) : (
+            <SignupModal />
+          )}
         </Flex>
-
       </Flex>
 
-      <Image src={WavesDivider} alt='Header Decoration' className='w-full h-5 -mt-[1px]' />
+      <Image
+        src={WavesDivider}
+        alt="Header Decoration"
+        className="w-full h-5 -mt-[1px]"
+      />
     </header>
-  )
+  );
 }

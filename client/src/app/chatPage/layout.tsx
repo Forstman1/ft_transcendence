@@ -1,12 +1,13 @@
 "use client";
 
-import { FC, ReactNode, useEffect} from "react";
+import { FC, ReactNode, useEffect, useState} from "react";
 import LeftSidebar from "@/components/elements/ChatPage/leftsidebar/LeftSidebar";
 import { Flex } from "@chakra-ui/react";
 import MobileFooter from "@/components/elements/ChatPage/Mobile/MobileFooter";
-import { RootState } from "@/redux/store/store";
-import { useSelector } from "react-redux";
-import { ChatSocketState } from "@/redux/slices/socket/chatSocketSlice";
+import axios from "axios";
+import { User } from '@/utils/types/chat/ChatTypes';
+import { useQuery } from "react-query";
+import { useRouter } from "next/navigation";
 
 
 export interface LayoutProps{
@@ -14,17 +15,21 @@ export interface LayoutProps{
     children: ReactNode;
 }
 
-export const Layout: FC<LayoutProps> = ({children}) => {
+const Layout: FC<LayoutProps> = ({children}) => {
 
-    const socket = useSelector((state: ChatSocketState) => state.socket)
-
-    // socket?.on('connect', () => {
-    //     console.log('hello from the chat layout')
+    // const [User, setUser] = useState()
+    // const router = useRouter();
+    // const id = `1da63ba9-7bb7-4d49-86a9-db17bbec6c49`
+    // const {data} = useQuery({
+    //     queryKey: ["userData"],
+    //     queryFn: async () => {
+    //         const {data} = await axios.get(`http://localhost:3001/users/${id}`)
+    //         return data as User
+    //     }
     // })
-
     return(
         <>
-            <Flex className="Chat_Parent h-[calc(100vh_-_170px)] md:h-[calc(100vh_-_90px)] ">
+            <Flex className="Chat_Parent  h-full">
                 <LeftSidebar />
                 <div className="Chat_sub_div1 flex-grow flex">
                     {children}

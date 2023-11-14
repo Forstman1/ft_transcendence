@@ -7,19 +7,16 @@ import { useSelector } from 'react-redux';
 
 
 export default function userPage() {
-    const username = useSelector((state:any) => state.authUser.id)
+    const userId = useSelector((state:any) => state.authUser.userId)
     const router = useRouter();
   
     useEffect(() => {
-
-    //   if (!username) {
-        router.push('/profile/' + username);
-    //   }
-    }, [username]);
+        router.push('/profile/' + userId);
+    }, [userId]);
 
   return (
     <div className="w-full h-full py-40 px-8 container m-auto">
-        <h1>user Page ...{username}..</h1>
+        <h1>user Page ...{userId}..</h1>
     </div>
   )
 }
