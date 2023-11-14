@@ -31,7 +31,6 @@ import {
   initialRightPaddle,
   initialGameEndStatic,
 } from "@/utils/constants/game/GameConstants";
-import Footer from "@/components/elements/Footer/Footer";
 
 
 export default function GameFriendPage() {
@@ -44,7 +43,7 @@ export default function GameFriendPage() {
   appliyGameMode(gameSettings);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [keysPressed, setKeysPressed] = useState<Record<string, boolean>>({});
-  const [canvasSize, setCanvasSize] = useState(initialCanvasSize);
+  const canvasSize = initialCanvasSize;
   const initialBallState: Ball = {
     x: canvasSize.width / 2,
     y: canvasSize.height / 2,
@@ -220,7 +219,7 @@ export default function GameFriendPage() {
       xp = gameSettings.mode === "EASY" ? 5 : gameSettings.mode === "MEDIUM" ? 10 : 15;
     }
     const data: any = {
-      userId: socketState.playerId,
+      userId: socket?.auth?.id,
       status: status,
       userScore: userScore,
       opponentScore: opponentScore,
@@ -483,7 +482,6 @@ export default function GameFriendPage() {
                   </div>
                 </div>
               </div>
-              <Footer />
             </div>
         </motion.div>
     </PageWrapper>

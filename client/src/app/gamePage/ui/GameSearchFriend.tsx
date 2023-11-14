@@ -107,7 +107,6 @@ export default function GameSearchFriend({ onClose }: Props) {
     dispatch(
       setSocketState({
         socket: socket.socket,
-        socketId: socket.socketId,
         isOwner: true,
         roomId: RoomId,
         friendId: friendId,
@@ -120,7 +119,7 @@ export default function GameSearchFriend({ onClose }: Props) {
 
   const handleInviteClick = async (friendId: string) => {
     await createRoom(friendId);
-    setFriendInviteIData((prev) => 
+    setFriendInviteIData((prev) =>
       prev.map((friend) => {
         if (friend.id === friendId) {
           friend.isInvited = true;
@@ -225,7 +224,7 @@ export default function GameSearchFriend({ onClose }: Props) {
               </Box>
             ))
           ) : (
-            <div className="flex w-full h-[300px] justify-center items-center">
+            <div className="flex w-full h-[300px] justify-center items-center no-scrollbar">
               <h1 className="text-lg font-bold">No Friends</h1>
             </div>
           )}

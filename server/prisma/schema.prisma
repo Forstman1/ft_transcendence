@@ -12,7 +12,7 @@ datasource db {
 }
 
 model User {
-  id                String       @id @default(uuid())
+  id                String       @id @default(uuid()) @unique
   username          String       @unique
   email             String       @unique
   fullname          String       
@@ -25,20 +25,44 @@ model User {
   twoFactorSecret   String?
   isOnline          Boolean     @default(false)
   hasTwoFA          Boolean     @default(false)
+  // isBlocked          Boolean     @default(false)
+  // isMuted           Boolean     @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  usersmessages1 UserMessage[] @relation("Author")
-  usersmessages2 UserMessage[] @relation("Reciver")
 
-  channelmessages ChannelMessage[]
+  friends User[] @relation("Friends")
+  friendOf User[] @relation("Friends")
+
+  chatWith User[] @relation("Chate")
+  chatBy User[] @relation("Chate")
+
+  friendRequestsSent FriendRequest[] @relation("SentFriendRequests")
+  friendRequestsReceived FriendRequest[] @relation("ReceivedFriendRequests")
 
   channelMember ChannelMember[]
+  
+  roomMember      DMRoom[] @relation("rooms")
+  roomMessage     UserMessage[]    @relation("roommessage")
+
   games     GameHistory[]
   userGamesXp   Int      @default(0)
 
-  friends  User[] @relation("friends")
-  friendOf User[] @relation("friends")
+
+
+}
+
+
+model FriendRequest {
+  id        String   @id @default(uuid())
+  fromUser  User     @relation("SentFriendRequests", fields: [fromUserId], references: [id])
+  fromUserId String
+  toUser    User     @relation("ReceivedFriendRequests", fields: [toUserId], references: [id])
+  toUserId   String
+  status    String   // You can use this to track the status of the request (e.g., "pending," "accepted," "rejected")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
 
 }
 
@@ -51,6 +75,18 @@ model Channel {
   channelMember ChannelMember[]
 }
 
+
+
+
+model DMRoom {
+  id        String   @id @default(uuid())
+  roomMembers User[]    @relation("rooms")
+  roomMessages UserMessage[]
+}
+
+
+
+
 model ChannelMember {
   id        String   @id @default(uuid())
   channelId String
@@ -58,24 +94,27 @@ model ChannelMember {
   role     Role @default(MEMBER)
   channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
   user    User  @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  channelmessages ChannelMessage[] @relation("channelmessage")
+
   createdAt DateTime @default(now())
 }
 
 model ChannelMessage {
   id        String   @id @default(uuid())
   content   String
-  author User @relation(fields: [authorID], references: [id], onDelete: Cascade)
+  author ChannelMember @relation(name: "channelmessage", fields: [authorID], references: [id], onDelete: Cascade)
 	reciver Channel @relation(fields: [reciverID], references: [id], onDelete: Cascade)
 	reciverID String
 	authorID String
   authorName String
   createdAt DateTime @default(now())
 }
+
 model UserMessage {
   id        String   @id @default(uuid())
   content   String
-  author User @relation(name: "Author", fields: [authorID], references: [id])
-	reciver User @relation(name: "Reciver", fields: [reciverID], references: [id])
+  author User @relation(name: "roommessage", fields: [authorID], references: [id], onDelete: Cascade)
+	reciver DMRoom @relation(fields: [reciverID], references: [id], onDelete: Cascade)
 	reciverID String
 	authorID String
   authorName String

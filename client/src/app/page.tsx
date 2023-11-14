@@ -144,7 +144,7 @@ const Footer: React.FC = () => {
     'xs', 'sm', 'md', 'lg', 'xl', 'xl', '2xl', '2xl', '2xl', '3xl', '3xl'
   ];
   return (
-    <footer className="w-screen relative -mt-5 md:-mt-10 z-10">
+    <footer className="w-full relative -mt-5 md:-mt-10 z-10">
       <Box className="w-full h-5 md:h-10">
         <Image src={PageDivider2} alt="Footer Divider" className="transform rotate-180 w-full h-full" />
       </Box>

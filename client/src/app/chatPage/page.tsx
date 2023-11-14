@@ -5,14 +5,14 @@ import Image from "next/image";
 import { Flex, Box, Button, useMediaQuery } from "@chakra-ui/react";
 import LeftSidebar from "@/components/elements/ChatPage/leftsidebar/LeftSidebar";
 import RightSidebar from "@/components/elements/ChatPage/rightSideBar/RightSidebar";
-import ChatWindow from "@/components/elements/ChatPage/ChatWindow";
-
 import RightSidebarChannel from "@/components/elements/ChatPage/rightSideBar/RightSideBarChannel";
 import { Channel, User } from "@/utils/types/chat/ChatTypes";
 import { setLeft, setMidle, setRight } from "@/redux/slices/chat/MobileSlice";
-import { motion } from 'framer-motion'
+import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
-
+import { UseSelector } from "react-redux/es/hooks/useSelector";
+import ChatWindow from "@/components/elements/ChatPage/ChatWindow";
+import RestrictedRoute from "@/components/RestrictedRoute";
 
 
 
@@ -21,22 +21,44 @@ export default function ChatPage() {
   const [RightIsOpen, setRightIsOpen] = useState(false);
   const [LeftIsOpen, setLeftIsOpen] = useState(false);
 
+
   const { LeftClice } = useSelector((state: any) => state.mobile);
   const { RightClice } = useSelector((state: any) => state.mobile);
   const { MidleClice } = useSelector((state: any) => state.mobile);
+  const socket = useSelector((state: any) => state.socket.socket);
 
 
   const isDesktop = useMediaQuery("(min-width: 1000px)")
   const dispatch = useDispatch()
-
-
   const selected: Channel | User | null = useSelector((state: any) => state.chat.selectedChannelorUser);
-  if(isDesktop[0]) {
-    dispatch(setRight(true))
-    dispatch(setMidle(true))
-    dispatch(setLeft(true))
-  }
 
+
+
+
+  // useEffect(() => {
+    
+  //   socket.on(`receivedFreindRequest`, (user: User) => {
+  //     console.log(user)
+  //   });
+
+  //   return () => {
+  //     socket.off(`receivedFreindRequest`)
+  //   }
+    
+  // }, [socket])
+  
+
+
+  useEffect(() => {
+    if(isDesktop[0]) {
+      dispatch(setRight(true))
+      dispatch(setMidle(true))
+      dispatch(setLeft(true))
+    }
+  }, [isDesktop])
+
+  
+  
   const sidebar = {
     open: (height = 1000) => ({
       // width: "375px",
@@ -45,7 +67,7 @@ export default function ChatPage() {
         type: "spring",
         stiffness: 20,
         restDelta: 2,
-      }
+      },
     }),
     closed: {
       width: 0,
@@ -53,29 +75,30 @@ export default function ChatPage() {
       transition: {
         type: "spring",
         stiffness: 400,
-        damping: 40
-      }
-    }
+        damping: 40,
+      },
+    },
   };
 
-
   return (
-    <div className="Chat_sub_div2 flex flex-grow w-full ">
-      <ChatWindow />
-      
-      {selected !== null && 'username' in selected ? (
-        <RightSidebar />
-      ) : selected !== null && 'type' in selected ? (
-        <RightSidebarChannel />
-      ) : (
-        <Box  className='RightSideBar w-[375px] absolute md:block backdrop-blur-xl md:static md:w-[465px] h-full overflow-y-auto border-l-[3px] border-l-black pb-28 right-0'
-        as={motion.div}
-        initial={false}
-        animate={RightClice.RightValue ? "open" : "closed"}
-        variants={sidebar}
-        
-      ></Box>
-      )}
-    </div>
+    <RestrictedRoute>
+      <div className="Chat_sub_div2 flex flex-grow w-full ">
+        <ChatWindow />
+
+        {selected !== null && "username" in selected ? (
+          <RightSidebar />
+        ) : selected !== null && "type" in selected ? (
+          <RightSidebarChannel />
+        ) : (
+          <Box
+            className="RightSideBar w-[375px] absolute md:block backdrop-blur-xl md:static md:w-[465px] h-full overflow-y-auto border-l-[3px] border-l-black pb-28 right-0"
+            as={motion.div}
+            initial={false}
+            animate={RightClice.RightValue ? "open" : "closed"}
+            variants={sidebar}
+          ></Box>
+        )}
+      </div>
+    </RestrictedRoute>
   );
 }

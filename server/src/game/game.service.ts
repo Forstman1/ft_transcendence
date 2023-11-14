@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { GameServiceData } from './dto/create-game.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { GameHistory } from './dto/create-game.dto';
-import { PrismaService } from '../prisma.service';
+import { PrismaService } from 'src/prisma/prisma.service';
+// import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class GameService {
@@ -16,7 +17,7 @@ export class GameService {
       isPoused?: boolean;
     }
   > = new Map();
-
+ 
   //------------------ update paddles ------------------
 
   public updatePaddles(data, roomId: string): void {
@@ -382,5 +383,32 @@ export class GameService {
       },
     });
     return friends;
+  }
+
+  //----------------------------------------------------
+  getOpponentData = async (opponentId: string): Promise<any> => {
+    const opponentData = await this.prisma.user.findUnique({
+      where: { id: opponentId },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        fullname: true,
+        avatarURL: true,
+        isOnline: true,
+      },
+    });
+    return opponentData;
+  }
+
+  //----------------------------------------------------
+  updateUserIsOnline = async (userId: string, isOnline: boolean): Promise<void> => {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        isOnline,
+      },
+    });
+    return;
   }
 }

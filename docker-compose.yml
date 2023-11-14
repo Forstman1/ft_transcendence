@@ -17,7 +17,7 @@ services:
     env_file:
       - .env
     networks:
-      - myNetwork
+      - local
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'user', '-d', 'transcendance']
       interval: 30s
@@ -44,7 +44,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     networks:
-      - myNetwork
+      - local
     ports:
       - "3001:3001"
     env_file:
@@ -70,7 +70,7 @@ services:
     depends_on:
       - server
     networks:
-      - myNetwork
+      - local
     restart: always
 
 
@@ -82,10 +82,10 @@ services:
     ports:
       - 8080:8080
     networks:
-      - myNetwork
+      - local
 
 
 #---------------------------------networks-------------------------------------
 networks:
-  myNetwork:
+  local:
     driver: bridge

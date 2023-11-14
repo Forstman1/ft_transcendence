@@ -34,11 +34,6 @@ export default function RightSidebarChannel() {
   const channel: Channel = useSelector((state:any) => state.chat.selectedChannelorUser)
 
 
-  // if(isDesktop[0]) {
-  //   dispatch(setRight(true))
-  //   dispatch(setMidle(true))
-  //   dispatch(setLeft(true))
-  // }
 
   const sidebar = {
     open: (height = 1000) => ({
@@ -64,7 +59,7 @@ export default function RightSidebarChannel() {
 
   return (
    
-    <Box  className='RightSideBar w-[375px] absolute md:block backdrop-blur-xl md:static md:w-[465px] h-full overflow-y-auto border-l-[3px] border-l-black pb-28 right-0'
+    <Box  className='RightSideBar w-[375px] absolute md:block backdrop-blur-xl md:static md:w-[465px] h-full overflow-y-auto border-l-[3px] border-l-black pb-28 right-0 pt-[100px]'
       as={motion.div}
       initial={false}
       animate={RightClice.RightValue ? "open" : "closed"}
