@@ -224,7 +224,7 @@ export default function GameSearchFriend({ onClose }: Props) {
               </Box>
             ))
           ) : (
-            <div className="flex w-full h-[300px] justify-center items-center">
+            <div className="flex w-full h-[300px] justify-center items-center no-scrollbar">
               <h1 className="text-lg font-bold">No Friends</h1>
             </div>
           )}

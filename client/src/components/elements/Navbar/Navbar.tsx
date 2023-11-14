@@ -26,7 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from '@/redux/slices/authUser/authUserSlice';
 
 /* -------------------------------------------------- Remote Assets ------------------------------------------------- */
-import { HamburgerIcon } from '@chakra-ui/icons';
+import { HamburgerIcon} from '@chakra-ui/icons';
 
 /* -------------------------------------------------- Local Assets -------------------------------------------------- */
 import WavesDivider from 'assets/icons/wavesOpacity.svg';
@@ -36,6 +36,7 @@ import { io } from "socket.io-client";
 import { setSocketState } from "@/redux/slices/socket/globalSocketSlice";
 import { initialState as DefaultUserStoreData, UserState } from "@/redux/slices/authUser/authUserSlice";
 import { setChatSocketState } from '@/redux/slices/socket/chatSocketSlice';
+import Notification from '../Notification/Notification';
 
 const CreatGameGlobalSocket = (user: any) => {
   console.log("CreatGameGlobalSocket user: ", user);
@@ -255,7 +256,7 @@ const HeaderNavDesktop: React.FC = () => {
   return (
     <nav className='hidden md:block'>
       <motion.div>
-        <Flex color='white' className="grid-cols-3 w-full h-full items-center justify-start space-x-8">
+        <Flex color='white' className="grid-cols-3 w-full h-full items-center justify-between space-x-8">
           {NAVBAR_ITEMS.map((item: {
             text: string,
             href: string
@@ -285,6 +286,7 @@ const HeaderNavDesktop: React.FC = () => {
 }
 
 const HeaderNavMobile: React.FC = () => {
+  let path = usePathname();
   return (
     <Box className='block md:hidden'>
       <Menu>
@@ -310,8 +312,9 @@ const HeaderNavMobile: React.FC = () => {
           }, index: number) => {
             return (
               <MenuItem
-                key={`mobile-navbar-menu-item-${index}`} rounded='md' as={"a"} href={item.href}
-                className='bg-neutral-900 text-neutral-50 border-neutral-950'
+                key={`mobile-navbar-menu-item-${index}`} rounded='md' as={"a"}
+                className={`bg-neutral-900 text-neutral-50 border-neutral-950`}
+                href={item.href}
               >
                 <Text className="text-xl font-semibold">
                   {item.text}
@@ -369,44 +372,56 @@ export default function Navbar() {
   }, [data, dispatch, isError, isLoading]);
 
   return (
-    <header className='w-screen h-16 md:h-24 bg-neutral-950 fixed top-0 z-50'>
+    <header className="w-screen h-16 md:h-24 bg-neutral-950 fixed top-0 z-50">
       <Flex
-        className='grid-cols-3 justify-around md:justify-between'
-        width='full' height='full'
-        alignItems='center'
-        flexDirection='row'
+        className="grid-cols-3 justify-around md:justify-between"
+        width="full"
+        height="full"
+        alignItems="center"
+        flexDirection="row"
       >
         <Flex
-          key='navbar-menu-item-1'
-          className='h-full col-span-1 order-1 md:order-2 w-1/3 md:w-72 md:mr-auto'
-          justifyContent='center'
-          alignItems='center'
+          key="navbar-menu-item-1"
+          className="h-full col-span-1 order-1 md:order-2 w-1/3 md:w-72 md:mr-auto"
+          justifyContent="center"
+          alignItems="center"
         >
           <HeaderNavMobile />
           <HeaderNavDesktop />
         </Flex>
         <Flex
-          key='navbar-menu-item-2'
-          className='h-full col-span-1 order-2 md:order-1 w-1/3 md:w-56'
-          justifyContent='center'
-          alignItems='center'
+          key="navbar-menu-item-2"
+          className="h-full col-span-1 order-2 md:order-1 w-1/3 md:w-56"
+          justifyContent="center"
+          alignItems="center"
         >
           <Link href="/">
             <Image src={Logo} alt="Website Logo" width={150} height={150} />
-          </Link>,
+          </Link>
+          ,
         </Flex>
         <Flex
-          key='navbar-menu-item-3'
-          className='h-full col-span-1 order-last w-1/3 md:w-72'
-          justifyContent='center'
-          alignItems='center'
+          key="navbar-menu-item-3"
+          className="h-full col-span-1 order-last w-1/3 md:w-72"
+          justifyContent="center"
+          alignItems="center"
         >
-          {userNotAuthenticated == false ? <UserProfileNavbarBadge /> : <SignupModal />}
+          {userNotAuthenticated == false ? (
+            <div className="flex flex-row gap-6 items-center justify-center">
+              <Notification />
+              <UserProfileNavbarBadge />
+            </div>
+          ) : (
+            <SignupModal />
+          )}
         </Flex>
-
       </Flex>
 
-      <Image src={WavesDivider} alt='Header Decoration' className='w-full h-5 -mt-[1px]' />
+      <Image
+        src={WavesDivider}
+        alt="Header Decoration"
+        className="w-full h-5 -mt-[1px]"
+      />
     </header>
-  )
+  );
 }
