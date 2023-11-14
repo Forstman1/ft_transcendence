@@ -26,7 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from '@/redux/slices/authUser/authUserSlice';
 
 /* -------------------------------------------------- Remote Assets ------------------------------------------------- */
-import { HamburgerIcon, BellIcon} from '@chakra-ui/icons';
+import { HamburgerIcon} from '@chakra-ui/icons';
 
 /* -------------------------------------------------- Local Assets -------------------------------------------------- */
 import WavesDivider from 'assets/icons/wavesOpacity.svg';
@@ -36,6 +36,7 @@ import { io } from "socket.io-client";
 import { setSocketState } from "@/redux/slices/socket/globalSocketSlice";
 import { initialState as DefaultUserStoreData, UserState } from "@/redux/slices/authUser/authUserSlice";
 import { setChatSocketState } from '@/redux/slices/socket/chatSocketSlice';
+import Notification from '../Notification/Notification';
 
 const CreatGameGlobalSocket = (user: any) => {
   console.log("CreatGameGlobalSocket user: ", user);
@@ -331,7 +332,6 @@ const HeaderNavMobile: React.FC = () => {
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 export default function Navbar() {
-  const { isOpen, onToggle } = useDisclosure()
   const [userNotAuthenticated, setUserNotAuthenticated] = useState(true);
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['userProfile'],
@@ -407,26 +407,8 @@ export default function Navbar() {
           alignItems="center"
         >
           {userNotAuthenticated == false ? (
-            <div className="flex flex-row gap-10 items-center justify-center">
-              <div className="hidden md:block">
-                <Menu>
-                  <MenuButton
-                    as={IconButton}
-                    isRound={true}
-                    className='bg-black'
-                    variant='solid'
-                    icon={<BellIcon w={10} h={10} color={"white"}/>}
-                  >
-                  </MenuButton>
-                    <MenuList>
-                      <MenuItem>Download</MenuItem>
-                      <MenuItem>Create a Copy</MenuItem>
-                      <MenuItem>Mark as Draft</MenuItem>
-                      <MenuItem>Delete</MenuItem>
-                      <MenuItem>Attend a Workshop</MenuItem>
-                    </MenuList>
-                </Menu>
-              </div>
+            <div className="flex flex-row gap-6 items-center justify-center">
+              <Notification />
               <UserProfileNavbarBadge />
             </div>
           ) : (
