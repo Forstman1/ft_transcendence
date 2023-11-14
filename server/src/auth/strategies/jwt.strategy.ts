@@ -5,7 +5,6 @@ import { UserService } from 'src/user/user.service';
 import { UnauthorizedException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { Request } from 'express';
-import { Console } from 'console';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -44,8 +43,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user: User = await this.userService.findUser({
       id: payload.id,
     });
-    if (!payload.isTwoFA_Token && user.twoFactorEnabled && !payload.twoFASuccess) {
-      throw new UnauthorizedException('Two-factor Authentication Required');
+    if (!payload.isTwoFA_Token && user.twoFactorEnabled && !payload.TwoFA_Success) {
+      throw new UnauthorizedException('Two-factor Authentication Requiregggd');
     }
     return { id: payload.id };
   }

@@ -39,7 +39,8 @@ const RestrictedRoute = ({ children }: RestrictedRouteProps) => {
   // }, [isAuthorized]);
 
   if (!isAuthorized) {
-    router.push('/');
+    router.push('/?unauthorized=true');
+    return null;
   }
   return <>{children}</>;
 };
