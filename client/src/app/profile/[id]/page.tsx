@@ -73,7 +73,7 @@ export default function Profile({params}: any) {
                 <Achievements userId={params.id} />
             </div>
             <div className='lg:col-span-1 min-h-[250px] lg:h-full w-full  mb-8 lg:mb-0 border-black border-2 rounded custom-shadow'>
-                <MatchHistory />
+                <MatchHistory userId={params.id} />
             </div>
  
         </div>
