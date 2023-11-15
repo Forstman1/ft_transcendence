@@ -12,7 +12,7 @@ export interface UserState {
   avatarUrl: string,
   isOnline: boolean,
   accessToken: string,
-};
+}
 
 export const initialState = {
   isAuthenticated: false,
@@ -40,6 +40,6 @@ export const userSlice = createSlice({
   },
 });
 
-export const { updateUser } = userSlice.actions
+export const { updateUser } = userSlice.actions;
 
 export default userSlice.reducer;

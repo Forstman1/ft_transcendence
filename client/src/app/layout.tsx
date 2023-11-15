@@ -53,7 +53,7 @@ export default function RootLayout({
         <ReduxProvider>
           <CacheProvider>
             <QueryClientProvider client={queryClient}>
-              <ChakraProvider>
+              <ChakraProvider theme={theme}>
                 {isloading ? <SplashScreen finishLoading={() => setIsLoading(false)} /> :
                   <>
                     <GameNotification />
