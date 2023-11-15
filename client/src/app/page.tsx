@@ -2,8 +2,7 @@
 
 import React, { useEffect } from "react";
 import Image from "next/image";
-import { useRouter as useRouterNavigation, useSearchParams } from "next/navigation";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import {
   Flex,
   Box,
@@ -34,7 +33,7 @@ import PageDivider2 from "assets/icons/waves.svg"
 import { toast } from "react-hot-toast";
 
 
-export function CustomButton(
+const CustomButton = (
   {
     inverseColorProp,
     borderColorProp,
@@ -47,7 +46,7 @@ export function CustomButton(
     propOnClick: () => void,
     children: React.ReactNode
   }
-  ) {
+  ) => {
   const primaryColor = inverseColorProp ? "neutral-950" : "neutral-50";
   const secondaryColor = inverseColorProp ? "neutral-50" : "neutral-950";
   const borderColor = borderColorProp ? "neutral-950" : "neutral-50";
@@ -77,9 +76,9 @@ export function CustomButton(
       </Center>
     </Button>
   )
-}
+};
 
-export function SignupModal (props: any) {
+const SignupModal = (props: any) => {
   const OverlayOne = () => (
     <ModalOverlay
       bg='blackAlpha.300'
@@ -134,12 +133,12 @@ export function SignupModal (props: any) {
       </motion.div>
     </>
   )
-}
+};
 
 // TODO add a custom cursor for the whole website
 // TODO add a custom favicon
 
-const Footer: React.FC = () => {
+const Footer = () => {
   const textSize = [
     'xs', 'sm', 'md', 'lg', 'xl', 'xl', '2xl', '2xl', '2xl', '3xl', '3xl'
   ];
@@ -173,7 +172,7 @@ const Footer: React.FC = () => {
   );
 };
 
-export function GoToProfileButton(
+const GoToProfileButton = (
   {
     inverseColorProp,
     borderColorProp,
@@ -181,9 +180,8 @@ export function GoToProfileButton(
   {
     inverseColorProp: boolean,
     borderColorProp: boolean,
-  })
-  {
-  const router = useRouterNavigation();
+  }) => {
+  const router = useRouter();
   const primaryColor = inverseColorProp ? "neutral-950" : "neutral-50";
   const secondaryColor = inverseColorProp ? "neutral-50" : "neutral-950";
   const borderColor = borderColorProp ? "neutral-950" : "neutral-50";
@@ -213,11 +211,11 @@ export function GoToProfileButton(
       </Center>
     </Button>
   )
-}
+};
 
-export default function Home({ searchParams }: { searchParams: any }) {
+export default function Homepage({ searchParams }: { searchParams: any }) {
   const data = useSelector((state: { authUser: UserState }) => state.authUser);
-  const router = useRouterNavigation();
+  const router = useRouter();
   useEffect(() => {
     if (searchParams?.error === 'true') {
       toast.error('Something wrong happened, please try again later.')
@@ -228,7 +226,7 @@ export default function Home({ searchParams }: { searchParams: any }) {
     } else if (searchParams?.unauthorized === 'true') {
       toast.error('You need to be logged in to access this page.')
     }
-  }, [])
+  }, [searchParams, searchParams?.error, searchParams?.logged, searchParams?.unauthorized])
   return (
     <PageWrapper>
       <div

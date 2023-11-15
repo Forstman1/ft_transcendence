@@ -1,7 +1,7 @@
 "use client";
 
 /* ------------------------------------------------ Remote Components ----------------------------------------------- */
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -17,17 +17,16 @@ import {
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
-import { useQuery, useMutation } from 'react-query';
-import { fetchUserProfile, logout } from '@/utils/functions/auth/fetchingUserData';
+import { useQuery } from 'react-query';
+import { fetchUserProfile } from '@/utils/functions/auth/fetchingUserData';
 import {
   AuthButtonsList, NAVBAR_ITEMS, AuthButtonObj
 } from '@/utils/constants/auth/AuthConstants';
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from '@/redux/slices/authUser/authUserSlice';
-import { useRouter} from 'next/navigation';
 
 /* -------------------------------------------------- Remote Assets ------------------------------------------------- */
-import { HamburgerIcon} from '@chakra-ui/icons';
+import { HamburgerIcon } from '@chakra-ui/icons';
 
 /* -------------------------------------------------- Local Assets -------------------------------------------------- */
 import WavesDivider from 'assets/icons/wavesOpacity.svg';
@@ -137,20 +136,7 @@ export function SignupButton({ onClick }: { onClick: () => void }) {
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 export function UserProfileNavbarBadge() {
-  const dispatch = useDispatch();
   const data = useSelector((state: { authUser: UserState }) => state.authUser);
-  const router = useRouter();
-  const { mutate } = useMutation({
-    mutationFn: logout,
-    mutationKey: ['logout'],
-    onError: (error: any) => {
-      router.push('/?error=true');
-    },
-    onSuccess: (response) => {
-      dispatch(updateUser(DefaultUserStoreData));
-      router.push('/?logged=false');
-    }
-  });
   return (
     <Flex alignItems='center' gap={5} flexDirection='row-reverse'>
       <Box flexShrink={0}>
@@ -161,7 +147,7 @@ export function UserProfileNavbarBadge() {
             variant={'link'}
             cursor={'pointer'}
             minW={0}>
-            <Avatar size='lg' src={data.avatarUrl}>
+            <Avatar size={['md', 'md', 'md', 'lg']} src={data.avatarUrl}>
               <AvatarBadge
                 boxSize='1em'
                 borderColor={data.isOnline ? 'green.100' : 'red.100'}
@@ -189,10 +175,10 @@ export function UserProfileNavbarBadge() {
             <MenuItem as='a' href='/userPage'>Profile</MenuItem>
             <MenuItem as='a' href='/settings'>Settings</MenuItem>
             <MenuDivider />
-            <MenuItem 
-              color={'red.500'} as='a' 
+            <MenuItem
+              color={'red.500'} as='a'
               href={`${process.env.NEXT_PUBLIC_SERVER_URL}auth/logout`}>
-                Logout
+              Logout
             </MenuItem>
           </MenuList>
         </Menu>
@@ -298,7 +284,6 @@ const HeaderNavDesktop: React.FC = () => {
 }
 
 const HeaderNavMobile: React.FC = () => {
-  let path = usePathname();
   return (
     <Box className='block md:hidden'>
       <Menu>
@@ -323,16 +308,17 @@ const HeaderNavMobile: React.FC = () => {
             href: string
           }, index: number) => {
             return (
-              <MenuItem
-                key={`mobile-navbar-menu-item-${index}`} rounded='md' as={"a"}
-                className={`bg-neutral-900 text-neutral-50 border-neutral-950`}
-                href={item.href}
-              >
-                <Text className="text-xl font-semibold">
-                  {item.text}
-                </Text>
-                {index != NAVBAR_ITEMS.length - 1 ? <MenuDivider /> : null}
-              </MenuItem>
+              <Link href={item.href} key={`mobile-navbar-menu-link-${index}`}>
+                <MenuItem
+                  key={`mobile-navbar-menu-item-${index}`} rounded='md' as={"button"}
+                  className={`bg-neutral-900 text-neutral-50 border-neutral-950`}
+                >
+                  <Text className="text-xl font-semibold">
+                    {item.text}
+                  </Text>
+                  {index != NAVBAR_ITEMS.length - 1 ? <MenuDivider /> : null}
+                </MenuItem>
+              </Link>
             )
           })}
         </MenuList>
@@ -345,13 +331,14 @@ const HeaderNavMobile: React.FC = () => {
 
 export default function Navbar() {
   const dispatch = useDispatch();
-  const [userAuthenticated, setUserAuthenticated] = useState(false);
-  const userData = useQuery({
+  const user = useSelector((state: { authUser: UserState }) => state.authUser);
+  const [userAuthenticated, setUserAuthenticated] = useState(user.isAuthenticated);
+  useQuery({
     queryKey: ['userProfile'],
     queryFn: fetchUserProfile,
     refetchInterval: 5000,
     useErrorBoundary: false,
-    onError: (err: any) => {
+    onError: () => {
       setUserAuthenticated(false);
       dispatch(updateUser(DefaultUserStoreData));
     },
@@ -372,6 +359,7 @@ export default function Navbar() {
       }));
     },
   });
+
   return (
     <header className="w-screen h-16 md:h-24 bg-neutral-950 fixed top-0 z-50">
       <Flex
