@@ -23,8 +23,36 @@ ChartJS.register(
   Legend
 );
 
+import { useQuery } from 'react-query';
+import { getChartLineData } from '@/utils/profile/fetchingProfileData'
 
-export default function ChartLine() {
+
+export default function ChartLine({userId}: {userId: string}) {
+
+    console.log(`ChartLine userId: ${userId}`);
+    
+	const { 
+        data: chartData,
+        error,
+        isLoading
+    } = useQuery("activitieshistory", () => getChartLineData(userId));
+
+
+if(isLoading){
+    return(
+        <h2>User activities loading ....</h2>
+        );
+    }
+if(error){
+    return(
+        <h2>Opps User activities error</h2>
+    );
+}
+
+console.log(`before------User activities-----------:`);console.log(chartData);console.log(`:-----------------------after`);
+
+
+    
 
     const options = {
     responsive: true,
@@ -40,7 +68,7 @@ export default function ChartLine() {
         },
     };
     
-    const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+    const labels = chartData.labels;
     
     const data = {
       labels,
@@ -48,7 +76,7 @@ export default function ChartLine() {
         {
           fill: true,
           label: 'Dataset 2',
-          data: [5, 10, 5, 10],
+          data: chartData.values,
           borderColor: 'rgb(53, 162, 235)',
           backgroundColor: 'rgba(53, 162, 235, 0.5)',
         },

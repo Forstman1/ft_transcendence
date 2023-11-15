@@ -50,13 +50,13 @@ export default function Profile({params}: any) {
                     <div className=' border-r-2 border-black w-[100%] md:basis-7/12'>
                         <h4 className='font-bold text-center bg-black text-white text-xl border-r border-white'>Activity</h4>
                         <div>
-                            <ChartLine />
+                            <ChartLine userId={params.id}/>
                         </div>
                     </div>
                     <div className=' w-[100%] md:basis-1/3'>
                         <h4 className='font-bold text-center bg-black text-white text-xl border-l border-white'>Stats</h4>
                         <div>
-                            <ChartPie chartData={{wins: 10, loses: 5, draws: 2}}/>
+                            <ChartPie userId={params.id}/>
                         </div>
                     </div>
                 </Flex>
@@ -70,7 +70,7 @@ export default function Profile({params}: any) {
             </div>
 
             <div className='lg:col-span-1  min-h-[250px] lg:h-full w-full  mb-8 lg:mb-0 border-black border-2 rounded custom-shadow'>
-                <Achievements />
+                <Achievements userId={params.id} />
             </div>
             <div className='lg:col-span-1 min-h-[250px] lg:h-full w-full  mb-8 lg:mb-0 border-black border-2 rounded custom-shadow'>
                 <MatchHistory />

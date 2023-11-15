@@ -5,27 +5,29 @@ import { AuthGuard } from '@nestjs/passport';
 
 
 
-// @UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'))
 @Controller('profile')
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
-  @Get('achievements/:id')
-  async getUserAchievements(@Param('id') id: string): Promise<any> {
-    const gameHistory = await this.profileService.findGameHistory(id);
-  
-    if (!gameHistory) {
-      // Handle error or return appropriate response
-      return { error: 'Failed to fetch game history data.' };
+    @Get('activitieshistory/:id')
+    async getChartLineData(@Param('id') id: string): Promise<any> {
+    return await this.profileService.calculateChartData(id);
     }
-    const userAchievements = this.profileService.determineAchievements(gameHistory);
-    return userAchievements;
-  }
 
-  @Get('activitieshistory/:id')
-  async getChartData(@Param('id') id: string): Promise<any> {
-    const chartData = await this.profileService.calculateChartData(id);
-    return chartData;
-  }
+    @Get('matchesresults/:id')
+    async getMatchesResults(@Param('id') id: string): Promise<any> {
+    return await this.profileService.calculateMatchesResults(id);
+    }
+  
+    @Get('achievements/:id')
+    async getUserAchievements(@Param('id') id: string): Promise<any> {
+        return await this.profileService.determineAchievements(id);
+    }
+
+    @Get('matcheshistory/:id')
+    async getMatchesHistory(@Param('id') id: string): Promise<any> {
+        return await this.profileService.calculateMatchesHistory(id);
+    }
 
 }

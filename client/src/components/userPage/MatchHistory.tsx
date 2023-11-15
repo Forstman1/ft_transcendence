@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Flex, Icon, Avatar } from '@chakra-ui/react'
 import { TriangleDownIcon } from '@chakra-ui/icons'
 
+import { useQuery } from 'react-query';
+import { getMatchesHistory } from '@/utils/profile/fetchingProfileData'
 
 
 type matchInfoType =  Array<{
@@ -20,12 +22,38 @@ const data: matchInfoType = [
     {'score': 5, 'profile':'https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg', 'opponentScore': 7, 'opponentProfile': 'https://avatars.githubusercontent.com/u/76266668?v=4'},
 ]
 
-export default function MatchHistory() {
+export default function MatchHistory({userId}: {userId: string}) {
     const [showWins, setShowWins] = useState(false);
     const [showLoses, setShowLoses] = useState(false);
     const [showAll, setShowAll] = useState(true);
+
+
+	const {
+        data: matchesHistoryData,
+        error,
+        isLoading
+    } = useQuery("matchesrhistory", () => getMatchesHistory(userId));
+
+
+    if(isLoading){
+        return(
+            <h2>Matches History loading ....</h2>
+        );
+    }
+    if(error){
+        return(
+            <h2>Opps Matches History error</h2>
+        );
+    }
+
+    console.log(`before------Matches History-----------:`);console.log(matchesHistoryData);console.log(`:-----------------------after`);
+    // TODO: this should be removed when backend endpoint completes.
+    let tempData: matchInfoType = matchesHistoryData;
+    if(!matchesHistoryData.length){
+        tempData = data
+    }
   
-    const filterdData = data.filter((item) => {
+    const filterdData = tempData.filter((item) => {
         if (showAll)
             return true;
         if (showWins)

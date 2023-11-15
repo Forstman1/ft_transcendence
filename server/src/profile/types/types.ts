@@ -21,3 +21,16 @@ export type activitiesHistoryType = {
   values: number[];
 };
 
+export type matchesResultsType = {
+  wins: number;
+  loses: number;
+  draws: number;
+};
+
+export type matchesHistoryType =  Array<{
+    score: number;
+    profile: string;
+    opponentScore: number;
+    opponentProfile: string;
+}>
+
