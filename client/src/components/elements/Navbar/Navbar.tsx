@@ -17,14 +17,13 @@ import {
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
-import { useQuery, useMutation } from 'react-query';
-import { fetchUserProfile, logout } from '@/utils/functions/auth/fetchingUserData';
+import { useQuery } from 'react-query';
+import { fetchUserProfile } from '@/utils/functions/auth/fetchingUserData';
 import {
   AuthButtonsList, NAVBAR_ITEMS, AuthButtonObj
 } from '@/utils/constants/auth/AuthConstants';
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from '@/redux/slices/authUser/authUserSlice';
-import { useRouter } from 'next/navigation';
 
 /* -------------------------------------------------- Remote Assets ------------------------------------------------- */
 import { HamburgerIcon } from '@chakra-ui/icons';
@@ -47,13 +46,6 @@ const CreatGameGlobalSocket = (user: any) => {
     auth: {
       id: user.userId,
     },
-    //   transportOptions: {
-    //     polling: {
-    //       extraHeaders: {
-    //           Authorization: `Bearer ${user.accessToken}`,
-    //       }
-    //     }
-    // }
   });
   socket.emit("createRoomNotification", { userId: user.userId }, (data: any) => {
     console.log("createGameRoomNotification: " + data);

@@ -42,7 +42,8 @@ const RestrictedRoute = ({ children }: RestrictedRouteProps) => {
     router.push('/?unauthorized=true');
     return null;
   }
-  return <>{children}</>;
+  else
+    return <>{children}</>;
 };
 
 export default RestrictedRoute;
