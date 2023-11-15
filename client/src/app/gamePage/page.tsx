@@ -17,7 +17,7 @@ import { motion } from "framer-motion";
 import { AppDispatch } from "@/redux/store/store";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/redux/store/store";
-import { setSocketState } from "@/redux/slices/socket/globalSocketSlice";
+import { setGameMatchState } from "@/redux/slices/game/gameMatchSlice";
 import { setModal } from "@/redux/slices/game/gameModalSlice";
 import { useRouter } from "next/navigation";
 import LodingAnimation from "../../../assets/animations/loadingAnimation.json";
@@ -40,13 +40,11 @@ export default function GamePage() {
   socket.socket?.on(
     "setIsOwner",
     (data: { isOwner: boolean; roomId: string, opponentId: string }) => {
-      console.log('data:', data);
       dispatch(
-        setSocketState({
-          socket: socket.socket,
+        setGameMatchState({
           isOwner: data.isOwner,
           roomId: data.roomId,
-          friendId: data.opponentId,
+          opponentId: data.opponentId,
         })
       );
       dispatch(

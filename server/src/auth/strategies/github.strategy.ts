@@ -27,7 +27,7 @@ export class GithubStrategy extends PassportStrategy(Strategy) {
     profile: Profile,
   ): Promise<UserDto> {
     try {
-      if (!profile) {
+      if (!profile || !profile?._json?.login || !profile?.emails[0]?.value || !profile?.displayName) {
         throw new ServiceUnavailableException("Couldn't retrieve data from API");
       }
       let generatedUsername: string = profile?._json?.login;

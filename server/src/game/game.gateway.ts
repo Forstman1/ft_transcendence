@@ -22,16 +22,17 @@ export class GameGateway {
   private readonly gameQueue: { [userId: string]: Socket } = {};
   private readonly isAllReady: { [roomId: string]: number } = {};
 
-
+// ---------------- connection----------------------------------------------
   handleConnection(@ConnectedSocket() client: Socket) {
-    this.server.on('connection', (socket) => {
       console.log('-----------------connection-----------------');
-      const userId = socket.handshake.auth.id;
-      this.connectedUsers[userId] = socket;
+      console.log('connection userId:', client.handshake.auth.id);
+      const userId = client.handshake.auth.id;
+      this.connectedUsers[userId] = client;
       this.gameService.updateUserIsOnline(userId, true);
-    });
+  }
 
-    client.on('disconnect', () => {
+// ---------------- disconnect----------------------------------------------
+  handleDisconnect(@ConnectedSocket() client: Socket) {
       console.log('-----------------disconnect-----------------');
       console.log('disconnect userId:', client.handshake.auth.id);
       const roomId = this.gameService.getRoomIdByUserId(client.id);
@@ -41,10 +42,10 @@ export class GameGateway {
         this.gameService.resetGameDate(roomId);
       }
       this.gameService.updateUserIsOnline(client.handshake.auth.id, false);
-    });
   }
 
   // ---------------- sendGameData------------------------------------------
+
   @SubscribeMessage('sendGameData')
   // @UseGuards(JwtAuthGuard)
   sendGameData(@Body() data): void {
@@ -339,7 +340,7 @@ export class GameGateway {
       console.error('Error in SearchFriend:', error);
     }
   }
-
+  
   //-------------getOpponentData---------------------------------------------------
   @SubscribeMessage('getOpponentData')
   // @UseGuards(JwtAuthGuard)

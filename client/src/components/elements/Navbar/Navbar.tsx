@@ -1,7 +1,7 @@
 "use client";
 
 /* ------------------------------------------------ Remote Components ----------------------------------------------- */
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -17,17 +17,17 @@ import {
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
-import { useQuery, useMutation } from 'react-query';
-import { fetchUserProfile, logout } from '@/utils/functions/auth/fetchingUserData';
+import { useQuery } from 'react-query';
+import { fetchUserProfile } from '@/utils/functions/auth/fetchingUserData';
 import {
   AuthButtonsList, NAVBAR_ITEMS, AuthButtonObj
 } from '@/utils/constants/auth/AuthConstants';
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from '@/redux/slices/authUser/authUserSlice';
-import { useRouter} from 'next/navigation';
+import { useAppSelector } from '@/redux/store/store';
 
 /* -------------------------------------------------- Remote Assets ------------------------------------------------- */
-import { HamburgerIcon} from '@chakra-ui/icons';
+import { HamburgerIcon } from '@chakra-ui/icons';
 
 /* -------------------------------------------------- Local Assets -------------------------------------------------- */
 import WavesDivider from 'assets/icons/wavesOpacity.svg';
@@ -40,7 +40,6 @@ import { setChatSocketState } from '@/redux/slices/socket/chatSocketSlice';
 import Notification from '../Notification/Notification';
 
 const CreatGameGlobalSocket = (user: any) => {
-  console.log("CreatGameGlobalSocket user: ", user);
   const socket = io(process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001', {
     transports: ["websocket"],
     upgrade: false,
@@ -49,13 +48,13 @@ const CreatGameGlobalSocket = (user: any) => {
     },
   });
   socket.emit("createRoomNotification", { userId: user.userId }, (data: any) => {
-    console.log("createGameRoomNotification: " + data);
+    // console.log("createGameRoomNotification: " + data);
   });
   return socket;
 }
 
 const CreatChatGlobalSocket = (user: any) => {
-  console.log("CreatChatGlobalSocket user: ", user);
+  // console.log("CreatChatGlobalSocket user: ", user);
 
   const socket = io('http://localhost:3001/chat', {
     transports: ["websocket"],
@@ -66,10 +65,11 @@ const CreatChatGlobalSocket = (user: any) => {
   });
 
   socket?.emit(`createRoom`, { userId: user.userId }, (data: any) => {
-    console.log(`the data returned is ` + data)
+    // console.log(`the data returned is ` + data)
   })
   return socket;
 }
+
 
 /* --------------------------------------------------- AuthButtons -------------------------------------------------- */
 // loginWithService
@@ -136,20 +136,7 @@ export function SignupButton({ onClick }: { onClick: () => void }) {
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 export function UserProfileNavbarBadge() {
-  const dispatch = useDispatch();
   const data = useSelector((state: { authUser: UserState }) => state.authUser);
-  const router = useRouter();
-  const { mutate } = useMutation({
-    mutationFn: logout,
-    mutationKey: ['logout'],
-    onError: (error: any) => {
-      router.push('/?error=true');
-    },
-    onSuccess: (response) => {
-      dispatch(updateUser(DefaultUserStoreData));
-      router.push('/?logged=false');
-    }
-  });
   return (
     <Flex alignItems='center' gap={5} flexDirection='row-reverse'>
       <Box flexShrink={0}>
@@ -160,7 +147,7 @@ export function UserProfileNavbarBadge() {
             variant={'link'}
             cursor={'pointer'}
             minW={0}>
-            <Avatar size='lg' src={data.avatarUrl}>
+            <Avatar size={['md', 'md', 'md', 'lg']} src={data.avatarUrl}>
               <AvatarBadge
                 boxSize='1em'
                 borderColor={data.isOnline ? 'green.100' : 'red.100'}
@@ -188,10 +175,10 @@ export function UserProfileNavbarBadge() {
             <MenuItem as='a' href='/userPage'>Profile</MenuItem>
             <MenuItem as='a' href='/settings'>Settings</MenuItem>
             <MenuDivider />
-            <MenuItem 
-              color={'red.500'} as='a' 
+            <MenuItem
+              color={'red.500'} as='a'
               href={`${process.env.NEXT_PUBLIC_SERVER_URL}auth/logout`}>
-                Logout
+              Logout
             </MenuItem>
           </MenuList>
         </Menu>
@@ -297,7 +284,6 @@ const HeaderNavDesktop: React.FC = () => {
 }
 
 const HeaderNavMobile: React.FC = () => {
-  let path = usePathname();
   return (
     <Box className='block md:hidden'>
       <Menu>
@@ -322,16 +308,17 @@ const HeaderNavMobile: React.FC = () => {
             href: string
           }, index: number) => {
             return (
-              <MenuItem
-                key={`mobile-navbar-menu-item-${index}`} rounded='md' as={"a"}
-                className={`bg-neutral-900 text-neutral-50 border-neutral-950`}
-                href={item.href}
-              >
-                <Text className="text-xl font-semibold">
-                  {item.text}
-                </Text>
-                {index != NAVBAR_ITEMS.length - 1 ? <MenuDivider /> : null}
-              </MenuItem>
+              <Link href={item.href} key={`mobile-navbar-menu-link-${index}`}>
+                <MenuItem
+                  key={`mobile-navbar-menu-item-${index}`} rounded='md' as={"button"}
+                  className={`bg-neutral-900 text-neutral-50 border-neutral-950`}
+                >
+                  <Text className="text-xl font-semibold">
+                    {item.text}
+                  </Text>
+                  {index != NAVBAR_ITEMS.length - 1 ? <MenuDivider /> : null}
+                </MenuItem>
+              </Link>
             )
           })}
         </MenuList>
@@ -344,33 +331,37 @@ const HeaderNavMobile: React.FC = () => {
 
 export default function Navbar() {
   const dispatch = useDispatch();
-  const [userAuthenticated, setUserAuthenticated] = useState(false);
-  const userData = useQuery({
+  const user = useSelector((state: { authUser: UserState }) => state.authUser);
+  const socketState = useAppSelector((state) => state.globalSocketReducer);
+  const [userAuthenticated, setUserAuthenticated] = useState(user.isAuthenticated);
+  useQuery({
     queryKey: ['userProfile'],
     queryFn: fetchUserProfile,
     refetchInterval: 5000,
     useErrorBoundary: false,
-    onError: (err: any) => {
+    onError: () => {
       setUserAuthenticated(false);
       dispatch(updateUser(DefaultUserStoreData));
     },
     onSuccess: (response: any) => {
       setUserAuthenticated(true);
       dispatch(updateUser({ isAuthenticated: true, ...response.data }));
-      const gameSocket = CreatGameGlobalSocket(response.data);
+      if(!socketState.socket){
+        const gameSocket = CreatGameGlobalSocket(response.data);
+        dispatch(setSocketState({
+          socket: gameSocket,
+        }));
+      }
       const chatSocket = CreatChatGlobalSocket(response.data);
       dispatch(setChatSocketState({
         socket: chatSocket,
         roomId: "",
         userID: response.data.userId,
       }));
-      dispatch(setSocketState({
-        socket: gameSocket,
-        isOwner: false,
-        roomId: "",
-      }));
     },
   });
+
+
   return (
     <header className="w-screen h-16 md:h-24 bg-neutral-950 fixed top-0 z-50">
       <Flex

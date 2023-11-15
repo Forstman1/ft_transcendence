@@ -53,14 +53,14 @@ export class IntraStrategy extends PassportStrategy(Strategy) {
     profile: Profile,
   ): Promise<UserDto> {
     try {
-      if (!profile) {
+      if (!profile || !profile?._json?.login || !profile?._json?.email || !profile?._json?.displayname) {
         throw new ServiceUnavailableException("Couldn't retrieve data from API");
       }
       const coalitionData = await this.getCoalition(
-        profile._json.id,
+        profile?._json?.id,
         accessToken,
       );
-      let generatedUsername: string = profile._json.login;
+      let generatedUsername: string = profile?._json?.login;
       let usernameExists: boolean = true;
       while (usernameExists) {
         const userFound = await this.userService.findUser({
@@ -74,9 +74,9 @@ export class IntraStrategy extends PassportStrategy(Strategy) {
       }
       const user: UserDto = {
         username: generatedUsername,
-        email: profile._json.email,
-        fullname: profile._json.displayname,
-        avatarURL: profile._json.image.versions.large,
+        email: profile?._json?.email,
+        fullname: profile?._json?.displayname,
+        avatarURL: profile?._json?.image?.versions?.large,
         coalitionURL: coalitionData?.image_url,
         coalitionColor: coalitionData?.color,
         coalitionName: coalitionData?.name,

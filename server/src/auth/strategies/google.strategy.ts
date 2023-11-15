@@ -27,13 +27,13 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     profile: Profile,
   ): Promise<UserDto> {
     try {
-      if (!profile) {
+      if (!profile || !profile?._json?.email || !profile?._json?.name) {
         throw new ServiceUnavailableException("Couldn't retrieve data from API");
       }
       let generatedUsername: string;
       let usernameExists: boolean = true;
       while (usernameExists) {
-        generatedUsername = generateFromEmail(profile._json.email, 3);
+        generatedUsername = generateFromEmail(profile?._json?.email, 3);
         const userFound = await this.userService.findUser({
           username: generatedUsername,
         });
@@ -43,8 +43,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
       }
       const user: UserDto = {
         username: generatedUsername,
-        email: profile._json.email,
-        fullname: profile._json.name,
+        email: profile?._json?.email,
+        fullname: profile?._json?.name,
         avatarURL: profile?._json?.picture,
         coalitionURL: undefined,
         coalitionColor: undefined,

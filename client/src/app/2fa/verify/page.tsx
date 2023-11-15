@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from "react";
+import React from "react";
 import { PageWrapper } from "../../animationWrapper/pageWrapper";
 import {
   Center,
