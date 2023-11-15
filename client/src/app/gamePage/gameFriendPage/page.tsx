@@ -37,8 +37,9 @@ export default function GameFriendPage() {
   let gameSettings = useAppSelector((state) => state.gameReducer);
   //-----------------socket data -----------------------------
   const socketState = useAppSelector((state) => state.globalSocketReducer);
+  const gameMatch = useAppSelector((state) => state.gameMatch);
   const socket = socketState.socket;
-  const roomId = socketState.roomId;
+  const roomId = gameMatch.roomId;
   //----------------------------------------------------------
   appliyGameMode(gameSettings);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -84,7 +85,6 @@ export default function GameFriendPage() {
       socket.io.engine.transport.close()
     }
   })
-
 
   //--------------------------------Socket Code logic-------------------------------------------
 
@@ -204,14 +204,14 @@ export default function GameFriendPage() {
     if (friendExitGame) return;
     let userScore = 0;
     let opponentScore = 0;
-    if (socketState.isOwner) {
+    if (gameMatch.isOwner) {
       userScore = rightScore;
       opponentScore = leftScore;
     } else {
       userScore = leftScore;
       opponentScore = rightScore;
     }
-    const status = socketState.isOwner ? gameEndStatic.user : gameEndStatic.bot;
+    const status = gameMatch.isOwner ? gameEndStatic.user : gameEndStatic.bot;
     let xp = 0;
     if (status === "WIN") {
       xp = gameSettings.mode === "EASY" ? 10 : gameSettings.mode === "MEDIUM" ? 20 : 30;
@@ -243,7 +243,7 @@ export default function GameFriendPage() {
         closeSocketConnection();
       });
     }
-    if (!socketState.isOwner) return;
+    if (!gameMatch.isOwner) return;
     if (!gameStarted && !gameEnded ) {
       socket?.emit("pauseGame", roomId);
     }
@@ -254,8 +254,7 @@ export default function GameFriendPage() {
 
   useEffect(() => {
     socket?.on("friendExitGame1", () => {
-      console.log("friendExitGame1");
-      if (socketState.isOwner) {
+      if (gameMatch.isOwner) {
         setGameEndStatic({
           bot: "LOSE",
           user: "WIN",
@@ -376,7 +375,7 @@ export default function GameFriendPage() {
     
     const speed = RecSpeed;
 
-    if (socketState.isOwner) {
+    if (gameMatch.isOwner) {
       if (keysPressed["ArrowUp"]) {
         setRightPaddle((prev) => ({
           ...prev,

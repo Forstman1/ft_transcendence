@@ -24,6 +24,7 @@ import {
 } from '@/utils/constants/auth/AuthConstants';
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from '@/redux/slices/authUser/authUserSlice';
+import { useAppSelector } from '@/redux/store/store';
 
 /* -------------------------------------------------- Remote Assets ------------------------------------------------- */
 import { HamburgerIcon } from '@chakra-ui/icons';
@@ -39,7 +40,6 @@ import { setChatSocketState } from '@/redux/slices/socket/chatSocketSlice';
 import Notification from '../Notification/Notification';
 
 const CreatGameGlobalSocket = (user: any) => {
-  console.log("CreatGameGlobalSocket user: ", user);
   const socket = io(process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001', {
     transports: ["websocket"],
     upgrade: false,
@@ -48,13 +48,13 @@ const CreatGameGlobalSocket = (user: any) => {
     },
   });
   socket.emit("createRoomNotification", { userId: user.userId }, (data: any) => {
-    console.log("createGameRoomNotification: " + data);
+    // console.log("createGameRoomNotification: " + data);
   });
   return socket;
 }
 
 const CreatChatGlobalSocket = (user: any) => {
-  console.log("CreatChatGlobalSocket user: ", user);
+  // console.log("CreatChatGlobalSocket user: ", user);
 
   const socket = io('http://localhost:3001/chat', {
     transports: ["websocket"],
@@ -65,10 +65,11 @@ const CreatChatGlobalSocket = (user: any) => {
   });
 
   socket?.emit(`createRoom`, { userId: user.userId }, (data: any) => {
-    console.log(`the data returned is ` + data)
+    // console.log(`the data returned is ` + data)
   })
   return socket;
 }
+
 
 /* --------------------------------------------------- AuthButtons -------------------------------------------------- */
 // loginWithService
@@ -331,6 +332,7 @@ const HeaderNavMobile: React.FC = () => {
 export default function Navbar() {
   const dispatch = useDispatch();
   const user = useSelector((state: { authUser: UserState }) => state.authUser);
+  const socketState = useAppSelector((state) => state.globalSocketReducer);
   const [userAuthenticated, setUserAuthenticated] = useState(user.isAuthenticated);
   useQuery({
     queryKey: ['userProfile'],
@@ -344,20 +346,21 @@ export default function Navbar() {
     onSuccess: (response: any) => {
       setUserAuthenticated(true);
       dispatch(updateUser({ isAuthenticated: true, ...response.data }));
-      const gameSocket = CreatGameGlobalSocket(response.data);
+      if(!socketState.socket){
+        const gameSocket = CreatGameGlobalSocket(response.data);
+        dispatch(setSocketState({
+          socket: gameSocket,
+        }));
+      }
       const chatSocket = CreatChatGlobalSocket(response.data);
       dispatch(setChatSocketState({
         socket: chatSocket,
         roomId: "",
         userID: response.data.userId,
       }));
-      dispatch(setSocketState({
-        socket: gameSocket,
-        isOwner: false,
-        roomId: "",
-      }));
     },
   });
+
 
   return (
     <header className="w-screen h-16 md:h-24 bg-neutral-950 fixed top-0 z-50">
