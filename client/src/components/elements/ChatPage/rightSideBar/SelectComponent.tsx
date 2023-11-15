@@ -11,7 +11,6 @@ export default function SelectComponent() {
 
   const [isOpen, setIsOpen] = useState(false)
   const [Chosen, setChosen] = useState("Channels")
-  const Toast = useToast
   const Channels = [
 
     { name: "General" },

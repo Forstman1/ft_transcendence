@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Box, Button, Input, InputGroup, InputRightElement, ModalBody, ModalCloseButton, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
+import { Box, Button, Input, InputGroup, InputRightElement, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
 import {  useSelector } from 'react-redux'
 import ModalWraper from '../../ModalWraper'
 import channelconfig from "../../../../../../assets/icons/channelconf.svg"

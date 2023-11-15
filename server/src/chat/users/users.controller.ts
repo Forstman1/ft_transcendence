@@ -20,7 +20,7 @@ export class UsersController {
     }
 
     @Get(`chatList/:id`)
-    async getChatList(@Param() id: string) {
+    async getChatList(@Param() id: Prisma.UserWhereUniqueInput) {
         return await this.usersService.getChatList(id)
     }
     
@@ -30,7 +30,7 @@ export class UsersController {
     }
 
     @Post(`addToChat/:id`)
-    async addToChat(@Param() id: string, @Body() friendId: string) {
+    async addToChat(@Param() id: Prisma.UserWhereUniqueInput, @Body() friendId: Prisma.UserWhereUniqueInput) {
         return await this.usersService.addToChat(id, friendId)
     }
 
@@ -43,11 +43,7 @@ export class UsersController {
         return this.usersService.listUsers(id)
     }
 
-    
-    @Get('/getuser/:id')
-    getuser(@Param('id') id: string) {
-        return this.usersService.getUserbyId(id)
-    }
+
 
     @Get('/getusers/:tofound')
     getuserstofound(@Param('tofound') tofound: string) {

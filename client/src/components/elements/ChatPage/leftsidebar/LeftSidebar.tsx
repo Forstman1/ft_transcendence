@@ -1,27 +1,24 @@
 "use client";
 
 import { SmallAddIcon } from '@chakra-ui/icons';
-import { Avatar, AvatarBadge, Icon, useDisclosure, Modal, background, useToast } from '@chakra-ui/react';
+import { Avatar, AvatarBadge, Icon, useDisclosure, Modal, useToast } from '@chakra-ui/react';
 import React, { useEffect, useState, useRef, use } from 'react'
 import Newchannel from './newchannel';
 import Hashtag from './hatshtag';
 import Newmessage from './newmessage';
 import Search from './search';
-import { Channel, ChannelMember } from '@/utils/types/chat/ChatTypes';
+import { Channel } from '@/utils/types/chat/ChatTypes';
 import { useDispatch, useSelector } from 'react-redux';
 import { User } from '@/utils/types/chat/ChatTypes';
 import { Box, Flex } from '@chakra-ui/layout';
 import { motion } from 'framer-motion';
-import { RootState } from '@/redux/store/store';
 import { setChannel, setChannelMember, setChannels, setMessages, setNewChannel, setTheUser, setUserDms } from '@/redux/slices/chat/ChatSlice';
-import { useQuery, useQueryClient } from "react-query";
-import { useAppSelector } from '@/redux/store/store';
+import { useQuery } from "react-query";
 import axios from 'axios';
 
 function Usercard(props: any) {
 
   const { user } = useSelector((state: any) => state.socket.userID)
-  const socket = useSelector((state: any) => state.socket.socket)
   const scroolToRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch();
 
@@ -75,11 +72,7 @@ export default function LeftSidebar() {
   const Users = useSelector((state: any) => state.chat.users)
   const id = useSelector((state: any) => state.socket.userID);
   const toast = useToast()
-
-
-  const { MidleClice } = useSelector((state: any) => state.mobile)
   const { LeftClice } = useSelector((state: any) => state.mobile)
-  const { RightClice } = useSelector((state: any) => state.mobile)
 
   useQuery({
     queryKey: "users",
@@ -98,7 +91,6 @@ export default function LeftSidebar() {
 
     socket?.on('getChannelsFirstTime', (data: any) => {
       const allchannels: Channel[] = data.channels
-
       allchannels.map((channel: Channel) => {
         socket?.emit('joinChannel', {
           channelId: channel.id,

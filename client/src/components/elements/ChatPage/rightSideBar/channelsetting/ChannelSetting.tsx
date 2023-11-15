@@ -1,17 +1,7 @@
-import React, { useState } from 'react'
-import AddToChannel from '../../../../../../assets/icons/AddToChannel.svg'
-import { Box, Button, Input, InputGroup, InputRightElement, ModalBody, ModalCloseButton, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
-import Image from 'next/image'
-import channelconfig from "../../../../../../assets/icons/channelconf.svg"
-import { useForm } from 'react-hook-form'
+import React from 'react'
+import { Box } from '@chakra-ui/react'
 import { useSelector } from 'react-redux'
-import { Channel, ChannelMember } from '@/utils/types/chat/ChatTypes'
-import ModalWraper from '../../ModalWraper'
-import ChangePassword from '../channelconfiguration/ChangePassword'
-import leavechannel from "../../../../../../assets/icons/leavechannel.svg"
-import invite from "../../../../../../assets/icons/invite.svg"
-import ban from "../../../../../../assets/icons/bancopy.svg"
-import Ban from "../../../../../../assets/icons/Ban.svg"
+import { ChannelMember } from '@/utils/types/chat/ChatTypes'
 import InvitePeople from './invitepeople'
 import LeaveChannel from './LeaveChannel'
 import DeletChannel from './DeleteChannel'
@@ -20,16 +10,6 @@ import DeletChannel from './DeleteChannel'
 
 export default function ChannelSetting() {
 
-    const { isOpen, onOpen, onClose } = useDisclosure()
-    const [imageAlt, setImageAlt] = useState('');
-    const channelinfo: Channel = useSelector((state:any) => state.chat.selectedChannelorUser)
-    const CtrlImages = [
-        { src: invite, alt: "Invite People", Componenent: ChangePassword },
-        { src: ban, alt: "Ban People", Componenent: ChangePassword },
-        { src: Ban, alt: "Delete Channel", Componenent: ChangePassword },
-        { src: leavechannel, alt: "Leave Channel", Componenent: ChangePassword },
-
-    ]
     const channelmember: ChannelMember = useSelector((state:any) => state.chat.ChannelMember)
    
     return <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7'>

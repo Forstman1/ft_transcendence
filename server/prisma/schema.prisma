@@ -15,7 +15,7 @@ datasource db {
 
 
 model User {
-  id                String       @id @default(uuid())
+  id                String       @id @unique @default(uuid())
   username          String       @unique
   email             String       @unique
   fullname          String       
@@ -34,8 +34,8 @@ model User {
   friends User[] @relation("Friends")
   friendOf User[] @relation("Friends")
 
-  chatWith User[] @relation("Chate")
-  chatBy User[] @relation("Chate")
+  chatWith User[] @relation("Chat")
+  chatBy User[] @relation("Chat")
 
   friendRequestsSent FriendRequest[] @relation("SentFriendRequests")
   friendRequestsReceived FriendRequest[] @relation("ReceivedFriendRequests")

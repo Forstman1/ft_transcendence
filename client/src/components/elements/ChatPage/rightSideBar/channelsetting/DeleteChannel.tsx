@@ -1,12 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Box, Button, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
-import { useMutation } from 'react-query'
-import { useDispatch, useSelector } from 'react-redux'
+import React, { useState } from 'react'
+import { Box, Button, ModalFooter, Text, useDisclosure } from '@chakra-ui/react'
+import { useSelector } from 'react-redux'
 import ModalWraper from '../../ModalWraper'
 import Image from 'next/image'
-import { Channel } from '@/utils/types/chat/ChatTypes'
-import { setChannels } from '@/redux/slices/chat/ChatSlice'
-import leavechannel from "../../../../../../assets/icons/leavechannel.svg"
 import Ban from "../../../../../../assets/icons/Ban.svg"
 
 
@@ -17,9 +13,6 @@ function Componenent({ onClose }: any) {
 
     const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
     const userId = useSelector((state: any) => state.socket.userID)
-    const toast = useToast()
-    const dispatch = useDispatch()
-
     const socket = useSelector((state: any) => state.socket.socket)
     
 

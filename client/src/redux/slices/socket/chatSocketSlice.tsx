@@ -1,8 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { data } from "autoprefixer";
-import { stat } from "fs";
-import { ACTION } from "next/dist/client/components/app-router-headers";
-import { dash } from "radash";
+import { createSlice } from "@reduxjs/toolkit";
 import { io, Socket } from "socket.io-client";
 
 let userId: string | null = null
@@ -27,13 +23,6 @@ const socket = io('http://localhost:3001/chat', {
     },
 })
 
-socket.on('connect', () => {
-    console.log('chat user connected')
-})
-
-// socket.emit(`createRoom`, {userId: userId}, (data: any) => {
-    
-// })
 
 export interface ChatSocketState {
     socket: Socket | null;

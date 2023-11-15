@@ -1,8 +1,8 @@
 "use client"
 
-import React, { useEffect } from "react";
+import React  from "react";
 import DesktopGamePreview from "../../assets/icons/pongDesktopImage.svg";
-import MobileGamePreview from "../../assets/icons/pongMobileImage.svg";
+
 import Image from "next/image";
 import { Flex, Box } from "@chakra-ui/react";
 import { PageWrapper } from "./animationWrapper/pageWrapper";

@@ -1,15 +1,12 @@
 import { Avatar, Input } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
-import Lottie from "lottie-react";
-import animationData from "../../../../../client/assets/animations/animation_typing.json";
 import arrow from "../../../../assets/icons/arrow.svg";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { addMessage } from "@/redux/slices/chat/ChatSlice";
-import { ChannelMessage, UserMessage } from "@/utils/types/chat/ChatTypes";
+import { ChannelMessage } from "@/utils/types/chat/ChatTypes";
 import { useMutation } from "react-query";
-import MobileFooter from "./Mobile/MobileFooter";
 import { setLeft, setRight, setMidle } from "@/redux/slices/chat/MobileSlice";
 import { useAppSelector } from "@/redux/store/store";
 
