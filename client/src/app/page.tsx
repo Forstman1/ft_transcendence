@@ -223,10 +223,11 @@ export default function Homepage({ searchParams }: { searchParams: any }) {
       toast.success('Welcome back to Pong!')
     } else if (searchParams?.logged === 'false') {
       toast.success('You have been logged out successfully.');
-    } else if (searchParams?.unauthorized === 'true') {
+    } else if (searchParams?.unauthorized === 'true' && !data) {
+      // rida update - I add this data condition to avoid the toast message to appear when the user refreshe the page
       toast.error('You need to be logged in to access this page.')
     }
-  }, [searchParams, searchParams?.error, searchParams?.logged, searchParams?.unauthorized])
+  }, [searchParams, searchParams?.error, searchParams?.logged, searchParams?.unauthorized,data])
   return (
     <PageWrapper>
       <div

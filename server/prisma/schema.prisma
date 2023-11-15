@@ -46,8 +46,6 @@ model User {
   games     GameHistory[]
   userGamesXp   Int      @default(0)
 
-
-
 }
 
 
@@ -60,9 +58,6 @@ model FriendRequest {
   status    String   // You can use this to track the status of the request (e.g., "pending," "accepted," "rejected")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-
-
 }
 
 model Channel {

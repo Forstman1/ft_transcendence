@@ -341,7 +341,7 @@ export class GameGateway {
       console.error('Error in SearchFriend:', error);
     }
   }
-
+  
   //-------------getOpponentData---------------------------------------------------
   @SubscribeMessage('getOpponentData')
   // @UseGuards(JwtAuthGuard)
@@ -351,7 +351,6 @@ export class GameGateway {
   ): Promise<void> {
     try {
       console.log('-----------------getOpponentData-----------------');
-      console.log('opponentId:', data.opponentId);
       const opponentData = await this.gameService.getOpponentData(
         data.opponentId,
       );
@@ -361,4 +360,3 @@ export class GameGateway {
     }
   }
 }
-

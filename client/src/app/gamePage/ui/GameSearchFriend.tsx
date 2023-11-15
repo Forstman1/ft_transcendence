@@ -23,7 +23,7 @@ import Lottie from "lottie-react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store/store";
-import { setSocketState } from "@/redux/slices/socket/globalSocketSlice";
+import { setGameMatchState } from "@/redux/slices/game/gameMatchSlice";
 import { useAppSelector } from "@/redux/store/store";
 import { useState, useEffect } from "react";
 
@@ -105,11 +105,10 @@ export default function GameSearchFriend({ onClose }: Props) {
 
   const dispatchData = (RoomId: string) => {
     dispatch(
-      setSocketState({
-        socket: socket.socket,
+      setGameMatchState({
         isOwner: true,
         roomId: RoomId,
-        friendId: friendId,
+        opponentId: friendId,
       })
     );
     setSocketRoomId(RoomId);
@@ -142,7 +141,6 @@ export default function GameSearchFriend({ onClose }: Props) {
   };
 
   const handleSearchClick = () => {
-    console.log('searchInput: ', searchInput);
     if (searchInput !== "") {
       socket.socket?.emit("SearchFriend", {username: searchInput}, (data: any) => {
         setMyFriends(data.friends);
