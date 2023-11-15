@@ -1,11 +1,8 @@
 import { Flex } from "@chakra-ui/react";
-import QrCodeImage from "./Base64ToQRCode";
+import Image from "next/image";
 
-interface QRCodeModalProps {
-  base64QRCode: string;
-}
 
-const QRCodeModal = ({ base64QRCode }: QRCodeModalProps) => {
+const QRCodeModal = ({ base64QRCode }: { base64QRCode: string }) => {
   return (
     <Flex
       w="100%"
@@ -18,7 +15,9 @@ const QRCodeModal = ({ base64QRCode }: QRCodeModalProps) => {
       left="0"
       zIndex="999"
     >
-      <QrCodeImage base64QRCode={base64QRCode} />
+      <Image alt='QR Code to scan for the 2-Factor Authentiation activation' src={base64QRCode}/>
     </Flex>
   );
 };
+
+export default QRCodeModal;
