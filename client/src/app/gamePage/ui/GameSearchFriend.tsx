@@ -184,11 +184,10 @@ export default function GameSearchFriend({ onClose }: Props) {
             type="tel"
             placeholder="Search for a friend"
             height={12}
-            borderEndEndRadius={0}
             onChange={(e) => handelSearchInputChange(e)}
           />
         </InputGroup>
-        <div className="flex w-full h-[300px]  flex-col  overflow-y-scroll">
+        <div className="flex w-full h-[300px]  flex-col  overflow-y-scroll no-scrollbar">
           {myFriends.length > 0 ? (
             myFriends.map((friend, index) => (
               <Box
@@ -222,7 +221,7 @@ export default function GameSearchFriend({ onClose }: Props) {
               </Box>
             ))
           ) : (
-            <div className="flex w-full h-[300px] justify-center items-center no-scrollbar">
+            <div className="flex w-full h-[300px] justify-center items-center ">
               <h1 className="text-lg font-bold">No Friends</h1>
             </div>
           )}
