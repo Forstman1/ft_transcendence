@@ -20,6 +20,9 @@ import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import Cookies from "js-cookie";
 import Remove from "../../../assets/icons/remove-friend.svg";
 import Block from "../../../assets/icons/Block.svg";
+import { useAppSelector } from "@/redux/store/store";
+import { setOptAllImages } from "@/redux/slices/chat/OptImagesSlice";
+
 
 
 export default function ChatPage() {
@@ -27,6 +30,7 @@ export default function ChatPage() {
   const socket = useSelector((state: any) => state.socket.socket);
   const dispatch = useDispatch();
   const toast = useToast();
+  const allOptImages = useAppSelector((state: any) => state.optImages.optImages);
   const selected: Channel | User | null = useSelector(
     (state: any) => state.chat.selectedChannelorUser
   );
@@ -73,16 +77,7 @@ export default function ChatPage() {
   };
 
   useEffect(() => {
-    const handleFreindRequest = (Friend: any) => {
-      Cookies.set(
-        Friend.username,
-        JSON.stringify([
-          { src: Remove, alt: "Remove from frien list" },
-          { src: Block, alt: "Block" },
-        ]),
-        { expires: 365 }
-      );
-
+    const handleFreindRequest = (Friend: User) => {
       toast({
         position: "top-right",
         duration: 9000,
@@ -105,6 +100,25 @@ export default function ChatPage() {
               <Button
                 onClick={() => {
                   socket?.emit(`acceptFreindRequest`, { friendId: Friend.id });
+                  Cookies.set(
+                    Friend.username,
+                    JSON.stringify([
+                      { src: Remove, alt: "Remove from friend list" },
+                      { src: Block, alt: "Block" },
+                    ]),
+                    { expires: 365 }
+                  );
+                  dispatch(
+                    setOptAllImages([
+                      {
+                        key: Friend.username,
+                        optImages: [
+                          { src: Remove, alt: "Remove from friend list" },
+                          { src: Block, alt: "Block" },
+                        ],
+                      },
+                    ])
+                  );           
                   onClose();
                 }}
                 className="flex items-center justify-center w-full p-2 space-x-2 bg-green-500 rounded-md"
@@ -114,7 +128,7 @@ export default function ChatPage() {
               </Button>
               <Button
                 onClick={() => {
-                  socket?.emit(`denyFreindRequest`, Friend);
+                  socket?.emit(`rejectFreindRequest`, { friendId: Friend.id });
                   onClose();
                 }}
                 className="flex items-center justify-center w-full p-2 space-x-2 bg-red-600 rounded-md"

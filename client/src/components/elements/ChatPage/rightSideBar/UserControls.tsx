@@ -34,42 +34,57 @@ export default function UserControls() {
   const dispatch = useDispatch()
   const allOptImages = useAppSelector((state: any) => state.optImages.optImages);
 
-
   const getSelectedOpt = allOptImages.find((optImage: any) => optImage.key === selected.username);
-  
-
   const [optImages, setOptImages] = useState([
       { src: AddToFriendList, alt: "Add to friend list" },
       { src: Block, alt: "Block" }, 
   ]);
 
-
   useEffect(() => { 
-
-  
-    socket.on(`friendRequestAccepted`, () => { 
-      
+    
+    socket.on(`friendRequestAccepted`, () => {  
+      //! i don't resive an answer from the server
+        console.log(selected.username);
         Cookies.set(selected.username, JSON.stringify([
-          { src: Remove, alt: "Remove from frien list" },
+          { src: Remove, alt: "Remove from friend list" },
           { src: Block, alt: "Block" },
         ]), { expires: 365 });
-    
       
-      console.log("friendRequestAccepted")
+      //set optImages only for the added friend list and leave the block option as it was before
+   
         setOptImages([
-          { src: Remove, alt: "Remove from frien list" },
+          { src: Remove, alt: "Remove from friend list" },
           { src: Block, alt: "Block" },
         ])
     });
 
+    socket?.on([`removeFriend`, `friendRequestRejected`], (Friend: any) => {
+      console.log(Friend.username);
+      Cookies.set(
+        Friend.username,
+        JSON.stringify([
+          { src: AddToFriendList, alt: "Add to friend list" },
+          { src: Block, alt: "Block" },
+        ]),
+        { expires: 365 }
+      );
+
+      setOptImages([
+        { src: AddToFriendList, alt: "Add to friend list" },
+        { src: Block, alt: "Block" },
+      ]);
+    });
+
+      return () => {
+        socket.off(`friendRequestAccepted`);
+        socket.off(`removeFriend`);
+      }
   }, [socket])
 
   useEffect(() => {
 
     const cookies = Cookies.get(selected.username);
-
     if (cookies) {
-      
       setOptImages(JSON.parse(cookies));
     }
     else {
@@ -79,8 +94,7 @@ export default function UserControls() {
       ]);
     }
 
-    
-  }, [selected])
+  }, [selected, allOptImages])
 
   
   const handleUserControls = (option: string) => {
@@ -109,10 +123,9 @@ export default function UserControls() {
       ]
       )
     }
-    else if (option === "Remove from frien list") {
-        
+    else if (option === "Remove from friend list") {
+
         socket.emit(`removeFriend`, { friendId: User.id });
-  
         Cookies.set(selected.username, JSON.stringify([
           { src: AddToFriendList, alt: "Add to friend list" },
           { src: Block, alt: "Block" },
@@ -127,12 +140,15 @@ export default function UserControls() {
           }
         ]]
         dispatch(setOptAllImages(newOptImages));
-        setOptImages([
-          { src: AddToFriendList, alt: "Add to friend list" },
-          { src: Block, alt: "Block" },
-        ]
-        )
-     }
+        // setOptImages([
+        //   { src: AddToFriendList, alt: "Add to friend list" },
+        //   { src: Block, alt: "Block" },
+        // ]
+        // )
+    }
+    else if (option === "Block") {
+      socket.emit(`blockUser`, { friendId: User.id });
+    }
   }
 
 

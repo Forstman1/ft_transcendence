@@ -27,7 +27,6 @@ const socket = io('http://localhost:3001/chat', {
 export interface ChatSocketState {
     socket: Socket | null;
     socketId: string;
-    roomID: string;
     userID?: string | null;
 }
 
@@ -35,12 +34,8 @@ export interface ChatSocketState {
 const initialState: ChatSocketState = {
     socket: socket,
     socketId: "",
-    roomID: "",
     userID: userId,
 }
-
-
-// socket.emit(`createNotificationRoom`, { userId: userId });
 
 
 const chatSocketSlice = createSlice({

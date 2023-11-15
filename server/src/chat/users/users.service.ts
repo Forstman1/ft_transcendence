@@ -204,7 +204,7 @@ export class UsersService {
                     },
                 },
             });
-            await this.prisma.user.update({
+          await this.prisma.user.update({
                 where: { id: friend.id },
                 data: {
                     friends: {
@@ -213,7 +213,7 @@ export class UsersService {
                         },
                     },
                 },
-            });
+          })
             return `Friend removed`;
         }
         catch (error) {
@@ -350,6 +350,55 @@ export class UsersService {
       return `User added to chat list`;
     } catch (error) {
       return `${error} could not add to chat list`;
+    }
+  }
+
+  async removeFromChat(
+    User: Prisma.UserWhereUniqueInput,
+    friendId: Prisma.UserWhereUniqueInput,
+  ): Promise<string> {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id: User.id,
+        },
+      });
+      const friend = await this.prisma.user.findUnique({
+        where: {
+          id: friendId.id,
+        },
+      });
+      if (!user) {
+        return 'User not found';
+      }
+      if (!friend) {
+        return 'Friend not found';
+      }
+      await this.prisma.user.update({
+        where: User,
+        data: {
+          chatWith: {
+            disconnect: {
+              id: friend.id,
+            },
+          },
+        },
+      });
+      await this.prisma.user.update({
+        where: {
+          id: friend.id,
+        },
+        data: {
+          chatWith: {
+            disconnect: {
+              id: user.id,
+            },
+          },
+        },
+      });
+      return `User removed from chat list`;
+    } catch (error) {
+      return `${error} could not remove from chat list`;
     }
   }
 
