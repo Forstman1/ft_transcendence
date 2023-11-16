@@ -407,4 +407,16 @@ export class GameService {
     });
     return;
   }
+
+  //----------------------------------------------------
+  updateUserIsInGame = async (userId: string, isInGame: boolean): Promise<void> => {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        isInGame,
+      },
+    });
+    return;
+  }
+
 }
