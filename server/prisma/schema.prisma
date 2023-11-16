@@ -26,13 +26,16 @@ model User {
   refreshToken      String
   isOnline          Boolean     @default(false)
   hasTwoFA          Boolean     @default(false)
-  // isBlocked          Boolean     @default(false)
+  // isBlocked         Boolean     @default(false)
   // isMuted           Boolean     @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   friends User[] @relation("Friends")
   friendOf User[] @relation("Friends")
+
+  blocked User[] @relation("Blocked")
+  blockedBy User[] @relation("Blocked")
 
   chatWith User[] @relation("Chat")
   chatBy User[] @relation("Chat")

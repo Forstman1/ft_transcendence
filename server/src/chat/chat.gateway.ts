@@ -147,6 +147,64 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     }
   }
 
+  //!--------------- BLOCK && UNBLOCK------------------------!//
+
+  @SubscribeMessage(`blockUser`)
+  async blockUser(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { friendId: string },
+  ): Promise<any> {
+    try {
+      const User: Prisma.UserWhereUniqueInput = {
+        id: client.handshake.auth.id,
+      };
+      const friend: Prisma.UserWhereUniqueInput = { id: data.friendId };
+      const responce = await this.userService.blockUser(User, friend);
+      const userId = await this.userService.getUser(User);
+      // if (responce === `User blocked`) {
+      //   const friendSocket = this.connectedUsers[data.friendId];
+      //   if (friendSocket) {
+      //     for (const socket of friendSocket) {
+      //       this.server.to(socket.id).emit(`userBlocked`, userId);
+      //     }
+      //   }
+      // }
+    }
+    catch (error)
+    {
+      console.error(`Error in blocking user`, error);
+    }
+  }
+
+
+  @SubscribeMessage(`unblockUser`)
+  async unblockUser(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { friendId: string },
+  ): Promise<any> {
+    try {
+      const User: Prisma.UserWhereUniqueInput = {
+        id: client.handshake.auth.id,
+      };
+      const friend: Prisma.UserWhereUniqueInput = { id: data.friendId };
+      const responce = await this.userService.unblockUser(User, friend);
+      const userId = await this.userService.getUser(User);
+      // if (responce === `User unblocked`) {
+      //   const friendSocket = this.connectedUsers[data.friendId];
+      //   if (friendSocket) {
+      //     for (const socket of friendSocket) {
+      //       this.server.to(socket.id).emit(`userUnblocked`, userId);
+      //     }
+      //   }
+      // }
+    }
+    catch (error) {
+      console.error(`Error in unblocking user`, error);
+    }
+   }
+
+
+
   //!---------------Friend Request------------------------!//
 
   @SubscribeMessage(`sendFreindRequest`)
@@ -190,9 +248,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       const responce = await this.userService.acceptFriendRequest(User, friend);
       // const userId = await this.userService.getUser(User);
       if (responce === `Friend request accepted`) {
-        const userSocket = this.connectedUsers[User.id];
-        if (userSocket) {
-          for (const socket of userSocket) {
+        const userSockets = this.connectedUsers[friend.id];
+        if (userSockets) {
+          for (const socket of userSockets) {
             this.server.to(socket.id).emit(`friendRequestAccepted`);
           }
         }
@@ -212,8 +270,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
         id: client.handshake.auth.id,
       };
       const UserId = await this.userService.getUser(User);
-      const friendSocket = this.connectedUsers[data.friendId];
-      for (const socket of friendSocket) {
+      const userSockets = this.connectedUsers[data.friendId];
+      for (const socket of userSockets) {
+        this.logger.log(`here i'm sending ` + socket.id);
         this.server.to(socket.id).emit(`friendRequestRejected`, UserId);
       }
     } catch (error) {

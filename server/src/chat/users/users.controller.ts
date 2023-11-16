@@ -13,7 +13,6 @@ export class UsersController {
         return await this.usersService.listFriends(id)
     }
 
-
     @Get(`:id`)
     async getUser(@Param() id: Prisma.UserWhereUniqueInput) {
         return await this.usersService.getUser(id)

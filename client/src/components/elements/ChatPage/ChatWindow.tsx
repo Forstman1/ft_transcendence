@@ -118,8 +118,10 @@ import { setMessages } from '@/redux/slices/chat/ChatSlice';
 
 
     const HideMobileSideBars = () => {
-      dispatch(setRight(false));
-      dispatch(setLeft(false));
+      if (window.innerWidth <= 1024) {
+        dispatch(setRight(false));
+        dispatch(setLeft(false));
+      }
     }
 
 
@@ -209,6 +211,7 @@ import { setMessages } from '@/redux/slices/chat/ChatSlice';
 
       });
       socket?.on("receivedPrivateMessage", (data: any) => {
+
         console.log("waslat chi7aja", data.message);
 
         dispatch(addMessage(data.message));

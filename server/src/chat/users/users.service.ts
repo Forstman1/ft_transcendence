@@ -26,7 +26,10 @@ export class UsersService {
       return await this.prisma.user.findMany({
         where: {
           NOT: {
-            id: id,
+            OR: [
+              { id: id },
+              {blocked: {some: {id: id}}}
+            ]
           },
         },
       });
@@ -219,7 +222,62 @@ export class UsersService {
         catch (error) {
             return `${error} could not remove friend`;
         }
-     }
+    }
+  
+  //!---------------Block && UNBLOCK------------------------!//
+
+  async blockUser(user: Prisma.UserWhereUniqueInput, friend: Prisma.UserWhereUniqueInput) {
+    const User = await this.prisma.user.findUnique({
+      where: user,
+    });
+    const Friend = await this.prisma.user.findUnique({
+      where: friend,
+    });
+    if (!User) return `User not found`;
+    if (!Friend) return `Friend not found`;
+    try {
+      await this.prisma.user.update({
+        where: user,
+        data: {
+          blocked: {
+            connect: {
+              id: Friend.id,
+            },
+          },
+        },
+      })
+    }
+    catch(error) {
+      return `${error} could not block user`;
+    }
+  }
+
+  async unblockUser(user: Prisma.UserWhereUniqueInput, friend: Prisma.UserWhereUniqueInput) {
+    const User = await this.prisma.user.findUnique({
+      where: user,
+    });
+    const Friend = await this.prisma.user.findUnique({
+      where: friend,
+    });
+    if (!User) return `User not found`;
+    if (!Friend) return `Friend not found`;
+    try {
+      await this.prisma.user.update({
+        where: user,
+        data: {
+          blocked: {
+            disconnect: {
+              id: Friend.id,
+            },
+          },
+        },
+      })
+    }
+    catch(error) {
+      return `${error} could not unblock user`;
+    }
+   }
+
 
   //!---------------ListofFriend && ChatList------------------------!//
 
@@ -335,18 +393,18 @@ export class UsersService {
           },
         },
       });
-      await this.prisma.user.update({
-        where: {
-          id: friend.id,
-        },
-        data: {
-          chatWith: {
-            connect: {
-              id: user.id,
-            },
-          },
-        },
-      });
+      // await this.prisma.user.update({
+      //   where: {
+      //     id: friend.id,
+      //   },
+      //   data: {
+      //     chatWith: {
+      //       connect: {
+      //         id: user.id,
+      //       },
+      //     },
+      //   },
+      // });
       return `User added to chat list`;
     } catch (error) {
       return `${error} could not add to chat list`;
@@ -380,18 +438,6 @@ export class UsersService {
           chatWith: {
             disconnect: {
               id: friend.id,
-            },
-          },
-        },
-      });
-      await this.prisma.user.update({
-        where: {
-          id: friend.id,
-        },
-        data: {
-          chatWith: {
-            disconnect: {
-              id: user.id,
             },
           },
         },

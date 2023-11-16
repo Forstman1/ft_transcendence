@@ -125,7 +125,6 @@ export default function Search() {
         fetch('http://127.0.0.1:3001/users/listusers/' + userId).then((res) => {
             return res.json()
         }).catch((err) => console.log(err)))
-
     const listchannels = useMutation<any, Error, any>((variables) =>
         fetch('http://127.0.0.1:3001/channel/getallpublicandprivatechannels').then((res) => {
             return res.json()

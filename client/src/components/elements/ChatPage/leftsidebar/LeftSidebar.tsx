@@ -119,7 +119,6 @@ export default function LeftSidebar() {
       dispatch(setUserDms(data));
     },
   });
-
   useEffect(() => {
     socket?.emit("getChannelsFirstTime", { userId: userId });
   }, []);
@@ -451,7 +450,7 @@ export default function LeftSidebar() {
 
   return (
     <Box
-      className="LeftSideBar place-items-center grid w-[375px] absolute  h-full overflow-y-auto border-r-[3px] border-r-black  md:static md:w-[400px] backdrop-blur-xl z-10"
+      className="LeftSideBar place-items-center grid w-[375px] absolute  h-full overflow-y-auto border-r-[3px] border-r-black md:static md:w-[400px] backdrop-blur-xl z-10"
       as={motion.div}
       initial={false}
       animate={LeftClice.LeftValue ? "open" : "closed"}
