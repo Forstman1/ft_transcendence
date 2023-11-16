@@ -365,6 +365,7 @@ export class ChannelService {
   ) {
 
 
+
     const channel = await this.prisma.channel.findUnique({
       where: {
         id: channelId,
@@ -389,9 +390,6 @@ export class ChannelService {
       return { status: "this member is banned" };
 
 
-    const channelowner = channelmembers[0];
-    delete channelmembers[0];
-
     try {
       const channelmembers = await this.prisma.channelMember.findMany({
         where: {
@@ -404,7 +402,6 @@ export class ChannelService {
     } catch (error) {
 
     }
-    console.log(channelowner);
 
       const channelmember = await this.prisma.channelMember.create({
         data: {

@@ -638,9 +638,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     const status = await this.channelService.banMember(data.channelId, client.handshake.auth.id, data.memberId);
 
     if (status.status === "This member is banned.") {
-      this.connectedUsersInChannles[data.memberId].map((socket) => {
-        this.server.to(socket.id).emit('banmember', { status: "you have been banned from channel" });
-      })
+      if (this.connectedUsersInChannles[data.memberId]) {
+        this.connectedUsersInChannles[data.memberId].map((socket) => {
+          this.server.to(socket.id).emit('banmember', { status: "you have been banned from channel" });
+        })
+      }
     }
     else {
       this.connectedUsersInChannles[client.handshake.auth.id].map((socket) => {

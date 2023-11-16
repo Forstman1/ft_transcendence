@@ -77,7 +77,7 @@ function formatTimeAgo(timestamp:any) {
       <Avatar className='custom-shadow2' boxSize={12} src={user?.avatarURL} />
       <div className="bg-white border-2 border-black rounded-2xl custom-shadow2  rounded-tl-none pl-[10px] w-[50%]">
         <div>{formattedTime}</div>
-        <div className="text-[#B4B4B4]">{sender}</div>
+        <div className="text-[#B4B4B4] pb-[5px]">{sender}</div>
         <div>{message}</div>
       </div>
     </div>
