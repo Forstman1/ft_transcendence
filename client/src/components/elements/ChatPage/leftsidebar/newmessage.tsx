@@ -19,7 +19,7 @@ import {
     ModalCloseButton,
     Radio
 } from '@chakra-ui/react'
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useQuery } from 'react-query';
 import axios from 'axios';
 import { useAppSelector } from '@/redux/store/store';
@@ -49,7 +49,7 @@ function Usercard(props: any) {
     <div onClick={handleChange} className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md'>
         <div>
             <Avatar boxSize={12} src={data?.avatarURL}>
-                <AvatarBadge boxSize={6} bg='green' />
+                <AvatarBadge boxSize={6} bg={data?.isOnline ? 'green.500' : 'gray.500'} />
             </Avatar>
         </div>
 
@@ -72,7 +72,6 @@ export default function Newmessage({ isOpen, onClose}: Props) {
     
     const chatSocket = useAppSelector((state) => state.socket);
     const {socket} = chatSocket;
-    const dispatch = useDispatch();
     const toast = useToast();
     const [selectedOption, setSelectedOption]: any = useState('');
     

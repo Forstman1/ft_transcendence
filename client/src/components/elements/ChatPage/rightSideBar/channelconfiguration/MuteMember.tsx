@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Avatar, AvatarBadge, Box, Button, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
+import { Box, Button, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
 import { useSelector } from 'react-redux'
 import Image from 'next/image'
 import ModalWraper from '../../ModalWraper'
@@ -13,19 +13,14 @@ import Mutes from '../../../../../../assets/icons/Mute.svg'
 
 function Componenent({ onClose }: any) {
 
-    const [show, setShow] = useState(false)
-    const handleClick = () => setShow(!show)
     const toast = useToast()
     const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
-    const userId = useSelector((state: any) => state.socket.userID)
     const socket = useSelector((state: any) => state.socket.socket)
     const [users, setUsers] = useState<any>([])
     const [selectedOption, setSelectedOption]: any = useState('');
 
     const handleOptionChange = (newValue: any) => {
-
         setSelectedOption(newValue);
-
     };
 
     useEffect(() => {
@@ -49,10 +44,13 @@ function Componenent({ onClose }: any) {
                 const users: ChannelMember[] = await usersResponse.json()
 
 
-                const filteredUsers = users.filter((user: any) => {
-                    return user.role !== "OWNER" && !user.isMuted;
+                let filteredUsers = users.filter((user: any) => {
+                    return user.role !== 'OWNER';
                 });
 
+                filteredUsers = filteredUsers.filter((user: any) => {
+                    return !user.isMuted;
+                });
 
                 let listedusers: any = []
 

@@ -417,13 +417,13 @@ export class ChannelService {
           },
         },
       });
-      return {channelmember: channelmember, status: "this member is invited" };
+      return {channelmember: channelmember, status: "this member is invited", channel: channel };
 
   }
 
 
   async enterchannel(channelName: string, userId: string) {
-    const channel = await this.prisma.channel.findUnique({
+    let channel = await this.prisma.channel.findUnique({
       where: {
         name: channelName,
       },
@@ -459,6 +459,14 @@ export class ChannelService {
             user: {
               connect: { id: userId },
             },
+          },
+        });
+        channel = await this.prisma.channel.findUnique({
+          where: {
+            name: channelName,
+          },
+          include: {
+            channelMember: true,
           },
         });
         return {channel: channel, status: "you are now member of the channel" };
@@ -565,10 +573,11 @@ export class ChannelService {
 
 
 
-  async deleteChannel(channelName: string, userId: string) {
+  async deleteChannel(channelId: string, userId: string) {
+
     const channel = await this.prisma.channel.findUnique({
       where: {
-        name: channelName,
+        id: channelId,
       },
       include: {
         channelMember: true,
@@ -596,8 +605,7 @@ export class ChannelService {
 
     await this.prisma.channel.delete({
       where: {
-        name: channelName,
-        // id: channel.id,
+        id: channelId,
       },
       include: {
         channelMember: true,
@@ -713,8 +721,10 @@ export class ChannelService {
         const otherChannelmember = channelmembers[0];
 
         if (otherChannelmember.role === 'MEMBER' || otherChannelmember.role === 'ADMIN') {
+          
           const startDate = new Date();
-          const endDate = new Date(startDate.getTime() + 5 * 60 * 1000);
+          const endDate = new Date(startDate.getTime() + 5 * 60 * 1000)
+
           const member = await this.prisma.channelMember.update({
             where: {
               id: otherChannelmember.id,

@@ -1,16 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { PageWrapper } from "../animationWrapper/pageWrapper";
-import Image from "next/image";
-import { Flex, Box, Button, useMediaQuery } from "@chakra-ui/react";
-import LeftSidebar from "@/components/elements/ChatPage/leftsidebar/LeftSidebar";
+import {  Box, useMediaQuery } from "@chakra-ui/react";
 import RightSidebar from "@/components/elements/ChatPage/rightSideBar/RightSidebar";
 import RightSidebarChannel from "@/components/elements/ChatPage/rightSideBar/RightSideBarChannel";
 import { Channel, User } from "@/utils/types/chat/ChatTypes";
 import { setLeft, setMidle, setRight } from "@/redux/slices/chat/MobileSlice";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
-import { UseSelector } from "react-redux/es/hooks/useSelector";
 import ChatWindow from "@/components/elements/ChatPage/ChatWindow";
 import RestrictedRoute from "@/components/RestrictedRoute";
 
@@ -18,14 +14,10 @@ import RestrictedRoute from "@/components/RestrictedRoute";
 
 
 export default function ChatPage() {
-  const [RightIsOpen, setRightIsOpen] = useState(false);
-  const [LeftIsOpen, setLeftIsOpen] = useState(false);
 
 
-  const { LeftClice } = useSelector((state: any) => state.mobile);
+
   const { RightClice } = useSelector((state: any) => state.mobile);
-  const { MidleClice } = useSelector((state: any) => state.mobile);
-  const socket = useSelector((state: any) => state.socket.socket);
 
 
   const isDesktop = useMediaQuery("(min-width: 1000px)")

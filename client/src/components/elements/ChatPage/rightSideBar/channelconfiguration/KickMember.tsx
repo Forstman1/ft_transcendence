@@ -13,18 +13,14 @@ import kick from '../../../../../../assets/icons/kickout.svg'
 
 function Componenent({ onClose }: any) {
 
-    const [show, setShow] = useState(false)
     const toast = useToast()
     const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
-    const userId = useSelector((state: any) => state.socket.userID)
     const socket = useSelector((state: any) => state.socket.socket)
     const [users, setUsers] = useState<any>([])
     const [selectedOption, setSelectedOption]: any = useState('');
 
     const handleOptionChange = (newValue: any) => {
-
         setSelectedOption(newValue);
-
     };
 
     useEffect(() => {

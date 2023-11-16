@@ -1,6 +1,6 @@
 "use client"
 
-import React, { RefObject, use, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Text, Avatar, Box } from '@chakra-ui/react'
 import Image from 'next/image'
 import Profile from '../../../../../assets/icons/Profile.svg'
@@ -44,7 +44,6 @@ export default function RightSidebar() {
 
   const sidebar = {
     open: (height = 1000) => ({
-      // width: "375px",
       clipPath: `circle(${height * 2 + 200}px at 90% 90%)`,
       transition: {
         type: "spring",

@@ -1,5 +1,5 @@
 `use client`;
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import gameReducer from "../slices/game/gameModalSlice";
 import authUserReducer from "../slices/authUser/authUserSlice";
@@ -7,7 +7,6 @@ import globalSocketReducer  from '../slices/socket/globalSocketSlice';
 import mobileReducer from "../slices/chat/MobileSlice";
 import chatSocketReducer from "@/redux/slices/socket/chatSocketSlice";
 import chatSlice from '../slices/chat/ChatSlice'
-// import channelChatSocketReducer from '../slices/socket/channelChatSocketSlice'
 
 
 export const store = configureStore({
@@ -19,7 +18,6 @@ export const store = configureStore({
     mobile: mobileReducer,
     chat: chatSlice,
     
-    // user: userReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

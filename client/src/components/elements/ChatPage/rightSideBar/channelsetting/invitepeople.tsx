@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Avatar, AvatarBadge, Box, Button, ModalFooter, Radio, Text, useDisclosure, useToast } from '@chakra-ui/react'
-import { useMutation } from 'react-query'
+import React, { useEffect,  useState } from 'react'
+import { Box, Button, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
 import { useSelector } from 'react-redux'
 import ModalWraper from '../../ModalWraper'
 import Image from 'next/image'
@@ -63,7 +62,6 @@ function Componenent({ onClose }: any) {
 
     async function   onInvite() {
 
-
         socket?.emit('inviteMember', {
             channelId: channel.id,
             memberId: selectedOption.id,
@@ -118,7 +116,6 @@ export default function InvitePeople() {
 
 
     const data = { src: invite, alt: "Invite People" }
-
 
 
     return (<Box className='flex items-center gap-6 w-[220px]'

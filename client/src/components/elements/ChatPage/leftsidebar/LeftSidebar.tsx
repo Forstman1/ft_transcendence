@@ -1,25 +1,22 @@
 "use client";
 
 import { SmallAddIcon } from '@chakra-ui/icons';
-import { Avatar, AvatarBadge, Icon, useDisclosure, Modal, background, useToast } from '@chakra-ui/react';
+import { Avatar, AvatarBadge, Icon, useDisclosure, Modal, useToast } from '@chakra-ui/react';
 import React, { useEffect, useState, useRef, use } from 'react'
 import Newchannel from './newchannel';
 import Hashtag from './hatshtag';
 import Newmessage from './newmessage';
 import Search from './search';
-import { Channel, ChannelMember } from '@/utils/types/chat/ChatTypes';
+import { Channel } from '@/utils/types/chat/ChatTypes';
 import { useDispatch, useSelector } from 'react-redux';
 import { User } from '@/utils/types/chat/ChatTypes';
-import { Box, Flex } from '@chakra-ui/layout';
+import { Box } from '@chakra-ui/layout';
 import { motion } from 'framer-motion';
-import { usePathname } from 'next/navigation';
-import { ChatSocketState } from '@/redux/slices/socket/chatSocketSlice';
+
 import { RootState } from '@/redux/store/store';
-import { addMessage, setChannel, setChannelMember, setChannels, setMessages, setNewChannel, setTheUser } from '@/redux/slices/chat/ChatSlice';
-import { useMutation } from 'react-query';
+import { setChannel, setChannelMember, setChannels, setMessages, setNewChannel, setTheUser } from '@/redux/slices/chat/ChatSlice';
 
 
-import { useQuery, useQueryClient } from "react-query";
 import { useAppSelector } from '@/redux/store/store';
 
 function Usercard(props: any) {
@@ -46,7 +43,7 @@ function Usercard(props: any) {
   >
     <div> 
       <Avatar className='custom-shadow border-[1px] border-black' boxSize={14} src={props.data.avatarURL}>
-        <AvatarBadge className='custom-shadow border-[1px] border-black' boxSize={4} bg='green.500' />
+        <AvatarBadge className='custom-shadow border-[1px] border-black' boxSize={4} bg={props.data.isOnline ? 'green.500' : 'gray.500'} />
       </Avatar>
 
     </div>
@@ -69,7 +66,7 @@ function Usercard(props: any) {
 export default function LeftSidebar() {
 
   const chatSocket = useAppSelector((state) => state.socket);
-  const { socket, userID } = chatSocket;
+  const { socket } = chatSocket;
   const dispatch = useDispatch()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [ChannelOrUser, setChannelOrUser] = useState(false)
@@ -82,9 +79,7 @@ export default function LeftSidebar() {
   const toast = useToast()
 
 
-  const { MidleClice } = useSelector((state: any) => state.mobile)
   const { LeftClice } = useSelector((state: any) => state.mobile)
-  const { RightClice } = useSelector((state: any) => state.mobile)
 
   
   useEffect(() => {
@@ -99,8 +94,6 @@ export default function LeftSidebar() {
 
   }, [socket]);
 
-  // const socket = useSelector((state: any) => state.socket.socket)
-
 
 
   useEffect(() => {
@@ -114,10 +107,8 @@ export default function LeftSidebar() {
       const allchannels: Channel[] = data.channels
 
       allchannels.map((channel: Channel) => {
-        console.log(channel, " ", userId)
         socket?.emit('joinChannel', {
           channelId: channel.id,
-          userId: userId,
         })
       });
       dispatch(setChannels(allchannels))
@@ -259,11 +250,13 @@ export default function LeftSidebar() {
         toast({
           title: "Channel has been deleted",
           position: `bottom-right`,
-          status: "success",
+          status: "error",
           duration: 3000,
           isClosable: true,
         })
         dispatch(setChannel(null))
+        dispatch(setMessages([]))
+        socket?.emit('getChannels', { userId: userId })
       }
     })
     socket?.on('setAdministrator', (data: any) => {
@@ -404,6 +397,29 @@ export default function LeftSidebar() {
         })
       }
     })
+    socket?.on('mutemember', (data: any) => {
+      if (data.status === "you have been muted from channel")
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+      else
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+    })
+
     socket?.on('kickmember', (data: any) => {
       if (data.status === "you have been kicked from channel")
       {
@@ -467,7 +483,9 @@ export default function LeftSidebar() {
           duration: 3000,
           isClosable: true,
         })
+        
         socket?.emit('getChannels', { userId: userId })
+        
       }
       else
       {
@@ -490,6 +508,10 @@ export default function LeftSidebar() {
           duration: 3000,
           isClosable: true,
         })
+        socket?.emit('joinChannel', {
+          channelId: data.channel.id,
+        })
+      
         socket?.emit('getChannels', { userId: userId })
 
       }
@@ -502,6 +524,7 @@ export default function LeftSidebar() {
           duration: 3000,
           isClosable: true,
         })
+        socket?.emit('getChannels', { userId: userId })
       }
     })
 
@@ -517,6 +540,7 @@ export default function LeftSidebar() {
       socket?.off('changepassword');
       socket?.off('channelEntered');
       socket?.off('channelCreated');
+      socket?.off('mutemember');
       socket?.off('kickmember');
       socket?.off('banmember');
       socket?.off('unbanmember');
@@ -591,10 +615,8 @@ export default function LeftSidebar() {
   
         </div>
         {ChannelOrUser === true ? <Modal isOpen={isOpen} onClose={onClose} isCentered>
-        <Newchannel isOpen={isOpen}
+        <Newchannel 
           onClose={onClose}
-          channels={channels}
-
         />
       </Modal> : <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <Newmessage isOpen={isOpen}

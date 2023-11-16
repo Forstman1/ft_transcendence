@@ -1,10 +1,8 @@
 "use client";
 
-import { SearchIcon, SmallAddIcon } from '@chakra-ui/icons';
-import { Avatar, AvatarBadge, Button, FormControl, FormLabel, Icon, Input, InputGroup, InputRightElement, Select, useToast } from '@chakra-ui/react';
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, Select } from '@chakra-ui/react';
+import React, { useState } from 'react'
 import {
-  Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
@@ -13,20 +11,13 @@ import {
   ModalCloseButton,
 } from '@chakra-ui/react'
 import { useForm } from "react-hook-form"
-import { useMutation } from 'react-query';
-// import { useMutation } from 'react-query';
-import { Channel } from '@/utils/types/chat/ChatTypes';
-import { useDispatch, useSelector } from 'react-redux';
-import { setChannel, setChannelMember, setNewChannel } from '@/redux/slices/chat/ChatSlice';
+import { useSelector } from 'react-redux';
 
 
 
 
 type Props = {
-
-  isOpen: boolean;
   onClose: () => void;
-  channels: Channel[];
 };
 
 type ChannelValues = {
@@ -34,14 +25,15 @@ type ChannelValues = {
   password: string
   type: string
   userId: string
+
 }
 
 
-export default function Newchannel({ isOpen, onClose, channels }: Props) {
+export default function Newchannel({  onClose }: Props) {
 
 
   const { handleSubmit, register, watch } = useForm<ChannelValues>();
-  const [dup, setDup] = useState(false);
+  const [dup] = useState(false);
 
   const [show, setShow] = React.useState(false)
   const handleClick = () => setShow(!show)
@@ -58,7 +50,6 @@ export default function Newchannel({ isOpen, onClose, channels }: Props) {
     if (data.type === "Public")
       data.password = "123"
 
-      
     socket.emit('createChannel', {
       channelName: data.channelName,
       type: data.type,

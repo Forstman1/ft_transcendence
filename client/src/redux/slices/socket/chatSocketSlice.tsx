@@ -8,7 +8,6 @@ import { Socket } from "socket.io-client";
 export interface ChatSocketState {
     socket: Socket | null;
     socketId: string;
-    roomID: string;
     userID?: string | null;
 }
 
@@ -16,7 +15,6 @@ export interface ChatSocketState {
 const initialState: ChatSocketState = {
     socket: null,
     socketId: "",
-    roomID: "",
     userID: "",
 }
 

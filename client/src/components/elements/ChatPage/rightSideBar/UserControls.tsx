@@ -9,12 +9,6 @@ import { User } from '@/utils/types/chat/ChatTypes'
 
 
 
-function handleUserControls(User: User) {
-
- 
-
-}
-
 
 export default function UserControls() {
 

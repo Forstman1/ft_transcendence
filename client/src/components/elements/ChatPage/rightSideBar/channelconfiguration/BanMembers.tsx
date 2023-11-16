@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Avatar, AvatarBadge, Box, Button, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
+import { Box, Button, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
 import { useSelector } from 'react-redux'
 import Image from 'next/image'
 import ModalWraper from '../../ModalWraper'
@@ -13,18 +13,14 @@ import ban from '../../../../../../assets/icons/Ban.svg'
 
 function Componenent({ onClose }: any) {
 
-    const [show, setShow] = useState(false)
     const toast = useToast()
     const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
-    const userId = useSelector((state: any) => state.socket.userID)
     const socket = useSelector((state: any) => state.socket.socket)
     const [users, setUsers] = useState<any>([])
     const [selectedOption, setSelectedOption]: any = useState('');
 
     const handleOptionChange = (newValue: any) => {
-
         setSelectedOption(newValue);
-
     };
 
     useEffect(() => {

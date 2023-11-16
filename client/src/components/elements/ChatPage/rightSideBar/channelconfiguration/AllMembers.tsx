@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { Avatar, AvatarBadge, Box, Button, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
-import { useMutation } from 'react-query'
+import { Avatar, AvatarBadge, Box, Button, ModalFooter, Text, useDisclosure } from '@chakra-ui/react'
 import { useSelector } from 'react-redux'
 import ModalWraper from '../../ModalWraper'
 import Image from 'next/image'
-import { ChannelMember, User } from '@/utils/types/chat/ChatTypes'
+import { ChannelMember } from '@/utils/types/chat/ChatTypes'
 import invite from "../../../../../../assets/icons/invite.svg"
 
 
 
-
 function Usercard(props: any) {
-
 
     const  data:ChannelMember  = props.data;
     const [user, setUser] = useState<any>({})
@@ -44,7 +41,7 @@ function Usercard(props: any) {
         <div className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md '>
             <div>
                 <Avatar boxSize={12} src={user?.avatarURL}>
-                    <AvatarBadge boxSize={6} bg='green' />
+                    <AvatarBadge boxSize={6} bg={user?.isOnline ? 'green.500' : 'gray.500'} />
                 </Avatar>
             </div>
 
@@ -63,7 +60,6 @@ function Componenent({ onClose }: any) {
 
     const [users, setUsers] = useState<any[]>([])
     const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
-    const userId = useSelector((state: any) => state.socket.userID);
     const socket = useSelector((state: any) => state.socket.socket)
 
 
@@ -73,15 +69,11 @@ function Componenent({ onClose }: any) {
 
         socket.on('allmembers', (data: any) => {
             setUsers(data.members);
-
         })
         return () => {
             socket.off('allmembers')
         }
     }, [])
-
-
-
 
 
     return (

@@ -1,11 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Box, Button, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
-import { useMutation } from 'react-query'
+import React, {  useState } from 'react'
+import { Box, Button, ModalFooter, Text, useDisclosure } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import ModalWraper from '../../ModalWraper'
 import Image from 'next/image'
-import invite from "../../../../../../assets/icons/invite.svg"
-import { Channel } from '@/utils/types/chat/ChatTypes'
 import { setChannel } from '@/redux/slices/chat/ChatSlice'
 import leavechannel from "../../../../../../assets/icons/leavechannel.svg"
 
@@ -14,25 +11,17 @@ import leavechannel from "../../../../../../assets/icons/leavechannel.svg"
 
 function Componenent({ onClose }: any) {
 
-
-
     const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
-    const userId = useSelector((state: any) => state.socket.userID)
     const dispatch = useDispatch()
     const socket = useSelector((state: any) => state.socket.socket)
-
-
-
     
     const onSubmit = async () => {
         
         socket.emit('leaveChannel', {
             channelId: channel.id,
-            userId: userId,
-        });
+        })
 
         dispatch(setChannel(null))
-        
         onClose()
     }
 
