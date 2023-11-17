@@ -7,7 +7,7 @@ import globalSocketReducer  from '../slices/socket/globalSocketSlice';
 import mobileReducer from "../slices/chat/MobileSlice";
 import chatSocketReducer from "@/redux/slices/socket/chatSocketSlice";
 import chatSlice from '../slices/chat/ChatSlice'
-// import channelChatSocketReducer from '../slices/socket/channelChatSocketSlice'
+import gameMatchReducer from '../slices/game/gameMatchSlice'
 
 
 export const store = configureStore({
@@ -18,6 +18,7 @@ export const store = configureStore({
     socket: chatSocketReducer,
     mobile: mobileReducer,
     chat: chatSlice,
+    gameMatch: gameMatchReducer,
     
     // user: userReducer,
   },

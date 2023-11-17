@@ -12,20 +12,24 @@ const GameFriendHeader = ({
 }) => {
   const gameSettings = useAppSelector((state) => state.gameReducer);
   const socketState = useAppSelector((state) => state.globalSocketReducer);
+  const gameMatch = useAppSelector((state) => state.gameMatch);
   const user = useAppSelector((state) => state.authUser);
   const balColor = gameSettings.playgroundtheme.balColor;
-  const opponentId = socketState.friendId;
+  const opponentId = gameMatch.opponentId;
   const [opponentData, setOpponentData] = React.useState<any>({});
+
+
 
   useEffect(() => {
     socketState.socket?.emit("getOpponentData", { opponentId }, (data: any) => {
       setOpponentData(data);
     });
-  }, [opponentId, socketState.socket]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
-      {socketState.isOwner ? (
+      {gameMatch.isOwner ? (
         <div
           className={`flex items-center justify-between h-[100px] mx-auto rounded-lg p-10 drop-shadow-2xl w-full max-w-[1200px] ${balColor}`}
         >

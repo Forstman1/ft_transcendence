@@ -227,7 +227,6 @@ export class GameService {
       gameData,
       isPoused: false,
     });
-    // console.log('createRoom all rooms: ', this.rooms);
     return roomId;
   }
 
@@ -253,8 +252,6 @@ export class GameService {
 
   deleteRoom(roomId: string): void {
     this.rooms.delete(roomId);
-    // console.log('deleteRoom roomId: ', roomId);
-    // console.log('deleteRoom all rooms: ', this.rooms);
   }
 
   getRoom(roomId: string): {
@@ -274,7 +271,6 @@ export class GameService {
         isPoused,
       });
     }
-    // console.log('setRoomPause room: ', room);
   }
 
   checkFriendIsInOtherRoom(friendId: string): boolean {
@@ -411,4 +407,16 @@ export class GameService {
     });
     return;
   }
+
+  //----------------------------------------------------
+  updateUserIsInGame = async (userId: string, isInGame: boolean): Promise<void> => {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        isInGame,
+      },
+    });
+    return;
+  }
+
 }
