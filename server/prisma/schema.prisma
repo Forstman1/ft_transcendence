@@ -46,9 +46,21 @@ model User {
 
   games     GameHistory[]
   userGamesXp   Int      @default(0)
+  notifications   Notification[]
 
 }
 
+
+model Notification {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  type      NotifType
+  title      String
+  description   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
 
 model FriendRequest {
   id        String   @id @default(uuid())
@@ -142,4 +154,10 @@ enum Type {
   PUBLIC
   PRIVATE
   PROTECTED
+}
+
+enum NotifType {
+  gameInvite
+  friendRequest
+  roomMessage
 }

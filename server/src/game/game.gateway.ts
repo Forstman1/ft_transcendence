@@ -179,6 +179,7 @@ export class GameGateway {
             client.emit('frinedIsInGame');
           } else if (friendSocket) {
             const friendId = client.handshake.auth.id;
+            this.gameService.notifyFriend(client.handshake.auth.id, friendId);
             this.server
               .to(friendUserId)
               .emit('room-invitation', { roomId, modalData, friendId });
