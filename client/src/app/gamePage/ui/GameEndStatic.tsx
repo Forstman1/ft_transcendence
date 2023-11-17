@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import Lottie from "lottie-react";
 import ggAnimation from "../../../../assets/animations/ggAnimation.json";
 import { useAppSelector } from '@/redux/store/store';
+import { Text } from '@chakra-ui/react';
 
 type GameStaticProps = {
     opponent: string;
@@ -14,11 +15,11 @@ type GameStaticProps = {
     isFriendMode: boolean;
 }
 
-
 const GameEndStatic = ({opponent, user, isFriendMode}: GameStaticProps) => {
     const socketState = useAppSelector((state) => state.globalSocketReducer);
     const isOwner = socketState.isOwner
-
+    const botColor = opponent === 'LOSE' ? 'red' : 'green';
+    const userColor = user === 'LOSE' ? 'red' : 'green';
     const userBorderColor = user === 'LOSE' ? 'border-red-500' : 'border-green-500';
     const botBorderColor = opponent === 'LOSE' ? 'border-red-500' : 'border-green-500';
     const router = useRouter();
@@ -31,7 +32,46 @@ const GameEndStatic = ({opponent, user, isFriendMode}: GameStaticProps) => {
       <PageWrapper>
         <div className=" flex flex-col items-center justify-center  p-5 w-full h-full bg-opacity-0">
           <div className="flex flex-row items-center justify-center space-x-60">
-
+            {!isFriendMode ? (
+              <>
+                <div className="flex flex-col items-center justify-center">
+                  <Text
+                    fontSize="6xl"
+                    fontWeight="bold"
+                    color={userColor}
+                    className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]"
+                  >
+                    YOU {user}
+                  </Text>
+                </div>
+              </>
+            ) : (
+              <>
+                {!isOwner ? (
+                  <div className="flex flex-col items-center justify-center">
+                    <Text
+                      fontSize="6xl"
+                      fontWeight="bold"
+                      color={botColor}
+                      className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]"
+                    >
+                      YOU {opponent}
+                    </Text>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center">
+                    <Text
+                      fontSize="6xl"
+                      fontWeight="bold"
+                      color={userColor}
+                      className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]"
+                    >
+                      YOU {user}
+                    </Text>
+                  </div>
+                )}
+              </>
+            )}
           </div>
           {isFriendMode ? (
           <div className={`flex flex-row items-center justify-center bg-white rounded-xl space-x-10 p-2 mt-10 opacity-90 border-2 ${isFriendMode && isOwner ? userBorderColor : botBorderColor}`}>

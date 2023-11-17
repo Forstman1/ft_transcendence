@@ -10,28 +10,21 @@ import {
   useToast,
   CloseButton,
 } from "@chakra-ui/react";
-import React, { useEffect, useState, useRef, use } from "react";
-import Newchannel from "./newchannel";
-import Hashtag from "./hatshtag";
-import Newmessage from "./newmessage";
-import Search from "./search";
-import { Channel } from "@/utils/types/chat/ChatTypes";
-import { useDispatch, useSelector } from "react-redux";
-import { User } from "@/utils/types/chat/ChatTypes";
-import { Box, Flex } from "@chakra-ui/layout";
-import { motion } from "framer-motion";
-import {
-  setChannel,
-  setChannelMember,
-  setChannels,
-  setMessages,
-  setNewChannel,
-  setTheUser,
-  setUserDms,
-} from "@/redux/slices/chat/ChatSlice";
 import { useQuery } from "react-query";
 import axios from "axios";
-import { Socket } from "socket.io-client";
+import React, { useEffect, useState, useRef, use } from 'react'
+import Newchannel from './newchannel';
+import Hashtag from './hatshtag';
+import Newmessage from './newmessage';
+import Search from './search';
+import { Channel } from '@/utils/types/chat/ChatTypes';
+import { useDispatch, useSelector } from 'react-redux';
+import { User } from '@/utils/types/chat/ChatTypes';
+import { Box } from '@chakra-ui/layout';
+import { motion } from 'framer-motion';
+import { setChannel, setChannelMember, setChannels, setMessages, setNewChannel, setTheUser, setUserDms } from '@/redux/slices/chat/ChatSlice';
+import { useAppSelector } from '@/redux/store/store';
+
 
 
 function Usercard(props: any) {
@@ -45,33 +38,44 @@ function Usercard(props: any) {
   };
 
   return (
-    <Box
-      ref={scroolToRef}
-      className="flex justify-between items-center cursor-pointer m-2 ml-0 p-2 rounded-md active:bg-zinc-300 hover:bg-zinc-300 group"
-      onClick={() => onSubmited()}
+    // <Box
+    //   ref={scroolToRef}
+    //   className="flex justify-between items-center cursor-pointer m-2 ml-0 p-2 rounded-md active:bg-zinc-300 hover:bg-zinc-300 group"
+    //   onClick={() => onSubmited()}
       
-      // {...(user === props.data.id
-      //   ? scroolToRef.current?.scrollIntoView({
-      //       block: "nearest",
-      //       inline: "start",
-      //     }) && { bg: "bg-zinc-300" }
-      //   : {})}
-    >
-      <div>
-        <Avatar
-          className="custom-shadow border-[1px] border-black"
-          boxSize={14}
-          src={props.data.avatar}
-        >
-          <AvatarBadge
-            className="custom-shadow border-[1px] border-black"
-            boxSize={4}
-            bg="green.500"
-          />
-        </Avatar>
-      </div>
+    //   // {...(user === props.data.id
+    //   //   ? scroolToRef.current?.scrollIntoView({
+    //   //       block: "nearest",
+    //   //       inline: "start",
+    //   //     }) && { bg: "bg-zinc-300" }
+    //   //   : {})}
+    // >
+    //   <div>
+    //     <Avatar
+    //       className="custom-shadow border-[1px] border-black"
+    //       boxSize={14}
+    //       src={props.data.avatar}
+    //     >
+    //       <AvatarBadge
+    //         className="custom-shadow border-[1px] border-black"
+    //         boxSize={4}
+    //         bg="green.500"
+    //       />
+    //     </Avatar>
+    //   </div>
+  
+  <Box ref={scroolToRef} className='flex justify-between items-center cursor-pointer m-2 ml-0 p-2 rounded-md active:bg-zinc-300'
+    onClick={() => onSubmited()}
+  {...(user === props.data.id ? scroolToRef.current?.scrollIntoView({ block: 'nearest', inline: 'start' }) && {bg: 'bg-zinc-300'} : {})}
 
-      <div className="ml-[7px] flex flex-col  text-left w-[40%] justify-around">
+  >
+    <div> 
+      <Avatar className='custom-shadow border-[1px] border-black' boxSize={14} src={props.data.avatarURL}>
+        <AvatarBadge className='custom-shadow border-[1px] border-black' boxSize={4} bg={props.data.isOnline ? 'green.500' : 'gray.500'} />
+      </Avatar>
+
+    </div>
+<div className="ml-[7px] flex flex-col  text-left w-[40%] justify-around">
         <div className="text-[22px] font-bold">{props.data.username} </div>
         <div className="text-gray-400 text-[12px] font-medium	">
           ok, see you tomorrow{" "}
@@ -89,17 +93,30 @@ function Usercard(props: any) {
           socket?.emit(`removeChatUser`, { friendId: props.data.id });
         }}
       />
-    </Box>
-  );
+  </Box>)
+
 }
 
 export default function LeftSidebar() {
 
-  const socket = useSelector((state: any) => state.socket.socket);
-  const dispatch = useDispatch();
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [ChannelOrUser, setChannelOrUser] = useState(false);
+  const chatSocket = useAppSelector((state) => state.socket);
+  const { socket } = chatSocket;
+  const dispatch = useDispatch()
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [ChannelOrUser, setChannelOrUser] = useState(false)
   const channels = useSelector((state: any) => state.chat.channels);
+  
+  useEffect(() => {
+  
+    socket?.on(`updateChatList`, async (Users: any) => {
+      // console.log(Users)
+      // setUsers(Users);
+      dispatch(setTheUser(Users[0]));
+    });
+
+  }, [socket]);
+
+
 
   const selected = useSelector(
     (state: any) => state.chat.selectedChannelorUser
@@ -124,13 +141,14 @@ export default function LeftSidebar() {
   }, []);
 
   useEffect(() => {
-    socket?.on("getChannelsFirstTime", (data: any) => {
-      const allchannels: Channel[] = data.channels;
+
+    socket?.on('getChannelsFirstTime', (data: any) => {
+      const allchannels: Channel[] = data.channels
+
       allchannels.map((channel: Channel) => {
         socket?.emit("joinChannel", {
           channelId: channel.id,
-          userId: userId,
-        });
+        })
       });
       dispatch(setChannels(allchannels));
     });
@@ -204,7 +222,8 @@ export default function LeftSidebar() {
         dispatch(setChannel(data.channel));
 
         if (selected?.id === data.channel.id) {
-          if (selected.channelMember) {
+
+          if (selected?.channelMember) {
             selected.channelMember.map((data1: any) => {
               if (data1.userId === userId) dispatch(setChannelMember(data1));
             });
@@ -214,7 +233,7 @@ export default function LeftSidebar() {
       } else {
         toast({
           title: data.message,
-          status: "success",
+          status: "error",
           position: `bottom-right`,
           isClosable: true,
         });
@@ -254,11 +273,13 @@ export default function LeftSidebar() {
         toast({
           title: "Channel has been deleted",
           position: `bottom-right`,
-          status: "success",
+          status: "error",
           duration: 3000,
           isClosable: true,
-        });
-        dispatch(setChannel(null));
+        })
+        dispatch(setChannel(null))
+        dispatch(setMessages([]))
+        socket?.emit('getChannels', { userId: userId })
       }
     });
     socket?.on("setAdministrator", (data: any) => {
@@ -309,30 +330,9 @@ export default function LeftSidebar() {
       }
     });
 
-    socket?.on("removeMember", (data: any) => {
-      if (data.status === "This member can't be removed.") {
-        toast({
-          title: data.status,
-          position: `bottom-right`,
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      } else {
-        toast({
-          title: data.status,
-          position: `bottom-right`,
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
-      if (data.userId === userId) {
-        dispatch(setChannel(null));
-      }
-    });
 
-    socket?.on("setpassword", (data: any) => {
+
+    socket?.on('setpassword', (data: any) => {
       if (data.status === "You are not owner or admin of the channel") {
         toast({
           title: data.status,
@@ -340,29 +340,32 @@ export default function LeftSidebar() {
           status: "error",
           duration: 3000,
           isClosable: true,
-        });
-      } else if (data.status === "Password is set. Channel is private now") {
-        console.log(data);
+        })
+      }
+      else if (data.status === "Password is set. Channel is private now") {
+        console.log(data)
         toast({
           title: data.status,
           position: `bottom-right`,
           status: "success",
           duration: 3000,
           isClosable: true,
-        });
-        socket.emit("getChannels", { userId: userId });
-      } else {
+        })
+        socket.emit('getChannels', { userId: userId })
+      }
+      else {
         toast({
           title: data.status,
           position: `bottom-right`,
           status: "error",
           duration: 3000,
           isClosable: true,
-        });
+        })
       }
-    });
+    })
 
-    socket?.on("removepassword", (data: any) => {
+    socket?.on('removepassword', (data: any) => {
+
       if (data.status === "You are not owner or admin of the channel") {
         toast({
           title: data.status,
@@ -370,18 +373,20 @@ export default function LeftSidebar() {
           status: "error",
           duration: 3000,
           isClosable: true,
-        });
-      } else if (data.status === "Password is removed. Channel is public now") {
-        console.log(data);
+        })
+      }
+      else if (data.status === "Password is removed. Channel is public now") {
+        console.log(data)
         toast({
           title: data.status,
           position: `bottom-right`,
           status: "success",
           duration: 3000,
           isClosable: true,
-        });
-        socket?.emit("getChannels", { userId: userId });
-      } else {
+        })
+        socket?.emit('getChannels', { userId: userId })
+      }
+      else {
         toast({
           title: data.status,
           position: `bottom-right`,
@@ -390,8 +395,8 @@ export default function LeftSidebar() {
           isClosable: true,
         });
       }
-    });
-    socket?.on("changepassword", (data: any) => {
+    })
+    socket?.on('changepassword', (data: any) => {
       if (data.status === "Password is changed") {
         toast({
           title: data.status,
@@ -399,9 +404,112 @@ export default function LeftSidebar() {
           status: "success",
           duration: 3000,
           isClosable: true,
-        });
-        socket?.emit("getChannels", { userId: userId });
-      } else {
+        })
+        socket?.emit('getChannels', { userId: userId })
+
+      }
+      else {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+    })
+    socket?.on('mutemember', (data: any) => {
+      if (data.status === "you have been muted from channel")
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+      else
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+    })
+
+    socket?.on('kickmember', (data: any) => {
+      if (data.status === "you have been kicked from channel")
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        })
+        dispatch(setChannel(null))
+        dispatch(setMessages([]))
+        dispatch(setChannelMember(null))
+      }
+      else
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+    })
+    socket?.on('banmember', (data: any) => {
+      if (data.status === "you have been banned from channel")
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+        dispatch(setChannel(null))
+        dispatch(setMessages([]))
+        dispatch(setChannelMember(null))
+        socket?.emit('getChannels', { userId: userId })
+      }
+      else
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+
+    })
+
+    socket?.on('unbanmember', (data: any) => {
+      if (data.status === "you have been unbanned from channel")
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        })
+        
+        socket?.emit('getChannels', { userId: userId })
+        
+      }
+      else
+      {
         toast({
           title: data.status,
           position: `bottom-right`,
@@ -410,23 +518,58 @@ export default function LeftSidebar() {
           isClosable: true,
         });
       }
+    })
+    socket?.on('inviteMember', (data: any) => {
+      if (data.status === "you have been invited to channel")
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        })
+        socket?.emit('joinChannel', {
+          channelId: data.channel.id,
+        })
+      
+        socket?.emit('getChannels', { userId: userId })
+
+      }
+      else
+      {
+        toast({
+          title: data.status,
+          position: `bottom-right`,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        })
+        socket?.emit('getChannels', { userId: userId })
+      }
     });
 
     return () => {
-      socket?.off("getChannelsFirstTime");
-      socket?.off("channelLeft");
-      socket?.off("allchannels");
-      socket?.off("channelDeleted");
-      socket?.off("setAdministrator");
-      socket?.off("removeAdministrator");
-      socket?.off("removeMember");
-      socket?.off("setpassword");
-      socket?.off("removepassword");
-      socket?.off("changepassword");
-      socket?.off("channelEntered");
-      socket?.off("channelCreated");
-    };
-  }, [selected]);
+      socket?.off('getChannelsFirstTime');
+      socket?.off('channelLeft');
+      socket?.off('allchannels');
+      socket?.off('channelDeleted');
+      socket?.off('setAdministrator');
+      socket?.off('removeAdministrator');
+      socket?.off('setpassword');
+      socket?.off('removepassword');
+      socket?.off('changepassword');
+      socket?.off('channelEntered');
+      socket?.off('channelCreated');
+      socket?.off('mutemember');
+      socket?.off('kickmember');
+      socket?.off('banmember');
+      socket?.off('unbanmember');
+      socket?.off('inviteMember');
+    }
+  }, [selected, userId])
+
+
 
   const sidebar = {
     open: (height = 1000) => ({
@@ -449,8 +592,8 @@ export default function LeftSidebar() {
   };
 
   return (
-    <Box
-      className="LeftSideBar place-items-center grid w-[375px] absolute  h-full overflow-y-auto border-r-[3px] border-r-black md:static md:w-[400px] backdrop-blur-xl z-10"
+
+    <Box className='LeftSideBar place-items-center grid w-[375px] absolute  h-full overflow-y-auto border-r-[3px] border-r-black  md:static md:w-[400px] backdrop-blur-xl z-10 pt-[100px]'
       as={motion.div}
       initial={false}
       animate={LeftClice.LeftValue ? "open" : "closed"}
@@ -490,22 +633,26 @@ export default function LeftSidebar() {
         </div>
       </div>
 
-      <div className=" mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll">
-        {Users
-          ? Users.map((userData: User, id: number) => (
-              <Usercard key={id} data={userData} />
-            ))
-          : null}
-      </div>
-      {ChannelOrUser === true ? (
-        <Modal isOpen={isOpen} onClose={onClose} isCentered>
-          <Newchannel isOpen={isOpen} onClose={onClose} channels={channels} />
-        </Modal>
-      ) : (
-        <Modal isOpen={isOpen} onClose={onClose} isCentered>
-          <Newmessage isOpen={isOpen} onClose={onClose} />
-        </Modal>
-      )}
+        <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
+        {
+          Users.map((userData: User, id: number) => (
+            <Usercard
+              key={id}
+              data={userData}
+            />
+          ))
+        }
+  
+        </div>
+        {ChannelOrUser === true ? <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <Newchannel 
+          onClose={onClose}
+        />
+      </Modal> : <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <Newmessage isOpen={isOpen}
+          onClose={onClose}
+        />
+      </Modal>}
     </Box>
   );
 }

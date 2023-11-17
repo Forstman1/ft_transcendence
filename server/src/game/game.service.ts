@@ -190,6 +190,13 @@ export class GameService {
   //------------------ create room ------------------
 
   createRoom(ownerId: string): string {
+    //check if user already has room and return room id
+    // this.rooms.forEach((room, key) => {
+    //   if (room.players.includes(ownerId)) {
+    //     roomId = key;
+    //   }
+    // });
+    // if (roomId) return roomId;
     const roomId = uuidv4();
     const gameData: GameServiceData = {
       id: roomId,
@@ -308,7 +315,15 @@ export class GameService {
     data: GameHistory,
     opponentId: string,
   ): Promise<void> => {
-    const { userId, status, userScore, opponentScore, rounds, matches } = data;
+    const { userId, status, userScore, opponentScore, rounds, matches, xp } = data;
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        userGamesXp: {
+          increment: xp,
+        },
+      },
+    });
     await this.prisma.gameHistory.create({
       data: {
         user: { connect: { id: userId } },
@@ -318,6 +333,80 @@ export class GameService {
         opponentScore,
         rounds,
         matches,
+        xp,
+      },
+    });
+    return;
+  }
+
+  //----------------------------------------------------
+
+  getMyFriends = async (userId: string): Promise<any> => {
+    const friends = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        friends: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            fullname: true,
+            avatarURL: true,
+            isOnline: true,
+          },
+        },
+      },
+    });
+    return friends;
+  }
+
+  //----------------------------------------------------
+  searchFriend = async (userId: string, search: string): Promise<any> => {
+    const friends = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        friends: {
+          where: {
+            OR: [
+              { username: { contains: search, mode: 'insensitive' } },
+            ],
+          },
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            fullname: true,
+            avatarURL: true,
+            isOnline: true,
+          },
+        },
+      },
+    });
+    return friends;
+  }
+
+  //----------------------------------------------------
+  getOpponentData = async (opponentId: string): Promise<any> => {
+    const opponentData = await this.prisma.user.findUnique({
+      where: { id: opponentId },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        fullname: true,
+        avatarURL: true,
+        isOnline: true,
+      },
+    });
+    return opponentData;
+  }
+
+  //----------------------------------------------------
+  updateUserIsOnline = async (userId: string, isOnline: boolean): Promise<void> => {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        isOnline,
       },
     });
     return;

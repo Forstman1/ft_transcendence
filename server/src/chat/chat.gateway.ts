@@ -20,7 +20,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
   @WebSocketServer()
   server: Server;
 
-  private readonly connectedUsers: { [key: string]: Socket[] } = {};
+  private readonly connectedUsers: { [userId: string]: Socket[] } = {};
   private logger: Logger = new Logger(`ChatGateway`);
 
   afterInit() {
@@ -51,6 +51,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
   //!---------------DISCONNECTION------------------------!//
 
   async handleDisconnect(socket: Socket) {
+
+    this.connectedUsers[socket.handshake.auth.id].splice(this.connectedUsers[socket.handshake.auth.id].indexOf(socket), 1);
+    socket.leave(socket.id);
     // await this.userService.removeFromAllRooms(socket.id)
     // delete all sockets in connectedUsers that are associated with this socket.id
     this.logger.log(`Socket disconnected: ${socket.id}`);
@@ -333,44 +336,48 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
   }
 
 
-  @SubscribeMessage('joinChannel')
-  async joinChannel(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: any,
-  ): Promise<any> {
-    const channel: any = await this.channelService.getchannelinfo(
-      data.channelId,
-    );
 
-    const user: any = await this.userService.getUser(data.userId);
+
+
+  @SubscribeMessage('joinChannel')
+  async joinChannel(@ConnectedSocket() client: Socket, @MessageBody() data: any): Promise<any> {
+    const channel: any = await this.channelService.getchannelinfo(data.channelId);
+
+    const user: any = await this.userService.getUser(client.handshake.auth.id);
 
     if (channel && user) {
-      client.join(channel.id);
-      this.server
-        .to(channel.id)
-        .emit(
-          'joinChannel',
-          'UserJoined ' + data.channelId + '  ' + user.username,
-        );
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+        socket.join(channel.id);
+      })
+      this.server.to(channel.id).emit('joinChannel', "UserJoined " + data.channelId + "  " + user.username);
     }
   }
 
   @SubscribeMessage('sendMessage')
-  async sendMessage(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: any,
-  ): Promise<any> {
-    const channel: any = await this.channelService.getchannelinfo(
-      data.channelId,
-    );
-    const user = await this.userService.getUser(data.userId);
+  async sendMessage(@ConnectedSocket() client: Socket, @MessageBody() data: any): Promise<any> {
 
+
+    const channel: any = await this.channelService.getchannelinfo(data.channelId);
+    const user = await this.userService.getUser(client.handshake.auth.id);
+    const member: any = await this.channelService.getchannelmemberinfo(data.channelId, client.handshake.auth.id);
+
+
+    if (member && member.isMuted) {
+      if (member.timeMuted > new Date()) {
+        this.connectedUsers[client.handshake.auth.id].map((socket) => {
+          this.server.to(socket.id).emit('sendMessage', { status: "You are muted" });
+        })
+
+        return;
+      }
+      else {
+        await this.channelService.unmuteMember(data.channelId, client.handshake.auth.id);
+
+      }
+
+    }
     if (channel && user) {
-      const channelMessage = await this.messageService.createmessage({
-        content: data.message,
-        userId: data.userId,
-        reciverId: data.channelId,
-      });
+      const channelMessage = await this.messageService.createmessage({ content: data.message, userId: client.handshake.auth.id, reciverId: data.channelId });
 
       if (channelMessage) {
         this.server
@@ -395,139 +402,131 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
 
       const channel: any = await this.channelService.createchannel(data);
 
-      if (channel.status === 'channel created') {
-        client.join(channel.channel.id);
-        this.server
-          .to(channel.channel.id)
-          .emit('channelCreated', {
-            channelId: channel.id,
-            message: 'Channel Created',
-            userId: data.userId,
-            channel: channel.channel,
-          });
-      } else {
-        this.server
-          .to(client.id)
-          .emit('channelCreated', {
-            channelId: data.channelId,
-            message: channel.status,
-          });
+      if (channel.status === "channel created") {
+
+        this.connectedUsers[client.handshake.auth.id].map((socket) => {
+          socket.join(channel.channel.id);
+        })
+        this.server.to(channel.channel.id).emit('channelCreated', { channelId: channel.id, message: "Channel Created", userId: data.userId, channel: channel.channel });
       }
+      else {
+        this.connectedUsers[client.handshake.auth.id].map((socket) => {
+          this.server.to(socket.id).emit('channelCreated', { channelId: data.channelId, message: channel.status });
+        })
+      }
+
     } catch (error) {
-      this.server
-        .to(client.id)
-        .emit('channelCreated', {
-          channelId: data.channelId,
-          message: "channel doesn't exist",
-        });
-      console.log(error);
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+        this.server.to(socket.id).emit('channelCreated', { channelId: data.channelId, message: "channel doesn't exist" });
+      })
     }
   }
 
   @SubscribeMessage('enterChannel')
-  async enterChannel(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: any,
-  ): Promise<any> {
-    let channel: any = await this.channelService.getchannelinfo(data.channelId);
-    const user: any = await this.userService.getUser(data.userId);
+  async enterChannel(@ConnectedSocket() client: Socket, @MessageBody() data: any): Promise<any> {
 
-    if (channel && user) {
-      channel = await this.channelService.enterchannel(
-        channel.name,
-        data.userId,
-      );
-      client.join(channel.id);
-      this.server
-        .to(channel.id)
-        .emit('channelEntered', {
-          channelId: data.channelId,
-          message: user.username + ' entered the channel',
-          userId: data.userId,
-          channel: channel,
-        });
-    } else {
-      this.server
-        .to(client.id)
-        .emit('channelEntered', {
-          channelId: data.channelId,
-          message: "channel doesn't exist",
-        });
+    try {
+
+
+      let channel: any = await this.channelService.getchannelinfo(data.channelId);
+      const user: any = await this.userService.getUser(client.handshake.auth.id);
+
+
+
+
+      channel = await this.channelService.enterchannel(channel.name, client.handshake.auth.id);
+      if (channel.status === "you are now member of the channel") {
+        this.connectedUsers[client.handshake.auth.id].map((socket) => {
+          socket.join(channel.id);
+        })
+        this.server.to(channel.id).emit('channelEntered', { channelId: data.channelId, message: user.username + " entered the channel", userId: client.handshake.auth.id, channel: channel.channel });
+      }
+      else {
+        this.connectedUsers[client.handshake.auth.id].map((socket) => {
+          this.server.to(socket.id).emit('channelEntered', { channelId: data.channelId, message: "channel doesn't exist" });
+        })
+      }
+
+    } catch (error) {
+
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+        this.server.to(socket.id).emit('channelEntered', { channelId: data.channelId, message: "channel doesn't exist" });
+      })
     }
   }
 
   @SubscribeMessage('getChannels')
-  async getChannels(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: any,
-  ) {
-    const channels = await this.channelService.getallchannels(data.userId);
-    client.join(client.id);
+  async getChannels(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
 
-    this.server.to(client.id).emit('allchannels', { channels: channels });
+
+    const channels = await this.channelService.getallchannels(client.handshake.auth.id);
+    this.connectedUsers[client.handshake.auth.id].map((socket) => {
+
+      this.server.to(socket.id).emit('allchannels', { channels: channels });
+    })
+
   }
 
   @SubscribeMessage('getChannelsFirstTime')
-  async getChannelsFirstTime(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: any,
-  ) {
-    const channels = await this.channelService.getallchannels(data.userId);
-    client.join(client.id);
+  async getChannelsFirstTime(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
 
-    this.server
-      .to(client.id)
-      .emit('getChannelsFirstTime', { channels: channels });
+
+    const channels = await this.channelService.getallchannels(client.handshake.auth.id);
+    this.connectedUsers[client.handshake.auth.id].map((socket) => {
+
+      this.server.to(socket.id).emit('getChannelsFirstTime', { channels: channels });
+    })
+
   }
-  // getChannelsFirstTime
+
 
   @SubscribeMessage('leaveChannel')
-  async leaveChannel(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: any,
-  ): Promise<any> {
-    const channel: any = await this.channelService.getchannelinfo(
-      data.channelId,
-    );
-    const user: any = await this.userService.getUser(data.userId);
-    await this.channelService.leaveChannel(channel.name, data.userId);
+  async leaveChannel(@ConnectedSocket() client: Socket, @MessageBody() data: any): Promise<any> {
 
-    const channels = await this.channelService.getallchannels(data.userId);
+    const channel: any = await this.channelService.getchannelinfo(data.channelId);
+    const user: any = await this.userService.getUser(client.handshake.auth.id);
+    await this.channelService.leaveChannel(channel.name, client.handshake.auth.id);
+    const channels = await this.channelService.getallchannels(client.handshake.auth.id);
 
-    this.server
-      .to(channel.id)
-      .emit('channelLeft', {
-        channelId: data.channelId,
-        message: user.username + ' left the channel',
-        userId: data.userId,
-      });
+    this.server.to(channel.id).emit('channelLeft', { channelId: data.channelId, message: user.username + " left the channel", userId: client.handshake.auth.id });
 
     const members = await this.channelService.getallmembers(data.channelId);
     this.server.to(channel.id).emit('allmembers', { members: members });
 
-    this.server.to(client.id).emit('allchannels', { channels: channels });
+    this.connectedUsers[client.handshake.auth.id].map((socket) => {
+      this.server.to(socket.id).emit('allchannels', { channels: channels });
+    })
 
-    client.leave(channel.id);
+    this.connectedUsers[client.handshake.auth.id].map((socket) => {
+      socket.leave(channel.id);
+
+    })
+
+
   }
 
   @SubscribeMessage('deleteChannel')
-  async deleteChannel(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: any,
-  ) {
-    const channel = await this.channelService.deleteChannel(
-      data.channelName,
-      data.userId,
-    );
-    if (channel.status == 'You are not the owner of the channel') {
-      this.server
-        .to(client.id)
-        .emit('channelDeleted', { status: 'You are not owner of the channel' });
-    } else {
-      this.server
-        .to(client.id)
-        .emit('channelDeleted', { status: 'Channel is deleted' });
+  async deleteChannel(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
+
+    try {
+
+      const channel = await this.channelService.deleteChannel(data.channelId, client.handshake.auth.id);
+
+      if (channel.status == "You are not the owner of the channel") {
+        this.connectedUsers[client.handshake.auth.id].map((socket) => {
+          this.server.to(socket.id).emit('channelDeleted', { status: "You are not owner of the channel" });
+        })
+      }
+      else {
+        this.server.to(data.channelId).emit('channelDeleted', { status: "Channel is deleted", channelId: data.channelId });
+      }
+    } catch (error) {
+
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+        this.server.to(socket.id).emit('channelDeleted', { status: "Channel can't be deleted", channelId: data.channelId });
+      })
     }
+
   }
 
   @SubscribeMessage('getmembers')
@@ -536,7 +535,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     @MessageBody() data: any,
   ) {
     const members = await this.channelService.getallmembers(data.channelId);
-    this.server.to(client.id).emit('allmembers', { members: members });
+    this.connectedUsers[client.handshake.auth.id].map((socket) => {
+      this.server.to(socket.id).emit('allmembers', { members: members });
+    })
   }
 
   @SubscribeMessage('setadministrator')
@@ -545,38 +546,25 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     @MessageBody() data: any,
   ) {
     try {
-      const channel: any = await this.channelService.getchannelinfo(
-        data.channelId,
-      );
-      const admin: any = await this.channelService.setAdministrator(
-        data.channelId,
-        data.userId,
-        data.adminId,
-      );
+
+
+      const channel: any = await this.channelService.getchannelinfo(data.channelId);
+      const admin: any = await this.channelService.setAdministrator(data.channelId, client.handshake.auth.id, data.adminId);
       const user: any = await this.userService.getUser(data.adminId);
 
-      console.log('channel ', ' ' + admin.channelmember);
+
       if (admin.status === "This member can't be set as an administrator.") {
-        this.server
-          .to(client.id)
-          .emit('setAdministrator', {
-            status: "This member can't be set as an administrator.",
-          });
-      } else {
-        this.server
-          .to(channel.id)
-          .emit('setAdministrator', {
-            member: admin.channelmember,
-            status: user.username + ' is now an administrator.',
-          });
+        this.connectedUsers[client.handshake.auth.id].map((socket) => {
+          this.server.to(socket.id).emit('setAdministrator', { status: "This member can't be set as an administrator." });
+        })
+      }
+      else {
+        this.server.to(channel.id).emit('setAdministrator', { member: admin.channelmember, status: user.username + " is now an administrator." });
       }
     } catch (error) {
-      console.log(error);
-      this.server
-        .to(client.id)
-        .emit('setAdministrator', {
-          status: "This member can't be set as an administrator.",
-        });
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+        this.server.to(socket.id).emit('setAdministrator', { status: "This member can't be set as an administrator." });
+      })
     }
   }
 
@@ -586,75 +574,33 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     @MessageBody() data: any,
   ) {
     try {
-      const channel: any = await this.channelService.getchannelinfo(
-        data.channelId,
-      );
-      const member: any = await this.channelService.removeAdministrator(
-        data.channelId,
-        data.userId,
-        data.adminId,
-      );
+
+      const channel: any = await this.channelService.getchannelinfo(data.channelId);
+      const member: any = await this.channelService.removeAdministrator(data.channelId, client.handshake.auth.id, data.adminId);
       const user: any = await this.userService.getUser(data.adminId);
 
       if (member.status === "This administrator can't be removed.") {
-        this.server
-          .to(client.id)
-          .emit('removeAdministrator', {
-            status: "This member can't be removed as an administrator.",
-          });
-      } else {
-        this.server
-          .to(channel.id)
-          .emit('removeAdministrator', {
-            member: member.channelmember,
-            status: user.username + ' is no longer an administrator.',
-          });
+        this.connectedUsers[client.handshake.auth.id].map((socket) => {
+
+          this.server.to(socket.id).emit('removeAdministrator', { status: "This member can't be removed as an administrator." });
+        })
       }
+      else {
+        this.server.to(channel.id).emit('removeAdministrator', { member: member.channelmember, status: user.username + " is no longer an administrator." });
+      }
+
+
     } catch (error) {
-      console.log(error);
-      this.server
-        .to(client.id)
-        .emit('setAdministrator', {
-          status: "This member can't be set as an administrator1.",
-        });
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+        this.server.to(socket.id).emit('setAdministrator', { status: "This member can't be set as an administrator1." });
+
+      })
     }
   }
 
-  @SubscribeMessage('removemember')
-  async removemember(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: any,
-  ) {
-    try {
-      const channel: any = await this.channelService.getchannelinfo(
-        data.channelId,
-      );
-      const member: any = await this.channelService.removeMember(
-        data.channelId,
-        data.userId,
-        data.memberId,
-      );
-      const user: any = await this.userService.getUser(data.memberId);
 
-      if (member.status === "This member can't be removed.") {
-        this.server
-          .to(client.id)
-          .emit('removeMember', { status: "This member can't be removed." });
-      } else {
-        this.server
-          .to(channel.id)
-          .emit('removeMember', {
-            member: member.channelmember,
-            status: user.username + ' is no longer a member.',
-          });
-      }
-    } catch (error) {
-      console.log(error);
-      this.server
-        .to(client.id)
-        .emit('removeMember', { status: "This member can't be removed." });
-    }
-  }
+
+
 
   @SubscribeMessage('setpassword')
   async setpassword(
@@ -662,43 +608,36 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     @MessageBody() data: any,
   ) {
     try {
-      const channel: any = await this.channelService.getchannelinfo(
-        data.channelId,
-      );
-      const user = await this.userService.getUser(data.userId);
+
+      const channel: any = await this.channelService.getchannelinfo(data.channelId);
+      const user = await this.userService.getUser(client.handshake.auth.id);
 
       if (channel && user) {
-        const newchannel: any = await this.channelService.setpassword(
-          data.channelId,
-          data.userId,
-          data.password,
-        );
+        const newchannel: any = await this.channelService.setpassword(data.channelId, client.handshake.auth.id, data.password)
 
-        if (newchannel.status == 'Password is set. Channel is private now') {
-          this.server
-            .to(channel.id)
-            .emit('setpassword', {
-              status: 'Password is set. Channel is private now',
-              channel: newchannel.channel,
-            });
-        } else if (
-          newchannel.status === 'You are not the owner of the channel'
-        ) {
-          this.server
-            .to(client.id)
-            .emit('setpassword', { status: 'channel is already protected' });
-        } else
-          this.server
-            .to(client.id)
-            .emit('setpassword', {
-              status: 'You are not owner or admin of the channel',
-            });
+        if (newchannel.status == "Password is set. Channel is private now") {
+          this.server.to(channel.id).emit('setpassword', { status: "Password is set. Channel is private now", channel: newchannel.channel });
+
+
+        }
+        else if (newchannel.status === "You are not the owner of the channel") {
+          this.connectedUsers[client.handshake.auth.id].map((socket) => {
+            this.server.to(socket.id).emit('setpassword', { status: "channel is already protected" });
+          })
+        }
+        else {
+          this.connectedUsers[client.handshake.auth.id].map((socket) => {
+            this.server.to(socket.id).emit('setpassword', { status: "You are not owner or admin of the channel" });
+          })
+        }
+
       }
     } catch (error) {
       console.log(error);
-      this.server
-        .to(client.id)
-        .emit('setpassword', { status: "password can't be set" });
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+        this.server.to(socket.id).emit('setpassword', { status: "password can't be set" });
+
+      })
     }
   }
 
@@ -708,44 +647,35 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     @MessageBody() data: any,
   ) {
     try {
-      const channel: any = await this.channelService.getchannelinfo(
-        data.channelId,
-      );
-      const user = await this.userService.getUser(data.userId);
+
+      const channel: any = await this.channelService.getchannelinfo(data.channelId);
+      const user = await this.userService.getUser(client.handshake.auth.id);
 
       if (channel && user) {
-        const newchannel: any = await this.channelService.removepassword(
-          data.channelId,
-          data.userId,
-        );
+        const newchannel: any = await this.channelService.removepassword(data.channelId, client.handshake.auth.id)
 
-        if (
-          newchannel.status === 'Password is removed. Channel is public now'
-        ) {
-          this.server
-            .to(channel.id)
-            .emit('removepassword', {
-              status: 'Password is removed. Channel is public now',
-              channel: newchannel.channel,
-            });
-        } else if (
-          newchannel.status === 'You are not the owner of the channel'
-        ) {
-          this.server
-            .to(client.id)
-            .emit('removepassword', { status: 'channel is already public' });
-        } else
-          this.server
-            .to(client.id)
-            .emit('removepassword', {
-              status: 'You are not owner or admin of the channel',
-            });
+        if (newchannel.status === "Password is removed. Channel is public now") {
+          this.server.to(channel.id).emit('removepassword', { status: "Password is removed. Channel is public now", channel: newchannel.channel });
+
+
+        }
+        else if (newchannel.status === "You are not the owner of the channel") {
+          this.connectedUsers[client.handshake.auth.id].map((socket) => {
+            this.server.to(socket.id).emit('removepassword', { status: "channel is already public" });
+          })
+        }
+        else {
+          this.connectedUsers[client.handshake.auth.id].map((socket) => {
+            this.server.to(socket.id).emit('removepassword', { status: "You are not owner or admin of the channel" });
+          })
+        }
+
       }
     } catch (error) {
       console.log(error);
-      this.server
-        .to(client.id)
-        .emit('removepassword', { status: "password can't be removed" });
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+        this.server.to(socket.id).emit('removepassword', { status: "password can't be removed" });
+      })
     }
   }
 
@@ -755,48 +685,181 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     @MessageBody() data: any,
   ) {
     try {
-      const channel: any = await this.channelService.getchannelinfo(
-        data.channelId,
-      );
-      const user = await this.userService.getUser(data.userId);
+
+      const channel: any = await this.channelService.getchannelinfo(data.channelId);
+      const user = await this.userService.getUser(client.handshake.auth.id);
 
       if (channel && user) {
-        const newchannel: any = await this.channelService.changepassword(
-          data.channelId,
-          data.userId,
-          data.currentpassword,
-          data.newpassword,
-        );
+        const newchannel: any = await this.channelService.changepassword(data.channelId, client.handshake.auth.id, data.currentpassword, data.newpassword)
 
-        if (newchannel.status === 'Password is changed') {
-          this.server
-            .to(channel.id)
-            .emit('changepassword', {
-              status: 'Password is changed',
-              channel: newchannel.channel,
-            });
-        } else if (
-          newchannel.status === 'You are not the owner of the channel'
-        ) {
-          this.server
-            .to(client.id)
-            .emit('changepassword', {
-              status: 'You are not the owner of the channel',
-            });
-        } else if (newchannel.status === 'Current password is wrong') {
-          this.server
-            .to(client.id)
-            .emit('changepassword', { status: 'Current password is wrong' });
-        } else
-          this.server
-            .to(client.id)
-            .emit('changepassword', { status: 'You are not authorized' });
+        if (newchannel.status === "Password is changed") {
+          this.server.to(channel.id).emit('changepassword', { status: "Password is changed", channel: newchannel.channel });
+
+
+        }
+        else if (newchannel.status === "You are not the owner of the channel") {
+          this.connectedUsers[client.handshake.auth.id].map((socket) => {
+
+            this.server.to(socket.id).emit('changepassword', { status: "You are not the owner of the channel" });
+          })
+        }
+        else if (newchannel.status === "Current password is wrong") {
+          this.connectedUsers[client.handshake.auth.id].map((socket) => {
+
+            this.server.to(socket.id).emit('changepassword', { status: "Current password is wrong" });
+          })
+        }
+        else {
+          this.connectedUsers[client.handshake.auth.id].map((socket) => {
+
+            this.server.to(socket.id).emit('changepassword', { status: "You are not authorized" });
+          })
+        }
+
       }
     } catch (error) {
       console.log(error);
-      this.server
-        .to(client.id)
-        .emit('changepassword', { status: "password can't be changed" });
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+        this.server.to(socket.id).emit('changepassword', { status: "password can't be changed" });
+
+      })
     }
   }
+
+
+
+  @SubscribeMessage('mutemember')
+  async mutemember(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
+    try {
+
+
+      const channel: any = await this.channelService.getchannelinfo(data.channelId);
+
+      const mutedmember = await this.channelService.mutemember(data.channelId, client.handshake.auth.id, data.memberId);
+      if (mutedmember.status === 'This member is muted.')
+
+        if (this.connectedUsers[data.memberId]) {
+          this.connectedUsers[data.memberId].map((socket) => {
+
+            this.server.to(socket.id).emit('mutemember', { status: "you have been muted from channel" });
+          })
+        }
+        else {
+          this.connectedUsers[client.handshake.auth.id].map((socket) => {
+
+            this.server.to(socket.id).emit('mutemember', { status: mutedmember.status });
+          })
+        }
+
+    } catch (error) {
+      console.log(error);
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+
+        this.server.to(socket.id).emit('mutemember', { status: "member can't be muted" });
+      })
+    }
+  }
+
+  @SubscribeMessage('kickmember')
+  async kickmember(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
+    try {
+
+      console.log("channel id ", data.channelId, " user id ", client.handshake.auth.id, " member id ", data.memberId)
+
+      const channel: any = await this.channelService.getchannelinfo(data.channelId);
+
+      const member: any = await this.channelService.getchannelmemberinfo(data.channelId, data.memberId);
+      if (member.role != 'OWNER') {
+
+        if (this.connectedUsers[data.memberId]) {
+          this.connectedUsers[data.memberId].map((socket) => {
+            this.server.to(socket.id).emit('kickmember', { status: "you have been kicked from channel", channel: channel });
+          })
+        }
+      }
+      else {
+        this.connectedUsers[client.handshake.auth.id].map((socket) => {
+
+          this.server.to(socket.id).emit('kickmember', { status: "member can't be kicked" });
+        })
+      }
+    } catch (error) {
+      console.log(error);
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+
+        this.server.to(socket.id).emit('kickmember', { status: "member can't be kicked" });
+      })
+    }
+  }
+
+
+  @SubscribeMessage('banmember')
+  async banmember(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
+
+    const status = await this.channelService.banMember(data.channelId, client.handshake.auth.id, data.memberId);
+
+    if (status.status === "This member is banned.") {
+      if (this.connectedUsers[data.memberId]) {
+        this.connectedUsers[data.memberId].map((socket) => {
+          this.server.to(socket.id).emit('banmember', { status: "you have been banned from channel" });
+        })
+      }
+    }
+    else {
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+        this.server.to(socket.id).emit('banmember', { status: status.status });
+      })
+    }
+  }
+
+
+
+  @SubscribeMessage('unbanmember')
+  async unbanmember(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
+
+    const status = await this.channelService.unbanMember(data.channelId, client.handshake.auth.id, data.memberId);
+
+    if (status.status === "This member is unbanned.") {
+      if (this.connectedUsers[data.memberId]) {
+        this.connectedUsers[data.memberId].map((socket) => {
+          this.server.to(socket.id).emit('unbanmember', { status: "you have been unbanned from channel" });
+        })
+      }
+    }
+    else {
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+        this.server.to(socket.id).emit('unbanmember', { status: status.status });
+      })
+    }
+  }
+
+  @SubscribeMessage('inviteMember')
+  async inviteMember(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
+
+    try {
+
+      const status = await this.channelService.inviteMember(data.channelId, client.handshake.auth.id, data.memberId);
+
+      if (status.status === "this member is invited") {
+        if (this.connectedUsers[data.memberId]) {
+          this.connectedUsers[data.memberId].map((socket) => {
+            this.server.to(socket.id).emit('inviteMember', { status: "you have been invited to channel", channel: status.channel });
+          })
+        }
+      }
+      else {
+        this.connectedUsers[client.handshake.auth.id].map((socket) => {
+          this.server.to(socket.id).emit('inviteMember', { status: status.status });
+        })
+      }
+    } catch (error) {
+
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+        this.server.to(socket.id).emit('inviteMember', { status: "member can't be invited1" });
+      })
+
+    }
+
+  }
+
 }

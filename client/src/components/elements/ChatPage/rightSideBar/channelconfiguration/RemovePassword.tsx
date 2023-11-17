@@ -5,10 +5,6 @@ import ModalWraper from '../../ModalWraper'
 import channelconfig from "../../../../../../assets/icons/channelconf.svg"
 import Image from 'next/image'
 
-
-
-
-
 function Componenent({ onClose }: any) {
 
     const channel = useSelector((state: any) => state.chat.selectedChannelorUser)

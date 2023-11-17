@@ -1,27 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { io, Socket } from "socket.io-client";
-
-let userId: string | null = null
-
-function assignuserId() {
-    if (userId === null) {
-        const id1 = "515253a4-90d8-474e-8fa7-01ae83c04d20"; 
-        const id2 = "56d81659-4dfd-487a-8e63-1ecdb37d752b";
-        userId = Math.floor(Math.random() * 11) > 5 ? id1 : id2;
-        console.log(`User ID assigned: ${userId}`);
-        // userId = id1;
-}
-
-}
-
-assignuserId()
-
-const socket = io('http://localhost:3001/chat', {
-    transports: ['websocket'],
-    auth: {
-        id: userId,
-    },
-})
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Socket } from "socket.io-client";
 
 
 export interface ChatSocketState {
@@ -30,26 +8,30 @@ export interface ChatSocketState {
     userID?: string | null;
 }
 
-
 const initialState: ChatSocketState = {
-    socket: socket,
+    socket: null,
     socketId: "",
-    userID: userId,
+    userID: "",
 }
 
+// socket.emit(`createNotificationRoom`, { userId: userId });
 
 const chatSocketSlice = createSlice({
     name: "chatSocket",
     initialState,
     reducers: {
-        setSocketState(state, action) {
-            state.socket = action.payload;
+        setChatSocketState: (state, action: PayloadAction<ChatSocketState>) => {
+            return {
+                ...state,
+                socket: action.payload.socket,
+                userID: action.payload.userID,
+            };
         },
-        getSocketState(state) {
+        getChatSocketState: (state) => {
             return state;
         }
     }
 })
 
-export const {getSocketState, setSocketState} = chatSocketSlice.actions;
+export const { getChatSocketState, setChatSocketState } = chatSocketSlice.actions;
 export default chatSocketSlice.reducer;

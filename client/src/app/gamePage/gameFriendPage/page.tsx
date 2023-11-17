@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import React, { useRef, useEffect, useState, use} from "react";
+import React, { useRef, useEffect, useState} from "react";
 import { PageWrapper } from "../../animationWrapper/pageWrapper";
 import Countdown from "../ui/Countdown";
 import GameHeader from "../ui/GameFriendHeader";
@@ -42,17 +43,13 @@ export default function GameFriendPage() {
   appliyGameMode(gameSettings);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [keysPressed, setKeysPressed] = useState<Record<string, boolean>>({});
-
-  const [canvasSize, setCanvasSize] = useState(initialCanvasSize);
-
+  const canvasSize = initialCanvasSize;
   const initialBallState: Ball = {
     x: canvasSize.width / 2,
     y: canvasSize.height / 2,
     speedX: initialBallSpeed,
     speedY: initialBallSpeed,
-
     radius: Math.floor(canvasSize.height / 55),
-
   };
   const leftPaddleRef = useRef<Rectangle>(initialLeftPaddle);
   const rightPaddleRef = useRef<Rectangle>(initialRightPaddle);
@@ -75,26 +72,18 @@ export default function GameFriendPage() {
   const [userPoints, setUserPoints] = useState<number>(0);
   const [gamePause, setGamePause] = useState<boolean>(false);
   const [hasInitialized, setHasInitialized] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  if (mounted) {
-    window?.addEventListener('offline', () => {
-      if (
-        socket &&
-        socket.io &&
-        socket.io.engine &&
-        socket.io.engine.transport
-      ) {
-        socket.io.engine.transport.close()
-      }
-    })
-    
-  }
-     
+  const [friendExitGame, setFriendExitGame] = useState<boolean>(false);
 
-  
-useEffect(() => {
-  setMounted(true);
-}, []);
+  window?.addEventListener('offline', () => {
+    if (
+      socket &&
+      socket.io &&
+      socket.io.engine &&
+      socket.io.engine.transport
+    ) {
+      socket.io.engine.transport.close()
+    }
+  })
 
 
   //--------------------------------Socket Code logic-------------------------------------------
@@ -103,7 +92,6 @@ useEffect(() => {
   useEffect(() => {
 
     if (socket !== null && roomId !== "") {
-      console.log("socket is not null");
       let prevLeftScore = 0;
       let prevRightScore = 0;
       
@@ -150,7 +138,6 @@ useEffect(() => {
     };
   }, [socketState]);
 
-
   //----------------------------------------------------------------------------------------------
 
   const closeSocketConnection = () => {
@@ -159,8 +146,7 @@ useEffect(() => {
     }
   };
 
-
-
+  //----------------------------------------------------------------------------------------------
   useEffect(() => {
     if (gameStarted && !hasInitialized && roomId !== "") {
       const initCanvasData = {
@@ -169,9 +155,7 @@ useEffect(() => {
           y: 50,
           speedX: (initialBallState.speedX * 100) / canvasSize.width,
           speedY: (initialBallState.speedY * 100) / canvasSize.height,
-
           radius: (Math.floor(canvasSize.height / 55) * 100) / canvasSize.height,
-
           maxBallSpeed: (maxBallSpeed * 100) / canvasSize.width,
         },
         leftPaddle: {
@@ -193,9 +177,7 @@ useEffect(() => {
   }, [gameStarted, hasInitialized]);
 
 
-
   //-------------------------------Update Paddles----------------------------------------------
-
   useEffect(() => {
     if (roomId !== "") {
     const canvasData: CanvasData = {
@@ -212,7 +194,6 @@ useEffect(() => {
         height: (rightPaddle.height  * 100) / canvasSize.height,
       },
     };
-
       socket?.emit("updatePaddles", {canvasData, roomId});
     }
    }, [leftPaddle, rightPaddle]);
@@ -221,46 +202,50 @@ useEffect(() => {
 
   
   const PostGameHistory = async () => {
-
+    if (friendExitGame) return;
     let userScore = 0;
     let opponentScore = 0;
     if (socketState.isOwner) {
       userScore = rightScore;
       opponentScore = leftScore;
-    }
-    else {
+    } else {
       userScore = leftScore;
       opponentScore = rightScore;
     }
+    const status = socketState.isOwner ? gameEndStatic.user : gameEndStatic.bot;
+    let xp = 0;
+    if (status === "WIN") {
+      xp = gameSettings.mode === "EASY" ? 10 : gameSettings.mode === "MEDIUM" ? 20 : 30;
+    } else if (status === "DRAW") {
+      xp = gameSettings.mode === "EASY" ? 5 : gameSettings.mode === "MEDIUM" ? 10 : 15;
+    }
     const data: any = {
-      userId: socketState.playerId,
-      status: socketState.isOwner ? gameEndStatic.user : gameEndStatic.bot,
+      // userId: socket?.auth?.id,
+      status: status,
       userScore: userScore,
       opponentScore: opponentScore,
       rounds: gameSettings.rounds,
       matches: gameSettings.matches,
       roomId: roomId,
+      xp: xp,
     };
 
     await socket?.emit("CreateGameHistory", data);
-  }
-
-  //----------------------------------------------------------------------------------------------
-
-   //-------------------------------Post Game History----------------------------------------------
-
+  };
 
   //----------------------------------------------------------------------------------------------
   useEffect(() => {
     if (roomId == "") return;
     if (gameEnded) {
       PostGameHistory().then(() => {
-          closeSocketConnection();
+        if (friendExitGame) {
+          socket?.emit("leaveRoom", roomId);
+        }
+        closeSocketConnection();
       });
     }
     if (!socketState.isOwner) return;
     if (!gameStarted && !gameEnded ) {
-
       socket?.emit("pauseGame", roomId);
     }
     else if (gameStarted && !gameEnded) {
@@ -269,25 +254,31 @@ useEffect(() => {
   }, [gameEnded, gameStarted]);
 
   useEffect(() => {
-    socket?.on("friendExitGame", () => {
+    socket?.on("friendExitGame1", () => {
+      console.log("friendExitGame1");
       if (socketState.isOwner) {
         setGameEndStatic({
           bot: "LOSE",
           user: "WIN",
         });
+        setRightScore(1);
+        setLeftScore(0);
       } else {
         setGameEndStatic({
           bot: "WIN",
           user: "LOSE",
         });
+        setRightScore(0);
+        setLeftScore(1);
       }
+      setFriendExitGame(true);
       setGameEnded(true);
     });
     return () => {
       socket?.off("friendExitGame");
     };
   }, [socket]);
-
+  
   //----------------------------------end Socket code Logic-----------------------------------------
 
   useEffect (() => {
@@ -345,57 +336,28 @@ useEffect(() => {
   }, [canvasSize, ball]);
 
   const handleCountdownEnd = () => {
+    setKeysPressed({});
     setGameStarted(true);
   };
 
   //---------------------------------------------------------------------------
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === " ") {
+      event.preventDefault();
+      setGamePause((prevGamePause) => !prevGamePause);
+    } else {
+      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: true }));
+    }
+  };
 
+  const handleKeyUp = (event: KeyboardEvent) => {
+    setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: false }));
+  };
+
+  
   useEffect(() => {
-    
-    
     if (!gameStarted || gameEnded) return;
 
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === " ") {
-        event.preventDefault();
-        setGamePause((prevGamePause) => !prevGamePause);
-      } else {
-        setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: true }));
-      }
-    };
-  
-    const handleKeyUp = (event: KeyboardEvent) => {
-      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: false }));
-    };
-  
-    document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("keyup", handleKeyUp);
-  
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("keyup", handleKeyUp);
-    };
-  }, [gameStarted]);
-
-  useEffect(() => {
-    
-    
-    if (!gameStarted || gameEnded) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === " ") {
-        event.preventDefault();
-        setGamePause((prevGamePause) => !prevGamePause);
-      } else {
-        setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: true }));
-      }
-    };
-  
-    const handleKeyUp = (event: KeyboardEvent) => {
-      setKeysPressed((prevKeys) => ({ ...prevKeys, [event.key]: false }));
-    };
-  
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
   
@@ -404,7 +366,6 @@ useEffect(() => {
       document.removeEventListener("keyup", handleKeyUp);
     };
   }, [gameStarted, gameEnded, ball]);
-
 
   //---------------------------------------------------------------------------
   
@@ -449,9 +410,7 @@ useEffect(() => {
     if (context)
       draw(canvasRef.current!, context, leftPaddle, rightPaddle, ball, gameSettings);
   
-
   }, [keysPressed, canvasSize, ball, gameStarted, gameEnded]);
-
 
   //---------------------------------------------------------------------------
 
@@ -473,16 +432,14 @@ useEffect(() => {
                   gameStarted={gameStarted}
                   gameMode="FRIEND"
                 />
-                <div className="flex flex-col space-y-10 w-full mx-[10%] h-full justify-center items-center mt-[100px]" >
+                <div className="flex flex-col space-y-10 w-full mx-[10%] h-screen justify-center items-center" >
                   <GameHeader leftScore={leftScore} rightScore={rightScore} />
                   <div
                     id="canvas-container"
-
                     className="relative flex items-center bg-background-primary rounded-lg h-[50vh] w-full max-w-[1200px]"
                   >
                     <div className="absolute top-0 left-0 w-full h-full rounded-lg z-10">
                       {!gameStarted && !gameEnded  && (
-
                         <div className="w-full h-full">
                           <Countdown
                             seconds={3}
@@ -498,9 +455,7 @@ useEffect(() => {
                             <GameEndStatic
                               opponent={gameEndStatic.bot}
                               user={gameEndStatic.user}
-
                               isFriendMode={true}
-
                             />
                           </div>
                         </>

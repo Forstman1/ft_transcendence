@@ -1,10 +1,8 @@
 "use client";
 
-import { SearchIcon, SmallAddIcon } from '@chakra-ui/icons';
-import { Avatar, AvatarBadge, Button, FormControl, FormLabel, Icon, Input, InputGroup, InputRightElement, Select, useToast } from '@chakra-ui/react';
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, Select } from '@chakra-ui/react';
+import React, { useState } from 'react'
 import {
-  Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
@@ -13,19 +11,13 @@ import {
   ModalCloseButton,
 } from '@chakra-ui/react'
 import { useForm } from "react-hook-form"
-import { useMutation } from 'react-query';
-import { Channel } from '@/utils/types/chat/ChatTypes';
-import { useDispatch, useSelector } from 'react-redux';
-import { setChannel, setChannelMember, setNewChannel } from '@/redux/slices/chat/ChatSlice';
+import { useSelector } from 'react-redux';
 
 
 
 
 type Props = {
-
-  isOpen: boolean;
   onClose: () => void;
-  channels: Channel[];
 };
 
 type ChannelValues = {
@@ -33,36 +25,22 @@ type ChannelValues = {
   password: string
   type: string
   userId: string
+
 }
 
 
-export default function Newchannel({ isOpen, onClose, channels }: Props) {
+export default function Newchannel({  onClose }: Props) {
 
 
   const { handleSubmit, register, watch } = useForm<ChannelValues>();
-  const [dup, setDup] = useState(false);
-  const toast = useToast()
+  const [dup] = useState(false);
 
   const [show, setShow] = React.useState(false)
   const handleClick = () => setShow(!show)
-  const dispatch = useDispatch()
   const userId = useSelector((state: any) => state.socket.userID)
   const socket = useSelector((state: any) => state.socket.socket)
 
-  const createchannel = useMutation<any, Error, ChannelValues>((variables) =>
-    fetch('http://127.0.0.1:3001/channel/createchannel', {
-      method: "POST",
-      body: JSON.stringify(variables),
-      headers: {
-        "content-type": "application/json",
-      }
-    }).then((response) => {
-      return response.json()
 
-    }).catch((error) => {
-      return error
-    })
-  )
 
   const onSubmit = async (data: ChannelValues) => {
 
@@ -72,7 +50,6 @@ export default function Newchannel({ isOpen, onClose, channels }: Props) {
     if (data.type === "Public")
       data.password = "123"
 
-      
     socket.emit('createChannel', {
       channelName: data.channelName,
       type: data.type,
@@ -81,64 +58,7 @@ export default function Newchannel({ isOpen, onClose, channels }: Props) {
     })
     
     onClose();
-    
-    // let channel: Channel;
-    // try {
-    //   const newchannel = await createchannel.mutateAsync({
-    //     channelName: data.channelName,
-    //     type: data.type,
-    //     password: data.password,
-    //     userId: data.userId
-    //   })
 
-    //   data.type = data.type.toUpperCase()
-    //   if (newchannel.status)
-    //     throw newchannel.status;
-    //   channel = newchannel
-
-
-    // } catch (error) {
-    //   console.log(error)
-    //   toast({
-    //     title: "couldn't create channel",
-    //     position: `bottom-right`,
-    //     status: 'error',
-    //     duration: 1000,
-    //     containerStyle: {
-    //       width: 300,
-    //       height: 100,
-    //     }
-    //   })
-    //   return;
-    // }
-
-
-    // toast({
-    //   title: "Channel Created",
-    //   position: `bottom-right`,
-    //   status: 'success',
-    //   duration: 1000,
-    //   containerStyle: {
-    //     width: 300,
-    //     height: 100,
-    //   }
-    // })
-
-
-
-    // dispatch(setChannel(channel))
-    // console.log(channel.channelMember)
-    // if (channel.channelMember) {
-    //   channel.channelMember.map((data1: any) => {
-    //     if (data1.userId === userId)
-    //       dispatch(setChannelMember(data1))
-    //   })
-    // }
-    // dispatch(setNewChannel(channel))
-    // socket.emit('joinChannel', {
-    //   channelId: channel.id,
-    //   userId: userId,
-    // })
 
   };
 

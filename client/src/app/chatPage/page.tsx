@@ -4,10 +4,9 @@ import {
   Box,
   Button,
   Alert,
-  Image,
-  AlertIcon,
   useToast,
 } from "@chakra-ui/react";
+
 import RightSidebar from "@/components/elements/ChatPage/rightSideBar/RightSidebar";
 import RightSidebarChannel from "@/components/elements/ChatPage/rightSideBar/RightSideBarChannel";
 import { Channel, User } from "@/utils/types/chat/ChatTypes";
@@ -25,6 +24,8 @@ import { setOptAllImages } from "@/redux/slices/chat/OptImagesSlice";
 
 
 
+
+
 export default function ChatPage() {
   const { RightClice } = useSelector((state: any) => state.mobile);
   const socket = useSelector((state: any) => state.socket.socket);
@@ -34,6 +35,7 @@ export default function ChatPage() {
   const selected: Channel | User | null = useSelector(
     (state: any) => state.chat.selectedChannelorUser
   );
+
 
   const handleWindowResize = () => {
     if (window.innerWidth <= 1024) {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Button, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
+import { Box, Button,  ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
 import { useSelector } from 'react-redux'
 import ModalWraper from '../../ModalWraper'
 import Image from 'next/image'
@@ -95,9 +95,9 @@ function Componenent({ onClose }: any) {
 
             <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
 
-                {users.map((data: User) => {
+                {users.map((data: User, id: number) => {
                     return <Usercard
-                        key={data.username}
+                        key={id}
                         data={data}
                         selectedOption={selectedOption}
                         onOptionChange={handleOptionChange}
@@ -118,9 +118,7 @@ function Componenent({ onClose }: any) {
                     colorScheme="green"
                     variant="outline"
                     ml={10}
-                    onClick={() => {
-                        onSubmit()
-                    }}
+                    onClick={onSubmit}
                 >
                     Confirm
                 </Button>

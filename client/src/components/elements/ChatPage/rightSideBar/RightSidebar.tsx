@@ -10,8 +10,7 @@ import Link from 'next/link'
 import { useToast } from '@chakra-ui/react'
 import ChannelMemberActions from './ChannelMemberActions'
 import UserControls from './UserControls'
-import { useSelector, useDispatch } from 'react-redux'
-import { useMediaQuery } from '@chakra-ui/react'
+import { useSelector } from 'react-redux'
 import AddToChannelComponent from './AddToChannelComponent'
 
 
@@ -50,7 +49,7 @@ export default function RightSidebar() {
 
   return (
 
-    <Box  className='RightSideBar w-[375px] absolute md:block backdrop-blur-xl md:static md:w-[465px] h-full overflow-y-auto border-l-[3px] border-l-black pb-28 right-0'
+    <Box  className='RightSideBar w-[375px] absolute md:block backdrop-blur-xl md:static md:w-[465px] h-full overflow-y-auto border-l-[3px] border-l-black pb-28 right-0 pt-[100px]'
       as={motion.div}
       initial={false}
       animate={RightClice.RightValue ? "open" : "closed"}
@@ -61,7 +60,7 @@ export default function RightSidebar() {
         <Text className='flex text-black text-4xl drop-shadow-[2px_2px_0_rgba(18,18,18,.0.50)]'>
           {User.username}
         </Text>
-        <Avatar src={User.avatar} className='m-7 h-[130px] w-[130px] drop-shadow-[2px_2px_0_rgba(18,18,18,0.50)] border border-black' />
+        <Avatar src={User?.avatarURL} className='m-7 h-[130px] w-[130px] drop-shadow-[2px_2px_0_rgba(18,18,18,0.50)] border border-black' />
         <Box className='bg-black justify-start flex items-center rounded text-white w-[200px] h-[45px] drop-shadow-[2px_2px_0_rgba(18,18,18,0.50)]'>
           <Box className={`AvatarBadge w-[25px] h-[25px] rounded-full mx-5 ${User.isOnline ? `bg-green-600`: `bg-red-600`}`} />
           <Text className='text-3xl'> {User.isOnline ? `Availabel` : `Unvailable`} </Text>

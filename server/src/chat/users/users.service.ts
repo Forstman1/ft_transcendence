@@ -565,7 +565,6 @@ export class UsersService {
     } catch (error) {
       return `${error} could not create message`;
     }
-    return;
   }
 
   async getuserstofound(tofound: string) {

@@ -7,12 +7,13 @@ import * as argon2 from 'argon2';
 
 @Injectable()
 export class ChannelService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
 
   async createchannel(channelData: CreateChannelDto) {
+
     try {
-      console.log('ana hna');
+
       const find = await this.prisma.channel.findUnique({
         where: {
           name: channelData.channelName,
@@ -29,8 +30,8 @@ export class ChannelService {
             channelData.type === 'Public'
               ? 'PUBLIC'
               : channelData.type === 'Private'
-              ? 'PRIVATE'
-              : 'PROTECTED',
+                ? 'PRIVATE'
+                : 'PROTECTED',
           password: channelData.type === 'Protected' ? hash : '',
         },
       });
@@ -67,7 +68,7 @@ export class ChannelService {
       });
 
       console.log('creating new channel');
-      return {channel: channel, status: "channel created"};
+      return { channel: channel, status: "channel created" };
 
 
     } catch (error) {
@@ -86,8 +87,8 @@ export class ChannelService {
         channelMember: true,
       },
     });
-    if (findchannel) 
-        return findchannel;
+    if (findchannel)
+      return findchannel;
     else return { status: "couldn't found channel" };
   }
 
@@ -152,7 +153,7 @@ export class ChannelService {
     });
 
     const channelmember = channelmembers[0];
-    if (channel.type !== 'PROTECTED') 
+    if (channel.type !== 'PROTECTED')
       return { status: 'channel is not protected' };
 
     if (channelmember.role === 'OWNER' || channelmember.role === 'ADMIN') {
@@ -167,14 +168,14 @@ export class ChannelService {
           },
         });
         return { status: 'Password is changed' };
-      } else 
+      } else
         return { status: 'Current password is wrong' };
     }
     return { status: 'You are not the owner of the channel' };
   }
 
 
- 
+
 
   async setpassword(channelId: string, userId: string, newpassword: string) {
 
@@ -195,7 +196,7 @@ export class ChannelService {
       if (channelmember.role === 'OWNER' || channelmember.role === 'ADMIN') {
 
         const hash = await argon2.hash(newpassword);
-  
+
         channel = await this.prisma.channel.update({
           where: {
             id: channelId,
@@ -205,17 +206,17 @@ export class ChannelService {
             type: 'PROTECTED',
           },
         });
-  
-        return {channel: channel, status: "Password is set. Channel is private now"};
-  
+
+        return { channel: channel, status: "Password is set. Channel is private now" };
+
       } else return { status: 'you are not owner or admin of the channel' };
     }
     else return { status: 'channel is already protected' };
-    
+
   }
 
 
-  
+
 
   async removepassword(channelId: string, userId: string) {
     let channel = await this.prisma.channel.findUnique({
@@ -242,20 +243,20 @@ export class ChannelService {
           type: 'PUBLIC',
         },
       });
-      return {channel: channel, status: "Password is removed. Channel is public now"};
+      return { channel: channel, status: "Password is removed. Channel is public now" };
     } else return { status: 'you are not owner of the channel' };
   }
- 
 
 
-  async removeAdministrator(channelId:string, userIdOwner:string, userIdAdministrator:string){
+
+  async removeAdministrator(channelId: string, userIdOwner: string, userIdAdministrator: string) {
     try {
       const channel = await this.prisma.channel.findUnique({
         where: {
           id: channelId,
         },
       });
-  
+
       let channelMembers = await this.prisma.channelMember.findMany({
         where: {
           userId: userIdOwner,
@@ -264,7 +265,7 @@ export class ChannelService {
       });
 
       const channelOwner = channelMembers[0];
-  
+
       channelMembers = await this.prisma.channelMember.findMany({
         where: {
           userId: userIdAdministrator,
@@ -274,8 +275,8 @@ export class ChannelService {
 
       const channelAdministrator = channelMembers[0];
 
-      
-      if ( (channelOwner.role === 'OWNER' || channelOwner.role === "ADMIN") && channelAdministrator.role === 'ADMIN') {
+
+      if ((channelOwner.role === 'OWNER' || channelOwner.role === "ADMIN") && channelAdministrator.role === 'ADMIN') {
 
         let member = await this.prisma.channelMember.update({
           where: {
@@ -286,7 +287,7 @@ export class ChannelService {
           },
         });
 
-        return { channelmember : member,  status: 'This administrator is now a member.' };
+        return { channelmember: member, status: 'This administrator is now a member.' };
 
       } else {
         return { status: "This administrator can't be removed." };
@@ -311,15 +312,15 @@ export class ChannelService {
           id: channelId,
         },
       });
-  
+
       let channelMembers = await this.prisma.channelMember.findMany({
         where: {
           userId: userIdOwner,
           channel: channel,
         },
-      }); 
+      });
       const channelOwner = channelMembers[0];
-  
+
       channelMembers = await this.prisma.channelMember.findMany({
         where: {
           userId: userIdAdministrator,
@@ -327,7 +328,7 @@ export class ChannelService {
         },
       });
       const channelAdministrator = channelMembers[0];
-  
+
       if (
         (channelOwner.role === 'OWNER' || channelOwner.role === 'ADMIN') &&
         channelAdministrator.role === 'MEMBER'
@@ -340,7 +341,7 @@ export class ChannelService {
             role: 'ADMIN',
           },
         });
-        return { channelmember : member, status: 'This member is now an administrator.' };
+        return { channelmember: member, status: 'This member is now an administrator.' };
       } else {
         return { status: "This member can't be set as an administrator." };
       }
@@ -354,81 +355,40 @@ export class ChannelService {
 
 
 
-  async removeMember(channelId: string,  userId: string, otherUserId: string) {
-
-    try {
-      
-      const channel = await this.prisma.channel.findUnique({
-        where: {
-          id: channelId,
-        },
-      });
-  
-      let channelMembers = await this.prisma.channelMember.findMany({
-        where: {
-          userId: userId,
-          channel: channel,
-        },
-      });
-  
-      const channelMember = channelMembers[0];
-  
-      channelMembers = await this.prisma.channelMember.findMany({
-        where: {
-          userId: otherUserId,
-          channel: channel,
-        },
-      });
-  
-      const otherChannelMember = channelMembers[0];
-  
-      if (
-        (channelMember.role === 'OWNER' || channelMember.role === 'ADMIN') &&
-        (otherChannelMember.role === 'MEMBER'  || otherChannelMember.role === 'ADMIN')
-      ) {
-        let member = await this.prisma.channelMember.delete({
-          where: {
-            id: otherChannelMember.id,
-          },
-        });
-        return { channelmember : member, status: 'This member is removed.' };
-      } else {
-        return { status: "This member can't be removed." };
-      }
-
-
-    } catch (error) {
-      console.error('Error setting member:', error);
-      throw new Error('Failed to remove member.');
-    }
-  }
-
-
 
 
 
   async inviteMember(
-    channelName: string,
+    channelId: string,
     userIdOwner: string,
     userIdMember: string,
   ) {
 
 
+
     const channel = await this.prisma.channel.findUnique({
       where: {
-        name: channelName,
+        id: channelId,
       },
     });
 
     const channelmembers = await this.prisma.channelMember.findMany({
       where: {
         userId: userIdOwner,
-        channel: channel,
+        id: channel.id,
       },
     });
+    const findbaned = await this.prisma.channel.findUnique({
+      where: {
+        id: channelId,
+      },
+      include: {
+        bannedUsers: true,
+      },
+    });
+    if (findbaned.bannedUsers.find((user) => user.id === userIdMember))
+      return { status: "this member is banned" };
 
-    const channelowner = channelmembers[0];
-    delete channelmembers[0];
 
     try {
       const channelmembers = await this.prisma.channelMember.findMany({
@@ -442,11 +402,7 @@ export class ChannelService {
     } catch (error) {
 
     }
-    console.log(channelowner);
-    if (
-      channelowner.role === 'OWNER' ||
-      channelowner.role === 'ADMIN'
-    ) {
+
       const channelmember = await this.prisma.channelMember.create({
         data: {
           role: 'MEMBER',
@@ -458,26 +414,38 @@ export class ChannelService {
           },
         },
       });
-      return channelmember;
-    } else return { status: "this member can't invite member" };
+      return {channelmember: channelmember, status: "this member is invited", channel: channel };
+
   }
 
 
   async enterchannel(channelName: string, userId: string) {
-    const channel = await this.prisma.channel.findUnique({
+    let channel = await this.prisma.channel.findUnique({
       where: {
         name: channelName,
       },
     });
-    
+
     const channelmembers = await this.prisma.channelMember.findMany({
       where: {
         userId: userId,
         channel: channel,
       },
     });
-    if (!channelmembers[0])
-    {
+
+    const findbaned = await this.prisma.channel.findUnique({
+      where: {
+        name: channelName,
+      },
+      include: {
+        bannedUsers: true,
+      },
+    });
+    if (findbaned.bannedUsers.find((user) => user.id === userId))
+      return { status: "this member is banned" };
+
+
+    if (!channelmembers[0]) {
       if (channel.type === 'PUBLIC' || channel.type === 'PROTECTED') {
         const channelmember = await this.prisma.channelMember.create({
           data: {
@@ -490,12 +458,19 @@ export class ChannelService {
             },
           },
         });
-        return channel;
+        channel = await this.prisma.channel.findUnique({
+          where: {
+            name: channelName,
+          },
+          include: {
+            channelMember: true,
+          },
+        });
+        return {channel: channel, status: "you are now member of the channel" };
       }
-      
+
     }
-    else 
-    { 
+    else {
       return { status: "you are already member of the channel" };
     }
   }
@@ -503,17 +478,17 @@ export class ChannelService {
   async getallmembers(id: string) {
     const channel = await this.prisma.channel.findUnique({
       where: {
-        id: id, 
+        id: id,
       },
       include: {
         channelMember: true,
       },
     });
-    
-    if (channel) 
-        return channel.channelMember;
-    else 
-        return { status: "couldn't found channel" };
+
+    if (channel)
+      return channel.channelMember;
+    else
+      return { status: "couldn't found channel" };
   }
 
   async leaveChannel(channelName: string, userId: string) {
@@ -522,65 +497,63 @@ export class ChannelService {
         name: channelName,
       },
     });
-  
+
     if (!channel) {
       return { status: "couldn't found channel" };
     }
-  
+
     const channelmembers = await this.prisma.channelMember.findMany({
       where: {
         userId: userId,
         channelId: channel.id,
       },
     });
-  
+
     let channelmemberOwner = channelmembers[0];
-  
-    console.log("ana hna", channelmemberOwner);
-  
+
+
     if (channelmemberOwner.role === 'OWNER') {
 
-      console.log("ana hna owner");
-  
+
       channelmemberOwner = await this.prisma.channelMember.delete({
         where: {
           id: channelmemberOwner.id,
         },
       });
-  
+
       const channelmembers = await this.prisma.channelMember.findMany({
         where: {
           channelId: channel.id,
         },
       });
-  
+
       const channelmember = channelmembers[0];
-  
+
       if (channelmember) {
         await this.prisma.channelMember.update({
           where: {
             id: channelmember.id,
           },
           data: {
-            role: 'OWNER', 
+            role: 'OWNER',
           },
         });
         return { status: 'you left the channel' };
       } else {
 
         console.log("delete channel");
-        
+
         await this.prisma.channel.delete({
           where: {
             id: channel.id,
           },
         });
-        
+
         return { status: 'you left the channel' };
       }
     }
-  
-  
+
+
     if (channelmemberOwner) {
       await this.prisma.channelMember.delete({
         where: {
@@ -588,54 +561,54 @@ export class ChannelService {
         },
       });
     }
-  
+
     return { status: 'you left the channel' };
   }
 
 
 
-   
-  
 
-  async deleteChannel(channelName: string, userId: string) {
+
+
+  async deleteChannel(channelId: string, userId: string) {
+
     const channel = await this.prisma.channel.findUnique({
       where: {
-        name: channelName,
+        id: channelId,
       },
       include: {
         channelMember: true,
         channelmessages: true,
       },
     });
-  
+
     if (!channel) {
       return { status: 'Channel not found' };
     }
-  
+
     const channelMember = channel.channelMember.find(
       (member) => member.userId === userId
     );
-  
+
     if (!channelMember || channelMember.role !== 'OWNER') {
       return { status: 'You are not the owner of the channel' };
     }
-  
+
     await this.prisma.channelMessage.deleteMany({
       where: {
         reciverID: channel.id,
       },
     });
-  
+
     await this.prisma.channel.delete({
       where: {
-        name: channelName,
-        // id: channel.id,
+        id: channelId,
       },
       include: {
         channelMember: true,
       },
     });
-  
+
     return { status: 'Channel deleted' };
   }
 
@@ -665,9 +638,8 @@ export class ChannelService {
       return { status: 'Error getting channel member info' };
     }
   }
-  
-  async getallchannelsapp(tofound: string)
-  {
+
+  async getallchannelsapp(tofound: string) {
     const channels = await this.prisma.channel.findMany({
       where: {
         name: {
@@ -682,8 +654,7 @@ export class ChannelService {
   }
 
 
-  async getallpublicandprivatechannels()
-  {
+  async getallpublicandprivatechannels() {
     const channels = await this.prisma.channel.findMany({
       where: {
         OR: [
@@ -697,6 +668,249 @@ export class ChannelService {
       }
     });
     return channels;
+  }
+
+
+  async getmember(id: string) {
+    try {
+      const channelmember = await this.prisma.channelMember.findUnique({
+        where: {
+          id: id,
+        },
+      });
+      return channelmember;
+    } catch (error) {
+      console.error('Error getting channel member:', error);
+      return { status: 'Error getting channel member' };
+    }
+
+  }
+
+
+  async mutemember(channelId: string, userId: string, otherUserId: string) {
+    if (userId === otherUserId) {
+      return { status: "you can't mute yourself" };
+    }
+    try {
+      const channel = await this.prisma.channel.findUnique({
+        where: {
+          id: channelId,
+        },
+      });
+
+      const channelmembers = await this.prisma.channelMember.findMany({
+        where: {
+          userId: userId,
+          channel: channel,
+        },
+      });
+
+      const channelmember = channelmembers[0];
+
+      if (channelmember.role === 'OWNER' || channelmember.role === 'ADMIN') {
+        const channelmembers = await this.prisma.channelMember.findMany({
+          where: {
+            userId: otherUserId,
+            channel: channel,
+          },
+        });
+
+        const otherChannelmember = channelmembers[0];
+
+        if (otherChannelmember.role === 'MEMBER' || otherChannelmember.role === 'ADMIN') {
+          
+          const startDate = new Date();
+          const endDate = new Date(startDate.getTime() + 5 * 60 * 1000)
+
+          const member = await this.prisma.channelMember.update({
+            where: {
+              id: otherChannelmember.id,
+            },
+            data: {
+              isMuted: true,
+              timeMuted: endDate,
+            },
+          });
+          return { channelmember: member, status: 'This member is muted.' };
+        } else {
+          return { status: "This member can't be muted." };
+        }
+      } else {
+        return { status: "You can't mute member." };
+      }
+    } catch (error) {
+      console.error('Error muting member:', error);
+      throw new Error('Failed to mute member.');
+    }
+  }
+
+
+  async unmuteMember(channelId: string, userId: string) {
+    try {
+      const channel = await this.prisma.channel.findUnique({
+        where: {
+          id: channelId,
+        },
+      });
+
+      const channelmembers = await this.prisma.channelMember.findMany({
+        where: {
+          userId: userId,
+          channel: channel,
+        },
+      });
+      const member = await this.prisma.channelMember.update({
+        where: {
+          id: channelmembers[0].id,
+        },
+        data: {
+          isMuted: false,
+          timeMuted: null,
+        },
+      });
+      return { channelmember: member, status: 'This member is unmuted.' };
+
+    } catch (error) {
+      console.error('Error unmuting member:', error);
+      throw new Error('Failed to unmute member.');
+    }
+
+  }
+
+
+
+
+
+  async banMember(channelId: string, userId: string, otherUserId: string) {
+    if (userId === otherUserId) {
+      return { status: "you can't ban yourself" };
+    }
+
+
+    try {
+
+
+      const findbaned = await this.prisma.channel.findUnique({
+        where: {
+          id: channelId,
+        },
+        include: {
+          bannedUsers: true,
+        },
+      });
+      if (findbaned.bannedUsers.find((user) => user.id === otherUserId))
+        return { status: "this member is already banned" };
+
+
+
+      const channel = await this.prisma.channel.findUnique({
+        where: {
+          id: channelId,
+        },
+      });
+      
+      let channelmembers = await this.prisma.channelMember.findMany({
+        where: {
+          userId: userId,
+          channel: channel,
+        },
+      });
+      const channelmember = channelmembers[0];
+      channelmembers = await this.prisma.channelMember.findMany({
+        where: {
+          userId: otherUserId,
+          channel: channel,
+        },
+      });
+      const otherChannelmember = channelmembers[0];
+
+      if ((channelmember.role === 'ADMIN' || channelmember.role === 'OWNER') && otherChannelmember.role != 'OWNER')
+      {
+        await this.prisma.channel.update({
+          where: {
+            id: channel.id,
+          },
+          data: {
+            bannedUsers: { connect: { id: otherUserId } },
+          },
+        });
+        await this.prisma.channelMember.delete({
+          where: {
+            id: otherChannelmember.id,
+          },
+        });
+
+        return { status: 'This member is banned.' };
+      }
+      else
+      {
+        return { status: "you can't ban this member" };
+      }
+
+    } catch (error) {
+      console.error('Error banning member:', error);
+      return { status: 'Error banning member' };
+    }
+
+  }
+
+  async unbanMember(channelId: string, userId: string, otherUserId: string) {
+
+    if (userId === otherUserId) {
+      return { status: "you can't unban yourself" };
+    }
+
+    try {
+      const channel = await this.prisma.channel.findUnique({
+        where: {
+          id: channelId,
+        },
+      });
+      let channelmembers = await this.prisma.channelMember.findMany({
+        where: {
+          userId: userId,
+          channel: channel,
+        },
+      });
+      const channelmember = channelmembers[0];
+
+      if (channelmember.role === 'ADMIN' || channelmember.role === 'OWNER') {
+        await this.prisma.channel.update({
+          where: {
+            id: channel.id,
+          },
+          data: {
+            bannedUsers: { disconnect: { id: otherUserId } },
+          },
+        });
+        return { status: 'This member is unbanned.' };
+      }
+      else {
+        return { status: "you can't unban this member" };
+      }
+
+    } catch (error) {
+      console.error('Error unbanning member:', error);
+      return { status: 'Error unbanning member' };
+    }
+  }
+
+  async getallbannedmembers(channelId: string) {
+    try {
+      const channel = await this.prisma.channel.findUnique({
+        where: {
+          id: channelId,
+        },
+        include: {
+          bannedUsers: true,
+        },
+      });
+      return channel.bannedUsers;
+
+    } catch (error) {
+      console.error('Error getting banned members:', error);
+      return { status: 'Error getting banned members' };
+    }
   }
 
 }

@@ -1,7 +1,6 @@
 import { Search2Icon, SearchIcon } from "@chakra-ui/icons";
 import { Box, Button, FormControl, FormLabel, Icon, Input, InputLeftElement, Modal, Radio, useDisclosure, useToast } from "@chakra-ui/react";
-import { Modak } from "next/font/google";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
     ModalOverlay,
@@ -13,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 
 import { Avatar, AvatarBadge, InputGroup, InputRightElement } from '@chakra-ui/react';
-import { Channel, ChannelMember, User } from "@/utils/types/chat/ChatTypes";
+import { Channel, User } from "@/utils/types/chat/ChatTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { setChannel, setChannelMember, setTheUser } from "@/redux/slices/chat/ChatSlice";
 import { useMutation } from "react-query";
@@ -33,15 +32,12 @@ function Usercard(props: any) {
         setSelectedOption(user);
     };
 
-    const dispatch = useDispatch()
-
-
     return (
 
         <div onClick={handleChange} className='flex justify-between items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md w-full'>
             <div>
-                <Avatar boxSize={12} src={user.avatar}>
-                    <AvatarBadge boxSize={6} bg='green' />
+                <Avatar boxSize={12} src={user?.avatarURL}>
+                    <AvatarBadge boxSize={6} bg={user?.isOnline ? 'green.500' : 'gray.500'} />
                 </Avatar>
             </div>
 
@@ -58,6 +54,7 @@ function Usercard(props: any) {
 
         </div>)
 }
+
 
 function Hashtag(props: any) {
 
@@ -94,16 +91,19 @@ export default function Search() {
     const [search, setSearch] = useState('');
     const [allSearchChannels, setAllSearchChannels]: any = useState([])
     const [allSearchUsers, setAllSearchUsers]: any = useState([])
-    const { isOpen, onOpen, onClose } = useDisclosure()
-    const channels = useSelector((state: any) => state.chat.channels)
     const [selectedOption, setSelectedOption]: any = useState();
-    const dispatch = useDispatch()
-    const toast = useToast()
-    const userId = useSelector((state: any) => state.socket.userID)
-    const socket = useSelector((state: any) => state.socket.socket)
     const [wrongpassowrd, setWrongpassowrd] = useState(false);
     const [openSearch, setOpenSearch] = useState(false);
     const { handleSubmit, register, reset } = useForm<any>();
+
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const channels = useSelector((state: any) => state.chat.channels)
+    const userId = useSelector((state: any) => state.socket.userID)
+    const socket = useSelector((state: any) => state.socket.socket)
+
+    const dispatch = useDispatch()
+    const toast = useToast()
+
     const [show, setShow] = React.useState(false)
     const handleShow = () => setShow(!show)
     const id = useSelector((state: any) => state.socket.userID);
@@ -121,11 +121,12 @@ export default function Search() {
             return res.json()
         }).catch((err) => console.log(err)))
 
-    const listusers = useMutation<any, Error, any>(( ) =>
+    const listusers = useMutation<any, Error, any>(() =>
         fetch('http://127.0.0.1:3001/users/listusers/' + userId).then((res) => {
             return res.json()
         }).catch((err) => console.log(err)))
-    const listchannels = useMutation<any, Error, any>((variables) =>
+
+    const listchannels = useMutation<any, Error, any>(() =>
         fetch('http://127.0.0.1:3001/channel/getallpublicandprivatechannels').then((res) => {
             return res.json()
         }).catch((err) => console.log(err)))
@@ -217,8 +218,6 @@ export default function Search() {
             })
         }
 
-
-
         info.password = "";
         reset({ password: "" })
         onClose();
@@ -270,7 +269,6 @@ export default function Search() {
                 if (selectedOption.type === 'PUBLIC') {
                     socket.emit('enterChannel', {
                         channelId: selectedOption.id,
-                        userId: userId,
                     })
                     onClose()
                 }
@@ -366,9 +364,7 @@ export default function Search() {
                                 setSelectedOption={setSelectedOption}
                             />)
                         })}
-                        {/* {allSearchUsers.map((users: User, id: number) => {
-                            return (<Usercard key={id} user={users}/>)
-                        })} */}
+
                     </div>
                 </ModalBody>
                 <ModalCloseButton />

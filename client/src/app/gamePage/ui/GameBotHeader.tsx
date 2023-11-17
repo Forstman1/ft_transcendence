@@ -15,6 +15,7 @@ const GameBotHeader = ({
     rightScore: number;
   }) => {
     const gameSettings = useAppSelector((state) => state.gameReducer);
+    const user = useAppSelector((state) => state.authUser);
     const balColor = gameSettings.playgroundtheme.balColor;
 
     
@@ -38,8 +39,8 @@ const GameBotHeader = ({
           </Text>
         </div>
         <div className="flex flex-row items-center space-x-5">
-          <Text className={`font-bold text-2xl ${getTextColor(gameSettings)} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}>UserName</Text>
-          <Avatar size="lg" />
+          <Text className={`font-bold text-2xl ${getTextColor(gameSettings)} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}>{user.username}</Text>
+          <Avatar size="lg" src={user.avatarUrl || ""} />
         </div>
       </div>
     );

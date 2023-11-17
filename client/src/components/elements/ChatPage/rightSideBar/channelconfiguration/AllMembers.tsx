@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { Avatar, AvatarBadge, Box, Button, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
+import { Avatar, AvatarBadge, Box, Button, ModalFooter, Text, useDisclosure } from '@chakra-ui/react'
 import { useSelector } from 'react-redux'
 import ModalWraper from '../../ModalWraper'
 import Image from 'next/image'
-import { ChannelMember, User } from '@/utils/types/chat/ChatTypes'
+import { ChannelMember } from '@/utils/types/chat/ChatTypes'
 import invite from "../../../../../../assets/icons/invite.svg"
 
 
 
-
 function Usercard(props: any) {
-
 
     const  data:ChannelMember  = props.data;
     const [user, setUser] = useState<any>({})
@@ -42,8 +40,8 @@ function Usercard(props: any) {
 
         <div className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md '>
             <div>
-                <Avatar boxSize={12} src={user.avatar}>
-                    <AvatarBadge boxSize={6} bg='green' />
+                <Avatar boxSize={12} src={user?.avatarURL}>
+                    <AvatarBadge boxSize={6} bg={user?.isOnline ? 'green.500' : 'gray.500'} />
                 </Avatar>
             </div>
 
@@ -61,9 +59,7 @@ function Usercard(props: any) {
 function Componenent({ onClose }: any) {
 
     const [users, setUsers] = useState<any[]>([])
-    const toast = useToast()
     const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
-    const userId = useSelector((state: any) => state.socket.userID);
     const socket = useSelector((state: any) => state.socket.socket)
 
 
@@ -72,41 +68,12 @@ function Componenent({ onClose }: any) {
         socket.emit('getmembers', { channelId: channel.id })
 
         socket.on('allmembers', (data: any) => {
-            console.log(data.members)
             setUsers(data.members);
-
         })
         return () => {
             socket.off('allmembers')
         }
-
-        // const fetchUsers = async () => {
-        //     try {
-
-        //         const usersResponse = await fetch('http://127.0.0.1:3001/channel/getallmembers/' + channel.id)
-        //         const users1: ChannelMember[] = await usersResponse.json()
-
-        //         setUsers(users1);
-
-        //     } catch (error) {
-        //         console.error('Error fetching users and channel Admins:', error);
-        //         toast({
-        //             title: 'Error fetching users and channel Admins',
-        //             position: `bottom-right`,
-        //             status: 'error',
-        //             duration: 1000,
-        //             containerStyle: {
-        //                 bottom: 90,
-        //                 right: 30,
-        //             },
-        //         });
-        //     }
-        // }
-        // fetchUsers()
     }, [])
-
-
-
 
 
     return (
@@ -119,7 +86,6 @@ function Componenent({ onClose }: any) {
 
                 {users.map((data: any, id: number) => {
                     return <Usercard
-
                         key={id}
                         data={data}
                     />

@@ -28,11 +28,9 @@ import axios from 'axios';
 
 
 type Props = {
-
     isOpen: boolean;
     onClose: () => void;
 };
-
 
 
 function Usercard(props: any) {
@@ -50,8 +48,8 @@ function Usercard(props: any) {
         
     <div onClick={handleChange} className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md'>
         <div>
-            <Avatar boxSize={12} src={data.avatar}>
-                <AvatarBadge boxSize={6} bg='green' />
+            <Avatar boxSize={12} src={data?.avatarURL}>
+                <AvatarBadge boxSize={6} bg={data?.isOnline ? 'green.500' : 'gray.500'} />
             </Avatar>
         </div>
 

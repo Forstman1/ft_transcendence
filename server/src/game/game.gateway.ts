@@ -6,8 +6,9 @@ import {
 } from '@nestjs/websockets';
 import { GameService } from './game.service';
 import { Server, Socket } from 'socket.io';
-import { Body } from '@nestjs/common';
+import { Body, UseGuards } from '@nestjs/common';
 import { GameModalState, GameHistory } from './dto/create-game.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
 @WebSocketGateway()
 export class GameGateway {
@@ -16,28 +17,37 @@ export class GameGateway {
 
   constructor(private readonly gameService: GameService) {}
 
-  private interval: NodeJS.Timeout | null = null;
   private isPaused = false;
   private readonly connectedUsers: { [userId: string]: Socket } = {};
   private readonly gameQueue: { [userId: string]: Socket } = {};
   private readonly isAllReady: { [roomId: string]: number } = {};
 
+
   handleConnection(@ConnectedSocket() client: Socket) {
+    this.server.on('connection', (socket) => {
+      console.log('-----------------connection-----------------');
+      console.log('connected userId:', socket.handshake.auth.id);
+      const userId = socket.handshake.auth.id;
+      this.connectedUsers[userId] = socket;
+      this.gameService.updateUserIsOnline(userId, true);
+    });
+
     client.on('disconnect', () => {
       console.log('-----------------disconnect-----------------');
       console.log('disconnect userId:', client.handshake.auth.id);
       const roomId = this.gameService.getRoomIdByUserId(client.id);
       if (roomId) {
-        this.server.sockets.in(roomId).emit('friendExitGame');
+        this.server.sockets.in(roomId).emit('friendExitGame1');
+        this.server.sockets.in(roomId).emit('friendExitGame2');
         this.gameService.resetGameDate(roomId);
-        this.gameService.deleteRoom(roomId);
-        this.server.in(roomId).socketsLeave(roomId);
       }
+      this.gameService.updateUserIsOnline(client.handshake.auth.id, false);
     });
   }
 
-  // ---------------- sendGameData
+  // ---------------- sendGameData------------------------------------------
   @SubscribeMessage('sendGameData')
+  // @UseGuards(JwtAuthGuard)
   sendGameData(@Body() data): void {
     try {
       this.gameService.resetGameDate(data.roomId);
@@ -45,23 +55,26 @@ export class GameGateway {
       this.isAllReady[data.roomId] += 1;
       if (this.isAllReady[data.roomId] === 2) {
         this.isAllReady[data.roomId] = 0;
-        this.interval = setInterval(() => {
+        setInterval(() => {
           const getRoom = this.gameService.getRoom(data.roomId);
-          if (!getRoom?.isPoused) {
+          const room = this.server.sockets.adapter.rooms.get(data.roomId);
+
+          if (!getRoom?.isPoused && room && room.size === 2) {
             this.gameService.updateBallPosition(data.roomId);
             this.server
               .to(data.roomId)
               .emit('GetGameData', this.gameService.getUpdateData(data.roomId));
           }
-        }, 20);
+        }, 15);
       }
     } catch (error) {
       console.error('Error in sendGameData:', error);
     }
   }
 
-  // ---------------- updatePaddles
+  // ---------------- updatePaddles------------------------------------------
   @SubscribeMessage('updatePaddles')
+  // @UseGuards(JwtAuthGuard)
   updatePaddles(@Body() data): void {
     try {
       this.gameService.updatePaddles(data.canvasData, data.roomId);
@@ -70,8 +83,9 @@ export class GameGateway {
     }
   }
 
-  // ---------------- endGame
+  // ---------------- endGame------------------------------------------------
   @SubscribeMessage('endGame')
+  // @UseGuards(JwtAuthGuard)
   endGame(@ConnectedSocket() client: Socket, @Body() roomId: string): void {
     try {
       console.log('-----------------endGame-----------------');
@@ -87,21 +101,24 @@ export class GameGateway {
     }
   }
 
-  // ---------------- pauseGame
+  // ---------------- pauseGame----------------------------------------------
   @SubscribeMessage('pauseGame')
+  // @UseGuards(JwtAuthGuard)
   pauseGame(@Body() roomId: string): void {
     console.log('-----------------pauseGame-----------------');
     this.gameService.setRoomPause(roomId, true);
   }
 
-  // ---------------- resumeGame
+  // ---------------- resumeGame---------------------------------------------
   @SubscribeMessage('resumeGame')
+  // @UseGuards(JwtAuthGuard)
   resumeGame(@Body() roomId: string): void {
     this.gameService.setRoomPause(roomId, false);
   }
 
-  // ---------------- createRoomNotifacaion
+  // ---------------- createRoomNotifacaion----------------------------------
   @SubscribeMessage('createRoomNotification')
+  // @UseGuards(JwtAuthGuard)
   createRoomNotifacation(
     @ConnectedSocket() client: Socket,
     @Body() data: { userId: string },
@@ -110,15 +127,15 @@ export class GameGateway {
     
       const userId = data.userId;
       client.join(userId);
-      this.connectedUsers[userId] = client;
       return 'your Notification room is ready';
     } catch (error) {
       console.error('Error in createRoomNotifacation:', error);
     }
   }
 
-  // ---------------- createRoom
+  // ---------------- createRoom---------------------------------------------
   @SubscribeMessage('createRoom')
+  // @UseGuards(JwtAuthGuard)
   createRoom(@ConnectedSocket() client: Socket): string {
     try {
       console.log('-----------------createRoom-----------------');
@@ -133,9 +150,9 @@ export class GameGateway {
     }
   }
 
-  // ---------------- inviteFriend
-
+  // ---------------- inviteFriend-------------------------------------------
   @SubscribeMessage('inviteFriend')
+  // @UseGuards(JwtAuthGuard)
   async inviteFriend(
     @ConnectedSocket() client: Socket,
     @Body()
@@ -157,11 +174,12 @@ export class GameGateway {
         if (room && room.size < 2) {
           const friendSocket = this.connectedUsers[friendUserId];
           if (this.gameService.checkFriendIsInOtherRoom(friendUserId)) {
-            client.emit('friendIsInRoom');
+            client.emit('frinedIsInGame');
           } else if (friendSocket) {
+            const friendId = client.handshake.auth.id;
             this.server
               .to(friendUserId)
-              .emit('room-invitation', { roomId, modalData });
+              .emit('room-invitation', { roomId, modalData, friendId });
           }
         } else {
           console.error('Room is full. Cannot invite more players.');
@@ -174,8 +192,9 @@ export class GameGateway {
     }
   }
 
-  //-------------acceptInvitation
+  //-------------acceptInvitation--------------------------------------------
   @SubscribeMessage('acceptInvitation')
+  // @UseGuards(JwtAuthGuard)
   acceptInvitation(
     @ConnectedSocket() client: Socket,
     @Body() data: { roomId: string },
@@ -198,14 +217,17 @@ export class GameGateway {
     }
   }
 
-  //-------------denyInvitation
+  //-------------denyInvitation----------------------------------------------
   @SubscribeMessage('denyInvitation')
+  // @UseGuards(JwtAuthGuard)
   denyInvitation(
     @ConnectedSocket() client: Socket,
     @Body() data: { roomId: string },
   ): void {
     try {
-      this.server.sockets.in(data.roomId).emit('friendDenyInvitation');
+      this.server.sockets
+        .in(data.roomId)
+        .emit('friendDenyInvitation', client.handshake.auth.id);
       this.gameService.resetGameDate(data.roomId);
       this.gameService.deleteRoom(data.roomId);
       this.server.in(data.roomId).socketsLeave(data.roomId);
@@ -215,8 +237,9 @@ export class GameGateway {
     }
   }
 
-  //-------------leaveRoom
+  //-------------leaveRoom---------------------------------------------------
   @SubscribeMessage('leaveRoom')
+  // @UseGuards(JwtAuthGuard)
   leaveRoom(@ConnectedSocket() client: Socket, @Body() roomId: string): void {
     try {
       console.log('-----------------leaveRoom-----------------');
@@ -227,8 +250,9 @@ export class GameGateway {
     }
   }
 
-  //-------------addPlayerToQueue
+  //-------------addPlayerToQueue--------------------------------------------
   @SubscribeMessage('addPlayerToQueue')
+  // @UseGuards(JwtAuthGuard)
   addPlayerToQueue(@ConnectedSocket() client: Socket): void {
     try {
       console.log('-----------------addPlayerToQueue-----------------');
@@ -243,8 +267,16 @@ export class GameGateway {
         player1.join(roomId);
         player2.join(roomId);
         this.gameService.addPlayerToRoom(roomId, player2.id);
-        player1.emit('setIsOwner', { isOwner: true, roomId });
-        player2.emit('setIsOwner', { isOwner: false, roomId });
+        player1.emit('setIsOwner', {
+          isOwner: true,
+          roomId,
+          opponentId: player2.handshake.auth.id,
+        });
+        player2.emit('setIsOwner', {
+          isOwner: false,
+          roomId,
+          opponentId: player1.handshake.auth.id,
+        });
         this.server.to(roomId).emit('playGame');
         delete this.gameQueue[queue[0]];
         delete this.gameQueue[queue[1]];
@@ -254,8 +286,9 @@ export class GameGateway {
     }
   }
 
-  //-------------getGameHistory
+  //-------------getGameHistory----------------------------------------------
   @SubscribeMessage('CreateGameHistory')
+  // @UseGuards(JwtAuthGuard)
   async postGameHistory(
     @ConnectedSocket() client: Socket,
     @Body() data: GameHistory,
@@ -265,15 +298,64 @@ export class GameGateway {
       const userId = data.userId;
       const sockets = await this.server.in(data.roomId).fetchSockets();
       const opponentSocket = sockets.find(
-        (socket) => socket.handshake.auth.id !== userId,
+        (socket) => socket?.handshake?.auth?.id !== userId,
       );
-      const opponentId = opponentSocket.handshake.auth.id;
-      console.log('CreateGameHistory opponentId:', opponentId);
-      console.log('CreateGameHistory userId:', userId);
-      console.log('CreateGameHistory data:', data);
+      const opponentId = opponentSocket?.handshake?.auth?.id;
       return this.gameService.createGameHistory(data, opponentId);
     } catch (error) {
       console.error('Error in CreateGameHistory:', error);
+    }
+  }
+
+  //-------------getMyFriends------------------------------------------------
+  @SubscribeMessage('GetMyFriends')
+  // @UseGuards(JwtAuthGuard)
+  async getMyFriends(@ConnectedSocket() client: Socket): Promise<void> {
+    try {
+      console.log('-----------------GetMyFriends-----------------');
+      const userId = client.handshake.auth.id;
+      const friends = await this.gameService.getMyFriends(userId);
+      return friends;
+    } catch (error) {
+      console.error('Error in GetMyFriends:', error);
+    }
+  }
+
+  //-------------searchFriend------------------------------------------------
+  @SubscribeMessage('SearchFriend')
+  // @UseGuards(JwtAuthGuard)
+  async searchFriend(
+    @ConnectedSocket() client: Socket,
+    @Body() data: { username: string },
+  ): Promise<void> {
+    try {
+      console.log('-----------------SearchFriend-----------------');
+      const userId = client.handshake.auth.id;
+      const friends = await this.gameService.searchFriend(
+        userId,
+        data.username,
+      );
+      return friends;
+    } catch (error) {
+      console.error('Error in SearchFriend:', error);
+    }
+  }
+
+  //-------------getOpponentData---------------------------------------------------
+  @SubscribeMessage('getOpponentData')
+  // @UseGuards(JwtAuthGuard)
+  async getOpponentData(
+    @ConnectedSocket() client: Socket,
+    @Body() data: { opponentId: string },
+  ): Promise<void> {
+    try {
+      console.log('-----------------getOpponentData-----------------');
+      const opponentData = await this.gameService.getOpponentData(
+        data.opponentId,
+      );
+      return opponentData;
+    } catch (error) {
+      console.error('Error in getOpponentData:', error);
     }
   }
 }

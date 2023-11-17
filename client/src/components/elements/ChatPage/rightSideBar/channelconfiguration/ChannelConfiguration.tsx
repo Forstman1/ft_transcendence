@@ -9,7 +9,10 @@ import SetChannelPassword from './SetChannelPassword'
 import SetChannelAdmin from './SetChannelAdmin'
 import RemoveChannelAdmin from './RemoveChannelAdmin'
 import AllMembers from './AllMembers'
-import RemoveMember from './RemoveMember'
+import MuteMember from './MuteMember'
+import KickMember from './KickMember'
+import BanMember from './BanMembers'
+import UnBanMember from './UnbaneMember'
 
 
 export default function ChannelConfiguration() {
@@ -26,7 +29,13 @@ export default function ChannelConfiguration() {
         {channelinfo.type != 'PROTECTED' && ( channelmember && (channelmember.role === "ADMIN" || channelmember.role === "OWNER")) && <SetChannelPassword />}
         {channelmember && (channelmember.role === "ADMIN" || channelmember.role === "OWNER") && <SetChannelAdmin />}
         {channelmember && ( channelmember.role === "OWNER" || channelmember.role === "ADMIN")&& <RemoveChannelAdmin />}
-        {channelmember && ( channelmember.role === "OWNER" || channelmember.role === "ADMIN" ) && <RemoveMember />}
+        {channelmember && ( channelmember.role === "OWNER" || channelmember.role === "ADMIN" ) && <MuteMember />}
+        {channelmember && ( channelmember.role === "OWNER" || channelmember.role === "ADMIN" ) && <KickMember />}
+        {channelmember && ( channelmember.role === "OWNER" || channelmember.role === "ADMIN" ) && <BanMember />}
+        {channelmember && ( channelmember.role === "OWNER" || channelmember.role === "ADMIN" ) && <UnBanMember />}
+
+
+
 
 
     </Box>
