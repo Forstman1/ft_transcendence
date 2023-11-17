@@ -46,7 +46,7 @@ export default function RightSidebarChannel() {
 
   return (
    
-    <Box  className='RightSideBar w-[375px] absolute md:block backdrop-blur-xl md:static md:w-[465px] h-full overflow-y-auto border-l-[3px] border-l-black pb-28 right-0 pt-[100px]'
+    <Box  className='ChannelRightSideBar w-[375px] absolute md:block bg-opacity-80 max-md:backdrop-blur-xl md:static md:w-[465px] h-full overflow-y-auto border-l-[3px] border-l-black pb-28 right-0 pt-[100px]'
       as={motion.div}
       initial={false}
       animate={RightClice.RightValue ? "open" : "closed"}

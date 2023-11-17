@@ -76,14 +76,14 @@ export default function Newmessage({ isOpen, onClose}: Props) {
     const [selectedOption, setSelectedOption]: any = useState('');
     const id = useSelector((state: any) => state.socket.userID);
     
-    const {data, isLoading, error} = useQuery({
-        queryKey: ["userData"],
-        queryFn: async () => {
-            const { data } = await axios.get(`http://localhost:3001/users/friends/${id}`)
-           console.log("data", data)
-            return data
-        }
-    })
+    // const {data, isLoading, error} = useQuery({
+    //     queryKey: ["userData"],
+    //     queryFn: async () => {
+    //         const { data } = await axios.get(`http://localhost:3001/users/friends/${id}`)
+    //        console.log("data", data)
+    //         return data
+    //     }
+    // })
 
     const handleOptionChange = (newValue: any) => {
 

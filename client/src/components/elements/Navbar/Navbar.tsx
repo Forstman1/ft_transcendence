@@ -69,10 +69,6 @@ const CreatChatGlobalSocket = (user: any) => {
       id: user.userId,
     },
   });
-
-  socket?.emit(`createRoom`, { userId: user.userId }, (data: any) => {
-    console.log(`the data returned is ` + data)
-  })
   return socket;
 }
 
@@ -404,7 +400,6 @@ export default function Navbar() {
         </Flex>
 
       </Flex>
-
       <Image src={WavesDivider} alt='Header Decoration' className='w-full h-5 -mt-[1px]' />
     </header>
   )

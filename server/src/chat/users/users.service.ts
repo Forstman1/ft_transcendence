@@ -21,15 +21,12 @@ export class UsersService {
     }
   }
 
-  async listUsers(id: string): Promise<User[] | string> {
+  async getUsers(id: string): Promise<User[] | string> {
     try {
       return await this.prisma.user.findMany({
         where: {
           NOT: {
-            OR: [
-              { id: id },
-              {blocked: {some: {id: id}}}
-            ]
+            OR: [{ id: id }, { blocked: { some: { id: id } } }],
           },
         },
       });
@@ -179,54 +176,56 @@ export class UsersService {
       return `${error} could not decline friend request`;
     }
   }
-    
-    async removeFriend(
-        id: Prisma.UserWhereUniqueInput,
-        friendId: Prisma.UserWhereUniqueInput,
-    ): Promise<string> {
-        try {
-            const user = await this.prisma.user.findUnique({
-                where: id,
-            });
-            const friend = await this.prisma.user.findUnique({
-                where: friendId,
-            });
-            if (!user) {
-                return 'User not found';
-            }
-            if (!friend) {
-                return 'Friend not found';
-            }
-            await this.prisma.user.update({
-                where: { id: user.id },
-                data: {
-                    friends: {
-                        disconnect: {
-                            id: friend.id,
-                        },
-                    },
-                },
-            });
-          await this.prisma.user.update({
-                where: { id: friend.id },
-                data: {
-                    friends: {
-                        disconnect: {
-                            id: user.id,
-                        },
-                    },
-                },
-          })
-            return `Friend removed`;
-        }
-        catch (error) {
-            return `${error} could not remove friend`;
-        }
+
+  async removeFriend(
+    id: Prisma.UserWhereUniqueInput,
+    friendId: Prisma.UserWhereUniqueInput,
+  ): Promise<string> {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: id,
+      });
+      const friend = await this.prisma.user.findUnique({
+        where: friendId,
+      });
+      if (!user) {
+        return 'User not found';
+      }
+      if (!friend) {
+        return 'Friend not found';
+      }
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          friends: {
+            disconnect: {
+              id: friend.id,
+            },
+          },
+        },
+      });
+      await this.prisma.user.update({
+        where: { id: friend.id },
+        data: {
+          friends: {
+            disconnect: {
+              id: user.id,
+            },
+          },
+        },
+      });
+      return `Friend removed`;
+    } catch (error) {
+      return `${error} could not remove friend`;
     }
-  
+  }
+
   //!---------------Block && UNBLOCK------------------------!//
 
-  async blockUser(user: Prisma.UserWhereUniqueInput, friend: Prisma.UserWhereUniqueInput) {
+  async blockUser(
+    user: Prisma.UserWhereUniqueInput,
+    friend: Prisma.UserWhereUniqueInput,
+  ) {
     const User = await this.prisma.user.findUnique({
       where: user,
     });
@@ -245,14 +244,16 @@ export class UsersService {
             },
           },
         },
-      })
-    }
-    catch(error) {
+      });
+    } catch (error) {
       return `${error} could not block user`;
     }
   }
 
-  async unblockUser(user: Prisma.UserWhereUniqueInput, friend: Prisma.UserWhereUniqueInput) {
+  async unblockUser(
+    user: Prisma.UserWhereUniqueInput,
+    friend: Prisma.UserWhereUniqueInput,
+  ) {
     const User = await this.prisma.user.findUnique({
       where: user,
     });
@@ -271,17 +272,15 @@ export class UsersService {
             },
           },
         },
-      })
-    }
-    catch(error) {
+      });
+    } catch (error) {
       return `${error} could not unblock user`;
     }
-   }
-
+  }
 
   //!---------------ListofFriend && ChatList------------------------!//
 
-  async UpdateFrindList(user: Prisma.UserWhereUniqueInput) {
+  async UpdateFriendList(user: Prisma.UserWhereUniqueInput) {
     const friendRequests = await this.prisma.friendRequest.findMany({
       where: {
         OR: [
@@ -321,7 +320,7 @@ export class UsersService {
   }
 
   async listFriends(id: Prisma.UserWhereUniqueInput): Promise<User[] | string> {
-    this.UpdateFrindList(id);
+    this.UpdateFriendList(id);
     try {
       const user = await this.prisma.user.findUnique({
         where: {

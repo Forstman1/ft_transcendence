@@ -37,13 +37,10 @@ export class UsersController {
     async acceptFriendRequest(@Param() id: Prisma.UserWhereUniqueInput, @Body() friendId: Prisma.UserWhereUniqueInput) {
         return await this.usersService.acceptFriendRequest(id, friendId)
     }
-    @Get('/listusers/:id')
-    listusers(@Param('id') id: string) {
-        return this.usersService.listUsers(id)
-    }
-
-
-
+    // @Get('/listusers/:id')
+    // listusers(@Param('id') id: string) {
+    //     return this.usersService.listUsers(id)
+    // }
     @Get('/getusers/:tofound')
     getuserstofound(@Param('tofound') tofound: string) {
         return this.usersService.getuserstofound(tofound)

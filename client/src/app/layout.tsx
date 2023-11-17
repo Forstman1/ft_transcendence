@@ -56,8 +56,7 @@ export default function RootLayout({
                 {isloading ? <SplashScreen  finishLoading={() => setIsLoading(false)}/> :
                 <>
                   <GameNotification />
-                  <Navbar />
-
+                    <Navbar />
                   {children}
                 </>
                 }
