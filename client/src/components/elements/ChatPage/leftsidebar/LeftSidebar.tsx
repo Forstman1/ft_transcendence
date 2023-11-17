@@ -10,8 +10,6 @@ import {
   useToast,
   CloseButton,
 } from "@chakra-ui/react";
-import { useQuery } from "react-query";
-import axios from "axios";
 import React, { useEffect, useState, useRef, use } from 'react'
 import Newchannel from './newchannel';
 import Hashtag from './hatshtag';
@@ -38,32 +36,6 @@ function Usercard(props: any) {
   };
 
   return (
-    // <Box
-    //   ref={scroolToRef}
-    //   className="flex justify-between items-center cursor-pointer m-2 ml-0 p-2 rounded-md active:bg-zinc-300 hover:bg-zinc-300 group"
-    //   onClick={() => onSubmited()}
-      
-    //   // {...(user === props.data.id
-    //   //   ? scroolToRef.current?.scrollIntoView({
-    //   //       block: "nearest",
-    //   //       inline: "start",
-    //   //     }) && { bg: "bg-zinc-300" }
-    //   //   : {})}
-    // >
-    //   <div>
-    //     <Avatar
-    //       className="custom-shadow border-[1px] border-black"
-    //       boxSize={14}
-    //       src={props.data.avatar}
-    //     >
-    //       <AvatarBadge
-    //         className="custom-shadow border-[1px] border-black"
-    //         boxSize={4}
-    //         bg="green.500"
-    //       />
-    //     </Avatar>
-    //   </div>
-  
   <Box ref={scroolToRef} className='flex justify-between items-center cursor-pointer m-2 ml-0 p-2 rounded-md active:bg-zinc-300'
     onClick={() => onSubmited()}
   {...(user === props.data.id ? scroolToRef.current?.scrollIntoView({ block: 'nearest', inline: 'start' }) && {bg: 'bg-zinc-300'} : {})}
@@ -106,42 +78,28 @@ export default function LeftSidebar() {
   const [ChannelOrUser, setChannelOrUser] = useState(false)
   const channels = useSelector((state: any) => state.chat.channels);
   
-  useEffect(() => {
-  
-    socket?.on(`updateChatList`, async (Users: any) => {
-      // console.log(Users)
-      // setUsers(Users);
-      dispatch(setTheUser(Users[0]));
-    });
+  // useEffect(() => {
 
-  }, [socket]);
+  //   socket?.on(`updateChatList`, async (Users: any) => {
+  //     dispatch(setTheUser(Users[0]));
+  //   });
 
-
+  // }, [socket]);
 
   const selected = useSelector(
     (state: any) => state.chat.selectedChannelorUser
   );
   const userId = useSelector((state: any) => state.socket.userID);
   const Users = useSelector((state: any) => state.chat.users);
-  const id = useSelector((state: any) => state.socket.userID);
   const toast = useToast();
   const { LeftClice } = useSelector((state: any) => state.mobile);
 
-  useQuery({
-    queryKey: "users",
-    queryFn: async () => {
-      const { data } = await axios.get(
-        `http://localhost:3001/users/chatlist/${id}`
-      );
-      dispatch(setUserDms(data));
-    },
-  });
   useEffect(() => {
     socket?.emit("getChannelsFirstTime", { userId: userId });
+    
   }, []);
 
   useEffect(() => {
-
     socket?.on('getChannelsFirstTime', (data: any) => {
       const allchannels: Channel[] = data.channels
 
@@ -151,6 +109,11 @@ export default function LeftSidebar() {
         })
       });
       dispatch(setChannels(allchannels));
+    });
+    socket?.on(`listUsers`, (data: any) => { 
+      const allUsers: User[] = data.users;
+      console.log(allUsers)
+      dispatch(setUserDms(allUsers));
     });
 
     socket?.on("channelCreated", (data: any) => {
@@ -616,7 +579,7 @@ export default function LeftSidebar() {
       <div className="flex h-[400px] flex-col w-full mt-[30px] items-center gap-6 overflow-y-scroll">
         {channels &&
           channels.length != 0 &&
-          channels.map((data: Channel, id: number) => {
+          channels?.map((data: Channel, id: number) => {
             if (data.name) return <Hashtag key={id} data={data} />;
           })}
       </div>

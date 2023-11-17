@@ -352,7 +352,6 @@ export default function Navbar() {
       const chatSocket = CreatChatGlobalSocket(data);
       dispatch(setChatSocketState({
         socket: chatSocket,
-        roomId: "",
         userID: data.userId,
       }));
       // for game page
