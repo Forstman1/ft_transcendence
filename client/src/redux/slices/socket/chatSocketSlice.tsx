@@ -7,19 +7,16 @@ import { Socket } from "socket.io-client";
 
 export interface ChatSocketState {
     socket: Socket | null;
-    socketId: string;
     userID?: string | null;
 }
 
 
 const initialState: ChatSocketState = {
     socket: null,
-    socketId: "",
     userID: "",
 }
 
 
-// socket.emit(`createNotificationRoom`, { userId: userId });
 
 
 const chatSocketSlice = createSlice({

@@ -236,7 +236,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       const user = await this.userService.getUserbyId(data.userId);
 
       const channel: any = await this.channelService.createchannel(data);
-
+      console.log(channel)
       if (channel.status === "channel created") {
 
         this.connectedUsersInChannles[client.handshake.auth.id].map((socket) => {

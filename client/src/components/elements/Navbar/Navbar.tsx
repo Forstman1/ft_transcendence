@@ -60,7 +60,6 @@ const CreatGameGlobalSocket = (user: any) => {
 }
 
 const CreatChatGlobalSocket = (user: any) => {
-  console.log("CreatChatGlobalSocket user: ", user);
 
   const socket = io('http://localhost:3001/chat', {
     transports: ["websocket"],
@@ -352,7 +351,6 @@ export default function Navbar() {
       const chatSocket = CreatChatGlobalSocket(data);
       dispatch(setChatSocketState({
         socket: chatSocket,
-        roomId: "",
         userID: data.userId,
       }));
       // for game page

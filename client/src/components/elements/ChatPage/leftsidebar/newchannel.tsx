@@ -47,7 +47,7 @@ export default function Newchannel({  onClose }: Props) {
     data.userId = userId
     console.log(data)
 
-    if (data.type === "Public")
+    if (data.type === "Public" || data.type === "Private")
       data.password = "123"
 
     socket.emit('createChannel', {

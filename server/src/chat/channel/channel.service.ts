@@ -19,7 +19,8 @@ export class ChannelService {
           name: channelData.channelName,
         },
       });
-      if (find) return { status: 'channel already exists' };
+      if (find) 
+        return { status: 'channel already exists' };
 
       const hash = await argon2.hash(channelData.password);
 

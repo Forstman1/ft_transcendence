@@ -115,7 +115,7 @@ export default function LeftSidebar() {
     })
 
     socket?.on('channelCreated', (data: any) => {
-
+      
       if (data.message === "Channel Created") {
 
         console.log(data.channel, " ana hna 1")
