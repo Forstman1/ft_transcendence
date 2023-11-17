@@ -23,6 +23,7 @@ model User {
   twoFactorEnabled  Boolean           @default(false)
   twoFactorSecret   String?
   isOnline          Boolean     @default(false)
+  isInGame          Boolean     @default(false)
   hasTwoFA          Boolean     @default(false)
   // isBlocked          Boolean     @default(false)
   // isMuted           Boolean     @default(false)
