@@ -419,4 +419,31 @@ export class GameService {
     return;
   }
 
+  notifyFriend = async (userId: string, friendId: string): Promise<void> => {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        username: true,
+      },
+    });
+    const data = {
+      title : "Game Invite",
+      description: "You have a game invite from " + user.username,
+      read: false,
+    }
+    await this.prisma.user.update({
+      where: { id: friendId },
+      data: {
+        notifications: {
+          create: {
+            type: 'gameInvite',
+            title: data.title,
+            description: data.description,
+            read: data.read,
+          },
+        },
+      },
+    });
+    return;
+  }
 }

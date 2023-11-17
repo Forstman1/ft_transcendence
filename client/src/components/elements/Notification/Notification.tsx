@@ -22,7 +22,6 @@ const allNotifications = [
     description: "Dummy text of the printing and typesetting industry.",
     time: "3 min ago",
     icon: DeleteIcon,
-    color: "bg-red-500",
   },
   {
     id: 2,
@@ -30,7 +29,6 @@ const allNotifications = [
     description: "Dummy text of the printing and typesetting industry.",
     time: "3 min ago",
     icon: CheckCircleIcon,
-    color: "bg-green-500",
   },
   {
     id: 3,
@@ -38,7 +36,6 @@ const allNotifications = [
     description: "Dummy text of the printing and typesetting industry.",
     time: "3 min ago",
     icon: EmailIcon,
-    color: "bg-blue-500",
   },
   {
     id: 4,
@@ -46,7 +43,6 @@ const allNotifications = [
     description: "Dummy text of the printing and typesetting industry.",
     time: "3 min ago",
     icon: WarningTwoIcon,
-    color: "bg-gray-500",
   },
   {
     id: 5,
@@ -54,7 +50,6 @@ const allNotifications = [
     description: "Dummy text of the printing and typesetting industry.",
     time: "3 min ago",
     icon: DeleteIcon,
-    color: "bg-red-500",
   },
   {
     id: 6,
@@ -62,7 +57,6 @@ const allNotifications = [
     description: "Dummy text of the printing and typesetting industry.",
     time: "3 min ago",
     icon: DeleteIcon,
-    color: "bg-red-500",
   },
   {
     id: 7,
@@ -70,7 +64,6 @@ const allNotifications = [
     description: "Dummy text of the printing and typesetting industry.",
     time: "3 min ago",
     icon: EmailIcon,
-    color: "bg-blue-500",
   },
   {
     id: 8,
@@ -78,7 +71,6 @@ const allNotifications = [
     description: "Dummy text of the printing and typesetting industry.",
     time: "3 min ago",
     icon: WarningTwoIcon,
-    color: "bg-gray-500",
   },
 ];
 
@@ -94,9 +86,9 @@ export default function Notification() {
           icon={<BellIcon w={8} h={8} color={"white"} />}
         />
         <div
-          className={`absolute top-7 rounded-full bg-green-600 w-5 h-5 flex justify-center items-center p-2`}
+          className={`absolute top-7 rounded-full bg-green-600 flex justify-center items-center px-1`}
         >
-          <p className="text-xs text-white ">10</p>
+          <p className="text-xs text-white text-center ">10</p>
         </div>
         <MenuList className="bg-white rounded-lg p-2 w-100 h-[400px]">
           <div className="flex items-center fixed top-0 w-[90%] h-8 bg-white p-2 space-x-2">
@@ -107,7 +99,7 @@ export default function Notification() {
             {allNotifications.map((notification, index) => (
               <MenuItem key={notification.id}>
                 <div
-                  className={`flex flex-col bg-gray-100 px-4 py-2 hover:bg-gray-300 cursor-pointer  relative inline-flex  overflow-hidden transition-all rounded hover:bg-white group`}
+                  className={`flex flex-col bg-gray-100 px-4 py-2 cursor-pointer  relative  overflow-hidden transition-all rounded hover:bg-white group`}
                 >
                   <span className="w-0 h-0 rounded bg-background-primary absolute top-0 left-0 ease-out duration-500 transition-all group-hover:w-full group-hover:h-full -z-1"/>
                   <span className="w-full text-black transition-colors duration-300 ease-in-out group-hover:text-white z-10">
