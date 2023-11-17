@@ -34,4 +34,12 @@ export async function getMatchesHistory(userId: string): Promise<any> {
   return response.data;
 }
 
+export async function getUser(userId: string): Promise<any> {
+  const response = await axios.get(
+    `${process.env.NEXT_PUBLIC_SERVER_URL}profile/user/${userId}`,
+    { withCredentials: true },
+  );
+  return response.data;
+}
+
 

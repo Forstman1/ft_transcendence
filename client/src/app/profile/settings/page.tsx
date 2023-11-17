@@ -6,12 +6,12 @@ import { useSelector } from 'react-redux';
 
 
 
-export default function userPage() {
+export default function userSettingsPage() {
     const userId = useSelector((state:any) => state.authUser.userId)
     const router = useRouter();
   
     useEffect(() => {
-        router.push('/profile/' + userId);
+        router.push('/profile/settings/' + userId);
     }, [userId]);
 
   return (

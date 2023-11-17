@@ -34,3 +34,13 @@ export type matchesHistoryType =  Array<{
     opponentProfile: string;
 }>
 
+export type userProfileData = {
+    username: string;
+    fullname: string;
+    email: string;
+    avatarURL: string;
+    coalitionName: string;
+    isOnline: boolean;
+    userGamesXp: number;
+}
+

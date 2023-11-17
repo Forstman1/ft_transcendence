@@ -29,5 +29,16 @@ export class ProfileController {
     async getMatchesHistory(@Param('id') id: string): Promise<any> {
         return await this.profileService.calculateMatchesHistory(id);
     }
+    @Get('user/:id')
+    async getUser(@Param('id') id: string): Promise<any> {
+        return await this.profileService.getUser(id);
+    }
+
+    // @Get('friends/:id')
+    // async getFriends(@Param('id') id: string): Promise<any> {
+    //     return await this.profileService.getFriends(id);
+    // }
+
+
 
 }
