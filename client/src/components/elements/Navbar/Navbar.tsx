@@ -396,32 +396,34 @@ export default function Navbar() {
   return (
     <header className="w-full h-16 md:h-24 bg-neutral-950 fixed top-0 z-50">
       <Flex
-        className="grid-cols-3 justify-around md:justify-between"
+        className="grid-cols-3 px-[10%]"
         width="full"
         height="full"
         alignItems="center"
         flexDirection="row"
       >
-        <Flex
-          key="navbar-menu-item-1"
-          className="h-full col-span-1 order-1 md:order-2 w-1/3 md:w-72 md:mr-auto"
-          justifyContent="center"
-          alignItems="center"
-        >
-          <HeaderNavMobile />
-          <HeaderNavDesktop />
-        </Flex>
-        <Flex
-          key="navbar-menu-item-2"
-          className="h-full col-span-1 order-2 md:order-1 w-1/3 md:w-56"
-          justifyContent="center"
-          alignItems="center"
-        >
-          <Link href="/">
-            <Image src={Logo} alt="Website Logo" width={150} height={150} />
-          </Link>
-          ,
-        </Flex>
+        <div className='flex w-full flex-row'>
+          <Flex
+            key="navbar-menu-item-1"
+            className="h-full col-span-1 order-1 md:order-2 w-1/3 md:w-72 md:mr-auto"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <HeaderNavMobile />
+            <HeaderNavDesktop />
+          </Flex>
+          <Flex
+            key="navbar-menu-item-2"
+            className="h-full col-span-1 order-2 md:order-1 w-1/3 md:w-56 max-md:hidden"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Link href="/">
+              <Image src={Logo} alt="Website Logo" width={150} height={150} />
+            </Link>
+            ,
+          </Flex>
+        </div>
         <Flex
           key="navbar-menu-item-3"
           className="h-full col-span-1 order-last w-1/3 md:w-72"

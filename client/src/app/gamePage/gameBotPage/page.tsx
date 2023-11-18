@@ -306,7 +306,7 @@ export default function GameBotPage() {
           transition={{ duration: 1 }}
         >
           <div className="flex-col w-full ">
-            <div className="flex flex-row">
+            <div className="flex flex-row w-full">
               <GameSideBar
                 tableResults={tableResults}
                 gamePause={gamePause}
