@@ -394,7 +394,7 @@ export default function Navbar() {
 
 
   return (
-    <header className="w-screen h-16 md:h-24 bg-neutral-950 fixed top-0 z-50">
+    <header className="w-full h-16 md:h-24 bg-neutral-950 fixed top-0 z-50">
       <Flex
         className="grid-cols-3 justify-around md:justify-between"
         width="full"

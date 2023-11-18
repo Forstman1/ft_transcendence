@@ -117,7 +117,7 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
       {!isSearchModalOpen ? (
         <ModalContent
           bg={`rgba(255, 255, 255, 0.95)`}
-          className="relative duration-500 ease-in-out rounded-2xl shadow-2xl border-1 border-black flex justify-between items-center bg-gray-100"
+          className="relative w-full duration-500 ease-in-out rounded-2xl shadow-2xl border-1 border-black flex justify-between items-center bg-gray-100 "
         >
           <Lottie
             animationData={animationData}
@@ -125,9 +125,9 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
           />
           <ModalHeader>Game Modes</ModalHeader>
           <ModalCloseButton />
-          <ModalBody className="flex justify-between items-center">
-            <div className="flex flex-col space-y-5">
-              <div className="flex flex-row justify-between items-center space-x-5">
+          <ModalBody className="flex w-full justify-between items-center ">
+            <div className="flex w-full flex-col space-y-5">
+              <div className="flex flex-row w-full justify-between items-center space-x-5">
                 {Modes.map((mode: string) => (
                   <Button
                     key={mode}
@@ -141,7 +141,7 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
                       <Image
                         src={getIcon(mode)}
                         alt="levelIcon"
-                        width={25}
+                        className="w-5"
                       />
                     }
                   >
@@ -149,41 +149,43 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
                   </Button>
                 ))}
               </div>
-              <Select
-                placeholder="Select game Rounds"
-                onChange={(e) => setRounds(Number(e.target.value))}
-              >
-                {Rounds.map((round) => (
-                  <option key={round} value={round}>
-                    {round}
-                  </option>
-                ))}
-              </Select>
-              <Select
-                placeholder="Select game Matches for each round"
-                onChange={(e) => setMatchesSelected(Number(e.target.value))}
-              >
-                {Matches.map((match) => (
-                  <option key={match} value={match}>
-                    {match}
-                  </option>
-                ))}
-              </Select>
-              <div className="flex flex-col justify-between space-y-2">
-                <Text>Playground Theme</Text>
+              <div className="flex flex-col space-y-5 ">
+                <Select
+                  placeholder="Select game Rounds"
+                  onChange={(e) => setRounds(Number(e.target.value))}
+                >
+                  {Rounds.map((round) => (
+                    <option key={round} value={round}>
+                      {round}
+                    </option>
+                  ))}
+                </Select>
+                <Select
+                  placeholder="Select game Matches for each round"
+                  onChange={(e) => setMatchesSelected(Number(e.target.value))}
+                >
+                  {Matches.map((match) => (
+                    <option key={match} value={match}>
+                      {match}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+              <div className="flex flex-col w-full justify-center items-center space-y-2">
+                <Text className="text-center">Playground Theme</Text>
                 <RadioGroup
                   value={Playground.id.toString()}
                   onChange={(id) => handleRadioChange(id)}
                 >
-                  <div className="flex flex-row justify-between items-center mx-10 space-x-8">
+                  <div className="flex flex-row w-full justify-center items-center space-x-7">
                     {PlaygroundTheme.map((theme) => (
                       <Radio key={theme.id} value={theme.id.toString()}>
-                        <div className="relative w-7 h-7">
+                        <div className="relative w-6 h-6">
                           <div
                             className={`w-full h-full rounded-full absolute border-1 border-black ${theme.playgroundColor}`}
                           />
                           <div
-                            className={`w-7 h-7 rounded-full absolute top-1/2 left-5 transform -translate-y-1/2 border-1 border-black ${theme.balColor}`}
+                            className={`w-6 h-6 rounded-full absolute top-1/2 left-5 transform -translate-y-1/2 border-1 border-black ${theme.balColor}`}
                           />
                         </div>
                       </Radio>
@@ -192,7 +194,7 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
                 </RadioGroup>
               </div>
               <div className="flex flex-col justify-between space-y-2">
-                <Text>Playground Background</Text>
+                <Text className="text-center">Playground Background</Text>
                 <div className="flex flex-wrap flex-row w-full items-center justify-center max-w-[320px] mx-auto ">
                   {BackgroundsImg.map((bg) => (
                     <button
@@ -230,9 +232,7 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
               variant="outline"
               mr={3}
               onClick={onClose}
-              leftIcon={
-                <Image src={closeIcon} alt="closeIcon" width={25}  />
-              }
+              leftIcon={<Image src={closeIcon} alt="closeIcon" width={25} />}
             >
               Close
             </Button>
@@ -240,13 +240,7 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
               <Button
                 colorScheme="teal"
                 variant="outline"
-                leftIcon={
-                  <Image
-                    src={StartGame}
-                    alt="StartGame"
-                    width={25}
-                  />
-                }
+                leftIcon={<Image src={StartGame} alt="StartGame" width={25} />}
                 onClick={handelStartGame}
               >
                 Start
@@ -256,11 +250,7 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
                 colorScheme="teal"
                 variant="outline"
                 leftIcon={
-                  <Image
-                    src={inviteFriend}
-                    alt="StartGame"
-                    width={25}
-                  />
+                  <Image src={inviteFriend} alt="StartGame" width={25} />
                 }
                 onClick={handelStartGame}
               >
