@@ -6,9 +6,9 @@ import {
 } from '@nestjs/websockets';
 import { GameService } from './game.service';
 import { Server, Socket } from 'socket.io';
-import { Body, UseGuards } from '@nestjs/common';
+import { Body} from '@nestjs/common';
 import { GameModalState, GameHistory } from './dto/create-game.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+// import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 
 @WebSocketGateway()
 export class GameGateway {
