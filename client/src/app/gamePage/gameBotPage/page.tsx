@@ -70,10 +70,14 @@ export default function GameBotPage() {
   const [botPoints, setBotPoints] = useState<number>(0);
   const [userPoints, setUserPoints] = useState<number>(0);
   const [gamePause, setGamePause] = useState<boolean>(false);
+  const [isMobileSize, setIsMobileSize] = useState<boolean>(false);
 
 
   useEffect(() => {
     const handleResize = () => {
+      if (window?.innerWidth < 1000) {
+        setIsMobileSize(true);
+      }
       const aspectRatioWidth = 16;
       const aspectRatioHeight = 9;
       const newCanvasWidth = window?.innerWidth;
@@ -302,7 +306,7 @@ export default function GameBotPage() {
           transition={{ duration: 1 }}
         >
           <div className="flex-col w-full ">
-            <div className="flex flex-row">
+            <div className="flex flex-row w-full">
               <GameSideBar
                 tableResults={tableResults}
                 gamePause={gamePause}

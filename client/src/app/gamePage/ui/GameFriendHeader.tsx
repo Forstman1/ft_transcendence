@@ -47,7 +47,7 @@ const GameFriendHeader = ({
             <Text
               className={`font-bold text-6xl ${getTextColor(
                 gameSettings
-              )} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
+              )} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] max-md:text-4xl`}
             >
               {leftScore}
             </Text>
@@ -56,12 +56,12 @@ const GameFriendHeader = ({
                 gameSettings
               )} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
             >
-              --
+              -
             </Text>
             <Text
               className={`font-bold text-6xl ${getTextColor(
                 gameSettings
-              )} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
+              )} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] max-md:text-4xl`}
             >
               {rightScore}
             </Text>
@@ -95,7 +95,7 @@ const GameFriendHeader = ({
             <Text
               className={`font-bold text-6xl ${getTextColor(
                 gameSettings
-              )} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
+              )} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] max-md:text-4xl`}
             >
               {leftScore}
             </Text>
@@ -104,12 +104,12 @@ const GameFriendHeader = ({
                 gameSettings
               )} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
             >
-              --
+              -
             </Text>
             <Text
               className={`font-bold text-6xl ${getTextColor(
                 gameSettings
-              )} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
+              )} drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] max-md:text-4xl`}
             >
               {rightScore}
             </Text>
