@@ -157,9 +157,9 @@ export default function ChatPage() {
     <div className="Chat_sub_div2 flex flex-grow w-full ">
       <ChatWindow />
 
-      {selected !== null && "username" in selected ? (
+      {selected !== null  && selected !== undefined && "username" in selected ? (
         <RightSidebar />
-      ) : selected !== null && "type" in selected ? (
+      ) : selected !== null  && selected !== undefined && "type" in selected ? (
         <RightSidebarChannel />
       ) : (
         <Box

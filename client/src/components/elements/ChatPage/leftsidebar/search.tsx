@@ -122,7 +122,7 @@ export default function Search() {
         }).catch((err) => console.log(err)))
 
     const listusers = useMutation<any, Error, any>(() =>
-        fetch('http://127.0.0.1:3001/users/listusers/' + userId).then((res) => {
+        fetch('http://127.0.0.1:3001/users/getAllUsers/' + userId).then((res) => {
             return res.json()
         }).catch((err) => console.log(err)))
 
@@ -344,7 +344,7 @@ export default function Search() {
                         />
                     </InputGroup>
                     <div className="flex w-full h-[300px]  flex-col  overflow-y-scroll ">
-                        {allSearchChannels.map((channels: Channel, id: number) => {
+                        { allSearchChannels.map((channels: Channel, id: number) => {
                             return <Box key={id} className="flex  w-[95%] p-2 flex-row justify-between items-center border-2 border-gray-300 rounded-lg  mt-5">
 
                                 <Hashtag

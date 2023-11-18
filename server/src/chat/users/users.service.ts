@@ -21,12 +21,12 @@ export class UsersService {
     }
   }
 
-  async getUsers(id: string): Promise<User[] | string> {
+  async getAllUsers(id: Prisma.UserWhereUniqueInput): Promise<User[] | string> {
     try {
       return await this.prisma.user.findMany({
         where: {
           NOT: {
-            OR: [{ id: id }, { blocked: { some: { id: id } } }],
+            OR: [{ id: id.id }, { blocked: { some: { id: id.id } } }],
           },
         },
       });
