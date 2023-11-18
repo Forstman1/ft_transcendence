@@ -1,7 +1,7 @@
 "use client";
 
 /* ------------------------------------------------ Remote Components ----------------------------------------------- */
-import React, { useEffect } from 'react';
+import React, { use, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -249,8 +249,10 @@ export function SignupModal() {
 
 const HeaderNavDesktop: React.FC = () => {
   let path = usePathname();
+  const user = useSelector((state: { authUser: UserState }) => state.authUser);
   const GameRouter = ["/gamePage/gameFriendPage", "/gamePage/gameBotPage"]
   path = GameRouter.includes(path) ? "/gamePage" : path;
+
   return (
     <nav className='hidden md:block'>
       <motion.div>
@@ -262,6 +264,7 @@ const HeaderNavDesktop: React.FC = () => {
             return (
               <Box key={index} className='col-span-1'>
                 <Center>
+                  {item.href === "/" && (
                   <Link href={item.href} className="w-auto">
                     <Text className="text-2xl font-semibold">
                       {item.text}
@@ -273,6 +276,20 @@ const HeaderNavDesktop: React.FC = () => {
                       />
                     ) : null}
                   </Link>
+                  )}
+                  {item.href !== "/" &&  user.isAuthenticated && (
+                    <Link href={item.href} className="w-auto">
+                      <Text className="text-2xl font-semibold">
+                        {item.text}
+                      </Text>
+                      {path.includes(item.href) ? (
+                        <motion.span
+                          layoutId="underline"
+                          className="absolute w-6 h-1 bg-white rounded-full"
+                        />
+                      ) : null}
+                    </Link>
+                  )}
                 </Center>
               </Box>
             )
@@ -284,6 +301,7 @@ const HeaderNavDesktop: React.FC = () => {
 }
 
 const HeaderNavMobile: React.FC = () => {
+  const user = useSelector((state: { authUser: UserState }) => state.authUser);
   return (
     <Box className='block md:hidden'>
       <Menu>
@@ -309,6 +327,7 @@ const HeaderNavMobile: React.FC = () => {
           }, index: number) => {
             return (
               <Link href={item.href} key={`mobile-navbar-menu-link-${index}`}>
+                { item.href === "/" && (
                 <MenuItem
                   key={`mobile-navbar-menu-item-${index}`} rounded='md' as={"button"}
                   className={`bg-neutral-900 text-neutral-50 border-neutral-950`}
@@ -318,6 +337,18 @@ const HeaderNavMobile: React.FC = () => {
                   </Text>
                   {index != NAVBAR_ITEMS.length - 1 ? <MenuDivider /> : null}
                 </MenuItem>
+                )}
+                { item.href !== "/" && user.isAuthenticated && (
+                  <MenuItem
+                    key={`mobile-navbar-menu-item-${index}`} rounded='md' as={"button"}
+                    className={`bg-neutral-900 text-neutral-50 border-neutral-950`}
+                  >
+                    <Text className="text-xl font-semibold">
+                      {item.text}
+                    </Text>
+                    {index != NAVBAR_ITEMS.length - 1 ? <MenuDivider /> : null}
+                  </MenuItem>
+                )}
               </Link>
             )
           })}
