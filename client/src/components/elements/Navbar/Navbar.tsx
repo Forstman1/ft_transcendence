@@ -1,7 +1,7 @@
 "use client";
 
 /* ------------------------------------------------ Remote Components ----------------------------------------------- */
-import React, { use, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -47,9 +47,7 @@ const CreatGameGlobalSocket = (user: any) => {
       id: user.userId,
     },
   });
-  socket.emit("createRoomNotification", { userId: user.userId }, (data: any) => {
-    // console.log("createGameRoomNotification: " + data);
-  });
+  socket.emit("createRoomNotification", { userId: user.userId });
   return socket;
 }
 
@@ -64,9 +62,7 @@ const CreatChatGlobalSocket = (user: any) => {
     },
   });
 
-  socket?.emit(`createRoom`, { userId: user.userId }, (data: any) => {
-    // console.log(`the data returned is ` + data)
-  })
+  socket?.emit(`createRoom`, { userId: user.userId })
   return socket;
 }
 
