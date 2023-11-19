@@ -48,7 +48,7 @@ function Usercard(props: any) {
           <AvatarBadge
             className="custom-shadow border-[1px] border-black"
             boxSize={4}
-            bg={props.data.isOnline ? "green.500" : "gray.500"}
+            bg={props.data.isOnline ? "green.500" : "red.500"}
           />
         </Avatar>
       </div>
