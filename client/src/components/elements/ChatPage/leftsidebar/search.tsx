@@ -14,7 +14,7 @@ import {
 import { Avatar, AvatarBadge, InputGroup, InputRightElement } from '@chakra-ui/react';
 import { Channel, User } from "@/utils/types/chat/ChatTypes";
 import { useDispatch, useSelector } from "react-redux";
-import { setChannel, setChannelMember } from "@/redux/slices/chat/ChatSlice";
+import { setChannel, setChannelMember, setTheUser } from "@/redux/slices/chat/ChatSlice";
 import { useMutation } from "react-query";
 import { LockIcon } from "@chakra-ui/icons";
 
@@ -97,7 +97,6 @@ export default function Search() {
     const { handleSubmit, register, reset } = useForm<any>();
 
     const { isOpen, onOpen, onClose } = useDisclosure()
-
     const channels = useSelector((state: any) => state.chat.channels)
     const userId = useSelector((state: any) => state.socket.userID)
     const socket = useSelector((state: any) => state.socket.socket)
@@ -107,11 +106,12 @@ export default function Search() {
 
     const [show, setShow] = React.useState(false)
     const handleShow = () => setShow(!show)
+    const id = useSelector((state: any) => state.socket.userID);
 
 
     const getchannels = useMutation<any, Error, any>((variables) =>
         fetch('http://127.0.0.1:3001/channel/getallchannelsapp/' + variables.tofound).then((res) => {
-            console.log(variables)
+            console.log("variable", variables)
             return res.json()
         }).catch((err) => console.log(err))
     )
@@ -278,6 +278,13 @@ export default function Search() {
                     setOpenSearch(true)
                 }
             }
+        }
+        else
+        {
+            socket?.emit(`updateChatList`, {frienID: selectedOption.id})
+            socket?.emit(`createRoom`, { userId: id, frienID: selectedOption.id});
+            dispatch(setTheUser(selectedOption))
+            onClose()
         }
 
     }

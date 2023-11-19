@@ -3,7 +3,6 @@ import { Box, Button, ModalFooter, Text, useDisclosure } from '@chakra-ui/react'
 import { useSelector } from 'react-redux'
 import ModalWraper from '../../ModalWraper'
 import Image from 'next/image'
-
 import Ban from "../../../../../../assets/icons/Ban.svg"
 
 

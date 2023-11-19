@@ -119,21 +119,7 @@ function formatTimeAgo(timestamp:any) {
     const [user, setUser]: any = useState()
     const toast = useToast()
     const socket = useAppSelector((state) => state.socket.socket);
-
-
-    useEffect(() => {
-      const fetchData = async () => {
-
-        const fetchuser = await fetch('http://127.0.0.1:3001/users/getuser/' + userId)
-        const response = await fetchuser.json()
-        setUser(response)
-      }
-      fetchData()
-    }, [])
-
-
-
-
+    
     const scrollToBottom = () => {
       if (chatContainer.current) {
         chatContainer.current.scrollTop = chatContainer.current.scrollHeight;
@@ -148,8 +134,10 @@ function formatTimeAgo(timestamp:any) {
 
 
     const HideMobileSideBars = () => {
-      dispatch(setRight(false));
-      dispatch(setLeft(false));
+      if (window.innerWidth <= 1024) {
+        dispatch(setRight(false));
+        dispatch(setLeft(false));
+      }
     }
 
 
@@ -184,6 +172,7 @@ function formatTimeAgo(timestamp:any) {
 
     const getChannelMessages: any = useMutation<any, Error, any>((variables) =>
       fetch('http://127.0.0.1:3001/message/getmessages/' + variables.channelId).then((response) => {
+        console.log("Chanellresponse", response)
         return response.json()
 
       }).catch((error) => {
@@ -192,7 +181,7 @@ function formatTimeAgo(timestamp:any) {
 
 
       const getUserMessages: any = useMutation<any, Error, any>((variables) =>
-      fetch('http://127.0.0.1:3001/message/getMessagesUsers/' + variables.userId + '/'+ variables.reciverId).then((response) => {
+        fetch('http://127.0.0.1:3001/message/getMessagesUsers/' + variables.userId + '/' + variables.reciverId).then((response) => {
         return response.json()
 
       }).catch((error) => {
@@ -217,9 +206,7 @@ function formatTimeAgo(timestamp:any) {
           userId: userId,
           reciverId: selected?.id
         })
-
         if (messages.length != 0) {
-          console.log(messages)
           dispatch(setMessages(messages))
         }
         else
@@ -241,6 +228,7 @@ function formatTimeAgo(timestamp:any) {
 
       });
       socket?.on("receivedPrivateMessage", (data: any) => {
+
         console.log("waslat chi7aja", data.message);
 
         dispatch(addMessage(data.message));

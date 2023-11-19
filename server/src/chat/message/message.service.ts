@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 // import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateMessageDto } from './dto';
 import { MessageDto } from '../users/dtos/user.dto';
+import { UserMessage } from '@prisma/client';
 
 
 import { UserService } from 'src/user/user.service';
@@ -83,8 +84,8 @@ export class MessageService {
         
     }
 
-    async getMessagesUsers(userId: string, reciverId: string): Promise<MessageDto[] | string> {
-        try {
+    async getMessagesUsers(userId: string, reciverId: string): Promise<UserMessage[] | string> {
+        try { 
             const user = await this.prisma.user.findUnique({
                 where: {
                     id: userId
@@ -98,23 +99,28 @@ export class MessageService {
             if (!user || !reciver)
                 return 'User not found'
             
-            const DMroom = await this.prisma.dMRoom.findFirst({
-                where: {
-                    roomMembers: {
-                        every: {
-                            id: {
-                                in: [user.id, reciver.id]
-                            }
-                        }
-                    },
-                },
-                include: {
-                    roomMessages: true,
-                }
-            })
-            return DMroom.roomMessages
+            // const DMroom = await this.prisma.dMRoom.findFirst({
+            //     where: {
+            //         roomMembers: {
+            //             every: {
+            //                 id: {
+            //                     in: [user.id, reciver.id]
+            //                 }
+            //             }
+            //         },
+            //     },
+            //     include: {
+            //         roomMessages: true,
+            //     }
+            // })
+            // console.log(DMroom.roomMessages)
+            // if (!DMroom.roomMessages)
+            //     return []
+            // return DMroom.roomMessages
+            return []
         }
         catch (error) {
+            
             return `${error} could not retrieve messages`
         }
     }

@@ -32,7 +32,7 @@ export class UserService {
     });
     return user;
   }
-
+ 
   /* ------------------------------------------------------------------------------------------------------------------ */
 
   async updateUserTwoFactorStatus(

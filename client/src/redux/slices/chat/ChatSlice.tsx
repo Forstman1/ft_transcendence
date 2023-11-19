@@ -65,6 +65,7 @@ import {
     setNewChannel,
     setChannelMember,
     setTheUser,
+    setUserDms,
   } = chatSlice.actions;
   export default chatSlice.reducer;
   

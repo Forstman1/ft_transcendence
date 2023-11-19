@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Text, Avatar, Box } from '@chakra-ui/react'
 import Image from 'next/image'
 import Profile from '../../../../../assets/icons/Profile.svg'
@@ -10,9 +10,7 @@ import Link from 'next/link'
 import { useToast } from '@chakra-ui/react'
 import ChannelMemberActions from './ChannelMemberActions'
 import UserControls from './UserControls'
-import { useSelector, useDispatch } from 'react-redux'
-import { useMediaQuery } from '@chakra-ui/react'
-import { setLeft, setMidle, setRight } from '@/redux/slices/chat/MobileSlice'
+import { useSelector } from 'react-redux'
 import AddToChannelComponent from './AddToChannelComponent'
 
 
@@ -24,23 +22,9 @@ export default function RightSidebar() {
   
 
   const { RightClice } = useSelector((state: any) => state.mobile)
-  const isDesktop = useMediaQuery("(min-width: 1000px)")
 
   const toast = useToast();
-  const dispatch = useDispatch()
   const User = useSelector((state: any) => state.chat.selectedChannelorUser)
-
-  
-  useEffect(() => {
-    if (isDesktop[0]) {
-      dispatch(setRight(true))
-      dispatch(setMidle(true))
-      dispatch(setLeft(true))
-    }
-  } , [isDesktop])
-
-
-
 
   const sidebar = {
     open: (height = 1000) => ({
@@ -78,8 +62,8 @@ export default function RightSidebar() {
         </Text>
         <Avatar src={User?.avatarURL} className='m-7 h-[130px] w-[130px] drop-shadow-[2px_2px_0_rgba(18,18,18,0.50)] border border-black' />
         <Box className='bg-black justify-start flex items-center rounded text-white w-[200px] h-[45px] drop-shadow-[2px_2px_0_rgba(18,18,18,0.50)]'>
-          <Box className='AvatarBadge w-[25px] h-[25px] rounded-full bg-green-600 mx-5' />
-          <Text className='text-3xl'>{User.isOnline} </Text>
+          <Box className={`AvatarBadge w-[25px] h-[25px] rounded-full mx-5 ${User.isOnline ? `bg-green-600`: `bg-red-600`}`} />
+          <Text className='text-3xl'> {User.isOnline ? `Availabel` : `Unvailable`} </Text>
         </Box>
       </Box>
       <hr className='bg-black h-[2px] mx-10' />

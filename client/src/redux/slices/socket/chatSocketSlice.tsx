@@ -2,21 +2,15 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Socket } from "socket.io-client";
 
 
-
-
-
 export interface ChatSocketState {
     socket: Socket | null;
     userID?: string | null;
 }
 
-
 const initialState: ChatSocketState = {
     socket: null,
     userID: "",
 }
-
-
 
 
 const chatSocketSlice = createSlice({

@@ -1,18 +1,14 @@
 "use client";
 
-import { FC, ReactNode, useEffect, useState} from "react";
+import { FC, ReactNode } from "react";
 import LeftSidebar from "@/components/elements/ChatPage/leftsidebar/LeftSidebar";
-import { Flex } from "@chakra-ui/react";
 import MobileFooter from "@/components/elements/ChatPage/Mobile/MobileFooter";
-import axios from "axios";
-import { User } from '@/utils/types/chat/ChatTypes';
-import { useQuery } from "react-query";
-import { useRouter } from "next/navigation";
+import { Flex } from "@chakra-ui/react";
 
 
-export interface LayoutProps{
 
-    children: ReactNode;
+export interface LayoutProps {
+  children: ReactNode;
 }
 
 const Layout: FC<LayoutProps> = ({children}) => {

@@ -2,7 +2,6 @@ import React from 'react'
 import { Box } from '@chakra-ui/react'
 import { useSelector } from 'react-redux'
 import { ChannelMember } from '@/utils/types/chat/ChatTypes'
-
 import InvitePeople from './invitepeople'
 import LeaveChannel from './LeaveChannel'
 import DeletChannel from './DeleteChannel'
@@ -10,7 +9,6 @@ import DeletChannel from './DeleteChannel'
 
 
 export default function ChannelSetting() {
-
 
     const channelmember: ChannelMember = useSelector((state:any) => state.chat.ChannelMember)
    
