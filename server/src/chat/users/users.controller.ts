@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { UsersService } from './users.service';
 import { Prisma } from '@prisma/client';
 
@@ -7,9 +8,14 @@ import { Prisma } from '@prisma/client';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get(`friends/:id`)
-  async listFriends(@Param() id: Prisma.UserWhereUniqueInput) {
-    return await this.usersService.listFriends(id);
+  @Get(`friends`)
+  @UseGuards(JwtAuthGuard)
+  async listFriends(@Request() request) {
+    const User: Prisma.UserWhereUniqueInput = {
+      id: request.user.id,
+    };
+   return await this.usersService.listFriends(User);
+    // return await this.usersService.listFriends(request.user.id);
   }
 
   @Get(`:id`)
@@ -44,20 +50,13 @@ export class UsersController {
     return await this.usersService.acceptFriendRequest(id, friendId);
   }
 
-    @Get(`getAllUsers/:id`)
-    async getAllUsers(
-      @Param() id: Prisma.UserWhereUniqueInput,
-    ){
-      return await this.usersService.getAllUsers(id);
-    }
-    
+  @Get(`getAllUsers/:id`)
+  async getAllUsers(@Param() id: Prisma.UserWhereUniqueInput) {
+    return await this.usersService.getAllUsers(id);
+  }
+
   @Get('/getusers/:tofound')
   getuserstofound(@Param('tofound') tofound: string) {
     return this.usersService.getuserstofound(tofound);
   }
-
-  // @Get()
-  // hello(){
-  //     return("hello world")
-  // }
 }

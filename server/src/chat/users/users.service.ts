@@ -188,6 +188,27 @@ export class UsersService {
       const friend = await this.prisma.user.findUnique({
         where: friendId,
       });
+      const friendRequest = await this.prisma.friendRequest.findFirst({
+        where: {
+          OR: [
+            {
+              fromUserId: user.id,
+              toUserId: friend.id,
+            },
+            {
+              fromUserId: friend.id,
+              toUserId: user.id,
+            },
+          ],
+        },
+      });
+      if (friendRequest) { 
+        await this.prisma.friendRequest.delete({
+          where: {
+            id: friendRequest.id,
+          },
+        });
+      }
       if (!user) {
         return 'User not found';
       }
@@ -327,13 +348,7 @@ export class UsersService {
           id: id.id,
         },
         include: {
-          friends: {
-            where: {
-              chatWith: {
-                none: { id: id.id },
-              },
-            },
-          },
+          friends: true
         },
       });
       if (user) return user.friends;
