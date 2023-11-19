@@ -16,13 +16,14 @@ model User {
   username          String       @unique
   email             String       @unique
   fullname          String       
-  coalitionUrl      String?
   avatarURL         String            @default("https://iintra.freekb.es/imgs/user.png")
   coalitionURL      String            @default("https://profile.intra.42.fr/assets/coalitions/factionless-05b8cd65bda8f5eaf56ecf1d16493f41908801cfd66aa97fb27c9611064f4f36.svg")
   coalitionColor    String            @default("#292d")
+  coalitionName     String            @default("Factionless")
   twoFactorEnabled  Boolean           @default(false)
   twoFactorSecret   String?
   isOnline          Boolean     @default(false)
+  isInGame          Boolean     @default(false)
   hasTwoFA          Boolean     @default(false)
   // isBlocked         Boolean     @default(false)
   // isMuted           Boolean     @default(false)
@@ -49,9 +50,21 @@ model User {
 
   games     GameHistory[]
   userGamesXp   Int      @default(0)
+  notifications   Notification[]
 
 }
 
+
+model Notification {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  type      NotifType
+  title      String
+  description   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
 
 model FriendRequest {
   id        String   @id @default(uuid())
@@ -62,7 +75,6 @@ model FriendRequest {
   status    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
 }
 
 
@@ -147,4 +159,10 @@ enum Type {
   PUBLIC
   PRIVATE
   PROTECTED
+}
+
+enum NotifType {
+  gameInvite
+  friendRequest
+  roomMessage
 }

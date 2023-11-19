@@ -12,8 +12,6 @@ const initialState: ChatSocketState = {
     userID: "",
 }
 
-// socket.emit(`createNotificationRoom`, { userId: userId });
-
 const chatSocketSlice = createSlice({
     name: "chatSocket",
     initialState,

@@ -348,7 +348,7 @@ export class UsersService {
   ): Promise<User[] | string> {
     try {
       const chatList = await this.prisma.user.findUnique({
-        where: User,
+        where:  User,
         include: {
           chatWith: true,
         },

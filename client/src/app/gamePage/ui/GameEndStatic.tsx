@@ -16,8 +16,8 @@ type GameStaticProps = {
 }
 
 const GameEndStatic = ({opponent, user, isFriendMode}: GameStaticProps) => {
-    const socketState = useAppSelector((state) => state.globalSocketReducer);
-    const isOwner = socketState.isOwner
+    const gameMatch = useAppSelector((state) => state.gameMatch);
+    const isOwner = gameMatch.isOwner;
     const botColor = opponent === 'LOSE' ? 'red' : 'green';
     const userColor = user === 'LOSE' ? 'red' : 'green';
     const userBorderColor = user === 'LOSE' ? 'border-red-500' : 'border-green-500';

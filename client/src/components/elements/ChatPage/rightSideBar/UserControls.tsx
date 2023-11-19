@@ -99,7 +99,7 @@ export default function UserControls() {
   }, [selected, allOptImages]);
 
   const handleUserControls = (option: string) => {
-    if (option === "Add to friend list") {
+    if (option === `Add to friend list`) {
       socket.emit(`sendFreindRequest`, { friendId: User.id });
 
       const newValue = { src: pending, alt: "Pending" };

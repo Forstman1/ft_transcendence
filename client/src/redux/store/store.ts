@@ -8,7 +8,7 @@ import mobileReducer from "../slices/chat/MobileSlice";
 import chatSocketReducer from "@/redux/slices/socket/chatSocketSlice";
 import chatSlice from '../slices/chat/ChatSlice'
 import OptImagesSlice from '../slices/chat/OptImagesSlice';
-// import channelChatSocketReducer from '../slices/socket/channelChatSocketSlice'
+import gameMatchReducer from '../slices/game/gameMatchSlice'
 
 
 export const store = configureStore({
@@ -20,6 +20,7 @@ export const store = configureStore({
     mobile: mobileReducer,
     chat: chatSlice,
     optImages: OptImagesSlice,
+    gameMatch: gameMatchReducer,
     
   },
   middleware: (getDefaultMiddleware) =>

@@ -5,6 +5,7 @@ import { UsersService } from './users/users.service';
 import {MessageService} from './message/message.service'
 import { Prisma } from '@prisma/client';
 import { ChannelService } from './channel/channel.service';
+import { th } from '@faker-js/faker';
 
 
 
@@ -36,9 +37,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     this.logger.log(
       `Socket connected: ${client.handshake.auth.id}   ${client.id}`,
     );
-    const chatList = await this.userService.getChatList(
-      client.handshake.auth.id,
-    );
+     const User: Prisma.UserWhereUniqueInput = {
+       id: client.handshake.auth.id,
+     };
+    const chatList = await this.userService.getChatList(User);
     const rooms = await this.userService.getRooms({
       id: client.handshake.auth.id,
     });
@@ -56,8 +58,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       1,
     );
     socket.leave(socket.id);
-    // await this.userService.removeFromAllRooms(socket.id)
-    // delete all sockets in connectedUsers that are associated with this socket.id
+
     this.logger.log(`Socket disconnected: ${socket.id}`);
   }
 
@@ -320,28 +321,27 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       console.error(`Error in removing freind`, error);
     }
   }
-
+  
   @SubscribeMessage(`removeChatUser`)
   async removeChatUser(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { friendId: string },
-  ): Promise<any> {
-    try {
-      const User: Prisma.UserWhereUniqueInput = {
-        id: client.handshake.auth.id,
-      };
-      const friend: Prisma.UserWhereUniqueInput = { id: data.friendId };
-      const responce = await this.userService.removeFromChat(User, friend);
-      const userId = await this.userService.getUser(User);
-
-      if (responce === `User removed`) {
-        const friendSocket = this.connectedUsers[data.friendId];
-        if (friendSocket) {
-          for (const socket of friendSocket) {
-            this.server.to(socket.id).emit(`chatUserRemoved`, userId);
+    ): Promise<any> {
+      try {
+        const User: Prisma.UserWhereUniqueInput = {
+          id: client.handshake.auth.id,
+        };
+        const friend: Prisma.UserWhereUniqueInput = { id: data.friendId };
+        const responce = await this.userService.removeFromChat(User, friend);
+        const friedList = await this.userService.getChatList(User);
+        if(responce === `User removed from chat list`){
+          const userSockets = this.connectedUsers[client.handshake.auth.id];
+          if (userSockets) {
+            for (const socket of userSockets) {
+              this.server.to(socket.id).emit(`updateChatList`, friedList);
+            }
           }
         }
-      }
     } catch (error) {
       console.error(`Error in removing chat user`, error);
     }

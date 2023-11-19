@@ -5,7 +5,7 @@ import { useAppSelector } from "@/redux/store/store";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store/store";
-import { setSocketState } from "@/redux/slices/socket/globalSocketSlice";
+import { setGameMatchState } from "@/redux/slices/game/gameMatchSlice";
 import acceptIcon from "../../../../assets/icons/accept.svg";
 import denyIcon from "../../../../assets/icons/deny.svg";
 import Image from "next/image";
@@ -174,11 +174,10 @@ export default function GameNotification() {
   const acceptInvitation = (roomId: string, modalData: GameModalState, friendId: string) => {
     dispatch(setModal(modalData));
     dispatch(
-      setSocketState({
-        socket: socket.socket,
+      setGameMatchState({
         isOwner: false,
         roomId: roomId,
-        friendId: friendId,
+        opponentId: friendId,
       })
     );
     socket.socket?.emit("acceptInvitation", { roomId: roomId });

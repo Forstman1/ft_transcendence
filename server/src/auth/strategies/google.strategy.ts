@@ -1,7 +1,6 @@
 import {
   Injectable,
   ServiceUnavailableException,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-google-oauth20';
@@ -17,22 +16,24 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: process.env.GOOGLE_CALLBACK_URI,
       scope: ['email', 'profile'],
+      passReqToCallback: true,
     });
   }
 
   async validate(
+    request: any,
     accessToken: string,
     refreshToken: string,
     profile: Profile,
   ): Promise<UserDto> {
-    if (!profile) {
-      throw new ServiceUnavailableException("Couldn't retrieve data from API");
-    }
     try {
+      if (!profile || !profile?._json?.email || !profile?._json?.name) {
+        throw new ServiceUnavailableException("Couldn't retrieve data from API");
+      }
       let generatedUsername: string;
       let usernameExists: boolean = true;
       while (usernameExists) {
-        generatedUsername = generateFromEmail(profile._json.email, 3);
+        generatedUsername = generateFromEmail(profile?._json?.email, 3);
         const userFound = await this.userService.findUser({
           username: generatedUsername,
         });
@@ -42,16 +43,16 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
       }
       const user: UserDto = {
         username: generatedUsername,
-        email: profile._json.email,
-        fullname: profile._json.name,
+        email: profile?._json?.email,
+        fullname: profile?._json?.name,
         avatarURL: profile?._json?.picture,
         coalitionURL: undefined,
         coalitionColor: undefined,
+        coalitionName: undefined,
       };
       return user;
     } catch (error) {
-      console.error(error.message);
-      throw new InternalServerErrorException('Internal Server Error');
+      request.res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
     }
   }
 }
