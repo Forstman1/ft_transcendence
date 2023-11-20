@@ -77,9 +77,9 @@ function Componenent({ onClose }: any) {
 
 
     return (
-        <div className='w-full'>
+        <div className='w-full flex flex-col items-center'>
             <h1 className=' font-thin text-xl text-red-700 pt-3'>
-                All Members
+                All Members With Roles
             </h1>
 
             <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll no-scrollbar '>

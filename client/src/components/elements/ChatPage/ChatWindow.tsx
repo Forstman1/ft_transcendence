@@ -60,7 +60,6 @@ function formatTimeAgo(timestamp:any) {
     useEffect(() => {
       const fetchData = async () => {
 
-        console.log("usermessage.authorID ", usermessage.authorID)
         const fetchmember = await fetch('http://127.0.0.1:3001/channel/getmember/' + usermessage.authorID)
         const member = await fetchmember.json()
         const fetchuser = await fetch('http://127.0.0.1:3001/users/getuser/' + member.userId)
@@ -78,7 +77,7 @@ function formatTimeAgo(timestamp:any) {
       <div className="bg-white border-2 border-black rounded-2xl custom-shadow2  rounded-tl-none pl-[10px] w-[50%]">
         <div>{formattedTime}</div>
         <div className="text-[#B4B4B4] pb-[5px]">{sender}</div>
-        <div>{message}</div>
+        <div  className="pb-[8px]" >{message}</div>
       </div>
     </div>
     );
@@ -94,8 +93,8 @@ function formatTimeAgo(timestamp:any) {
     return (<div className='w-full flex gap-[5px]   justify-end pr-[15px] items-baseline z-0'>
       <div className='bg-black border-2 border-black rounded-2xl custom-shadow text-white rounded-tr-none justify-start pl-[10px] w-[50%]'>
         <div>{formattedTime}</div>
-        <div className='text-[#B4B4B4]'>{user?.username}</div>
-        <div>{message?.content}</div>
+        <div className='text-[#B4B4B4] '>{user?.username}</div>
+        <div className="pb-[8px]">{message?.content}</div>
       </div>
       <Avatar className='custom-shadow' boxSize={12} src={user?.avatarURL} />
     </div>)
@@ -280,7 +279,7 @@ function formatTimeAgo(timestamp:any) {
 
     return (
       <div className='justify-between flex-col gap-[15px] w-full h-full pt-[120px]'>
-        <div className=' flex flex-col gap-[10px] overflow-y-scroll z-0 h-[95%] ' ref={chatContainer}>
+        <div className=' flex flex-col gap-[10px] overflow-y-scroll no-scrollbar z-0 h-[95%] ' ref={chatContainer}>
 
 
           {(messages && messages.length != 0) && (messages.map((message: ChannelMessage, index: number) => {
