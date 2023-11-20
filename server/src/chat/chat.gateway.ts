@@ -5,7 +5,7 @@ import { UsersService } from './users/users.service';
 import {MessageService} from './message/message.service'
 import { Prisma } from '@prisma/client';
 import { ChannelService } from './channel/channel.service';
-import { th } from '@faker-js/faker';
+
 
 
 
@@ -181,15 +181,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
         id: client.handshake.auth.id,
       };
       const friend: Prisma.UserWhereUniqueInput = { id: data.friendId };
-      const responce = await this.userService.blockUser(User, friend);
-      const userId = await this.userService.getUser(User);
+      await this.userService.blockUser(User, friend);
+      const friendSocket = this.connectedUsers[data.friendId];
+
+      if (friendSocket) {
+          for (const socket of friendSocket) {
+            this.server.to(socket.id).emit(`userBlockedYou`, User);
+          }
+        }
       // if (responce === `User blocked`) {
-      //   const friendSocket = this.connectedUsers[data.friendId];
-      //   if (friendSocket) {
-      //     for (const socket of friendSocket) {
-      //       this.server.to(socket.id).emit(`userBlocked`, userId);
-      //     }
-      //   }
       // }
     } catch (error) {
       console.error(`Error in blocking user`, error);
@@ -334,6 +334,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
         const friend: Prisma.UserWhereUniqueInput = { id: data.friendId };
         const responce = await this.userService.removeFromChat(User, friend);
         const friedList = await this.userService.getChatList(User);
+        this.logger.log(`users are `);
         if(responce === `User removed from chat list`){
           const userSockets = this.connectedUsers[client.handshake.auth.id];
           if (userSockets) {

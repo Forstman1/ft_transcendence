@@ -15,7 +15,7 @@ export class UsersController {
       id: request.user.id,
     };
    return await this.usersService.listFriends(User);
-    // return await this.usersService.listFriends(request.user.id);
+
   }
 
   @Get(`:id`)

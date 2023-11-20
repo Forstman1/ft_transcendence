@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Room, MessageDto } from './dtos/user.dto';
 import { Prisma, User } from '@prisma/client';
+import { fr } from '@faker-js/faker';
 
 @Injectable()
 export class UsersService {
@@ -351,8 +352,24 @@ export class UsersService {
           friends: true
         },
       });
-      if (user) return user.friends;
-      else return 'User not found';
+      if (!user) return 'User not found';
+      const Blocked = await this.prisma.user.findUnique({
+        where: {
+          id: id.id,
+        },
+        include: {
+          blockedBy: true
+        },
+      });
+      console.log('user.friends:', user.friends)
+      console.log('Blocked.blockedBy:', Blocked.blockedBy)
+      console.log('isBlocked: ', user.friends.includes(Blocked.blockedBy[0]));
+      const friendsList = user.friends.filter((friend) => {
+        return !Blocked.blockedBy.some(
+          (blockedFriend) => blockedFriend.id === friend.id,
+        );
+      });
+      return friendsList;
     } catch (error) {
       return `${error} could not retrieve friend list`;
     }
@@ -368,8 +385,8 @@ export class UsersService {
           chatWith: true,
         },
       });
-      if (chatList) return chatList.chatWith;
-      else return 'User not found';
+       return chatList.chatWith;
+
     } catch (error) {
       return `${error} could not retrieve chat list`;
     }

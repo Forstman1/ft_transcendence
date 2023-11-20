@@ -28,40 +28,50 @@ export default function UserControls() {
     (state: any) => state.optImages.optImages
   );
 
-  const getSelectedOpt = allOptImages.find(
-    (optImage: any) => optImage.key === selected.username
-  );
-
   const [optImages, setOptImages] = useState([
     { src: AddToFriendList, alt: "Add to friend list" },
     { src: Block, alt: "Block" },
   ]);
 
   useEffect(() => {
-    socket.on(`friendRequestAccepted`, () => {
+    const getSelectedOpt = allOptImages.find(
+      (optImage: any) => optImage.key === selected.username
+    );
 
-      const newValue = { src: Remove, alt: "Remove from friend list" };
+    if (getSelectedOpt && getSelectedOpt.optImages !== undefined) {
+      console.log("getSelectedOpt", getSelectedOpt.optImages);
       setOptImages((prevOptImages) => {
         const newOptImages = [...prevOptImages];
-        newOptImages[0] = newValue;
+        newOptImages[0] = getSelectedOpt.optImages[0];
         return newOptImages;
       });
+    }
+  }, [allOptImages, selected]);
 
-      Cookies.set(selected.username, JSON.stringify(optImages), {
+  useEffect(() => {
+    socket.on(`friendRequestAccepted`, () => {
+      const newValue = { src: Remove, alt: "Remove from friend list" };
+
+      Cookies.set(selected.username, JSON.stringify([newValue, optImages[1]]), {
         expires: 365,
       });
-      
-    });
 
+      setOptImages((prevOptImages) => {
+        const newOptImages = [...prevOptImages];
+        newOptImages[0] = newValue;
+        return newOptImages;
+      });
+    });
     socket?.on(`friendRequestRejected`, (Friend: any) => {
       const newValue = { src: AddToFriendList, alt: "Add to friend list" };
+
       setOptImages((prevOptImages) => {
         const newOptImages = [...prevOptImages];
         newOptImages[0] = newValue;
         return newOptImages;
       });
 
-      Cookies.set(Friend.username, JSON.stringify(optImages), {
+      Cookies.set(Friend.username, JSON.stringify([newValue, optImages[1]]), {
         expires: 365,
       });
     });
@@ -75,7 +85,7 @@ export default function UserControls() {
         return newOptImages;
       });
 
-      Cookies.set(Friend.username, JSON.stringify(optImages), {
+      Cookies.set(Friend.username, JSON.stringify([newValue, optImages[1]]), {
         expires: 365,
       });
     });
@@ -89,6 +99,7 @@ export default function UserControls() {
 
   useEffect(() => {
     const cookies = Cookies.get(selected.username);
+
     if (cookies) {
       setOptImages(JSON.parse(cookies));
     } else {
@@ -97,24 +108,22 @@ export default function UserControls() {
         { src: Block, alt: "Block" },
       ]);
     }
-  }, [selected, allOptImages]);
+  }, [selected]);
 
-  
   const handleUserControls = (option: string) => {
-    if (option === `Add to friend list`) {
+    if (option === "Add to friend list") {
       socket.emit(`sendFreindRequest`, { friendId: User.id });
-      
       const newValue = { src: pending, alt: "Pending" };
+
       setOptImages((prevOptImages) => {
         const newOptImages = [...prevOptImages];
         newOptImages[0] = newValue;
         return newOptImages;
       });
-      
-      Cookies.set(selected.username, JSON.stringify(optImages), {
+
+      Cookies.set(selected.username, JSON.stringify([newValue, optImages[1]]), {
         expires: 365,
       });
-
     } else if (option === "Remove from friend list") {
       socket.emit(`removeFriend`, { friendId: User.id });
 
@@ -124,7 +133,7 @@ export default function UserControls() {
         newOptImages[0] = newValue;
         return newOptImages;
       });
-      Cookies.set(selected.username, JSON.stringify(optImages), {
+      Cookies.set(selected.username, JSON.stringify([newValue, optImages[1]]), {
         expires: 365,
       });
     } else if (option === "Block") {
@@ -135,7 +144,7 @@ export default function UserControls() {
         newOptImages[1] = newValue;
         return newOptImages;
       });
-      Cookies.set(selected.username, JSON.stringify(optImages), {
+      Cookies.set(selected.username, JSON.stringify([optImages[0], newValue]), {
         expires: 365,
       });
     } else if (option === "Unblock") {
@@ -146,7 +155,7 @@ export default function UserControls() {
         newOptImages[1] = newValue;
         return newOptImages;
       });
-      Cookies.set(selected.username, JSON.stringify(optImages), {
+      Cookies.set(selected.username, JSON.stringify([optImages[0], newValue]), {
         expires: 365,
       });
     }

@@ -10,8 +10,6 @@ import {
   useToast,
   CloseButton,
 } from "@chakra-ui/react";
-import { useQuery } from "react-query";
-import axios from "axios";
 import React, { useEffect, useState, useRef, use } from "react";
 import Newchannel from "./newchannel";
 import Hashtag from "./hatshtag";
@@ -90,7 +88,6 @@ export default function LeftSidebar() {
 
 useEffect(() => {
   socket?.on(`updateChatList`, async (Users: any) => {
-    console.log(Users , "ana hna 2"   );
     dispatch(setUserDms(Users));
     setRanFirstEffect(!ranFirstEffect); 
   });
