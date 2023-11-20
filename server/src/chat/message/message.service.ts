@@ -124,4 +124,39 @@ export class MessageService {
             return `${error} could not retrieve messages`
         }
     }
+
+
+    // notifyRoomMessage = async (userId: string, friendId: string): Promise<void> => {
+
+    //     const room = await this.prisma.dMRoom.findFirst({
+    //         where: {
+    //             roomMembers: {
+    //                 every: {
+    //                     id: {
+    //                         in: [user.id, friend.id]
+    //                     }
+    //                 }
+    //             },
+    //         },
+    //     })
+    //     if (!room)
+    //         return;
+    //     const roomMember = await this.prisma.dMRoomMember.findFirst({
+    //         where: {
+    //             userId: friend.id,
+    //             dMRoomId: room.id,
+    //         }
+    //     })
+    //     if (!roomMember)
+    //         return;
+    //     this.prisma.dMRoomMember.update({
+    //         where: {
+    //             id: roomMember.id
+    //         },
+    //         data: {
+    //             hasUnreadMessages: true,
+    //         }
+    //     })
+
+    // }
 }

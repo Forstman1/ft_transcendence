@@ -8,14 +8,14 @@ import { motion } from 'framer-motion';
 import {
   MenuButton, MenuList, MenuItem, MenuDivider,
   IconButton, Modal, ModalOverlay, ModalContent,
-  Stack, Avatar, AvatarBadge, SkeletonCircle,
+  Stack, Avatar, AvatarBadge,
   Box, Flex, Button, Center, Text, Menu,
   ModalHeader, ModalFooter, ModalBody,
-  ModalCloseButton, Skeleton,
+  ModalCloseButton,
 } from '@chakra-ui/react';
 /* ------------------------------------------------------ Hooks ----------------------------------------------------- */
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
 import { useQuery } from 'react-query';
 import { fetchUserProfile } from '@/utils/functions/auth/fetchingUserData';
@@ -24,6 +24,7 @@ import {
 } from '@/utils/constants/auth/AuthConstants';
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from '@/redux/slices/authUser/authUserSlice';
+import { useAppSelector } from '@/redux/store/store';
 
 /* -------------------------------------------------- Remote Assets ------------------------------------------------- */
 import { HamburgerIcon } from '@chakra-ui/icons';
@@ -36,26 +37,19 @@ import { io } from "socket.io-client";
 import { setSocketState } from "@/redux/slices/socket/globalSocketSlice";
 import { initialState as DefaultUserStoreData, UserState } from "@/redux/slices/authUser/authUserSlice";
 import { setChatSocketState } from '@/redux/slices/socket/chatSocketSlice';
+import Notification from '../Notification/Notification';
+
+
 
 const CreatGameGlobalSocket = (user: any) => {
-  console.log("CreatGameGlobalSocket user: ", user);
   const socket = io(process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001', {
     transports: ["websocket"],
     upgrade: false,
     auth: {
       id: user.userId,
     },
-  //   transportOptions: {
-  //     polling: {
-  //       extraHeaders: {
-  //           Authorization: `Bearer ${user.accessToken}`,
-  //       }
-  //     }
-  // }
   });
-  socket.emit("createRoomNotification", { userId: user.userId }, (data: any) => {
-    console.log("createGameRoomNotification: " + data);
-  });
+  socket.emit("createRoomNotification", { userId: user.userId });
   return socket;
 }
 
@@ -66,17 +60,16 @@ const CreatChatGlobalSocket = (user: any) => {
     upgrade: false,
     auth: {
       id: user.userId,
-    },
-  });
+    },})
 
-  socket?.emit(`createRoom`, { userId: user.userId }, (data: any) => {
-    console.log(`the data returned is ` + data)
-  })
   return socket;
+
+  // socket?.emit(`createRoom`, { userId: user.userId })
 }
 
-/* --------------------------------------------------- AuthButtons -------------------------------------------------- */
 
+/* --------------------------------------------------- AuthButtons -------------------------------------------------- */
+// loginWithService
 
 export function AuthButtons() {
   return (
@@ -151,7 +144,7 @@ export function UserProfileNavbarBadge() {
             variant={'link'}
             cursor={'pointer'}
             minW={0}>
-            <Avatar size='lg' src={data.avatarUrl}>
+            <Avatar size={['md', 'md', 'md', 'lg']} src={data.avatarUrl}>
               <AvatarBadge
                 boxSize='1em'
                 borderColor={data.isOnline ? 'green.100' : 'red.100'}
@@ -176,10 +169,14 @@ export function UserProfileNavbarBadge() {
             </Center>
             <br />
             <MenuDivider />
-            <MenuItem as='a' href='#'>Profile</MenuItem>
-            <MenuItem as='a' href='#'>Settings</MenuItem>
+            <MenuItem as='a' href='/userPage'>Profile</MenuItem>
+            <MenuItem as='a' href='/settings'>Settings</MenuItem>
             <MenuDivider />
-            <MenuItem color={'red.500'} as='a' href={`${process.env.NEXT_PUBLIC_SERVER_URL}auth/logout`}>Logout</MenuItem>
+            <MenuItem
+              color={'red.500'} as='a'
+              href={`${process.env.NEXT_PUBLIC_SERVER_URL}auth/logout`}>
+              Logout
+            </MenuItem>
           </MenuList>
         </Menu>
       </Box>
@@ -249,12 +246,14 @@ export function SignupModal() {
 
 const HeaderNavDesktop: React.FC = () => {
   let path = usePathname();
+  const user = useSelector((state: { authUser: UserState }) => state.authUser);
   const GameRouter = ["/gamePage/gameFriendPage", "/gamePage/gameBotPage"]
   path = GameRouter.includes(path) ? "/gamePage" : path;
+
   return (
     <nav className='hidden md:block'>
       <motion.div>
-        <Flex color='white' className="grid-cols-3 w-full h-full items-center justify-start space-x-8">
+        <Flex color='white' className="grid-cols-3 w-full h-full items-center justify-between space-x-8">
           {NAVBAR_ITEMS.map((item: {
             text: string,
             href: string
@@ -262,6 +261,7 @@ const HeaderNavDesktop: React.FC = () => {
             return (
               <Box key={index} className='col-span-1'>
                 <Center>
+                  {item.href === "/" && (
                   <Link href={item.href} className="w-auto">
                     <Text className="text-2xl font-semibold">
                       {item.text}
@@ -273,6 +273,20 @@ const HeaderNavDesktop: React.FC = () => {
                       />
                     ) : null}
                   </Link>
+                  )}
+                  {item.href !== "/" &&  user.isAuthenticated && (
+                    <Link href={item.href} className="w-auto">
+                      <Text className="text-2xl font-semibold">
+                        {item.text}
+                      </Text>
+                      {path.includes(item.href) ? (
+                        <motion.span
+                          layoutId="underline"
+                          className="absolute w-6 h-1 bg-white rounded-full"
+                        />
+                      ) : null}
+                    </Link>
+                  )}
                 </Center>
               </Box>
             )
@@ -284,6 +298,7 @@ const HeaderNavDesktop: React.FC = () => {
 }
 
 const HeaderNavMobile: React.FC = () => {
+  const user = useSelector((state: { authUser: UserState }) => state.authUser);
   return (
     <Box className='block md:hidden'>
       <Menu>
@@ -308,15 +323,30 @@ const HeaderNavMobile: React.FC = () => {
             href: string
           }, index: number) => {
             return (
-              <MenuItem
-                key={`mobile-navbar-menu-item-${index}`} rounded='md' as={"a"} href={item.href}
-                className='bg-neutral-900 text-neutral-50 border-neutral-950'
-              >
-                <Text className="text-xl font-semibold">
-                  {item.text}
-                </Text>
-                {index != NAVBAR_ITEMS.length - 1 ? <MenuDivider /> : null}
-              </MenuItem>
+              <Link href={item.href} key={`mobile-navbar-menu-link-${index}`}>
+                { item.href === "/" && (
+                <MenuItem
+                  key={`mobile-navbar-menu-item-${index}`} rounded='md' as={"button"}
+                  className={`bg-neutral-900 text-neutral-50 border-neutral-950`}
+                >
+                  <Text className="text-xl font-semibold">
+                    {item.text}
+                  </Text>
+                  {index != NAVBAR_ITEMS.length - 1 ? <MenuDivider /> : null}
+                </MenuItem>
+                )}
+                { item.href !== "/" && user.isAuthenticated && (
+                  <MenuItem
+                    key={`mobile-navbar-menu-item-${index}`} rounded='md' as={"button"}
+                    className={`bg-neutral-900 text-neutral-50 border-neutral-950`}
+                  >
+                    <Text className="text-xl font-semibold">
+                      {item.text}
+                    </Text>
+                    {index != NAVBAR_ITEMS.length - 1 ? <MenuDivider /> : null}
+                  </MenuItem>
+                )}
+              </Link>
             )
           })}
         </MenuList>
@@ -328,83 +358,95 @@ const HeaderNavMobile: React.FC = () => {
 /* ------------------------------------------------------------------------------------------------------------------ */
 
 export default function Navbar() {
-  const [userNotAuthenticated, setUserNotAuthenticated] = useState(true);
-  const { data, isLoading, isError, refetch } = useQuery({
+  const dispatch = useDispatch();
+  const user = useSelector((state: { authUser: UserState }) => state.authUser);
+  const socketState = useAppSelector((state) => state.globalSocketReducer);
+  const chatSocket = useAppSelector((state) => state.socket);
+
+  const [userAuthenticated, setUserAuthenticated] = useState(user.isAuthenticated);
+  useQuery({
     queryKey: ['userProfile'],
     queryFn: fetchUserProfile,
-  });
-  const refreshInterval = 5000;
-  const dispatch = useDispatch();
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      refetch();
-    }, refreshInterval);
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [refetch, refreshInterval]);
-  useEffect(() => {
-    if (!isLoading && !isError) {
-      setUserNotAuthenticated(false);
-      dispatch(updateUser({ isAuthenticated: true, ...data }));
-      const gameSocket = CreatGameGlobalSocket(data);
-      const chatSocket = CreatChatGlobalSocket(data);
-      dispatch(setChatSocketState({
-        socket: chatSocket,
-        userID: data.userId,
-      }));
-      // for game page
-      dispatch(setSocketState({
-        socket: gameSocket,
-        isOwner: false,
-        roomId: "",
-      }));
-      // for game page
-    } else {
-      setUserNotAuthenticated(true);
+    refetchInterval: 5000,
+    useErrorBoundary: false,
+    onError: () => {
+      setUserAuthenticated(false);
       dispatch(updateUser(DefaultUserStoreData));
-    }
-  }, [data, dispatch, isError, isLoading]);
+    },
+    onSuccess: (response: any) => {
+      setUserAuthenticated(true);
+      dispatch(updateUser({ isAuthenticated: true, ...response.data }));
+      if(!socketState.socket){
+        const gameSocket = CreatGameGlobalSocket(response.data);
+        dispatch(setSocketState({
+          socket: gameSocket,
+        }));
+      }
+      if (!chatSocket.socket)
+      {
+        const chatSocket = CreatChatGlobalSocket(response.data);
+        dispatch(setChatSocketState({
+          socket: chatSocket,
+          userID: response.data.userId,
+        }));
+      }
+    },
+  });
+
 
   return (
-    <header className='w-screen h-16 md:h-24 bg-neutral-950 fixed top-0 z-50'>
+    <header className="w-full h-16 md:h-24 bg-neutral-950 fixed top-0 z-50">
       <Flex
-        className='grid-cols-3 justify-around md:justify-between'
-        width='full' height='full'
-        alignItems='center'
-        flexDirection='row'
+        className="grid-cols-3 px-[10%]"
+        width="full"
+        height="full"
+        alignItems="center"
+        flexDirection="row"
       >
+        <div className='flex w-full flex-row'>
+          <Flex
+            key="navbar-menu-item-1"
+            className="h-full col-span-1 order-1 md:order-2 w-1/3 md:w-72 md:mr-auto"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <HeaderNavMobile />
+            <HeaderNavDesktop />
+          </Flex>
+          <Flex
+            key="navbar-menu-item-2"
+            className="h-full col-span-1 order-2 md:order-1 w-1/3 md:w-56 max-md:hidden"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Link href="/">
+              <Image src={Logo} alt="Website Logo" width={150} height={150} />
+            </Link>
+            ,
+          </Flex>
+        </div>
         <Flex
-          key='navbar-menu-item-1'
-          className='h-full col-span-1 order-1 md:order-2 w-1/3 md:w-72 md:mr-auto'
-          justifyContent='center'
-          alignItems='center'
+          key="navbar-menu-item-3"
+          className="h-full col-span-1 order-last w-1/3 md:w-72"
+          justifyContent="center"
+          alignItems="center"
         >
-          <HeaderNavMobile />
-          <HeaderNavDesktop />
+          {userAuthenticated == true ? (
+            <div className="flex flex-row gap-6 items-center justify-center">
+              <Notification />
+              <UserProfileNavbarBadge />
+            </div>
+          ) : (
+            <SignupModal />
+          )}
         </Flex>
-        <Flex
-          key='navbar-menu-item-2'
-          className='h-full col-span-1 order-2 md:order-1 w-1/3 md:w-56'
-          justifyContent='center'
-          alignItems='center'
-        >
-          <Link href="/">
-            <Image src={Logo} alt="Website Logo" width={150} height={150} />
-          </Link>,
-        </Flex>
-        <Flex
-          key='navbar-menu-item-3'
-          className='h-full col-span-1 order-last w-1/3 md:w-72'
-          justifyContent='center'
-          alignItems='center'
-        >
-          {userNotAuthenticated == false ? <UserProfileNavbarBadge /> : <SignupModal />}
-        </Flex>
-
       </Flex>
 
-      <Image src={WavesDivider} alt='Header Decoration' className='w-full h-5 -mt-[1px]' />
+      <Image
+        src={WavesDivider}
+        alt="Header Decoration"
+        className="w-full h-5 -mt-[1px]"
+      />
     </header>
-  )
+  );
 }

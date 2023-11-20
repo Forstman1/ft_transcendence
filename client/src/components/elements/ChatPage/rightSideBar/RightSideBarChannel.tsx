@@ -53,10 +53,14 @@ export default function RightSidebarChannel() {
       variants={sidebar}
       
     >
-      <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7 '>
+      <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7'>
         <Text className='flex text-black text-4xl drop-shadow-[2px_2px_0_rgba(18,18,18,.0.50)]'>
           # {channel.name}
         </Text>
+        <Text className='flex text-black text-xl '>
+          {channel.type}
+        </Text>
+
       </Box>
       <hr className='bg-black h-[2px] mx-10' />
 

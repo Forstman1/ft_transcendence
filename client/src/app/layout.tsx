@@ -13,6 +13,7 @@ import { usePathname } from "next/navigation";
 import { QueryClient, QueryClientProvider } from 'react-query'
 import GameNotification from "./gamePage/gameNotification/page";
 import { extendTheme } from '@chakra-ui/react'
+// import { Toaster } from "react-hot-toast";
 
 const breakpoints = {
   'base': '0px',
@@ -48,18 +49,22 @@ export default function RootLayout({
   const [isloading, setIsLoading] = React.useState(isHome);
   return (
     <html lang="en">
-      <body className={`${geo.className} h-screen w-full`}>
+      <body className={`${geo.className}`}>
         <ReduxProvider>
-            <CacheProvider>
-              <QueryClientProvider client={queryClient}>
-              <ChakraProvider>
-                {isloading ? <SplashScreen  finishLoading={() => setIsLoading(false)}/> :
-                <>
-                  <GameNotification />
-                  <Navbar />
+          <CacheProvider>
+            <QueryClientProvider client={queryClient}>
+              <ChakraProvider theme={theme}>
+                {isloading ? <SplashScreen finishLoading={() => setIsLoading(false)} /> :
+                  <>
+                    <GameNotification />
+                    {/* <Toaster
+                      position="bottom-right"
+                      reverseOrder={false}
+                    /> */}
+                    <Navbar />
 
-                  {children}
-                </>
+                    {children}
+                  </>
                 }
               </ChakraProvider>
             </QueryClientProvider>

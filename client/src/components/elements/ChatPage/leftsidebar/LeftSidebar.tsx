@@ -95,7 +95,7 @@ export default function LeftSidebar() {
       const { data } = await axios.get(
         `http://localhost:3001/users/chatlist/${userId}`
       );
-      dispatch(setUserDms(data));
+      // dispatch(setUserDms(data));
     },
   });
 
@@ -158,6 +158,19 @@ export default function LeftSidebar() {
       });
       dispatch(setChannels(allchannels));
     });
+
+
+    socket?.on('allmembers', (data: any) => {
+      if (data.channelId === selected?.id) {
+        if (data.members) {
+          data.members.map((data1: any) => {
+            if (data1.userId === userId)
+              dispatch(setChannelMember(data1));
+          })
+        }
+      }
+    })
+
 
     socket?.on("channelEntered", async (data: any) => {
       if (data.status === "channel doesn't exist") {
@@ -407,15 +420,17 @@ export default function LeftSidebar() {
     socket?.on('kickmember', (data: any) => {
       if (data.status === "you have been kicked from channel") {
         toast({
-          title: data.status,
+          title: data.message,
           position: `bottom-right`,
           status: "success",
           duration: 3000,
           isClosable: true,
         })
-        dispatch(setChannel(null))
-        dispatch(setMessages([]))
-        dispatch(setChannelMember(null))
+        if (data.channel.id === selected?.id) {
+          dispatch(setChannel(null))
+          dispatch(setMessages([]))
+          dispatch(setChannelMember(null))
+        }
       }
       else {
         toast({
@@ -521,6 +536,7 @@ export default function LeftSidebar() {
       socket?.off('banmember');
       socket?.off('unbanmember');
       socket?.off('inviteMember');
+      socket?.off('allmembers');
     }
   }, [selected, userId])
 

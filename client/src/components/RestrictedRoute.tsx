@@ -20,7 +20,6 @@ const RestrictedRoute = ({ children }: RestrictedRouteProps) => {
   const router = useRouter();
   // const toast = useToast();
   const isAuthorized = useSelector((state: { authUser: UserState }) => state.authUser.isAuthenticated);
-  console.log('isAuthorized: ', isAuthorized);
 
   // useEffect(() => {
   //   if (!isAuthorized) {
@@ -36,14 +35,15 @@ const RestrictedRoute = ({ children }: RestrictedRouteProps) => {
   //       ),
   //     });
   //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+//   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [isAuthorized]);
 
   if (!isAuthorized) {
-    router.push('/');
+    router.push('/?unauthorized=true');
     return null;
   }
-  return <>{children}</>;
+  else
+    return <>{children}</>;
 };
 
 export default RestrictedRoute;

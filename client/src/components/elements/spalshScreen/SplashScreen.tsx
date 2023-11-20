@@ -37,7 +37,7 @@ const SplashScreen = ({ finishLoading }: { finishLoading: () => void }) => {
   });
 
   return (
-    <div className="flex items-center justify-center w-screen h-screen bg-background-primary">
+    <div className="flex items-center justify-center w-full h-screen bg-background-primary">
       <motion.div
         initial={{ scale: 0 }}
         animate={{ rotate: 360, scale: 1 }}

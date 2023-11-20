@@ -42,7 +42,11 @@ export class UsersController {
         return this.usersService.listUsers(id)
     }
 
-
+    
+    @Get('/getuser/:id')
+    getuser(@Param('id') id: string) {
+        return this.usersService.getUserbyId(id)
+    }
 
     @Get('/getusers/:tofound')
     getuserstofound(@Param('tofound') tofound: string) {

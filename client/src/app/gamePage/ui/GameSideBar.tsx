@@ -60,8 +60,8 @@ const GameSideBar = ({
   gameMode: string;
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const gameSettings = useAppSelector((state) => state.gameReducer);
-  const socketState = useAppSelector((state) => state.globalSocketReducer);
+  const gameSettings = useAppSelector((state:any) => state.gameReducer);
+  const gameMatch = useAppSelector((state:any) => state.gameMatch);
   const [Playground, setPlayground] = useState(gameSettings.playgroundtheme);
   const [canvasBgImg, setCanvasBgImg] = useState<number>(
     gameSettings.backgroundImg
@@ -336,10 +336,10 @@ const GameSideBar = ({
                                         {result.RoundNamber}
                                       </Td>
                                       <Td className="text-red-700 text-xl font-bold">
-                                        {socketState.isOwner ? result.botPoints : result.userPoints}
+                                        {gameMatch.isOwner ? result.botPoints : result.userPoints}
                                       </Td>
                                       <Td className="text-red-700 text-xl font-bold">
-                                        {socketState.isOwner ? result.userPoints : result.botPoints}
+                                        {gameMatch.isOwner ? result.userPoints : result.botPoints}
                                       </Td>
                                     </Tr>
                                   ))}

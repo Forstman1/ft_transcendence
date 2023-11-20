@@ -141,12 +141,36 @@ function formatTimeAgo(timestamp:any) {
     }
 
 
+    useEffect(() => {
+      const fetchData = async () => {
+
+        const fetchuser = await fetch('http://127.0.0.1:3001/users/getuser/' + userId)
+        const response = await fetchuser.json()
+        setUser(response)
+      }
+      fetchData()
+    }, [])
 
     const handleNewMessage = async (data: any) => {
 
       if (data.newmessage.trim() === '')
         return;
-
+      if (selected == null)
+      {
+        reset({ newmessage: '' });
+        return 
+      }
+      if (data.newmessage.length > 500)
+      {
+        toast({
+          title: "Message too long",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        })
+        reset({ newmessage: '' });
+        return 
+      }
 
         if ('name' in selected)
         {
@@ -172,7 +196,7 @@ function formatTimeAgo(timestamp:any) {
 
     const getChannelMessages: any = useMutation<any, Error, any>((variables) =>
       fetch('http://127.0.0.1:3001/message/getmessages/' + variables.channelId).then((response) => {
-        console.log("Chanellresponse", response)
+        console.log("Channelresponse", response)
         return response.json()
 
       }).catch((error) => {
@@ -275,6 +299,7 @@ function formatTimeAgo(timestamp:any) {
             type="submit"
             className="bg-black w-[50px] rounded-md cursor-pointer flex justify-start items-center h-[100%]"
           >
+            
             <Image className=" w-[40px] " src={arrow} alt="arrow" />
           </button>
         </form>

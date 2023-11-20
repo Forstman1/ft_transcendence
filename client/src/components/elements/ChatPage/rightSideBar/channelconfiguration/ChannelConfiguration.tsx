@@ -24,8 +24,8 @@ export default function ChannelConfiguration() {
 
         
         <AllMembers />
-        {channelinfo.type != 'PUBLIC' &&  channelmember && channelmember.role === "OWNER" && <ChangePassword />}
-        {channelinfo.type != 'PUBLIC' &&  channelmember && channelmember.role === "OWNER" && <RemovePassword />}
+        {channelinfo.type == 'PROTECTED' &&  channelmember && channelmember.role === "OWNER" && <ChangePassword />}
+        {channelinfo.type == 'PROTECTED' &&  channelmember && channelmember.role === "OWNER" && <RemovePassword />}
         {channelinfo.type != 'PROTECTED' && channelmember && channelmember.role === "OWNER" && <SetChannelPassword />}
         {channelmember && (channelmember.role === "ADMIN" || channelmember.role === "OWNER") && <SetChannelAdmin />}
         {channelmember && ( channelmember.role === "OWNER" || channelmember.role === "ADMIN")&& <RemoveChannelAdmin />}

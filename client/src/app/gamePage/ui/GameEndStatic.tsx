@@ -16,8 +16,8 @@ type GameStaticProps = {
 }
 
 const GameEndStatic = ({opponent, user, isFriendMode}: GameStaticProps) => {
-    const socketState = useAppSelector((state) => state.globalSocketReducer);
-    const isOwner = socketState.isOwner
+    const gameMatch = useAppSelector((state) => state.gameMatch);
+    const isOwner = gameMatch.isOwner;
     const botColor = opponent === 'LOSE' ? 'red' : 'green';
     const userColor = user === 'LOSE' ? 'red' : 'green';
     const userBorderColor = user === 'LOSE' ? 'border-red-500' : 'border-green-500';
@@ -39,7 +39,7 @@ const GameEndStatic = ({opponent, user, isFriendMode}: GameStaticProps) => {
                     fontSize="6xl"
                     fontWeight="bold"
                     color={userColor}
-                    className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]"
+                    className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] max-md:text-4xl"
                   >
                     YOU {user}
                   </Text>
@@ -53,7 +53,7 @@ const GameEndStatic = ({opponent, user, isFriendMode}: GameStaticProps) => {
                       fontSize="6xl"
                       fontWeight="bold"
                       color={botColor}
-                      className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]"
+                      className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] max-md:text-4xl"
                     >
                       YOU {opponent}
                     </Text>
@@ -64,7 +64,7 @@ const GameEndStatic = ({opponent, user, isFriendMode}: GameStaticProps) => {
                       fontSize="6xl"
                       fontWeight="bold"
                       color={userColor}
-                      className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]"
+                      className="drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] max-md:text-4xl"
                     >
                       YOU {user}
                     </Text>

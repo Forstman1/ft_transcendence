@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User, Prisma } from '@prisma/client';
 import { authenticator } from 'otplib';
+import { UserDto } from './user.dto';
 
 @Injectable()
 export class UserService {
@@ -18,7 +19,7 @@ export class UserService {
 
   /* ------------------------------------------------------------------------------------------------------------------ */
 
-  async createUser(userInput: Prisma.UserCreateInput): Promise<User | null> {
+  async createUser(userInput: UserDto): Promise<User | null> {
     const userData: Prisma.UserCreateInput = {
       email: userInput.email,
       username: userInput.username,
@@ -26,6 +27,7 @@ export class UserService {
       avatarURL: userInput.avatarURL,
       coalitionURL: userInput.coalitionURL,
       coalitionColor: userInput.coalitionColor,
+      coalitionName: userInput.coalitionName,
     };
     const user: User | null = await this.prismaService.user.create({
       data: userData,
