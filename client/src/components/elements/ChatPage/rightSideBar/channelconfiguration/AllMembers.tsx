@@ -38,7 +38,7 @@ function Usercard(props: any) {
 
     return (
 
-        <div className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md '>
+        <div className='flex justify-around items-center border-2  w-full cursor-pointer m-2 ml-0 p-2  rounded-md '>
             <div>
                 <Avatar boxSize={12} src={user?.avatarURL}>
                     <AvatarBadge boxSize={6} bg={user?.isOnline ? 'green.500' : 'gray.500'} />
@@ -77,7 +77,7 @@ function Componenent({ onClose }: any) {
 
 
     return (
-        <div>
+        <div className='w-full'>
             <h1 className=' font-thin text-xl text-red-700 pt-3'>
                 All Members
             </h1>
