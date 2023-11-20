@@ -97,12 +97,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       }
     }
     else if (data.type === "roomMessage") {
-      await this.userService.notifyRoomMessage(client.handshake.auth.id, data.roomId);
-      if (this.connectedUsers[data.friendId]) {
-        this.connectedUsers[data.friendId].map((socket) => {
-          this.server.to(socket.id).emit('receivedNotification', { message: "you have a new message" });
-        })
-      }
+      // await this.userService.notifyRoomMessage(client.handshake.auth.id, data.roomId);
+      // if (this.connectedUsers[data.friendId]) {
+      //   this.connectedUsers[data.friendId].map((socket) => {
+      //     this.server.to(socket.id).emit('receivedNotification', { message: "you have a new message" });
+      //   })
+      // }
     }
       // this.server.to(userID).emit(`receivedNotification`, data.message);
     } catch (error) {

@@ -72,7 +72,7 @@ function Componenent({ onClose }: any) {
     return (
         <div>
 
-            <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
+            <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll no-scrollbar '>
 
                 {users.map((data: User) => {
                     return <Usercard 

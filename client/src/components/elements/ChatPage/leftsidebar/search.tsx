@@ -343,7 +343,7 @@ export default function Search() {
                             onChange={handleChange}
                         />
                     </InputGroup>
-                    <div className="flex w-full h-[300px]  flex-col  overflow-y-scroll ">
+                    <div className="flex w-full h-[300px]  flex-col  no-scrollbar overflow-y-scroll ">
                         {allSearchChannels.map((channels: Channel, id: number) => {
                             return <Box key={id} className="flex  w-[95%] p-2 flex-row justify-between items-center border-2 border-gray-300 rounded-lg  mt-5">
 

@@ -102,7 +102,7 @@ export default function LeftSidebar() {
 
   useEffect(() => {
     socket?.emit("getChannelsFirstTime", { userId: userId });
-  }, []);
+  }, [socket]);
 
 
   useEffect(() => {
@@ -564,7 +564,7 @@ export default function LeftSidebar() {
 
   return (
 
-    <Box className='LeftSideBar place-items-center grid w-[375px] absolute  h-full overflow-y-auto border-r-[3px] border-r-black  md:static md:w-[400px] backdrop-blur-xl z-10 pt-[100px]'
+    <Box className='LeftSideBar place-items-center grid w-[375px] absolute no-scrollbar  h-full overflow-y-auto border-r-[3px] border-r-black  md:static md:w-[400px] backdrop-blur-xl z-10 pt-[100px]'
       as={motion.div}
       initial={false}
       animate={LeftClice.LeftValue ? "open" : "closed"}
@@ -584,7 +584,7 @@ export default function LeftSidebar() {
         </div>
       </div>
 
-      <div className="flex h-[400px] flex-col w-full mt-[30px] items-center gap-6 overflow-y-scroll">
+      <div className="flex h-[400px] flex-col w-full mt-[30px] items-center gap-6  no-scrollbar overflow-y-scroll">
         {channels &&
           channels.length != 0 &&
           channels?.map((data: Channel, id: number) => {
@@ -604,7 +604,7 @@ export default function LeftSidebar() {
         </div>
       </div>
 
-      <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
+      <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 no-scrollbar overflow-y-scroll'>
         {users.length != 0 &&
           users?.map((userData: User, id: number) => (
             <Usercard
