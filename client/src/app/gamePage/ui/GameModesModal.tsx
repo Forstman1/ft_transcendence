@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Modal,
@@ -12,6 +12,7 @@ import {
   Text,
   Radio,
   RadioGroup,
+  useToast,
 } from "@chakra-ui/react";
 import StartGame from "../../../../assets/icons/startIcon.svg";
 import closeIcon from "../../../../assets/icons/closeIcon.svg";
@@ -34,11 +35,14 @@ import levelMedium from "../../../../assets/icons/levelMedium.svg";
 import levelHard from "../../../../assets/icons/levelHard.svg";
 import { BackgroundsImg } from "@/utils/constants/game/GameConstants";
 import GameSearchFriend from "./GameSearchFriend";
+import { useAppSelector } from "@/redux/store/store";
+import { setGameMatchState } from "@/redux/slices/game/gameMatchSlice";
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
   gameType: string;
+  friend?: any;
 };
 
 const getIcon = (mode: string) => {
@@ -54,7 +58,7 @@ const getIcon = (mode: string) => {
   }
 };
 
-const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
+const GameModesModal = ({ isOpen, onClose, gameType, friend }: Props) => {
   const [modeValue, setmodeValue] = useState<string>(Modes[0]);
   const [Playground, setPlayground] = useState(PlaygroundTheme[0]);
   const [rounds, setRounds] = useState<number>(1);
@@ -65,6 +69,75 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(
     gameType === "friend"
   );
+  
+  const toast = useToast();
+  const socket = useAppSelector((state) => state.globalSocketReducer);
+  const modalData = useAppSelector((state) => state.gameReducer);
+  const [friendId, setFriendId] = useState<string>("");
+  const [socketRoomId, setSocketRoomId] = useState<string>("");
+
+  //-------------------chatGameLogic------------------------
+  useEffect(() => {
+    if (socketRoomId !== "") {
+      inviteFriendReq();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socketRoomId]);
+
+  const inviteFriendReq = async () => {
+    await socket.socket?.emit("inviteFriend", {
+      roomId: socketRoomId,
+      friendId: friendId,
+      modalData: modalData,
+    });
+  };
+
+  socket.socket?.on("playGame", () => {
+    router.push("/gamePage/gameFriendPage");
+  });
+
+  socket.socket?.on("friendDenyInvitation", () => {
+    toast({
+      title: "Your friend deny your invitation",
+      description: "Please try again",
+      status: "error",
+      duration: 5000,
+      isClosable: true,
+    });
+  });
+
+  const dispatchData = (RoomId: string) => {
+    dispatch(
+      setGameMatchState({
+        isOwner: true,
+        roomId: RoomId,
+        opponentId: friendId,
+      })
+    );
+    setSocketRoomId(RoomId);
+  };
+
+  const createRoom = async (friendId: string) => {
+    await socket.socket?.emit("createRoom", (RoomId: any) => {
+      setFriendId(friendId);
+      dispatchData(RoomId);
+    });
+  };
+
+  const handleInviteClick = async (friendId: string, isInGame: string, friendName: string) => {
+    if (isInGame === "true") {
+      toast({
+        title: "Your friend " + friendName + " is in game",
+        description: "Please wait until he finish",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
+    await createRoom(friendId);
+  };
+  //-------------------chatGameLogic------------------------
 
   const handleModeChange = (mode: string) => {
     setmodeValue(mode);
@@ -81,7 +154,10 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
       })
     );
 
-    if (gameType === "friend") {
+    if (gameType === "chatGame") {
+      handleInviteClick(friend.id, friend.isInGame, friend.name);
+    }
+    else if (gameType === "friend") {
       setIsSearchModalOpen(true);
     } else if (gameType === "bot") {
       router.push("/gamePage/gameBotPage");
@@ -236,7 +312,7 @@ const GameModesModal = ({ isOpen, onClose, gameType }: Props) => {
             >
               Close
             </Button>
-            {gameType === "bot" ? (
+            {gameType === "bot" || gameType === "chatGame" ? (
               <Button
                 colorScheme="teal"
                 variant="outline"

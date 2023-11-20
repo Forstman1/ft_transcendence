@@ -43,16 +43,16 @@ export default function GameInstruction({ isOpen, onClose }: Props) {
           </Text>
         </ModalHeader>
         <ModalCloseButton />
-        <ModalBody className="flex flex-col space-y-2 w-[400px] overflow-y-scroll max-h-[600px] w-full">
+        <ModalBody className="flex flex-col space-y-2 w-[400px] overflow-y-scroll max-h-[600px]">
           <Text className="">
             <ArrowRightIcon className="inline-block mr-2" />
             General
           </Text>
-          <p className="text-gray-500">
+          <p className="text-gray-500 px-5">
             Pong is a table tennis-themed arcade video game, featuring simple
             two-dimensional graphics, manufactured with love by our team.
           </p>
-          <div className="flex flex-col  space-y-2  w-full px-5">
+          <div className="flex flex-col  space-y-2  w-full px-8">
             <Text
               fontSize="lg"
               fontWeight="bold"
@@ -81,7 +81,7 @@ export default function GameInstruction({ isOpen, onClose }: Props) {
               </p>
             </div>
           </div>
-          <div className="flex flex-col  space-y-2 w-full px-5">
+          <div className="flex flex-col  space-y-2 w-full px-8">
             <Text
               fontSize="lg"
               fontWeight="bold"
@@ -98,7 +98,7 @@ export default function GameInstruction({ isOpen, onClose }: Props) {
               </p>
             </div>
           </div>
-          <div className="flex flex-col  space-y-2 w-full px-5">
+          <div className="flex flex-col  space-y-2 w-full px-8">
             <Text
               fontSize="lg"
               fontWeight="bold"
@@ -115,7 +115,7 @@ export default function GameInstruction({ isOpen, onClose }: Props) {
               </p>
             </div>
           </div>
-          <div className="flex flex-col  space-y-2 w-full px-5">
+          <div className="flex flex-col  space-y-2 w-full px-8">
             <Text
               fontSize="lg"
               fontWeight="bold"
@@ -132,7 +132,7 @@ export default function GameInstruction({ isOpen, onClose }: Props) {
               </p>
             </div>
           </div>
-          <div className="flex flex-col  space-y-2 w-full px-5">
+          <div className="flex flex-col  space-y-2 w-full px-8">
             <Text
               fontSize="lg"
               fontWeight="bold"
@@ -157,7 +157,7 @@ export default function GameInstruction({ isOpen, onClose }: Props) {
               </p>
             </div>
           </div>
-          <div className="flex flex-col  space-y-2 w-full">
+          <div className="flex flex-col  space-y-2 w-full px-5">
             <Text>
               <ArrowRightIcon className="inline-block mr-2" />
               Matchmaking Mode
@@ -168,7 +168,7 @@ export default function GameInstruction({ isOpen, onClose }: Props) {
               default theme and none background
             </p>
           </div>
-          <div className="flex flex-col  space-y-2 w-full px-5">
+          <div className="flex flex-col  space-y-2 w-full px-8">
             <Text
               fontSize="lg"
               fontWeight="bold"
