@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Room, MessageDto } from './dtos/user.dto';
 import { Prisma, User } from '@prisma/client';
-import { fr } from '@faker-js/faker';
+
 
 @Injectable()
 export class UsersService {
   private rooms: Room[];
   constructor(private readonly prisma: PrismaService) {}
 
-  //!---------------User------------------------!//
+  //!------------------------User------------------------!//
 
   async getUser(id: Prisma.UserWhereUniqueInput): Promise<User | string> {
     try {
@@ -203,7 +203,7 @@ export class UsersService {
           ],
         },
       });
-      if (friendRequest) { 
+      if (friendRequest) {
         await this.prisma.friendRequest.delete({
           where: {
             id: friendRequest.id,
@@ -300,7 +300,7 @@ export class UsersService {
     }
   }
 
-  //!---------------ListofFriend && ChatList------------------------!//
+  //!---------------ListofFriend------------------------!//
 
   async UpdateFriendList(user: Prisma.UserWhereUniqueInput) {
     const friendRequests = await this.prisma.friendRequest.findMany({
@@ -349,7 +349,7 @@ export class UsersService {
           id: id.id,
         },
         include: {
-          friends: true
+          friends: true,
         },
       });
       if (!user) return 'User not found';
@@ -358,11 +358,11 @@ export class UsersService {
           id: id.id,
         },
         include: {
-          blockedBy: true
+          blockedBy: true,
         },
       });
-      console.log('user.friends:', user.friends)
-      console.log('Blocked.blockedBy:', Blocked.blockedBy)
+      console.log('user.friends:', user.friends);
+      console.log('Blocked.blockedBy:', Blocked.blockedBy);
       console.log('isBlocked: ', user.friends.includes(Blocked.blockedBy[0]));
       const friendsList = user.friends.filter((friend) => {
         return !Blocked.blockedBy.some(
@@ -374,19 +374,19 @@ export class UsersService {
       return `${error} could not retrieve friend list`;
     }
   }
+  //!-------------------------ChatList---------------------------------!//
 
   async getChatList(
     User: Prisma.UserWhereUniqueInput,
   ): Promise<User[] | string> {
     try {
       const chatList = await this.prisma.user.findUnique({
-        where:  User,
+        where: User,
         include: {
           chatWith: true,
         },
       });
-       return chatList.chatWith;
-
+      return chatList.chatWith;
     } catch (error) {
       return `${error} could not retrieve chat list`;
     }
@@ -424,18 +424,6 @@ export class UsersService {
           },
         },
       });
-      // await this.prisma.user.update({
-      //   where: {
-      //     id: friend.id,
-      //   },
-      //   data: {
-      //     chatWith: {
-      //       connect: {
-      //         id: user.id,
-      //       },
-      //     },
-      //   },
-      // });
       return `User added to chat list`;
     } catch (error) {
       return `${error} could not add to chat list`;
@@ -476,6 +464,33 @@ export class UsersService {
       return `User removed from chat list`;
     } catch (error) {
       return `${error} could not remove from chat list`;
+    }
+  }
+
+  async isInChat(
+    User: Prisma.UserWhereUniqueInput,
+    friendId: Prisma.UserWhereUniqueInput,
+  ): Promise<boolean> {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id: User.id,
+        },
+        include: {
+          chatWith: true,
+        },
+      });
+      const friend = await this.prisma.user.findUnique({
+        where: {
+          id: friendId.id,
+        },
+      });
+      const isInChat = user.chatWith.some(
+        (friend) => friend.id === friendId.id,
+      );
+      return isInChat;
+    } catch (error) {
+      return false;
     }
   }
 
@@ -595,6 +610,19 @@ export class UsersService {
       return message;
     } catch (error) {
       return `${error} could not create message`;
+    }
+  }
+
+  async getUserbyId(id: string) {
+    try {
+      const getuser = await this.prisma.user.findUnique({
+        where: {
+          id: id,
+        },
+      });
+      return getuser;
+    } catch (error) {
+      return error;
     }
   }
 

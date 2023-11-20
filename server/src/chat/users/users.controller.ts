@@ -14,8 +14,7 @@ export class UsersController {
     const User: Prisma.UserWhereUniqueInput = {
       id: request.user.id,
     };
-   return await this.usersService.listFriends(User);
-
+    return await this.usersService.listFriends(User);
   }
 
   @Get(`:id`)
@@ -53,6 +52,11 @@ export class UsersController {
   @Get(`getAllUsers/:id`)
   async getAllUsers(@Param() id: Prisma.UserWhereUniqueInput) {
     return await this.usersService.getAllUsers(id);
+  }
+
+  @Get('/getuser/:id')
+  getuser(@Param('id') id: string) {
+    return this.usersService.getUserbyId(id);
   }
 
   @Get('/getusers/:tofound')

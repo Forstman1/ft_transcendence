@@ -252,8 +252,6 @@ function formatTimeAgo(timestamp:any) {
     }, [selected]);
 
 
-
-
     return (
       <div className='justify-between flex-col gap-[15px] w-full h-full pt-[120px]'>
         <div className=' flex flex-col gap-[10px] overflow-y-scroll z-0 h-[95%] ' ref={chatContainer}>

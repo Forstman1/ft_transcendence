@@ -9,6 +9,7 @@ import {
   Modal,
   useToast,
   CloseButton,
+  background,
 } from "@chakra-ui/react";
 import React, { useEffect, useState, useRef, use } from "react";
 import Newchannel from "./newchannel";
@@ -54,16 +55,8 @@ function Usercard(props: any) {
         <div className="text-[22px] font-bold truncate">
           {props.data.username}{" "}
         </div>
-        <div className="text-gray-400 text-[12px] font-medium	">
-          ok, see you tomorrow{" "}
-        </div>
       </div>
-
       <div className="flex flex-col items-center text-center ">
-        <div className="text-[13px] text-gray-400">06:49 pm </div>
-        <div className="rounded-full bg-black w-5 h-5 flex items-center justify-center text-[20px] text-white">
-          3{" "}
-        </div>
       </div>
       <Icon
         as={CloseButton}
@@ -88,7 +81,9 @@ export default function LeftSidebar() {
 
 useEffect(() => {
   socket?.on(`updateChatList`, async (Users: any) => {
+
     dispatch(setUserDms(Users));
+    dispatch(setTheUser(Users[0]));
     setRanFirstEffect(!ranFirstEffect); 
   });
 }, [socket]);
@@ -593,11 +588,11 @@ useEffect(() => {
       <div className=" mt-[40px] flex h-[500px] flex-col w-full  gap-1 overflow-y-scroll">
         {Users.map((userData: User, id: number) => (
           <Box
-            className="group flex justify-between items-center cursor-pointer h-20 m-2  p-2 rounded-md"
+            className="group flex justify-between items-center cursor-pointer h-20 m-2  p-2 rounded-md hover:bg-zinc-300"
             key={id}
-            onClick={() => { handelClick(id); onSubmited(userData)}}
+            onClick={() => { handelClick(id); onSubmited(userData) }}
             style={{
-              backgroundColor: selectedCard === id ? "#d4d4d8" : "white",
+              backgroundColor: selectedCard === id ? "#d4d4d8" : "",
             }}
           >
             <Usercard data={userData} />

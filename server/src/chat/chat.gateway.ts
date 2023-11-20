@@ -80,23 +80,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       console.error(`Error in getting users`, error);
     }
   }
-  // @SubscribeMessage(`createNotificationRoom`)
-  // createNotificationRoom(
-  //   @ConnectedSocket() client: Socket,
-  //   @Body() data: { userID: string },
-  // ): string {
-  //   try {
-  //     const userID = data.userID;
-  //     client.join(userID);
-  //     this.connectedUsers[userID] = [
-  //       ...(this.connectedUsers[userID] || []),
-  //       client,
-  //     ];
-  //     return `Notification room created`;
-  //   } catch (error) {
-  //     console.error(`Error in creating notification Room`, error);
-  //   }
-  // }
+
   //!---------------CREATE ROOM------------------------!//
 
   @SubscribeMessage(`createRoom`)
@@ -136,12 +120,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
         id: client.handshake.auth.id,
       };
       const friend: Prisma.UserWhereUniqueInput = { id: data.frienID };
-
       await this.userService.addToChat(User, friend);
-
       const friedList = await this.userService.getChatList(User);
-
-      client.emit(`updateChatList`, friedList);
+      const userSockets = this.connectedUsers[client.handshake.auth.id];
+      for (const socket of userSockets) {
+        this.server.to(socket.id).emit(`updateChatList`, friedList);
+      }
     } catch (error) {
       console.error(`Error in updating chat list`, error);
     }
@@ -156,11 +140,24 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
   ): Promise<any> {
     try {
       const userId = client.handshake.auth.id;
+      const user: Prisma.UserWhereUniqueInput = { id: userId };
+      const friend: Prisma.UserWhereUniqueInput = { id: data.reciverId };
       const room = await this.userService.getRoom(userId, data.reciverId);
+      const isInChat = await this.userService.isInChat(friend, user); 
+      await this.userService.addToChat(friend, user);
+      const friedList = await this.userService.getChatList(friend);
+      const friendSocket = this.connectedUsers[data.reciverId];
+      if (friendSocket) {
+        for (const socket of friendSocket) {
+          this.server.to(socket.id).emit(`updateChatList`, friedList);
+        }
+      }
       const message = await this.userService.createMessage({
+        
         authorName: userId,
         reciverID: room,
         content: data.message,
+        
       });
 
       this.server.to(room).emit(`receivedPrivateMessage`, { message });
@@ -183,14 +180,26 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       const friend: Prisma.UserWhereUniqueInput = { id: data.friendId };
       await this.userService.blockUser(User, friend);
       const friendSocket = this.connectedUsers[data.friendId];
+      const userSockets = this.connectedUsers[client.handshake.auth.id];
+      const userId = await this.userService.getUser(User);
+      if (userSockets) {
+        for (const socket of userSockets) {
+          this.server.to(socket.id).emit(`userBlocked`, User);
 
-      if (friendSocket) {
-          for (const socket of friendSocket) {
-            this.server.to(socket.id).emit(`userBlockedYou`, User);
-          }
         }
-      // if (responce === `User blocked`) {
+      }
+      
+      // if (friendSocket) {
+      //   for (const socket of friendSocket) {
+      //     this.server.to(socket.id).emit(`userBlockedYou`, User);
+      //   }
       // }
+      // if(userSockets){
+      //   for (const socket of userSockets) {
+      //     this.server.to(socket.id).emit(`userBlocked`, friend);
+      //   }
+      // }
+
     } catch (error) {
       console.error(`Error in blocking user`, error);
     }
@@ -206,16 +215,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
         id: client.handshake.auth.id,
       };
       const friend: Prisma.UserWhereUniqueInput = { id: data.friendId };
-      const responce = await this.userService.unblockUser(User, friend);
-      const userId = await this.userService.getUser(User);
-      // if (responce === `User unblocked`) {
-      //   const friendSocket = this.connectedUsers[data.friendId];
-      //   if (friendSocket) {
-      //     for (const socket of friendSocket) {
-      //       this.server.to(socket.id).emit(`userUnblocked`, userId);
-      //     }
-      //   }
-      // }
+      await this.userService.unblockUser(User, friend);
     } catch (error) {
       console.error(`Error in unblocking user`, error);
     }
@@ -250,6 +250,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       console.error(`Error in sending freind request`, error);
     }
   }
+
+
 
   @SubscribeMessage(`acceptFreindRequest`)
   async acceptFreindRequest(
@@ -308,12 +310,19 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       const friend: Prisma.UserWhereUniqueInput = { id: data.friendId };
       const responce = await this.userService.removeFriend(User, friend);
       const userId = await this.userService.getUser(User);
+      const friendId = await this.userService.getUser(friend);
 
       if (responce === `Friend removed`) {
         const friendSocket = this.connectedUsers[data.friendId];
+        const userSockets = this.connectedUsers[client.handshake.auth.id];
         if (friendSocket) {
           for (const socket of friendSocket) {
             this.server.to(socket.id).emit(`friendRemoved`, userId);
+          }
+        }
+        if(userSockets){
+          for (const socket of userSockets) {
+            this.server.to(socket.id).emit(`friendRemoved`, friend);
           }
         }
       }

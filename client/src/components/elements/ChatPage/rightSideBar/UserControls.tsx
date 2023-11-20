@@ -51,7 +51,7 @@ export default function UserControls() {
   useEffect(() => {
     socket.on(`friendRequestAccepted`, () => {
       const newValue = { src: Remove, alt: "Remove from friend list" };
-
+      console.log(`the new value is: `, newValue);
       Cookies.set(selected.username, JSON.stringify([newValue, optImages[1]]), {
         expires: 365,
       });
@@ -62,22 +62,46 @@ export default function UserControls() {
         return newOptImages;
       });
     });
-    socket?.on(`friendRequestRejected`, (Friend: any) => {
-      const newValue = { src: AddToFriendList, alt: "Add to friend list" };
+    socket.on(`friendRequestRejected`, (Friend: any) => {
 
+      const newValue = { src: AddToFriendList, alt: "Add to friend list" };
       setOptImages((prevOptImages) => {
         const newOptImages = [...prevOptImages];
         newOptImages[0] = newValue;
         return newOptImages;
+
       });
 
       Cookies.set(Friend.username, JSON.stringify([newValue, optImages[1]]), {
         expires: 365,
+
       });
+      
     });
 
+
+      socket.on(`userBlocked`, (Friend: any) => {
+
+        const newValue = { src: Unblock, alt: "Unblock" };
+        setOptImages((prevOptImages) => {
+          const newOptImages = [...prevOptImages];
+          newOptImages[1] = newValue;
+          return newOptImages;
+        });
+        console.log(`the new value is: `, optImages);
+        Cookies.set(Friend.username, JSON.stringify([optImages[0], newValue]), {
+          expires: 365,
+        });
+        
+      });
+      socket?.on(`userBlockedYou`, (Friend: any) => {
+        console.log(`hello from userBlockedYou`);
+      });
+
+
     socket?.on(`friendRemoved`, (Friend: any) => {
-      console.log(Friend.username);
+      
+
       const newValue = { src: AddToFriendList, alt: "Add to friend list" };
       setOptImages((prevOptImages) => {
         const newOptImages = [...prevOptImages];
@@ -93,6 +117,7 @@ export default function UserControls() {
     return () => {
       socket.off(`friendRequestRejected`);
       socket.off(`friendRequestAccepted`);
+      socket.off(`userBlocked`);
       socket.off(`friendRemoved`);
     };
   }, [socket]);
@@ -125,8 +150,8 @@ export default function UserControls() {
         expires: 365,
       });
     } else if (option === "Remove from friend list") {
-      socket.emit(`removeFriend`, { friendId: User.id });
 
+      socket.emit(`removeFriend`, { friendId: User.id });
       const newValue = { src: AddToFriendList, alt: "Add to friend list" };
       setOptImages((prevOptImages) => {
         const newOptImages = [...prevOptImages];
