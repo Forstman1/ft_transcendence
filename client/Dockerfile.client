@@ -1,10 +1,11 @@
 FROM node:20-alpine3.17
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
+COPY package.json .
+COPY package-lock.json .
 COPY . .
-RUN cd /usr/src/app && chmod +x init.sh
+RUN chmod +x init.sh
 EXPOSE 3000
 ENTRYPOINT ["sh", "/usr/src/app/init.sh"]
 CMD ["npm", "run", "dev"]
-# CMD ["sleep", "infinity"]
 
