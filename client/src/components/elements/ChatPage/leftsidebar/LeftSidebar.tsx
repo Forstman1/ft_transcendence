@@ -9,7 +9,6 @@ import {
   Modal,
   useToast,
   CloseButton,
-  background,
 } from "@chakra-ui/react";
 import React, { useEffect, useState, useRef, use } from "react";
 import Newchannel from "./newchannel";
@@ -80,16 +79,10 @@ export default function LeftSidebar() {
   useEffect(() => {
     socket?.on(`updateChatList`, async (Users: any) => {
       dispatch(setUserDms(Users));
-      dispatch(setTheUser(Users[0]));
-      setRanFirstEffect(!ranFirstEffect);
+      // dispatch(setTheUser(Users[0]));
+      // setRanFirstEffect(!ranFirstEffect);
     });
   }, [socket]);
-
-  useEffect(() => {
-    if (ranFirstEffect) {
-      dispatch(setTheUser(Users[0]));
-    }
-  }, [ranFirstEffect]);
 
   const selected = useSelector(
     (state: any) => state.chat.selectedChannelorUser
@@ -102,7 +95,7 @@ export default function LeftSidebar() {
   useEffect(() => {
     socket?.emit("getChannelsFirstTime", { userId: userId });
     socket?.emit(`getChatList`);
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     socket?.on("getChannelsFirstTime", (data: any) => {
@@ -114,11 +107,10 @@ export default function LeftSidebar() {
         });
       });
       dispatch(setChannels(allchannels));
-
-      socket?.on(`getChatList`, (Users: any) => {
-        dispatch(setTheUser(Users[0]));
-        dispatch(setUserDms(Users));
-      });
+    });
+    socket?.on(`getChatList`, (Users: any) => {
+      dispatch(setTheUser(Users[0]));
+      dispatch(setUserDms(Users));
     });
 
     socket?.on("channelCreated", (data: any) => {
@@ -160,6 +152,15 @@ export default function LeftSidebar() {
         }
       });
       dispatch(setChannels(allchannels));
+    });
+    socket?.on("allmembers", (data: any) => {
+      if (data.channelId === selected?.id) {
+        if (data.members) {
+          data.members.map((data1: any) => {
+            if (data1.userId === userId) dispatch(setChannelMember(data1));
+          });
+        }
+      }
     });
 
     socket?.on("channelEntered", async (data: any) => {
@@ -505,6 +506,7 @@ export default function LeftSidebar() {
       socket?.off("banmember");
       socket?.off("unbanmember");
       socket?.off("inviteMember");
+      socket?.off("allmembers");
     };
   }, [selected, userId]);
 

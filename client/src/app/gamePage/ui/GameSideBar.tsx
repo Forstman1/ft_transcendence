@@ -35,8 +35,8 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store/store";
 import { setModal } from "@/redux/slices/game/gameModalSlice";
 import { BackgroundsImg } from "@/utils/constants/game/GameConstants";
-// import { CheckIcon } from "@chakra-ui/icons";
-// import checkIcon from "../../../../assets/icons/c";
+import CheckIcon from "../../../../assets/icons/CheckIcon.svg";
+
 
 
 

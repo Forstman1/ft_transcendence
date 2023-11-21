@@ -59,12 +59,18 @@ function formatTimeAgo(timestamp:any) {
 
     useEffect(() => {
       const fetchData = async () => {
-
-        const fetchmember = await fetch('http://127.0.0.1:3001/channel/getmember/' + usermessage.authorID)
-        const member = await fetchmember.json()
-        const fetchuser = await fetch('http://127.0.0.1:3001/users/getuser/' + member.userId)
-        const response = await fetchuser.json()
-        setUser(response)
+        try {
+          const fetchmember = await fetch('http://127.0.0.1:3001/channel/getmember/' + usermessage.authorID)
+          const member = await fetchmember.json()
+          const fetchuser = await fetch('http://127.0.0.1:3001/users/getuser/' + member.userId)
+          const response = await fetchuser.json()
+          setUser(response)
+        } catch (error) {
+          console.log(usermessage)
+          const fetchuser = await fetch("http://127.0.0.1:3001/users/getuser/" + usermessage.authorID);
+          const response = await fetchuser.json();
+          setUser(response);
+        }
       }
       fetchData()
     }, [])
@@ -72,12 +78,15 @@ function formatTimeAgo(timestamp:any) {
     const timestamp = Date.parse(time);
     const formattedTime = formatTimeAgo(timestamp);
 
-    return (<div className='w-full flex gap-[5px]  items-baseline  pl-[15px] z-0 '>
+    return (<div className='w-full flex gap-[5px] pl-[15px] z-0 '>
       <Avatar className='custom-shadow2' boxSize={12} src={user?.avatarURL} />
-      <div className="bg-white border-2 border-black rounded-2xl custom-shadow2  rounded-tl-none pl-[10px] w-[50%]">
-        <div>{formattedTime}</div>
-        <div className="text-[#B4B4B4] pb-[5px]">{sender}</div>
-        <div  className="pb-[8px]" >{message}</div>
+      <div className="flex flex-col w-[50%] ">
+        <div className="w-[50%] text-grey-400 flex justify-start">
+          {sender} | {formattedTime}
+        </div>
+        <div className="bg-white border-2 border-black rounded-2xl custom-shadow2  rounded-tl-none pl-[10px] w-full h-[60px] ">
+          <div  className="flex w-full h-full items-center " >{message}</div>
+        </div>
       </div>
     </div>
     );
@@ -86,18 +95,22 @@ function formatTimeAgo(timestamp:any) {
 
 
   function Own_Message({ message, user }: any) {
-
     const timestamp = Date.parse(message.createdAt);
     const formattedTime = formatTimeAgo(timestamp);
 
-    return (<div className='w-full flex gap-[5px]   justify-end pr-[15px] items-baseline z-0'>
-      <div className='bg-black border-2 border-black rounded-2xl custom-shadow text-white rounded-tr-none justify-start pl-[10px] w-[50%]'>
-        <div>{formattedTime}</div>
-        <div className='text-[#B4B4B4] '>{user?.username}</div>
-        <div className="pb-[8px]">{message?.content}</div>
+    return (
+      <div className="w-full flex gap-[5px]   justify-end pr-[15px]  z-0">
+        <div className="flex flex-col w-[50%] ">
+            <div className="w-full text-grey-400 flex justify-end">
+              {user?.username} | {formattedTime}
+            </div>
+          <div className="bg-black border-2 border-black rounded-2xl custom-shadow text-white rounded-tr-none justify-start pl-[10px] w-full h-[60px]">
+            <div className="w-full h-full flex items-center">{message?.content}</div>
+          </div>
+        </div>
+        <Avatar className="custom-shadow" boxSize={12} src={user?.avatarURL} />
       </div>
-      <Avatar className='custom-shadow' boxSize={12} src={user?.avatarURL} />
-    </div>)
+    );
   }
 
 
@@ -148,7 +161,7 @@ function formatTimeAgo(timestamp:any) {
         setUser(response)
       }
       fetchData()
-    }, [])
+    }, [userId])
 
     const handleNewMessage = async (data: any) => {
 
@@ -282,6 +295,7 @@ function formatTimeAgo(timestamp:any) {
 
           {(messages && messages.length != 0) && (messages.map((message: ChannelMessage, index: number) => {
             if (message?.authorName === user?.username) {
+              
               return <Own_Message key={index} message={message} user={user} />
             }
             return <Message_other key={index} usermessage={message} message={message.content} sender={message.authorName} time={message.createdAt} />

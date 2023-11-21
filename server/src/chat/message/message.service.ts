@@ -97,27 +97,27 @@ export class MessageService {
                 }
             });
             if (!user || !reciver)
-                return 'User not found'
-            
-            // const DMroom = await this.prisma.dMRoom.findFirst({
-            //     where: {
-            //         roomMembers: {
-            //             every: {
-            //                 id: {
-            //                     in: [user.id, reciver.id]
-            //                 }
-            //             }
-            //         },
-            //     },
-            //     include: {
-            //         roomMessages: true,
-            //     }
-            // })
-            // console.log(DMroom.roomMessages)
-            // if (!DMroom.roomMessages)
-            //     return []
-            // return DMroom.roomMessages
-            return []
+                return []
+
+            const DMroom = await this.prisma.dMRoom.findFirst({
+                where: {
+                    roomMembers: {
+                        every: {
+                            id: {
+                                in: [user.id, reciver.id]
+                            }
+                        }
+                    },
+                },
+                include: {
+                    roomMessages: true,
+                }
+            })
+            console.log(DMroom.roomMessages)
+            if (!DMroom.roomMessages)
+                return []
+            return DMroom.roomMessages
+          
         }
         catch (error) {
             
