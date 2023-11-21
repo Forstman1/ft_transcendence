@@ -34,7 +34,6 @@ import {
       },
       setTheUser: (state, action) => {
         state.selectedChannelorUser = action.payload;
-        state.messages = [];
       },
       setNewChannel: (state, action) => {
         state.channels.push(action.payload);

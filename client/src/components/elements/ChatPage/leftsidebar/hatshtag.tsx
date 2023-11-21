@@ -54,11 +54,8 @@ export default function Hashtag(props: any) {
             return error
         }))
         
-
-
-
     const handleClick = async () => {
-        
+       
         if (props.data.type === 'PROTECTED') {
             setWrongpassowrd(false)
             onOpen()
@@ -72,16 +69,6 @@ export default function Hashtag(props: any) {
                         dispatch(setChannelMember(data))
                 })
             }
-            toast({
-                title: name,
-                position: `bottom-right`,
-                status: 'success',
-                duration: 1000,
-                containerStyle: {
-                    width: 300,
-                    height: 100,
-                }
-            })
         }
     }
 
@@ -125,8 +112,11 @@ export default function Hashtag(props: any) {
     if (name.length > 8)
         channelname += ".."
 
-    return (<>
-        <div className='flex items-center cursor-pointer justify-between w-[70%]' onClick={handleClick}>
+    return (
+        <>
+            <div className="w-full h-full"
+                onClick={() => { handleClick() }}
+            >
             <div className="flex h-[40px]">
                 <div className='h-[20px] text-[40px] mr-3'>#</div>
                 <div className='h-[20px] text-[30px]'>{channelname}</div>

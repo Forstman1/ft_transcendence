@@ -531,19 +531,37 @@ export default function LeftSidebar() {
   };
 
   const onSubmited = (userData: User) => {
+
     dispatch(setTheUser(userData));
+
   };
-  const [selectedCard, setSelectedCard] = useState<number | null>(null);
-  const handelClick = (id: number) => {
-    if (selectedCard === id) {
-      setSelectedCard(null);
+  const [selectedUser, setSelectedUser] = useState<number | null>(null);
+  const [selectedChanell, setSelectedChanell] = useState<number | null>(null);
+  
+
+  const handleBackground = (id: number) => {
+    if (selectedUser !== null)
+      setSelectedUser(null);
+    if (selectedChanell === id) {
+      setSelectedChanell(null);
     } else {
-      setSelectedCard(id);
+      setSelectedChanell(id);
     }
   };
+  const handelClick = (id: number) => {
+    if (selectedChanell !== null)
+      setSelectedChanell(null);
+  console.log(selectedUser, id);
+  if (selectedUser === id) {
+    setSelectedUser(null);
+  } else {
+    setSelectedUser(id);
+  }
+};
+
   return (
     <Box
-      className="LeftSideBar place-items-center grid min-w-[400px] absolute h-full overflow-y-auto border-r-[3px] border-r-black  md:static md:w-[400px] bg-opacity-80 max-md:backdrop-blur-xl z-10 pt-[100px] "
+      className="LeftSideBar place-items-center grid min-w-[400px] absolute h-full overflow-y-auto border-r-[3px] border-r-black  md:static md:w-[400px] bg-opacity-80 max-md:backdrop-blur-xl z-10 pt-[100px]"
       as={motion.div}
       initial={false}
       animate={LeftClice.LeftValue ? "open" : "closed"}
@@ -557,6 +575,7 @@ export default function LeftSidebar() {
           onClick={() => {
             onOpen(), setChannelOrUser(true);
           }}
+      
           className="cursor-pointer"
         >
           <Icon boxSize={10} as={SmallAddIcon} />
@@ -567,8 +586,18 @@ export default function LeftSidebar() {
         {channels &&
           channels.length != 0 &&
           channels.map((data: Channel, id: number) => {
-            if (data.name) return <Hashtag key={id} data={data} />;
+            if (data.name) return (
+             <div className='flex h-14 items-center cursor-pointer justify-between w-[80%] rounded-md hover:bg-zinc-100'
+                onClick={() => { handleBackground(id)}}
+            style={{    
+              backgroundColor: selectedChanell === id ? "#d4d4d8" : ""
+                }}
+              >
+                < Hashtag key = { id } data = { data } />
+              </div>
+              )
           })}
+         
       </div>
 
       <div className="w-[80%] flex justify-between items-center border-b-black border-b-2 mt-[20px]">
@@ -577,6 +606,7 @@ export default function LeftSidebar() {
           onClick={() => {
             onOpen(), setChannelOrUser(false);
           }}
+          
           className="cursor-pointer"
         >
           <Icon boxSize={10} as={SmallAddIcon} />
@@ -586,14 +616,14 @@ export default function LeftSidebar() {
       <div className=" mt-[40px] flex h-[500px] flex-col w-full  gap-1 overflow-y-scroll">
         {Users.map((userData: User, id: number) => (
           <Box
-            className="group flex justify-between items-center cursor-pointer h-20 m-2  p-2 rounded-md hover:bg-zinc-300"
+            className="group flex justify-between items-center cursor-pointer h-20 m-2  p-2 rounded-md hover:bg-zinc-100"
             key={id}
             onClick={() => {
               handelClick(id);
               onSubmited(userData);
             }}
-            style={{
-              backgroundColor: selectedCard === id ? "#d4d4d8" : "",
+            style={{    
+              backgroundColor: selectedUser === id ? "#d4d4d8" : "",
             }}
           >
             <Usercard data={userData} />
