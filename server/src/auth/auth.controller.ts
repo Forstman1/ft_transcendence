@@ -1,14 +1,6 @@
 import {
-  Controller,
-  Get,
-  InternalServerErrorException,
-  Post,
-  Req,
-  Res,
-  UseGuards,
-  BadRequestException,
-  UnauthorizedException,
-  HttpCode,
+  Controller, Get, Post, Put, Req, Res,
+  UseGuards, UnauthorizedException,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { AuthService } from './auth.service';
@@ -136,6 +128,8 @@ export class AuthController {
         const tempToken = await this.authService.issueTemporaryToken(req.user);
         if (!tempToken) {
           res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
+        } else if (req.cookies.access_token) {
+          res.redirect(req.headers.referer);
         }
         await res.cookie('access_token', tempToken, this.authService.cookieOptions);
         res.redirect(encodeURI(process.env.CLIENT_URL + '/2fa/verify'));
@@ -177,7 +171,7 @@ export class AuthController {
   }
 
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-
+ 
   @Post('2fa/disable')
   @UseGuards(JwtAuthGuard)
   async disableTwoFaAuth(@Req() req, @Res() res) {
