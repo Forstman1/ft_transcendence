@@ -543,7 +543,7 @@ export default function LeftSidebar() {
   };
   return (
     <Box
-      className="LeftSideBar place-items-center grid w-[375px] absolute h-full overflow-y-auto border-r-[3px] border-r-black  md:static md:w-[400px] bg-opacity-80 max-md:backdrop-blur-xl z-10 pt-[100px] "
+      className="LeftSideBar place-items-center grid min-w-[400px] absolute h-full overflow-y-auto border-r-[3px] border-r-black  md:static md:w-[400px] bg-opacity-80 max-md:backdrop-blur-xl z-10 pt-[100px] "
       as={motion.div}
       initial={false}
       animate={LeftClice.LeftValue ? "open" : "closed"}
