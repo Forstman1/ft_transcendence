@@ -33,3 +33,21 @@ export async function verify2FA(otp: string): Promise<any> {
   );
   return response;
 }
+
+export async function enable2FA(): Promise<any> {
+  const response = await axios.post(
+    `${process.env.NEXT_PUBLIC_SERVER_URL}auth/2fa/enable`,
+    {},
+    { withCredentials: true },
+  );
+  return response;
+}
+
+export async function disable2FA(): Promise<any> {
+  const response = await axios.post(
+    `${process.env.NEXT_PUBLIC_SERVER_URL}auth/2fa/disable`,
+    {},
+    { withCredentials: true },
+  );
+  return response;
+}
