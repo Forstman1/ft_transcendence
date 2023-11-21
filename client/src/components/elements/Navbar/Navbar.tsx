@@ -60,8 +60,8 @@ const CreatChatGlobalSocket = (user: any) => {
     upgrade: false,
     auth: {
       id: user.userId,
-    },})
-
+    },
+  });
   return socket;
 
   // socket?.emit(`createRoom`, { userId: user.userId })
@@ -361,8 +361,7 @@ export default function Navbar() {
   const dispatch = useDispatch();
   const user = useSelector((state: { authUser: UserState }) => state.authUser);
   const socketState = useAppSelector((state) => state.globalSocketReducer);
-  const chatSocket = useAppSelector((state) => state.socket);
-
+  const ChatsocketState = useAppSelector((state) => state.socket);
   const [userAuthenticated, setUserAuthenticated] = useState(user.isAuthenticated);
   useQuery({
     queryKey: ['userProfile'],
@@ -382,14 +381,18 @@ export default function Navbar() {
           socket: gameSocket,
         }));
       }
-      if (!chatSocket.socket)
-      {
+      if(!ChatsocketState.socket){
         const chatSocket = CreatChatGlobalSocket(response.data);
         dispatch(setChatSocketState({
           socket: chatSocket,
           userID: response.data.userId,
         }));
       }
+      // const chatSocket = CreatChatGlobalSocket(response.data);
+      // dispatch(setChatSocketState({
+      //   socket: chatSocket,
+      //   userID: response.data.userId,
+      // }));
     },
   });
 

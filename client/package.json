@@ -29,7 +29,7 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-react": "^7.25.3",
-    "framer-motion": "^10.16.4",
+    "framer-motion": "^10.16.5",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
     "lottie-react": "^2.4.0",

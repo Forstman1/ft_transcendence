@@ -13,7 +13,8 @@ import { usePathname } from "next/navigation";
 import { QueryClient, QueryClientProvider } from 'react-query'
 import GameNotification from "./gamePage/gameNotification/page";
 import { extendTheme } from '@chakra-ui/react'
-// import { Toaster } from "react-hot-toast";
+import ChatNotification from "../components/elements/ChatPage/ChatNotification";
+import GlobalChatListener from "@/components/elements/ChatPage/GlobalChatListener";
 
 const breakpoints = {
   'base': '0px',
@@ -56,6 +57,8 @@ export default function RootLayout({
               <ChakraProvider theme={theme}>
                 {isloading ? <SplashScreen finishLoading={() => setIsLoading(false)} /> :
                   <>
+                    <GlobalChatListener />
+                    <ChatNotification />
                     <GameNotification />
                     {/* <Toaster
                       position="bottom-right"

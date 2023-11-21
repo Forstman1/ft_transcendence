@@ -22,6 +22,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useQuery } from 'react-query';
 import axios from 'axios';
+import { useEffect } from 'react';
 
 
 
@@ -68,27 +69,24 @@ function Usercard(props: any) {
 }
 
 
-export default function Newmessage({ isOpen, onClose}: Props) {
+export default function Newmessage({onClose}: Props) {
     
     const socket = useSelector((state: any) => state.socket.socket)
     const dispatch = useDispatch();
     const toast = useToast();
     const [selectedOption, setSelectedOption]: any = useState('');
     const id = useSelector((state: any) => state.socket.userID);
-    
     const {data, isLoading, error} = useQuery({
         queryKey: ["userData"],
         queryFn: async () => {
-            const { data } = await axios.get(`http://localhost:3001/users/friends/${id}`)
-           console.log("data", data)
+            const { data } = await axios.get(`http://localhost:3001/users/friends`, { withCredentials: true },)
+            console.log("data", data)
             return data
         }
     })
 
     const handleOptionChange = (newValue: any) => {
-
         setSelectedOption(newValue);
-
     };
 
     const handleSubmit = async () => {

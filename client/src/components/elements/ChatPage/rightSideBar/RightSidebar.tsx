@@ -8,7 +8,7 @@ import InviteToaGame from '../../../../../assets/icons/InviteToaGame.svg'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useToast } from '@chakra-ui/react'
-import ChannelMemberActions from './ChannelMemberActions'
+
 import UserControls from './UserControls'
 import { useSelector } from 'react-redux'
 import AddToChannelComponent from './AddToChannelComponent'
@@ -49,7 +49,7 @@ export default function RightSidebar() {
 
   return (
 
-    <Box  className='RightSideBar w-[375px] absolute md:block backdrop-blur-xl md:static md:w-[465px] h-full overflow-y-auto border-l-[3px] border-l-black pb-28 right-0 pt-[100px]'
+    <Box  className='UserRightSideBar items-center w-[375px] absolute md:block bg-opacity-80 max-md:backdrop-blur-xl md:static md:w-[465px] h-full overflow-y-auto border-l-[3px] border-l-black pb-28 right-0 pt-[150px]'
       as={motion.div}
       initial={false}
       animate={RightClice.RightValue ? "open" : "closed"}
@@ -101,11 +101,6 @@ export default function RightSidebar() {
           </Text>
         </Box>
         <UserControls />
-      </Box>
-      <hr className='bg-black h-[2px] mx-10' />
-      <Box className='w-full flex flex-1 flex-col items-center justify-center my-14 gap-7'>
-        <AddToChannelComponent />
-        <ChannelMemberActions />
       </Box>
     </Box>
   )

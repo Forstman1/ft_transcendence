@@ -28,45 +28,80 @@ export default function UserControls() {
     (state: any) => state.optImages.optImages
   );
 
-  const getSelectedOpt = allOptImages.find(
-    (optImage: any) => optImage.key === selected.username
-  );
-
   const [optImages, setOptImages] = useState([
     { src: AddToFriendList, alt: "Add to friend list" },
     { src: Block, alt: "Block" },
   ]);
 
   useEffect(() => {
+    const getSelectedOpt = allOptImages.find(
+      (optImage: any) => optImage.key === selected.username
+    );
+
+    if (getSelectedOpt && getSelectedOpt.optImages !== undefined) {
+      console.log("getSelectedOpt", getSelectedOpt.optImages);
+      setOptImages((prevOptImages) => {
+        const newOptImages = [...prevOptImages];
+        newOptImages[0] = getSelectedOpt.optImages[0];
+        return newOptImages;
+      });
+    }
+  }, [allOptImages, selected]);
+
+  useEffect(() => {
     socket.on(`friendRequestAccepted`, () => {
-      //! i don't resive an answer from the server
       const newValue = { src: Remove, alt: "Remove from friend list" };
+      console.log(`the new value is: `, newValue);
+      Cookies.set(selected.username, JSON.stringify([newValue, optImages[1]]), {
+        expires: 365,
+      });
+
       setOptImages((prevOptImages) => {
         const newOptImages = [...prevOptImages];
         newOptImages[0] = newValue;
         return newOptImages;
       });
-
-      Cookies.set(selected.username, JSON.stringify(optImages), {
-        expires: 365,
-      });
     });
+    socket.on(`friendRequestRejected`, (Friend: any) => {
 
-    socket?.on(`friendRequestRejected`, (Friend: any) => {
       const newValue = { src: AddToFriendList, alt: "Add to friend list" };
       setOptImages((prevOptImages) => {
         const newOptImages = [...prevOptImages];
         newOptImages[0] = newValue;
         return newOptImages;
+
       });
 
-      Cookies.set(Friend.username, JSON.stringify(optImages), {
+      Cookies.set(Friend.username, JSON.stringify([newValue, optImages[1]]), {
         expires: 365,
+
       });
+      
     });
+
+
+      socket.on(`userBlocked`, (Friend: any) => {
+
+        const newValue = { src: Unblock, alt: "Unblock" };
+        setOptImages((prevOptImages) => {
+          const newOptImages = [...prevOptImages];
+          newOptImages[1] = newValue;
+          return newOptImages;
+        });
+        console.log(`the new value is: `, optImages);
+        Cookies.set(Friend.username, JSON.stringify([optImages[0], newValue]), {
+          expires: 365,
+        });
+        
+      });
+      socket?.on(`userBlockedYou`, (Friend: any) => {
+        console.log(`hello from userBlockedYou`);
+      });
+
 
     socket?.on(`friendRemoved`, (Friend: any) => {
-      console.log(Friend.username);
+      
+
       const newValue = { src: AddToFriendList, alt: "Add to friend list" };
       setOptImages((prevOptImages) => {
         const newOptImages = [...prevOptImages];
@@ -74,7 +109,7 @@ export default function UserControls() {
         return newOptImages;
       });
 
-      Cookies.set(Friend.username, JSON.stringify(optImages), {
+      Cookies.set(Friend.username, JSON.stringify([newValue, optImages[1]]), {
         expires: 365,
       });
     });
@@ -82,12 +117,14 @@ export default function UserControls() {
     return () => {
       socket.off(`friendRequestRejected`);
       socket.off(`friendRequestAccepted`);
+      socket.off(`userBlocked`);
       socket.off(`friendRemoved`);
     };
   }, [socket]);
 
   useEffect(() => {
     const cookies = Cookies.get(selected.username);
+
     if (cookies) {
       setOptImages(JSON.parse(cookies));
     } else {
@@ -96,32 +133,32 @@ export default function UserControls() {
         { src: Block, alt: "Block" },
       ]);
     }
-  }, [selected, allOptImages]);
+  }, [selected]);
 
   const handleUserControls = (option: string) => {
     if (option === "Add to friend list") {
       socket.emit(`sendFreindRequest`, { friendId: User.id });
-
       const newValue = { src: pending, alt: "Pending" };
+
       setOptImages((prevOptImages) => {
         const newOptImages = [...prevOptImages];
         newOptImages[0] = newValue;
         return newOptImages;
       });
 
-      Cookies.set(selected.username, JSON.stringify(optImages), {
+      Cookies.set(selected.username, JSON.stringify([newValue, optImages[1]]), {
         expires: 365,
       });
     } else if (option === "Remove from friend list") {
-      socket.emit(`removeFriend`, { friendId: User.id });
 
+      socket.emit(`removeFriend`, { friendId: User.id });
       const newValue = { src: AddToFriendList, alt: "Add to friend list" };
       setOptImages((prevOptImages) => {
         const newOptImages = [...prevOptImages];
         newOptImages[0] = newValue;
         return newOptImages;
       });
-      Cookies.set(selected.username, JSON.stringify(optImages), {
+      Cookies.set(selected.username, JSON.stringify([newValue, optImages[1]]), {
         expires: 365,
       });
     } else if (option === "Block") {
@@ -132,7 +169,7 @@ export default function UserControls() {
         newOptImages[1] = newValue;
         return newOptImages;
       });
-      Cookies.set(selected.username, JSON.stringify(optImages), {
+      Cookies.set(selected.username, JSON.stringify([optImages[0], newValue]), {
         expires: 365,
       });
     } else if (option === "Unblock") {
@@ -143,7 +180,7 @@ export default function UserControls() {
         newOptImages[1] = newValue;
         return newOptImages;
       });
-      Cookies.set(selected.username, JSON.stringify(optImages), {
+      Cookies.set(selected.username, JSON.stringify([optImages[0], newValue]), {
         expires: 365,
       });
     }

@@ -122,7 +122,7 @@ export default function Search() {
         }).catch((err) => console.log(err)))
 
     const listusers = useMutation<any, Error, any>(() =>
-        fetch('http://127.0.0.1:3001/users/listusers/' + userId).then((res) => {
+        fetch('http://127.0.0.1:3001/users/getAllUsers/' + userId).then((res) => {
             return res.json()
         }).catch((err) => console.log(err)))
 

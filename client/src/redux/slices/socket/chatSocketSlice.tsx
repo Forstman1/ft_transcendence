@@ -12,7 +12,6 @@ const initialState: ChatSocketState = {
     userID: "",
 }
 
-
 const chatSocketSlice = createSlice({
     name: "chatSocket",
     initialState,
