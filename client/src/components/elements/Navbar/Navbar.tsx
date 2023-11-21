@@ -1,7 +1,7 @@
 "use client";
 
 /* ------------------------------------------------ Remote Components ----------------------------------------------- */
-import React, { useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -47,9 +47,7 @@ const CreatGameGlobalSocket = (user: any) => {
       id: user.userId,
     },
   });
-  socket.emit("createRoomNotification", { userId: user.userId }, (data: any) => {
-    // console.log("createGameRoomNotification: " + data);
-  });
+  socket.emit("createRoomNotification", { userId: user.userId });
   return socket;
 }
 
@@ -64,9 +62,7 @@ const CreatChatGlobalSocket = (user: any) => {
     },
   });
 
-  socket?.emit(`createRoom`, { userId: user.userId }, (data: any) => {
-    // console.log(`the data returned is ` + data)
-  })
+  socket?.emit(`createRoom`, { userId: user.userId })
   return socket;
 }
 
@@ -249,8 +245,10 @@ export function SignupModal() {
 
 const HeaderNavDesktop: React.FC = () => {
   let path = usePathname();
+  const user = useSelector((state: { authUser: UserState }) => state.authUser);
   const GameRouter = ["/gamePage/gameFriendPage", "/gamePage/gameBotPage"]
   path = GameRouter.includes(path) ? "/gamePage" : path;
+
   return (
     <nav className='hidden md:block'>
       <motion.div>
@@ -262,6 +260,7 @@ const HeaderNavDesktop: React.FC = () => {
             return (
               <Box key={index} className='col-span-1'>
                 <Center>
+                  {item.href === "/" && (
                   <Link href={item.href} className="w-auto">
                     <Text className="text-2xl font-semibold">
                       {item.text}
@@ -273,6 +272,20 @@ const HeaderNavDesktop: React.FC = () => {
                       />
                     ) : null}
                   </Link>
+                  )}
+                  {item.href !== "/" &&  user.isAuthenticated && (
+                    <Link href={item.href} className="w-auto">
+                      <Text className="text-2xl font-semibold">
+                        {item.text}
+                      </Text>
+                      {path.includes(item.href) ? (
+                        <motion.span
+                          layoutId="underline"
+                          className="absolute w-6 h-1 bg-white rounded-full"
+                        />
+                      ) : null}
+                    </Link>
+                  )}
                 </Center>
               </Box>
             )
@@ -284,6 +297,7 @@ const HeaderNavDesktop: React.FC = () => {
 }
 
 const HeaderNavMobile: React.FC = () => {
+  const user = useSelector((state: { authUser: UserState }) => state.authUser);
   return (
     <Box className='block md:hidden'>
       <Menu>
@@ -309,6 +323,7 @@ const HeaderNavMobile: React.FC = () => {
           }, index: number) => {
             return (
               <Link href={item.href} key={`mobile-navbar-menu-link-${index}`}>
+                { item.href === "/" && (
                 <MenuItem
                   key={`mobile-navbar-menu-item-${index}`} rounded='md' as={"button"}
                   className={`bg-neutral-900 text-neutral-50 border-neutral-950`}
@@ -318,6 +333,18 @@ const HeaderNavMobile: React.FC = () => {
                   </Text>
                   {index != NAVBAR_ITEMS.length - 1 ? <MenuDivider /> : null}
                 </MenuItem>
+                )}
+                { item.href !== "/" && user.isAuthenticated && (
+                  <MenuItem
+                    key={`mobile-navbar-menu-item-${index}`} rounded='md' as={"button"}
+                    className={`bg-neutral-900 text-neutral-50 border-neutral-950`}
+                  >
+                    <Text className="text-xl font-semibold">
+                      {item.text}
+                    </Text>
+                    {index != NAVBAR_ITEMS.length - 1 ? <MenuDivider /> : null}
+                  </MenuItem>
+                )}
               </Link>
             )
           })}
@@ -363,34 +390,36 @@ export default function Navbar() {
 
 
   return (
-    <header className="w-screen h-16 md:h-24 bg-neutral-950 fixed top-0 z-50">
+    <header className="w-full h-16 md:h-24 bg-neutral-950 fixed top-0 z-50">
       <Flex
-        className="grid-cols-3 justify-around md:justify-between"
+        className="grid-cols-3 px-[10%]"
         width="full"
         height="full"
         alignItems="center"
         flexDirection="row"
       >
-        <Flex
-          key="navbar-menu-item-1"
-          className="h-full col-span-1 order-1 md:order-2 w-1/3 md:w-72 md:mr-auto"
-          justifyContent="center"
-          alignItems="center"
-        >
-          <HeaderNavMobile />
-          <HeaderNavDesktop />
-        </Flex>
-        <Flex
-          key="navbar-menu-item-2"
-          className="h-full col-span-1 order-2 md:order-1 w-1/3 md:w-56"
-          justifyContent="center"
-          alignItems="center"
-        >
-          <Link href="/">
-            <Image src={Logo} alt="Website Logo" width={150} height={150} />
-          </Link>
-          ,
-        </Flex>
+        <div className='flex w-full flex-row'>
+          <Flex
+            key="navbar-menu-item-1"
+            className="h-full col-span-1 order-1 md:order-2 w-1/3 md:w-72 md:mr-auto"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <HeaderNavMobile />
+            <HeaderNavDesktop />
+          </Flex>
+          <Flex
+            key="navbar-menu-item-2"
+            className="h-full col-span-1 order-2 md:order-1 w-1/3 md:w-56 max-md:hidden"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Link href="/">
+              <Image src={Logo} alt="Website Logo" width={150} height={150} />
+            </Link>
+            ,
+          </Flex>
+        </div>
         <Flex
           key="navbar-menu-item-3"
           className="h-full col-span-1 order-last w-1/3 md:w-72"
