@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, Select } from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, Select, useToast } from '@chakra-ui/react';
 import React, { useState } from 'react'
 import {
   ModalOverlay,
@@ -39,15 +39,25 @@ export default function Newchannel({  onClose }: Props) {
   const handleClick = () => setShow(!show)
   const userId = useSelector((state: any) => state.socket.userID)
   const socket = useSelector((state: any) => state.socket.socket)
-
+  const toast = useToast()
 
 
   const onSubmit = async (data: ChannelValues) => {
 
     data.userId = userId
     console.log(data)
-
-    if (data.type === "Public")
+    if (data.channelName.length > 10)
+    {
+      toast({
+        title: "Channel name should be less than 10 characters",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      
+      })
+      return ;
+    }
+    if (data.type === "Public" || data.type === "Private")
       data.password = "123"
 
     socket.emit('createChannel', {

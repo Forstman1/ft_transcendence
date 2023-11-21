@@ -399,7 +399,7 @@ export class UsersService {
     try {
       console.log(User.id, friendId.id);
       const user = await this.prisma.user.findUnique({
-        where: {
+        where: { 
           id: User.id,
         },
       });
@@ -612,19 +612,19 @@ export class UsersService {
       return `${error} could not create message`;
     }
   }
-
-  async getUserbyId(id: string) {
+  async getUserbyId(id: string){ 
     try {
-      const getuser = await this.prisma.user.findUnique({
-        where: {
-          id: id,
-        },
-      });
-      return getuser;
-    } catch (error) {
-      return error;
+        const getuser = await this.prisma.user.findUnique({
+            where: {
+                id: id
+            }
+        })
+        return getuser
     }
-  }
+    catch(error){
+        return error
+    }
+}
 
   async getuserstofound(tofound: string) {
     try {
@@ -639,5 +639,33 @@ export class UsersService {
     } catch (error) {
       return error;
     }
+  }
+
+  notifyFriendRequest = async (userId: string, friendId: string): Promise<void> => {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        username: true,
+      },
+    });
+    const data = {
+      title : "Friend Request",
+      description: "You have a Friend Request from " + user.username,
+      read: false,
+    }
+    await this.prisma.user.update({
+      where: { id: friendId },
+      data: {
+        notifications: {
+          create: {
+            type: 'friendRequest',
+            title: data.title,
+            description: data.description,
+            read: data.read,
+          },
+        },
+      },
+    });
+    return;
   }
 }

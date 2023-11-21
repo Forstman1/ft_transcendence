@@ -66,8 +66,8 @@ function Hashtag(props: any) {
 
     return (
 
-        <div className='flex items-center cursor-pointer justify-around w-full' onClick={handleChange}>
-            <div className="flex h-[40px]">
+        <div className='flex items-center cursor-pointer justify-between w-full' onClick={handleChange}>
+            <div className="flex">
                 <div className='h-[20px] text-[40px] mr-3'>#</div>
                 <div className='text-[20px] md:text-[30px]'>{data.name}</div>
             </div>
@@ -319,7 +319,7 @@ export default function Search() {
             >
 
                 <ModalHeader>Search</ModalHeader>
-                <ModalBody>
+                <ModalBody className="w-full">
                     <InputGroup>
                         <InputLeftElement pointerEvents="none">
                             <Search2Icon color="gray.300" />
@@ -343,9 +343,9 @@ export default function Search() {
                             onChange={handleChange}
                         />
                     </InputGroup>
-                    <div className="flex w-full h-[300px]  flex-col  overflow-y-scroll ">
-                        { allSearchChannels.map((channels: Channel, id: number) => {
-                            return <Box key={id} className="flex  w-[95%] p-2 flex-row justify-between items-center border-2 border-gray-300 rounded-lg  mt-5">
+                    <div className="flex w-full h-[300px]  flex-col  no-scrollbar overflow-y-scroll ">
+                        {allSearchChannels.map((channels: Channel, id: number) => {
+                            return <Box key={id} className="flex p-2 flex-row justify-between items-center border-2 border-gray-200 rounded-lg  mt-5">
 
                                 <Hashtag
                                     key={id}

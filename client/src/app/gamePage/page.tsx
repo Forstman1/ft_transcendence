@@ -94,28 +94,28 @@ export default function GamePage() {
             />
           </div>
         )}
-        <div className="relative flex flex-row h-screen justify-center items-center mx-[10%] z-0 ">
+        <div className="relative flex flex-row h-screen w-full justify-center items-center z-0 ">
           <div
             className={`${
               breakpoint === "base" ? "absolute" : "flex"
-            } flex-col justify-center items-center  P-20 space-y-6 z-10`}
+            } flex-col justify-center items-center  P-20 space-y-6 z-10 `}
           >
-            <Text className=" flex text-emerald-300 font-bold text-2xl">
-              EXPLORE THE GAME
-            </Text>
-            <Text className=" flex text-black font-bold text-6xl">
-              It&apos;s time to enjoy the game
-            </Text>
+            <div className="flex flex-col justify-center items-center space-x-2">
+              <Text className=" flex text-emerald-300 font-bold text-2xl max-md:text-xl">
+                EXPLORE THE GAME
+              </Text>
+              <Text className=" flex text-black text-center font-bold text-6xl max-md:text-3xl">
+                It&apos;s time to enjoy the game
+              </Text>
+            </div>
             <div
-              className={`flex flex-col justify-center items-center  space-y-6  mx-auto w-[400px] p-10`}
+              className={`flex flex-col justify-center items-center  space-y-6 w-full p-10`}
             >
               <Button
-                className="rounded-full"
+                className="rounded-full w-[300px] max-md:w-[200px]"
                 colorScheme="teal"
                 variant="outline"
-                bg="white"
                 size="lg"
-                width={300}
                 leftIcon={
                   <Image src={Gamepad} alt="Gamepad" width={25} height={25} />
                 }
@@ -124,11 +124,10 @@ export default function GamePage() {
                 Friend Mode
               </Button>
               <Button
-                className="rounded-full"
+                className="rounded-full w-[300px] max-md:w-[200px]"
                 colorScheme="teal"
                 variant="outline"
                 size="lg"
-                width={300}
                 leftIcon={
                   <Image src={Robot} alt="Robot" width={25} height={25} />
                 }
@@ -137,11 +136,10 @@ export default function GamePage() {
                 Training Mode
               </Button>
               <Button
-                className="rounded-full"
+                className="rounded-full w-[300px] max-md:w-[200px]"
                 colorScheme="teal"
                 variant="outline"
                 size="lg"
-                width={300}
                 leftIcon={
                   <Image src={Gamepad} alt="Gamepad" width={25} height={25} />
                 }
@@ -151,7 +149,7 @@ export default function GamePage() {
               </Button>
             </div>
             <div className="flex flex-row justify-center items-center space-x-2">
-              <Text className="text-black font-bold text-2xl">
+              <Text className="text-black font-bold text-2xl max-md:text-xl">
                 Game Instructions?
               </Text>
               <Button
@@ -180,7 +178,7 @@ export default function GamePage() {
           >
             <Lottie
               animationData={animationData}
-              className={`w-full h-[900px] border-2 border-white rounded-[100%] shadow-xl min-w-[370px] ${
+              className={`w-full h-[900px] border-2 border-white rounded-[100%] shadow-xl  ${
                 breakpoint === "base" ? "opacity-20" : ""
               }`}
             />

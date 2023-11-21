@@ -99,11 +99,11 @@ function Componenent({ onClose }: any) {
     }
 
 
-    return (<div className='flex gap-5 flex-col justify-center'  >
+    return (<div className='flex gap-5 flex-col justify-center text-center'  >
         <h1 className=' font-thin text-xl text-red-700 pt-3'>
             Are you sure you want to mute this member for 5 minutes
         </h1>
-        <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
+        <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll no-scrollbar '>
 
             {users.map((data: User, id: number) => {
                 return <Usercard

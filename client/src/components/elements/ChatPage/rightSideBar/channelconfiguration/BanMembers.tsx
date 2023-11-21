@@ -100,7 +100,7 @@ function Componenent({ onClose }: any) {
         <h1 className=' font-thin text-xl text-red-700 pt-3'>
             Are you sure you want to ban this member
         </h1>
-        <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
+        <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll no-scrollbar '>
 
             {users.map((data: User, id: number) => {
                 return <Usercard

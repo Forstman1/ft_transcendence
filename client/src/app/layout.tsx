@@ -13,7 +13,6 @@ import { usePathname } from "next/navigation";
 import { QueryClient, QueryClientProvider } from 'react-query'
 import GameNotification from "./gamePage/gameNotification/page";
 import { extendTheme } from '@chakra-ui/react'
-import { Toaster } from "react-hot-toast";
 import ChatNotification from "../components/elements/ChatPage/ChatNotification";
 import GlobalChatListener from "@/components/elements/ChatPage/GlobalChatListener";
 
@@ -51,7 +50,7 @@ export default function RootLayout({
   const [isloading, setIsLoading] = React.useState(isHome);
   return (
     <html lang="en">
-      <body className={`${geo.className} h-screen w-full`}>
+      <body className={`${geo.className}`}>
         <ReduxProvider>
           <CacheProvider>
             <QueryClientProvider client={queryClient}>
@@ -61,10 +60,10 @@ export default function RootLayout({
                     <GlobalChatListener />
                     <ChatNotification />
                     <GameNotification />
-                    <Toaster
+                    {/* <Toaster
                       position="bottom-right"
                       reverseOrder={false}
-                    />
+                    /> */}
                     <Navbar />
 
                     {children}

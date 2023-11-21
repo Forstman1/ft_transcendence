@@ -2,7 +2,7 @@ import { MessageBody, OnGatewayInit, SubscribeMessage, WebSocketGateway, OnGatew
 import { Body, Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { UsersService } from './users/users.service';
-import {MessageService} from './message/message.service'
+import { MessageService } from './message/message.service'
 import { Prisma } from '@prisma/client';
 import { ChannelService } from './channel/channel.service';
 
@@ -16,7 +16,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     private messageService: MessageService,
     private channelService: ChannelService,
     private userService: UsersService,
-  ) {}
+  ) { }
 
   @WebSocketServer()
   server: Server;
@@ -81,7 +81,39 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     }
   }
 
+
+
+  @SubscribeMessage(`sendNotification`)
+  async sendNotification(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data ): Promise<any> {
+
+
+    try {
+      if (data.type === "friendRequest") {
+      await this.userService.notifyFriendRequest(client.handshake.auth.id, data.friendId);
+      if (this.connectedUsers[data.friendId]) {
+        this.connectedUsers[data.friendId].map((socket) => {
+          this.server.to(socket.id).emit('receivedNotification', { message: "you have a new friend request" });
+        })
+      }
+    }
+    else if (data.type === "roomMessage") {
+      // await this.userService.notifyRoomMessage(client.handshake.auth.id, data.roomId);
+      // if (this.connectedUsers[data.friendId]) {
+      //   this.connectedUsers[data.friendId].map((socket) => {
+      //     this.server.to(socket.id).emit('receivedNotification', { message: "you have a new message" });
+      //   })
+      // }
+    }
+      // this.server.to(userID).emit(`receivedNotification`, data.message);
+    } catch (error) {
+      console.error(`Error in sending notification`, error);
+    }
+  }
+
   //!---------------CREATE ROOM------------------------!//
+
 
   @SubscribeMessage(`createRoom`)
   async createRoom(
@@ -438,8 +470,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       const user = await this.userService.getUser(data.userId);
 
       const channel: any = await this.channelService.createchannel(data);
+      console.log(channel)
+      if (channel.status === "channel created") {
 
-      if (channel.status === 'channel created') {
         this.connectedUsers[client.handshake.auth.id].map((socket) => {
           socket.join(channel.channel.id);
         });
@@ -553,40 +586,36 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
   }
 
   @SubscribeMessage('leaveChannel')
-  async leaveChannel(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: any,
-  ): Promise<any> {
-    const channel: any = await this.channelService.getchannelinfo(
-      data.channelId,
-    );
-    const user: any = await this.userService.getUser(client.handshake.auth.id);
-    await this.channelService.leaveChannel(
-      channel.name,
-      client.handshake.auth.id,
-    );
-    const channels = await this.channelService.getallchannels(
-      client.handshake.auth.id,
-    );
+  async leaveChannel(@ConnectedSocket() client: Socket, @MessageBody() data: any): Promise<any> {
 
-    this.server
-      .to(channel.id)
-      .emit('channelLeft', {
-        channelId: data.channelId,
-        message: user.username + ' left the channel',
-        userId: client.handshake.auth.id,
-      });
+    try {
 
-    const members = await this.channelService.getallmembers(data.channelId);
-    this.server.to(channel.id).emit('allmembers', { members: members });
+      const channel: any = await this.channelService.getchannelinfo(data.channelId);
+      const user: any = await this.userService.getUser(client.handshake.auth.id);
+      const channelStatus = await this.channelService.leaveChannel(channel.name, client.handshake.auth.id);
+      const channels = await this.channelService.getallchannels(client.handshake.auth.id);
 
-    this.connectedUsers[client.handshake.auth.id].map((socket) => {
-      this.server.to(socket.id).emit('allchannels', { channels: channels });
-    });
+      this.server.to(channel.id).emit('channelLeft', { channelId: data.channelId, message: user.username + " left the channel", userId: client.handshake.auth.id });
 
-    this.connectedUsers[client.handshake.auth.id].map((socket) => {
-      socket.leave(channel.id);
-    });
+      const members = await this.channelService.getallmembers(data.channelId);
+      this.server.to(channel.id).emit('allmembers', { members: members, channelId: data.channelId });
+
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+        this.server.to(socket.id).emit('allchannels', { channels: channels });
+      })
+
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+        socket.leave(channel.id);
+
+      })
+    } catch (error) {
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+        this.server.to(socket.id).emit('channelLeft', { channelId: data.channelId, message: "error has occurred" });
+      })
+    }
+
+
+
   }
 
   @SubscribeMessage('deleteChannel')
@@ -959,13 +988,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       if (member.role != 'OWNER') {
         if (this.connectedUsers[data.memberId]) {
           this.connectedUsers[data.memberId].map((socket) => {
-            this.server
-              .to(socket.id)
-              .emit('kickmember', {
-                status: 'you have been kicked from channel',
-                channel: channel,
-              });
-          });
+            this.server.to(socket.id).emit('kickmember', { status: "you have been kicked from channel", message: "you have been kicked from " + channel.name, channel: channel });
+          })
         }
       } else {
         this.connectedUsers[client.handshake.auth.id].map((socket) => {

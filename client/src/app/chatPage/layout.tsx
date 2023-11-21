@@ -15,7 +15,7 @@ const Layout: FC<LayoutProps> = ({children}) => {
 
     return(
         <>
-            <Flex className="w-full h-[calc(100vh_-_90px)] max-md:pb-[30px] md:h-full">
+             <Flex className="w-full h-[calc(100vh_-_90px)] max-md:pb-[30px] md:h-screen">
                 <LeftSidebar />
                 <div className="Chat_sub_div1 flex-grow flex">
                     {children}
