@@ -11,10 +11,12 @@ import { RestrictedMiddleware } from './common/restricted.middleware';
   providers: [],
 })
 
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(RestrictedMiddleware)
-      .forRoutes('auth');
-  }
-}
+// export class AppModule implements NestModule {
+//   configure(consumer: MiddlewareConsumer) {
+//     consumer
+//       .apply(RestrictedMiddleware)
+//       .forRoutes('auth');
+//   }
+// }
+
+export class AppModule {};

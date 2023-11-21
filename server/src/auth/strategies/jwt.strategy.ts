@@ -33,11 +33,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(request: Request, payload: any): Promise<{ id: string }> {
-    if (payload.isTwoFA_Token &&
-      (request.method !== 'POST'
-      || request.url !== '/auth/2fa/verify'
-      || request.body?.twoFactorAuthCode === undefined)
-      ) {
+    if (payload.isTwoFA_Token && (request.method !== 'POST'
+      || request.url !== '/auth/2fa/verify' || !request.body?.twoFactorAuthCode)
+    ) {
       throw new UnauthorizedException('Two-factor Authentication Required');
     }
     const user: User = await this.userService.findUser({
