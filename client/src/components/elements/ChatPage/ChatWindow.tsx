@@ -80,11 +80,11 @@ function formatTimeAgo(timestamp:any) {
 
     return (<div className='w-full flex gap-[5px] pl-[15px] z-0 '>
       <Avatar className='custom-shadow2' boxSize={12} src={user?.avatarURL} />
-      <div className="flex flex-col w-[50%] ">
+      <div className="flex flex-col min-w-[50%] max-w-[70%]">
         <div className="w-[50%] text-grey-400 flex justify-start">
           {sender} | {formattedTime}
         </div>
-        <div className="bg-white border-2 border-black rounded-2xl custom-shadow2  rounded-tl-none pl-[10px] w-full h-[60px] ">
+        <div className="bg-white border-2 border-black rounded-2xl custom-shadow2  rounded-tl-none pl-[10px] w-full min-h-[60px] ">
           <div  className="flex w-full h-full items-center " >{message}</div>
         </div>
       </div>
@@ -99,12 +99,12 @@ function formatTimeAgo(timestamp:any) {
     const formattedTime = formatTimeAgo(timestamp);
 
     return (
-      <div className="w-full flex gap-[5px]   justify-end pr-[15px]  z-0">
-        <div className="flex flex-col w-[50%] ">
+      <div className=" w-full flex gap-[5px] justify-end pr-[15px] z-0">
+        <div className="flex flex-col min-w-[50%] max-w-[70%]">
             <div className="w-full text-grey-400 flex justify-end">
               {user?.username} | {formattedTime}
             </div>
-          <div className="bg-black border-2 border-black rounded-2xl custom-shadow text-white rounded-tr-none justify-start pl-[10px] w-full h-[60px]">
+          <div className="bg-black border-2 border-black rounded-2xl custom-shadow text-white rounded-tr-none justify-start pl-[10px] w-full min-h-[60px] ">
             <div className="w-full h-full flex items-center">{message?.content}</div>
           </div>
         </div>
@@ -290,7 +290,7 @@ function formatTimeAgo(timestamp:any) {
 
     return (
       <div className='justify-between flex-col gap-[15px] w-full h-full pt-[120px]'>
-        <div className=' flex flex-col gap-[10px] overflow-y-scroll no-scrollbar z-0 h-[95%] ' ref={chatContainer}>
+        <div className=' flex flex-col gap-[10px] overflow-y-scroll no-scrollbar z-0 h-[95%] pb-10' ref={chatContainer}>
 
 
           {(messages && messages.length != 0) && (messages.map((message: ChannelMessage, index: number) => {
