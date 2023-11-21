@@ -28,8 +28,6 @@ import { getChartLineData } from '@/utils/profile/fetchingProfileData'
 
 
 export default function ChartLine({userId}: {userId: string}) {
-
-    console.log(`ChartLine userId: ${userId}`);
     
 	const { 
         data: chartData,

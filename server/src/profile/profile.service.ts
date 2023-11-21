@@ -8,6 +8,8 @@ import {
     matchesHistoryType,
     userProfileData } from './types/types';
 import { GameHistory } from '@prisma/client';
+import { UpdateUserDto } from './dto/updateuser-profile.dto';
+
 
 @Injectable()
 export class ProfileService {
@@ -190,9 +192,9 @@ async calculateMatchesResults(userId: string): Promise<matchesResultsType | null
 /*----------------------------------------------------------------------------------------------------------------------------------------*/
 
 //   async getFriends(userId: string): Promise<matchesHistoryType | []> {
-//     try {
-//         // return []; // TODO uncomment this logic after Rida modifies the database schema.
-//         const gameHistory = await this.prismaService.gameHistory.findMany({
+    //     try {
+        //         // return []; // TODO uncomment this logic after Rida modifies the database schema.
+        //         const gameHistory = await this.prismaService.gameHistory.findMany({
 //             where: { userId: userId },
 //             include: {
 //                 user: true,
@@ -208,6 +210,44 @@ async calculateMatchesResults(userId: string): Promise<matchesResultsType | null
 //   }
 
 
+/*----------------------------------------------------------------------------------------------------------------------------------------*/
+
+async updateUser(userData: UpdateUserDto, avatar: Express.Multer.File, userId: string): Promise<any> {
+    const { fullname, username, coalition, isTwoFactor } = userData;
+
+    const updateData: any = {};
+    
+    if (fullname) {
+      updateData.fullname = fullname;;
+    }
+    if (username) {
+      updateData.username = username;;
+    }
+    if (coalition) {
+      updateData.coalitionName = coalition;;
+    }
+    if (isTwoFactor && isTwoFactor == 'true' || isTwoFactor == 'false') {
+      updateData.twoFactorEnabled = isTwoFactor == 'true'? true : false
+    }
+    if (avatar) {
+      updateData.avatarURL = `${process.env.SERVER_URL}profile/avatars/${avatar.filename}`;
+    }
+
+    try {
+      const updatedUser = await this.prismaService.user.update({
+        where: { id: userId },
+        data: updateData,
+      });
+
+      return updatedUser;
+    } catch (error) {
+      throw new Error(`Error updating user: ${error.message}`);
+    }
+  }
+
 }
+
+/*----------------------------------------------------------------------------------------------------------------------------------------*/
+
 
 

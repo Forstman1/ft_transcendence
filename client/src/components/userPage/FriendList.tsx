@@ -16,7 +16,7 @@ type friendsType = Array<{
 const data: friendsType = [
     {"id":"1" , "fullname":"Hssain Aitkadir", "username":"@haitkadir", "collection":"bios", "score":"750", "isOnline":true, "img":"https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg"},
     {"id":"2" ,"fullname":"Hssain Aitkadir", "username":"@haitkadir", "collection":"freax", "score":"200", "isOnline":false, "img":"https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg"},
-    {"id":"3" ,"fullname":"Hssain Aitkadir", "username":"@haitkadir", "collection":"pandora", "score":"980", "isOnline":true, "img":"https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg"},
+    {"id":"3" ,"fullname":"Hssain Aitkadir", "username":"@haitkadir", "collection":"commodore", "score":"980", "isOnline":true, "img":"https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg"},
     {"id":"4" , "fullname":"Hssain Aitkadir", "username":"@haitkadir", "collection":"bios", "score":"750", "isOnline":true, "img":"https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg"},
     {"id":"5" ,"fullname":"Hssain Aitkadir", "username":"@haitkadir", "collection":"freax", "score":"200", "isOnline":false, "img":"https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg"},
     {"id":"6" ,"fullname":"Hssain Aitkadir", "username":"@haitkadir", "collection":"pandora", "score":"980", "isOnline":true, "img":"https://pbs.twimg.com/profile_images/1694707441437704193/lxUVfB4X_400x400.jpg"},
