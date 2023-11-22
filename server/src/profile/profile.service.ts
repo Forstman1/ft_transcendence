@@ -178,6 +178,7 @@ async calculateMatchesResults(userId: string): Promise<matchesResultsType | null
               avatarURL: true,
               coalitionName: true,
               isOnline: true,
+              isInGame: true,
               userGamesXp: true,
             },
         });

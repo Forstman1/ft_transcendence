@@ -41,6 +41,7 @@ export type userProfileData = {
     avatarURL: string;
     coalitionName: string;
     isOnline: boolean;
+    isInGame: boolean;
     userGamesXp: number;
 }
 

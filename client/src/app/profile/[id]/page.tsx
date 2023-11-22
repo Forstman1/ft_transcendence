@@ -25,6 +25,7 @@ type userProfileData = {
     avatarURL: string;
     coalitionName: string;
     isOnline: boolean;
+    isInGame: boolean;
     userGamesXp: number;
 }
 
@@ -100,15 +101,17 @@ export default function Profile({params}: any) {
                 <Flex className='justify-between'>
                     <h2 className=' bg-black text-white p-1 text-xl rounded-br-lg'>
                         <span className={`inline-block w-5 h-5 rounded-full border mr-4 ${userData.isOnline ? 'bg-green-500' : 'bg-gray-400'}`}></span>
-                        {userData.isOnline ? 'Available' : 'Offline'}
+                        {userData.isOnline ? (userData.isInGame ? 'In Game' : 'Online') : 'Offline'}
                     </h2>
                     {
                         params.id === logedUserId?
-                    <button onClick={() => {router.push(`/profile/settings`)}} className='bg-black text-white px-4 rounded-bl-lg hover:bg-gray-700'>
-                        <Icon as={MdSettings} /> Edit
-                    </button>
+                        <button onClick={() => {router.push(`/profile/settings`)}} className='bg-black text-white px-4 rounded-bl-lg hover:bg-gray-700'>
+                            <Icon as={MdSettings} /> Edit
+                        </button>
                         :
-                        'Add Friend'
+                        <button className='bg-black text-white px-4 rounded-bl-lg hover:bg-gray-700'>
+                            <Icon as={MdSettings} /> Add friend
+                        </button>
                     }
                 </Flex>
 
