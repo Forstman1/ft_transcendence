@@ -208,7 +208,7 @@ export default function GameSearchFriend({ onClose }: Props) {
                 className="flex w-[95%] p-2 flex-row justify-between items-center border-2 border-gray-300 rounded-lg  mt-5"
               >
                 <div className="flex flex-row items-center space-x-5">
-                  <Avatar size="md" src={friend.avatar} />
+                  <Avatar size="md" src={friend.avatarURL} />
                   <h1 className="text-lg font-bold">{friend.username}</h1>
                 </div>
                 {!friendInviteIData[index].isInvited ? (
