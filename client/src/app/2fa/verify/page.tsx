@@ -16,7 +16,7 @@ import { useMutation } from "react-query";
 import { useState } from 'react';
 import { verify2FA } from "@/utils/functions/auth/fetchingUserData";
 import toast from "react-hot-toast";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 
 export default function TwoFactorAuthPage() {
