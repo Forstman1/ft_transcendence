@@ -255,6 +255,23 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
 
   //!---------------Friend Request------------------------!//
 
+
+  @SubscribeMessage(`getNotifications`)
+  async getNotifications(
+    @ConnectedSocket() client: Socket,
+  ): Promise<any> {
+    try {
+
+      const notifications = await this.userService.getNotifications(client.handshake.auth.id);
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+        this.server.to(socket.id).emit(`getNotifications`, notifications);
+      });
+      // client.emit(`getNotifications`, notifications);
+    } catch (error) {
+      console.error(`Error in getting notifications`, error);
+    }
+  }
+
   @SubscribeMessage(`sendFreindRequest`)
   async sendFreindRequest(
     @ConnectedSocket() client: Socket,
@@ -273,8 +290,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       );
       //! Will use friendRequest to check if the request was sent or not or if it was sent before
       const friendId = await this.userService.getUser(User);
+      await this.userService.notifyFriendRequest(client.handshake.auth.id, data.friendId);
       if (friendSocket) {
         for (const socket of friendSocket) {
+          this.server.to(socket.id).emit(`notification`, friendId);
           this.server.to(socket.id).emit(`receivedFreindRequest`, friendId);
         }
       }

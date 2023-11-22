@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Menu,
   MenuButton,
@@ -14,67 +14,89 @@ import {
   EmailIcon,
   WarningTwoIcon,
 } from "@chakra-ui/icons";
+import { useSelector } from "react-redux";
 
-const allNotifications = [
-  {
-    id: 1,
-    title: "New Order Recieved",
-    description: "Dummy text of the printing and typesetting industry.",
-    time: "3 min ago",
-    icon: DeleteIcon,
-  },
-  {
-    id: 2,
-    title: "New Order Recieved",
-    description: "Dummy text of the printing and typesetting industry.",
-    time: "3 min ago",
-    icon: CheckCircleIcon,
-  },
-  {
-    id: 3,
-    title: "New Order Recieved",
-    description: "Dummy text of the printing and typesetting industry.",
-    time: "3 min ago",
-    icon: EmailIcon,
-  },
-  {
-    id: 4,
-    title: "New Order Recieved",
-    description: "Dummy text of the printing and typesetting industry.",
-    time: "3 min ago",
-    icon: WarningTwoIcon,
-  },
-  {
-    id: 5,
-    title: "New Order Recieved",
-    description: "Dummy text of the printing and typesetting industry.",
-    time: "3 min ago",
-    icon: DeleteIcon,
-  },
-  {
-    id: 6,
-    title: "New Order Recieved",
-    description: "Dummy text of the printing and typesetting industry.",
-    time: "3 min ago",
-    icon: DeleteIcon,
-  },
-  {
-    id: 7,
-    title: "New Order Recieved",
-    description: "Dummy text of the printing and typesetting industry.",
-    time: "3 min ago",
-    icon: EmailIcon,
-  },
-  {
-    id: 8,
-    title: "New Order Recieved",
-    description: "Dummy text of the printing and typesetting industry.",
-    time: "3 min ago",
-    icon: WarningTwoIcon,
-  },
-];
+// const allNotifications = [
+//   {
+//     id: 1,
+//     title: "New Order Recieved",
+//     description: "Dummy text of the printing and typesetting industry.",
+//     time: "3 min ago",
+//     icon: DeleteIcon,
+//   },
+//   {
+//     id: 2,
+//     title: "New Order Recieved",
+//     description: "Dummy text of the printing and typesetting industry.",
+//     time: "3 min ago",
+//     icon: CheckCircleIcon,
+//   },
+//   {
+//     id: 3,
+//     title: "New Order Recieved",
+//     description: "Dummy text of the printing and typesetting industry.",
+//     time: "3 min ago",
+//     icon: EmailIcon,
+//   },
+//   {
+//     id: 4,
+//     title: "New Order Recieved",
+//     description: "Dummy text of the printing and typesetting industry.",
+//     time: "3 min ago",
+//     icon: WarningTwoIcon,
+//   },
+//   {
+//     id: 5,
+//     title: "New Order Recieved",
+//     description: "Dummy text of the printing and typesetting industry.",
+//     time: "3 min ago",
+//     icon: DeleteIcon,
+//   },
+//   {
+//     id: 6,
+//     title: "New Order Recieved",
+//     description: "Dummy text of the printing and typesetting industry.",
+//     time: "3 min ago",
+//     icon: DeleteIcon,
+//   },
+//   {
+//     id: 7,
+//     title: "New Order Recieved",
+//     description: "Dummy text of the printing and typesetting industry.",
+//     time: "3 min ago",
+//     icon: EmailIcon,
+//   },
+//   {
+//     id: 8,
+//     title: "New Order Recieved",
+//     description: "Dummy text of the printing and typesetting industry.",
+//     time: "3 min ago",
+//     icon: WarningTwoIcon,
+//   },
+// ];
+
 
 export default function Notification() {
+  const [notifications, setNotifications] = useState<any>([])
+  const socket = useSelector((state: any) => state.socket.socket);
+  useEffect(() => {
+    // console.log("allNotifications", allNotifications);
+    socket.on("notification", (data: any) => {
+      console.log("notification", data);
+      socket.emit("getNotifications");
+    });
+
+    socket.on("getNotifications", (data: any) => {
+      console.log("getNotifications", data);
+      setNotifications(data);
+    });
+
+    return () => {
+      socket.off("notification");
+      socket.off("getNotifications");
+    }
+  }, [socket])
+
   return (
     <div>
       <Menu>
@@ -96,8 +118,8 @@ export default function Notification() {
             <Divider className="ml-auto" />
           </div>
           <div className="bg-white rounded-lg mt-5 w-full h-[95%] overflow-y-scroll no-scrollbar">
-            {allNotifications.map((notification, index) => (
-              <MenuItem key={notification.id}>
+            {notifications?.map((notification: any, index: number) => (
+              <MenuItem key={notification?.id}>
                 <div
                   className={`flex flex-col bg-gray-100 px-4 py-2 cursor-pointer  relative  overflow-hidden transition-all rounded hover:bg-white group`}
                 >
@@ -105,13 +127,13 @@ export default function Notification() {
                   <span className="w-full text-black transition-colors duration-300 ease-in-out group-hover:text-white z-10">
                     <div className="flex row">
                       <h1 className="text-sm font-bold">
-                        {notification.title}
+                        {notification?.title}
                       </h1>
-                      <notification.icon className="ml-auto" />
+                      {/* <notification.icon className="ml-auto" /> */}
                     </div>
-                    <p className="text-xs">{notification.description}</p>
-                    <p className="text-xs text-gray-400">{notification.time}</p>
-                    {index !== allNotifications.length - 1 && <Divider />}
+                    <p className="text-xs">{notification?.description}</p>
+                    <p className="text-xs text-gray-400">{notification?.time}</p>
+                    {index !== notifications.length - 1 && <Divider />}
                   </span>
                 </div>
               </MenuItem>

@@ -668,4 +668,14 @@ export class UsersService {
     });
     return;
   }
+
+  getNotifications = async (userId: string): Promise<any> => {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        notifications: true,
+      },
+    });
+    return user.notifications;
+  }
 }
