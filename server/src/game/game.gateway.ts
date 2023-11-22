@@ -6,9 +6,9 @@ import {
 } from '@nestjs/websockets';
 import { GameService } from './game.service';
 import { Server, Socket } from 'socket.io';
-import { Body, UseGuards } from '@nestjs/common';
+import { Body} from '@nestjs/common';
 import { GameModalState, GameHistory } from './dto/create-game.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+// import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 
 @WebSocketGateway()
 export class GameGateway {
@@ -128,7 +128,7 @@ export class GameGateway {
     @Body() data: { userId: string },
   ): string {
     try {
-      console.log('-----------------createRoomNotifacation-----------------');
+    
       const userId = data.userId;
       client.join(userId);
       return 'your Notification room is ready';
@@ -179,6 +179,7 @@ export class GameGateway {
             client.emit('frinedIsInGame');
           } else if (friendSocket) {
             const friendId = client.handshake.auth.id;
+            this.gameService.notifyFriend(client.handshake.auth.id, friendId);
             this.server
               .to(friendUserId)
               .emit('room-invitation', { roomId, modalData, friendId });

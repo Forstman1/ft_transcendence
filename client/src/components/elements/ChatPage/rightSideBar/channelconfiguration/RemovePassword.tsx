@@ -1,15 +1,9 @@
 import React, { useState } from 'react'
-import { Box, Button, Input, InputGroup, InputRightElement, ModalBody, ModalCloseButton, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
-import { useMutation } from 'react-query'
-import { useDispatch, useSelector } from 'react-redux'
+import { Box, Button, ModalFooter, Text, useDisclosure } from '@chakra-ui/react'
+import {  useSelector } from 'react-redux'
 import ModalWraper from '../../ModalWraper'
 import channelconfig from "../../../../../../assets/icons/channelconf.svg"
 import Image from 'next/image'
-import { setChannel, setChannels } from '@/redux/slices/chat/ChatSlice'
-import { Channel } from '@/utils/types/chat/ChatTypes'
-
-
-
 
 function Componenent({ onClose }: any) {
 

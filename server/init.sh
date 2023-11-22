@@ -9,7 +9,7 @@ do
     sleep 1
 done
 
-npm install && npm run build
+npm install
 npx prisma migrate dev --name dev --preview-feature
 npx prisma db push
 npx prisma generate

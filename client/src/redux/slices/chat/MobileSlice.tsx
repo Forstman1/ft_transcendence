@@ -6,7 +6,10 @@ import { combineReducers } from "@reduxjs/toolkit";
     initialState: { LeftValue: true},
     reducers: {
         setLeft: (state, action) => {
-            state.LeftValue = action.payload;
+            return {
+                ...state,
+                LeftValue: action.payload
+            }
         }
     }
 })
@@ -16,7 +19,10 @@ import { combineReducers } from "@reduxjs/toolkit";
     initialState: { RightValue: true },
     reducers: {
         setRight: (state, action) => {
-            state.RightValue = action.payload;
+            return {
+                ...state,
+                RightValue: action.payload
+            }
         }
     }
 })
@@ -26,7 +32,10 @@ import { combineReducers } from "@reduxjs/toolkit";
     initialState: { MidleValue: true },
     reducers: {
         setMidle: (state, action) => {
-            state.MidleValue = action.payload;
+            return {
+                ...state,
+                MidleValue: action.payload
+            }
         }
     }
 })

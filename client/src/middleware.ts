@@ -9,6 +9,13 @@ export async function middleware(request: NextRequest) {
   else if (request.nextUrl.pathname.match('/2fa/verify') && request.headers.get('referer') !== 'http://localhost:3000/') {
     return NextResponse.rewrite(new URL('/not-authorized', request.url))
   }
+  else if ((request.nextUrl.searchParams.get('logged') || 
+    request.nextUrl.searchParams.get('error') || 
+    request.nextUrl.searchParams.get('unauthorized')) && 
+    request.headers.get('referer') !== 'http://localhost:3000/'
+  ) {
+    return NextResponse.rewrite(new URL('/', request.url))
+  }
   return NextResponse.next()
 }
 

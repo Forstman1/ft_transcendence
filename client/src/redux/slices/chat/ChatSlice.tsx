@@ -32,9 +32,8 @@ type ChatState = {
       setChannelMember: (state, action) => {
         state.ChannelMember = action.payload
       },
-      setUser: (state, action) => {
-        state.selectedChannelorUser = action.payload
-        state.messages = []
+      setTheUser: (state, action) => {
+        state.selectedChannelorUser = action.payload;
       },
       setNewChannel: (state, action) => {
         state.channels.push(action.payload)
@@ -53,5 +52,15 @@ type ChatState = {
   });
 
   
-export const { setChannel, addMessage, setMessages, setChannels, setNewChannel, setUser, setChannelMember } = chatSlice.actions
-export default chatSlice.reducer
+  export const {
+    setChannel,
+    addMessage,
+    setMessages,
+    setChannels,
+    setNewChannel,
+    setChannelMember,
+    setTheUser,
+    setUserDms,
+  } = chatSlice.actions;
+  export default chatSlice.reducer;
+  

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UserService } from 'src/user/user.service';
@@ -33,19 +33,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(request: Request, payload: any): Promise<{ id: string }> {
-    if (payload.isTwoFA_Token &&
-      (request.method !== 'POST'
-      || request.url !== '/auth/2fa/verify'
-      || request.body?.twoFactorAuthCode === undefined)
-      ) {
+    if (payload.isTwoFA_Token && (request.method !== 'POST'
+      || request.url !== '/auth/2fa/verify' || !request.body?.twoFactorAuthCode)
+    ) {
       throw new UnauthorizedException('Two-factor Authentication Required');
     }
     const user: User = await this.userService.findUser({
       id: payload.id,
     });
     if (!payload.isTwoFA_Token && user.twoFactorEnabled && !payload.TwoFA_Success) {
-      throw new UnauthorizedException('Two-factor Authentication Requiregggd');
+      throw new ForbiddenException('Two-factor Authentication Requiregggd');
     }
-    return { id: payload.id };
+    return ({ id: user.id });
   }
 }
