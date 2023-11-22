@@ -193,7 +193,8 @@ export default function LeftSidebar() {
         if (selected?.id === data.channel.id) {
           if (selected?.channelMember) {
             selected.channelMember.map((data1: any) => {
-              if (data1.userId === userId) dispatch(setChannelMember(data1));
+              if (data1.userId === userId) 
+                dispatch(setChannelMember(data1));
             });
           }
         }
@@ -270,6 +271,7 @@ export default function LeftSidebar() {
       }
       if (data.member && data.member.userId === userId) {
         dispatch(setChannelMember(data.member));
+        socket.emit("getChannels", { userId: userId })
       }
     });
 
@@ -293,8 +295,8 @@ export default function LeftSidebar() {
       }
 
       if (data.member && data.member.userId === userId) {
-        console.log(data.member);
         dispatch(setChannelMember(data.member));
+        socket.emit("getChannels", { userId: userId })
       }
     });
 
@@ -531,33 +533,9 @@ export default function LeftSidebar() {
   };
 
   const onSubmited = (userData: User) => {
-
     dispatch(setTheUser(userData));
-
   };
-  const [selectedUser, setSelectedUser] = useState<number | null>(null);
-  const [selectedChanell, setSelectedChanell] = useState<number | null>(null);
   
-
-  const handleBackground = (id: number) => {
-    if (selectedUser !== null)
-      setSelectedUser(null);
-    if (selectedChanell === id) {
-      setSelectedChanell(null);
-    } else {
-      setSelectedChanell(id);
-    }
-  };
-  const handelClick = (id: number) => {
-    if (selectedChanell !== null)
-      setSelectedChanell(null);
-  console.log(selectedUser, id);
-  if (selectedUser === id) {
-    setSelectedUser(null);
-  } else {
-    setSelectedUser(id);
-  }
-};
 
   return (
     <Box
@@ -588,12 +566,11 @@ export default function LeftSidebar() {
           channels.map((data: Channel, id: number) => {
             if (data.name) return (
              <div className='flex h-14 items-center cursor-pointer justify-between w-[80%] rounded-md hover:bg-zinc-100'
-                onClick={() => { handleBackground(id)}}
             style={{    
-              backgroundColor: selectedChanell === id ? "#d4d4d8" : ""
+              backgroundColor: (selected && selected === data ? "#d4d4d8" : "")
                 }}
               >
-                < Hashtag key = { id } data = { data } />
+                <Hashtag key = { id } data = { data } />
               </div>
               )
           })}
@@ -615,15 +592,15 @@ export default function LeftSidebar() {
 
       <div className=" mt-[40px] flex h-[500px] flex-col w-full  gap-1 overflow-y-scroll">
         {Users.map((userData: User, id: number) => (
+
           <Box
             className="group flex justify-between items-center cursor-pointer h-20 m-2  p-2 rounded-md hover:bg-zinc-100"
             key={id}
             onClick={() => {
-              handelClick(id);
               onSubmited(userData);
             }}
             style={{    
-              backgroundColor: selectedUser === id ? "#d4d4d8" : "",
+              backgroundColor: (selected && selected === userData ? "#d4d4d8" : ""),
             }}
           >
             <Usercard data={userData} />

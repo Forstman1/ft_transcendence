@@ -398,7 +398,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       data.channelId,
     );
 
-    const user: any = await this.userService.getUser(client.handshake.auth.id);
+    const user: any = await this.userService.getUserbyId(client.handshake.auth.id);
 
     if (channel && user) {
       this.connectedUsers[client.handshake.auth.id].map((socket) => {
@@ -421,7 +421,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     const channel: any = await this.channelService.getchannelinfo(
       data.channelId,
     );
-    const user = await this.userService.getUser(client.handshake.auth.id);
+    const user = await this.userService.getUserbyId(client.handshake.auth.id);
     const member: any = await this.channelService.getchannelmemberinfo(
       data.channelId,
       client.handshake.auth.id,
@@ -467,7 +467,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     console.log('createChannel ', data);
 
     try {
-      const user = await this.userService.getUser(data.userId);
+      const user = await this.userService.getUserbyId(data.userId);
 
       const channel: any = await this.channelService.createchannel(data);
       console.log(channel)
@@ -515,7 +515,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       let channel: any = await this.channelService.getchannelinfo(
         data.channelId,
       );
-      const user: any = await this.userService.getUser(
+      const user: any = await this.userService.getUserbyId(
         client.handshake.auth.id,
       );
 
@@ -591,7 +591,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     try {
 
       const channel: any = await this.channelService.getchannelinfo(data.channelId);
-      const user: any = await this.userService.getUser(client.handshake.auth.id);
+      const user: any = await this.userService.getUserbyId(client.handshake.auth.id);
       const channelStatus = await this.channelService.leaveChannel(channel.name, client.handshake.auth.id);
       const channels = await this.channelService.getallchannels(client.handshake.auth.id);
 
@@ -682,7 +682,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
         client.handshake.auth.id,
         data.adminId,
       );
-      const user: any = await this.userService.getUser(data.adminId);
+      const user: any = await this.userService.getUserbyId(data.adminId);
 
       if (admin.status === "This member can't be set as an administrator.") {
         this.connectedUsers[client.handshake.auth.id].map((socket) => {
@@ -725,7 +725,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
         client.handshake.auth.id,
         data.adminId,
       );
-      const user: any = await this.userService.getUser(data.adminId);
+      const user: any = await this.userService.getUserbyId(data.adminId);
 
       if (member.status === "This administrator can't be removed.") {
         this.connectedUsers[client.handshake.auth.id].map((socket) => {
@@ -763,7 +763,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       const channel: any = await this.channelService.getchannelinfo(
         data.channelId,
       );
-      const user = await this.userService.getUser(client.handshake.auth.id);
+      const user = await this.userService.getUserbyId(client.handshake.auth.id);
 
       if (channel && user) {
         const newchannel: any = await this.channelService.setpassword(
@@ -776,7 +776,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
           this.server
             .to(channel.id)
             .emit('setpassword', {
-              status: 'Password is set. Channel is private now',
+              status: 'Password is set. Channel is protected now',
               channel: newchannel.channel,
             });
         } else if (
@@ -816,7 +816,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       const channel: any = await this.channelService.getchannelinfo(
         data.channelId,
       );
-      const user = await this.userService.getUser(client.handshake.auth.id);
+      const user = await this.userService.getUserbyId(client.handshake.auth.id);
 
       if (channel && user) {
         const newchannel: any = await this.channelService.removepassword(
@@ -870,7 +870,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       const channel: any = await this.channelService.getchannelinfo(
         data.channelId,
       );
-      const user = await this.userService.getUser(client.handshake.auth.id);
+      const user = await this.userService.getUserbyId(client.handshake.auth.id);
 
       if (channel && user) {
         const newchannel: any = await this.channelService.changepassword(
@@ -968,14 +968,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     @MessageBody() data: any,
   ) {
     try {
-      console.log(
-        'channel id ',
-        data.channelId,
-        ' user id ',
-        client.handshake.auth.id,
-        ' member id ',
-        data.memberId,
-      );
+
 
       const channel: any = await this.channelService.getchannelinfo(
         data.channelId,
@@ -1095,7 +1088,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       this.connectedUsers[client.handshake.auth.id].map((socket) => {
         this.server
           .to(socket.id)
-          .emit('inviteMember', { status: "member can't be invited1" });
+          .emit('inviteMember', { status: "member can't be invited" });
       });
     }
   }

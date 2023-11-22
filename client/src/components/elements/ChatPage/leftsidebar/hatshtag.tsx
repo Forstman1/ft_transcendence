@@ -114,7 +114,7 @@ export default function Hashtag(props: any) {
 
     return (
         <>
-            <div className="w-full h-full"
+            <div className="flex justify-between items-center  w-full h-full"
                 onClick={() => { handleClick() }}
             >
             <div className="flex h-[40px]">

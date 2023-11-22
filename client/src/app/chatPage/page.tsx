@@ -13,6 +13,7 @@ import { motion } from "framer-motion";
 import ChatWindow from "@/components/elements/ChatPage/ChatWindow";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
+import RestrictedRoute from "@/components/RestrictedRoute";
 
 
 
@@ -70,6 +71,7 @@ export default function ChatPage() {
 
 
   return (
+    <RestrictedRoute>
     <div className="Chat_sub_div2 flex w-full ">
       <ChatWindow />
       {selected !== null  && selected !== undefined && "username" in selected ? (
@@ -86,5 +88,6 @@ export default function ChatPage() {
         ></Box>
       )}
     </div>
+    </RestrictedRoute>
   );
 }
