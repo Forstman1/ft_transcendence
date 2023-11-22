@@ -139,6 +139,7 @@ export default function GameFriendPage() {
   }, [socketState]);
 
   //----------------------------------------------------------------------------------------------
+
   const closeSocketConnection = () => {
     if (socket) {
         socket.emit("endGame", roomId);
@@ -219,7 +220,7 @@ export default function GameFriendPage() {
       xp = gameSettings.mode === "EASY" ? 5 : gameSettings.mode === "MEDIUM" ? 10 : 15;
     }
     const data: any = {
-      userId: socket?.auth?.id,
+      // userId: socket?.auth?.id,
       status: status,
       userScore: userScore,
       opponentScore: opponentScore,

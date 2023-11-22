@@ -22,7 +22,8 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useQuery } from 'react-query';
 import axios from 'axios';
-import { useAppSelector } from '@/redux/store/store';
+import { useEffect } from 'react';
+
 
 
 
@@ -49,7 +50,7 @@ function Usercard(props: any) {
     <div onClick={handleChange} className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md'>
         <div>
             <Avatar boxSize={12} src={data?.avatarURL}>
-                <AvatarBadge boxSize={6} bg='green' />
+                <AvatarBadge boxSize={6} bg={data?.isOnline ? 'green.500' : 'gray.500'} />
             </Avatar>
         </div>
 
@@ -68,37 +69,30 @@ function Usercard(props: any) {
 }
 
 
-export default function Newmessage({ isOpen, onClose}: Props) {
+export default function Newmessage({onClose}: Props) {
     
-    const chatSocket = useAppSelector((state) => state.socket);
-    const {socket} = chatSocket;
+    const socket = useSelector((state: any) => state.socket.socket)
     const dispatch = useDispatch();
     const toast = useToast();
     const [selectedOption, setSelectedOption]: any = useState('');
-    
     const id = useSelector((state: any) => state.socket.userID);
-    
     const {data, isLoading, error} = useQuery({
         queryKey: ["userData"],
         queryFn: async () => {
-            const { data } = await axios.get(`http://localhost:3001/users/friends/${id}`)
-            console.log(data)
+            const { data } = await axios.get(`http://localhost:3001/users/friends`, { withCredentials: true },)
+            console.log("data", data)
             return data
         }
     })
 
     const handleOptionChange = (newValue: any) => {
-
         setSelectedOption(newValue);
-
     };
 
     const handleSubmit = async () => {
-
         try { 
-            socket?.emit(`updateChatList`, selectedOption.id)
-            socket?.emit(`createRoom`, {userId: id, reciverId: selectedOption.id }, (data: any) => {
-            })
+            socket?.emit(`updateChatList`, {frienID: selectedOption.id})
+            socket?.emit(`createRoom`, {userId: id, frienID: selectedOption.id})
             onClose();
         } catch (error) {
             console.error("Failed to add friend:", error);

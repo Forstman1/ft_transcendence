@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Box, Button, Input, InputGroup, InputRightElement, ModalBody, ModalCloseButton, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
+import { Box, Button, Input, InputGroup, InputRightElement, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import Image from 'next/image'

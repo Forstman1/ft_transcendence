@@ -1,7 +1,7 @@
 "use client";
 import { Box, Button } from '@chakra-ui/react'
 import Image from 'next/image'
-import React, {useEffect, useState} from 'react'
+import React from 'react'
 import FooterWaves from '../../../../../assets/icons/wavesOpacity.svg';
 import {HiOutlineChatBubbleLeftEllipsis} from 'react-icons/hi2'
 import {HiOutlineChatBubbleLeftRight} from 'react-icons/hi2'
@@ -12,7 +12,7 @@ import { setLeft, setRight, setMidle } from '@/redux/slices/chat/MobileSlice';
 
 
 
-export default function MobileFooter({LeftIsOpen, setLeftIsOpen, RightIsOpen, setRightIsOpen}: any) {
+export default function MobileFooter() {
 
   const { MidleClice } = useSelector((state: any) => state.mobile)
   const { LeftClice } = useSelector((state: any) => state.mobile)

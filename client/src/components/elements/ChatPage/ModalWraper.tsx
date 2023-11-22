@@ -72,7 +72,7 @@ export default function ModalWraper({ isOpen, onClose, imageAlt, Componenent }: 
       >
 
         <ModalHeader>{imageAlt}</ModalHeader>
-        <ModalBody>
+        <ModalBody className='w-full'>
           {Componenent &&  <Componenent />}
           <ShosenContent />
         </ModalBody>

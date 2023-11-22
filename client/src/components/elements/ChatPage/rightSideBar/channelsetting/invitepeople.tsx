@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Avatar, AvatarBadge, Box, Button, ModalFooter, Radio, Text, useDisclosure, useToast } from '@chakra-ui/react'
-import { useMutation } from 'react-query'
+import React, { useEffect,  useState } from 'react'
+import { Box, Button, ModalFooter, Text, useDisclosure, useToast } from '@chakra-ui/react'
 import { useSelector } from 'react-redux'
 import ModalWraper from '../../ModalWraper'
 import Image from 'next/image'
@@ -18,7 +17,7 @@ function Componenent({ onClose }: any) {
     const channel = useSelector((state: any) => state.chat.selectedChannelorUser)
     const userId = useSelector((state: any) => state.socket.userID)
     const toast = useToast()
-
+    const socket = useSelector((state: any) => state.socket.socket)
 
     const handleOptionChange = (newValue: any) => {
 
@@ -26,13 +25,11 @@ function Componenent({ onClose }: any) {
 
     };
 
-
-
     useEffect(() => {
         const fetchUsers = async () => {
           try {
             const [usersResponse, membersResponse] = await Promise.all([
-              fetch('http://127.0.0.1:3001/users/listusers/' + userId).then((api) => api.json()),
+              fetch('http://127.0.0.1:3001/users/getAllUsers/' + userId).then((api) => api.json()),
               fetch('http://127.0.0.1:3001/channel/getallmembers/' + channel.id).then((api) => api.json())
             ]);
       
@@ -60,52 +57,14 @@ function Componenent({ onClose }: any) {
       
         fetchUsers();
       }, []);
-    const Invite = useMutation<any, Error, any>((variables) => fetch('http://127.0.0.1:3001/channel/invitemember', { 
-        method: "POST",
-        body: JSON.stringify(variables),
-        headers: {
-            "content-type": "application/json",
-        }
-    }).then((response) => {
-        return response.json()
-    }).catch((error) => {
-        return error
-    }))
 
 
 
     async function   onInvite() {
 
-
-        const response = await Invite.mutateAsync({
-            channelName: channel.name, 
-            userIdOwner: userId,
-            userIdMember: selectedOption.id
-        })
-        console.log(response)
-        if (response.status) {
-            toast({
-                title: response.status,
-                position: `bottom-right`,
-                status: 'error',
-                duration: 1000,
-                containerStyle: {
-                    bottom: 90,
-                    right: 30,
-                },
-            })
-            onClose()
-            return;     
-        }
-        toast({
-            title: "User has been invited",
-            position: `bottom-right`,
-            status: 'success',
-            duration: 1000,
-            containerStyle: {
-                bottom: 90,
-                right: 30,
-            },
+        socket?.emit('inviteMember', {
+            channelId: channel.id,
+            memberId: selectedOption.id,
         })
         onClose()
     }
@@ -113,7 +72,7 @@ function Componenent({ onClose }: any) {
     return (
         <div>
 
-            <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll'>
+            <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll no-scrollbar '>
 
                 {users.map((data: User) => {
                     return <Usercard 
@@ -157,7 +116,6 @@ export default function InvitePeople() {
 
 
     const data = { src: invite, alt: "Invite People" }
-
 
 
     return (<Box className='flex items-center gap-6 w-[220px]'

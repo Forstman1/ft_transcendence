@@ -12,13 +12,13 @@ import {
     InputRightElement,
     useToast,
 } from '@chakra-ui/react'
-import { Button, FormControl, FormLabel, Icon, Input, Select } from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, Icon, Input } from '@chakra-ui/react';
 import { useForm } from "react-hook-form";
-import { LockIcon, SmallAddIcon } from "@chakra-ui/icons";
+import { LockIcon } from "@chakra-ui/icons";
 import { useMutation } from "react-query";
 import { setChannel, setChannelMember, setMessages } from "@/redux/slices/chat/ChatSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { Channel, ChannelMessage } from "@/utils/types/chat/ChatTypes";
+import { Channel } from "@/utils/types/chat/ChatTypes";
 
 
 
@@ -32,7 +32,7 @@ export default function Hashtag(props: any) {
     const [show, setShow] = React.useState(false)
     const handleShow = () => setShow(!show)
 
-    let { id, name, type }: Channel = props.data;
+    let { name, type }: Channel = props.data;
     let data: Channel = props.data;
     const userId = useSelector((state: any) => state.socket.userID)
 
@@ -54,11 +54,8 @@ export default function Hashtag(props: any) {
             return error
         }))
         
-
-
-
     const handleClick = async () => {
-        
+       
         if (props.data.type === 'PROTECTED') {
             setWrongpassowrd(false)
             onOpen()
@@ -72,16 +69,6 @@ export default function Hashtag(props: any) {
                         dispatch(setChannelMember(data))
                 })
             }
-            toast({
-                title: name,
-                position: `bottom-right`,
-                status: 'success',
-                duration: 1000,
-                containerStyle: {
-                    width: 300,
-                    height: 100,
-                }
-            })
         }
     }
 
@@ -125,8 +112,11 @@ export default function Hashtag(props: any) {
     if (name.length > 8)
         channelname += ".."
 
-    return (<>
-        <div className='flex items-center cursor-pointer justify-between w-[70%]' onClick={handleClick}>
+    return (
+        <>
+            <div className="flex justify-between items-center  w-full h-full"
+                onClick={() => { handleClick() }}
+            >
             <div className="flex h-[40px]">
                 <div className='h-[20px] text-[40px] mr-3'>#</div>
                 <div className='h-[20px] text-[30px]'>{channelname}</div>
