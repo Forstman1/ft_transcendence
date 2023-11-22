@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React from "react";
 import { PageWrapper } from "../../animationWrapper/pageWrapper";
@@ -10,10 +10,10 @@ import {
   Stack,
   HStack,
   PinInput,
-  PinInputField
-} from '@chakra-ui/react'
+  PinInputField,
+} from "@chakra-ui/react";
 import { useMutation } from "react-query";
-import { useState } from 'react';
+import { useState } from "react";
 import { verify2FA } from "@/utils/functions/auth/fetchingUserData";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";

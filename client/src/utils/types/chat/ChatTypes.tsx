@@ -47,5 +47,6 @@ export type ChannelMember = {
     role: string
     createdAt: Date
     user: User
+    isMuted: Boolean
 
 }

@@ -1,67 +1,56 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { PageWrapper } from "../animationWrapper/pageWrapper";
-import Image from "next/image";
-import { Flex, Box, Button, useMediaQuery } from "@chakra-ui/react";
-import LeftSidebar from "@/components/elements/ChatPage/leftsidebar/LeftSidebar";
+
+import {
+  Box,
+  useToast,
+} from "@chakra-ui/react";
+
 import RightSidebar from "@/components/elements/ChatPage/rightSideBar/RightSidebar";
 import RightSidebarChannel from "@/components/elements/ChatPage/rightSideBar/RightSideBarChannel";
 import { Channel, User } from "@/utils/types/chat/ChatTypes";
 import { setLeft, setMidle, setRight } from "@/redux/slices/chat/MobileSlice";
 import { motion } from "framer-motion";
-import { useDispatch, useSelector } from "react-redux";
-import { UseSelector } from "react-redux/es/hooks/useSelector";
 import ChatWindow from "@/components/elements/ChatPage/ChatWindow";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 import RestrictedRoute from "@/components/RestrictedRoute";
 
 
 
 
+
+
+
 export default function ChatPage() {
-  const [RightIsOpen, setRightIsOpen] = useState(false);
-  const [LeftIsOpen, setLeftIsOpen] = useState(false);
-
-
-  const { LeftClice } = useSelector((state: any) => state.mobile);
   const { RightClice } = useSelector((state: any) => state.mobile);
-  const { MidleClice } = useSelector((state: any) => state.mobile);
-  const socket = useSelector((state: any) => state.socket.socket);
+  const dispatch = useDispatch();
+  const selected: Channel | User | null = useSelector(
+    (state: any) => state.chat.selectedChannelorUser
+  );
 
 
-  const isDesktop = useMediaQuery("(min-width: 1000px)")
-  const dispatch = useDispatch()
-  const selected: Channel | User | null = useSelector((state: any) => state.chat.selectedChannelorUser);
-
-
-
-
-  // useEffect(() => {
-    
-  //   socket.on(`receivedFreindRequest`, (user: User) => {
-  //     console.log(user)
-  //   });
-
-  //   return () => {
-  //     socket.off(`receivedFreindRequest`)
-  //   }
-    
-  // }, [socket])
-  
-
+  const handleWindowResize = () => {
+    if (window.innerWidth <= 1024) {
+      dispatch(setRight(false));
+      dispatch(setMidle(false));
+      dispatch(setLeft(false));
+    } else {
+      dispatch(setRight(true));
+      dispatch(setMidle(true));
+      dispatch(setLeft(true));
+    }
+  };
 
   useEffect(() => {
-    if(isDesktop[0]) {
-      dispatch(setRight(true))
-      dispatch(setMidle(true))
-      dispatch(setLeft(true))
-    }
-  }, [isDesktop])
+    handleWindowResize();
+    window.addEventListener("resize", handleWindowResize);
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+    };
+  }, []);
 
-  
-  
   const sidebar = {
     open: (height = 1000) => ({
-      // width: "375px",
       clipPath: `circle(${height * 2 + 200}px at 90% 90%)`,
       transition: {
         type: "spring",
@@ -80,25 +69,25 @@ export default function ChatPage() {
     },
   };
 
+
   return (
     <RestrictedRoute>
-      <div className="Chat_sub_div2 flex flex-grow w-full ">
-        <ChatWindow />
-
-        {selected !== null && "username" in selected ? (
-          <RightSidebar />
-        ) : selected !== null && "type" in selected ? (
-          <RightSidebarChannel />
-        ) : (
-          <Box
-            className="RightSideBar w-[375px] absolute md:block backdrop-blur-xl md:static md:w-[465px] h-full overflow-y-auto border-l-[3px] border-l-black pb-28 right-0"
-            as={motion.div}
-            initial={false}
-            animate={RightClice.RightValue ? "open" : "closed"}
-            variants={sidebar}
-          ></Box>
-        )}
-      </div>
+    <div className="Chat_sub_div2 flex w-full ">
+      <ChatWindow />
+      {selected !== null  && selected !== undefined && "username" in selected ? (
+        <RightSidebar />
+      ) : selected !== null  && selected !== undefined && "type" in selected ? (
+        <RightSidebarChannel />
+      ) : (
+        <Box
+          className="RightSideBar w-[375px] absolute md:block bg-opacity-80 max-md:backdrop-blur-xl md:static md:w-[465px] h-full overflow-y-auto border-l-[3px] border-l-black pb-28 right-0"
+          as={motion.div}
+          initial={false}
+          animate={RightClice.RightValue ? "open" : "closed"}
+          variants={sidebar}
+        ></Box>
+      )}
+    </div>
     </RestrictedRoute>
   );
 }

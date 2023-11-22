@@ -187,7 +187,7 @@ export default function GamePage() {
         <GameModesModal
           isOpen={isOpen}
           onClose={onClose}
-          gameType={gameType as "bot" | "friend"}
+          gameType={gameType as "bot" | "friend" | "chatGame"}
         />
       </PageWrapper>
     </RestrictedRoute>

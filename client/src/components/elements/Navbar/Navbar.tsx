@@ -39,6 +39,8 @@ import { initialState as DefaultUserStoreData, UserState } from "@/redux/slices/
 import { setChatSocketState } from '@/redux/slices/socket/chatSocketSlice';
 import Notification from '../Notification/Notification';
 
+
+
 const CreatGameGlobalSocket = (user: any) => {
   const socket = io(process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001', {
     transports: ["websocket"],
@@ -52,7 +54,6 @@ const CreatGameGlobalSocket = (user: any) => {
 }
 
 const CreatChatGlobalSocket = (user: any) => {
-  // console.log("CreatChatGlobalSocket user: ", user);
 
   const socket = io('http://localhost:3001/chat', {
     transports: ["websocket"],
@@ -61,9 +62,9 @@ const CreatChatGlobalSocket = (user: any) => {
       id: user.userId,
     },
   });
-
-  socket?.emit(`createRoom`, { userId: user.userId })
   return socket;
+
+  // socket?.emit(`createRoom`, { userId: user.userId })
 }
 
 
@@ -360,6 +361,7 @@ export default function Navbar() {
   const dispatch = useDispatch();
   const user = useSelector((state: { authUser: UserState }) => state.authUser);
   const socketState = useAppSelector((state) => state.globalSocketReducer);
+  const ChatsocketState = useAppSelector((state) => state.socket);
   const [userAuthenticated, setUserAuthenticated] = useState(user.isAuthenticated);
   useQuery({
     queryKey: ['userProfile'],
@@ -379,12 +381,18 @@ export default function Navbar() {
           socket: gameSocket,
         }));
       }
-      const chatSocket = CreatChatGlobalSocket(response.data);
-      dispatch(setChatSocketState({
-        socket: chatSocket,
-        roomId: "",
-        userID: response.data.userId,
-      }));
+      if(!ChatsocketState.socket){
+        const chatSocket = CreatChatGlobalSocket(response.data);
+        dispatch(setChatSocketState({
+          socket: chatSocket,
+          userID: response.data.userId,
+        }));
+      }
+      // const chatSocket = CreatChatGlobalSocket(response.data);
+      // dispatch(setChatSocketState({
+      //   socket: chatSocket,
+      //   userID: response.data.userId,
+      // }));
     },
   });
 

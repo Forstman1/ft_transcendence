@@ -1,7 +1,6 @@
 import { Search2Icon, SearchIcon } from "@chakra-ui/icons";
 import { Box, Button, FormControl, FormLabel, Icon, Input, InputLeftElement, Modal, Radio, useDisclosure, useToast } from "@chakra-ui/react";
-import { Modak } from "next/font/google";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
     ModalOverlay,
@@ -13,9 +12,9 @@ import {
 } from '@chakra-ui/react';
 
 import { Avatar, AvatarBadge, InputGroup, InputRightElement } from '@chakra-ui/react';
-import { Channel, ChannelMember, User } from "@/utils/types/chat/ChatTypes";
+import { Channel, User } from "@/utils/types/chat/ChatTypes";
 import { useDispatch, useSelector } from "react-redux";
-import { setChannel, setChannelMember, setNewChannel } from "@/redux/slices/chat/ChatSlice";
+import { setChannel, setChannelMember, setTheUser } from "@/redux/slices/chat/ChatSlice";
 import { useMutation } from "react-query";
 import { LockIcon } from "@chakra-ui/icons";
 
@@ -33,15 +32,12 @@ function Usercard(props: any) {
         setSelectedOption(user);
     };
 
-    const dispatch = useDispatch()
-
-
     return (
 
         <div onClick={handleChange} className='flex justify-between items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md w-full'>
             <div>
                 <Avatar boxSize={12} src={user?.avatarURL}>
-                    <AvatarBadge boxSize={6} bg='green' />
+                    <AvatarBadge boxSize={6} bg={user?.isOnline ? 'green.500' : 'gray.500'} />
                 </Avatar>
             </div>
 
@@ -59,6 +55,7 @@ function Usercard(props: any) {
         </div>)
 }
 
+
 function Hashtag(props: any) {
 
     const { data, selectedOption, setSelectedOption } = props;
@@ -69,8 +66,8 @@ function Hashtag(props: any) {
 
     return (
 
-        <div className='flex items-center cursor-pointer justify-around w-full' onClick={handleChange}>
-            <div className="flex h-[40px]">
+        <div className='flex items-center cursor-pointer justify-between w-full' onClick={handleChange}>
+            <div className="flex">
                 <div className='h-[20px] text-[40px] mr-3'>#</div>
                 <div className='text-[20px] md:text-[30px]'>{data.name}</div>
             </div>
@@ -94,26 +91,27 @@ export default function Search() {
     const [search, setSearch] = useState('');
     const [allSearchChannels, setAllSearchChannels]: any = useState([])
     const [allSearchUsers, setAllSearchUsers]: any = useState([])
-
-    const { isOpen, onOpen, onClose } = useDisclosure()
-
-    const channels = useSelector((state: any) => state.chat.channels)
-
     const [selectedOption, setSelectedOption]: any = useState();
-    const dispatch = useDispatch()
-    const toast = useToast()
-    const userId = useSelector((state: any) => state.socket.userID)
-    const socket = useSelector((state: any) => state.socket.socket)
     const [wrongpassowrd, setWrongpassowrd] = useState(false);
     const [openSearch, setOpenSearch] = useState(false);
     const { handleSubmit, register, reset } = useForm<any>();
+
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const channels = useSelector((state: any) => state.chat.channels)
+    const userId = useSelector((state: any) => state.socket.userID)
+    const socket = useSelector((state: any) => state.socket.socket)
+
+    const dispatch = useDispatch()
+    const toast = useToast()
+
     const [show, setShow] = React.useState(false)
     const handleShow = () => setShow(!show)
+    const id = useSelector((state: any) => state.socket.userID);
 
 
     const getchannels = useMutation<any, Error, any>((variables) =>
         fetch('http://127.0.0.1:3001/channel/getallchannelsapp/' + variables.tofound).then((res) => {
-            console.log(variables)
+            console.log("variable", variables)
             return res.json()
         }).catch((err) => console.log(err))
     )
@@ -123,12 +121,12 @@ export default function Search() {
             return res.json()
         }).catch((err) => console.log(err)))
 
-    const listusers = useMutation<any, Error, any>((variables) =>
-        fetch('http://127.0.0.1:3001/users/listusers/' + userId).then((res) => {
+    const listusers = useMutation<any, Error, any>(() =>
+        fetch('http://127.0.0.1:3001/users/getAllUsers/' + userId).then((res) => {
             return res.json()
         }).catch((err) => console.log(err)))
 
-    const listchannels = useMutation<any, Error, any>((variables) =>
+    const listchannels = useMutation<any, Error, any>(() =>
         fetch('http://127.0.0.1:3001/channel/getallpublicandprivatechannels').then((res) => {
             return res.json()
         }).catch((err) => console.log(err)))
@@ -220,8 +218,6 @@ export default function Search() {
             })
         }
 
-
-
         info.password = "";
         reset({ password: "" })
         onClose();
@@ -273,7 +269,6 @@ export default function Search() {
                 if (selectedOption.type === 'PUBLIC') {
                     socket.emit('enterChannel', {
                         channelId: selectedOption.id,
-                        userId: userId,
                     })
                     onClose()
                 }
@@ -283,6 +278,13 @@ export default function Search() {
                     setOpenSearch(true)
                 }
             }
+        }
+        else
+        {
+            socket?.emit(`updateChatList`, {frienID: selectedOption.id})
+            socket?.emit(`createRoom`, { userId: id, frienID: selectedOption.id});
+            dispatch(setTheUser(selectedOption))
+            onClose()
         }
 
     }
@@ -317,7 +319,7 @@ export default function Search() {
             >
 
                 <ModalHeader>Search</ModalHeader>
-                <ModalBody>
+                <ModalBody className="w-full">
                     <InputGroup>
                         <InputLeftElement pointerEvents="none">
                             <Search2Icon color="gray.300" />
@@ -341,9 +343,9 @@ export default function Search() {
                             onChange={handleChange}
                         />
                     </InputGroup>
-                    <div className="flex w-full h-[300px]  flex-col  overflow-y-scroll ">
+                    <div className="flex w-full h-[300px]  flex-col  no-scrollbar overflow-y-scroll ">
                         {allSearchChannels.map((channels: Channel, id: number) => {
-                            return <Box key={id} className="flex  w-[95%] p-2 flex-row justify-between items-center border-2 border-gray-300 rounded-lg  mt-5">
+                            return <Box key={id} className="flex p-2 flex-row justify-between items-center border-2 border-gray-200 rounded-lg  mt-5">
 
                                 <Hashtag
                                     key={id}
@@ -362,9 +364,7 @@ export default function Search() {
                                 setSelectedOption={setSelectedOption}
                             />)
                         })}
-                        {/* {allSearchUsers.map((users: User, id: number) => {
-                            return (<Usercard key={id} user={users}/>)
-                        })} */}
+
                     </div>
                 </ModalBody>
                 <ModalCloseButton />
