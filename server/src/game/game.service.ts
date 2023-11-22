@@ -349,6 +349,7 @@ export class GameService {
             fullname: true,
             avatarURL: true,
             isOnline: true,
+            isInGame: true,
           },
         },
       },
