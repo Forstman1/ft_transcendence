@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import AddToFriendList from "../../../../../assets/icons/AddToFriendList.svg";
 import Remove from "../../../../../assets/icons/remove-friend.svg";
 import Block from "../../../../../assets/icons/Block.svg";
@@ -7,23 +7,22 @@ import { Box, Text, useDisclosure } from "@chakra-ui/react";
 import Image from "next/image";
 import ModalWraper from "../ModalWraper";
 import { useSelector } from "react-redux";
-import { User } from "@/utils/types/chat/ChatTypes";
 import Cookies from "js-cookie";
-import { setOptAllImages } from "@/redux/slices/chat/OptImagesSlice";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/redux/store/store";
 import Unblock from "../../../../../assets/icons/Unblock.svg";
-
-function handleUserControls(User: User) {}
+import { setMessages } from "@/redux/slices/chat/ChatSlice";
 
 export default function UserControls() {
   const User = useSelector((state: any) => state.chat.selectedChannelorUser);
   const socket = useSelector((state: any) => state.socket.socket);
+  const dispatch = useDispatch();
+
   const selected = useSelector(
     (state: any) => state.chat.selectedChannelorUser
   );
+
   const { isOpen, onClose } = useDisclosure();
-  const dispatch = useDispatch();
   const allOptImages = useAppSelector(
     (state: any) => state.optImages.optImages
   );
@@ -49,10 +48,10 @@ export default function UserControls() {
   }, [allOptImages, selected]);
 
   useEffect(() => {
-    socket.on(`friendRequestAccepted`, () => {
+    socket.on(`friendRequestAccepted`, (Friend: any) => {
       const newValue = { src: Remove, alt: "Remove from friend list" };
       console.log(`the new value is: `, newValue);
-      Cookies.set(selected.username, JSON.stringify([newValue, optImages[1]]), {
+      Cookies.set(Friend.username, JSON.stringify([newValue, optImages[1]]), {
         expires: 365,
       });
 
@@ -62,47 +61,48 @@ export default function UserControls() {
         return newOptImages;
       });
     });
-    socket.on(`friendRequestRejected`, (Friend: any) => {
 
+    socket.on(`friendRequestRejected`, (Friend: any) => {
       const newValue = { src: AddToFriendList, alt: "Add to friend list" };
       setOptImages((prevOptImages) => {
         const newOptImages = [...prevOptImages];
         newOptImages[0] = newValue;
         return newOptImages;
-
       });
 
       Cookies.set(Friend.username, JSON.stringify([newValue, optImages[1]]), {
         expires: 365,
-
       });
-      
+    });
+
+    socket.on(`userBlocked`, (Friend: any) => {
+      const newValue = { src: Unblock, alt: "Unblock" };
+      setOptImages((prevOptImages) => {
+        const newOptImages = [...prevOptImages];
+        newOptImages[1] = newValue;
+        return newOptImages;
+      });
+
+      console.log(`the new value is: `, optImages);
+      Cookies.set(Friend.username, JSON.stringify([optImages[0], newValue]), {
+        expires: 365,
+      });
     });
 
 
-      socket.on(`userBlocked`, (Friend: any) => {
+    socket?.on(`userBlockedYou`, (Friend: any) => {
 
-        const newValue = { src: Unblock, alt: "Unblock" };
-        setOptImages((prevOptImages) => {
-          const newOptImages = [...prevOptImages];
-          newOptImages[1] = newValue;
-          return newOptImages;
-        });
-        console.log(`the new value is: `, optImages);
-        Cookies.set(Friend.username, JSON.stringify([optImages[0], newValue]), {
-          expires: 365,
-        });
-        
-      });
-      socket?.on(`userBlockedYou`, (Friend: any) => {
-        console.log(`hello from userBlockedYou`);
-      });
+      console.log(Friend.id)
+      socket?.emit(`removeChatUser`, { friendId: Friend.id });
+      dispatch(setMessages([]));
 
+    });
 
     socket?.on(`friendRemoved`, (Friend: any) => {
-      
+      console.log(Friend.username);
 
       const newValue = { src: AddToFriendList, alt: "Add to friend list" };
+
       setOptImages((prevOptImages) => {
         const newOptImages = [...prevOptImages];
         newOptImages[0] = newValue;
@@ -124,7 +124,7 @@ export default function UserControls() {
 
   useEffect(() => {
     const cookies = Cookies.get(selected.username);
-
+    console.log(`cookies`, selected.username);
     if (cookies) {
       setOptImages(JSON.parse(cookies));
     } else {
@@ -150,7 +150,6 @@ export default function UserControls() {
         expires: 365,
       });
     } else if (option === "Remove from friend list") {
-
       socket.emit(`removeFriend`, { friendId: User.id });
       const newValue = { src: AddToFriendList, alt: "Add to friend list" };
       setOptImages((prevOptImages) => {

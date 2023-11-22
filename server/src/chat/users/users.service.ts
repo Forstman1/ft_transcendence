@@ -397,7 +397,7 @@ export class UsersService {
     friendId: Prisma.UserWhereUniqueInput,
   ): Promise<string> {
     try {
-      console.log(User.id, friendId.id);
+   
       const user = await this.prisma.user.findUnique({
         where: { 
           id: User.id,
@@ -585,18 +585,26 @@ export class UsersService {
   //!---------------Message Storing------------------------!//
 
   async createMessage(messageInfo: MessageDto): Promise<string | MessageDto> {
+    
     const user = await this.prisma.user.findUnique({
       where: {
         id: messageInfo.authorName,
       },
     });
+
     if (!user) return `user Not found`;
+
     const reciver = await this.prisma.dMRoom.findUnique({
       where: {
         id: messageInfo.reciverID,
       },
+      include: {
+        roomMembers: true,
+      },
     });
+
     if (!reciver) return `reciver Not found`;
+
     try {
       const message = await this.prisma.userMessage.create({
         data: {
@@ -604,10 +612,13 @@ export class UsersService {
           authorName: user.username,
           authorID: user.id,
           reciverID: reciver.id,
+          reciverName: messageInfo.reciverName,
           createdAt: new Date(),
         },
       });
+
       return message;
+      
     } catch (error) {
       return `${error} could not create message`;
     }

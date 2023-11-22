@@ -66,7 +66,6 @@ function formatTimeAgo(timestamp:any) {
           const response = await fetchuser.json()
           setUser(response)
         } catch (error) {
-          console.log(usermessage)
           const fetchuser = await fetch("http://127.0.0.1:3001/users/getuser/" + usermessage.authorID);
           const response = await fetchuser.json();
           setUser(response);
@@ -77,7 +76,7 @@ function formatTimeAgo(timestamp:any) {
     
     const timestamp = Date.parse(time);
     const formattedTime = formatTimeAgo(timestamp);
-
+ 
     return (<div className='w-full flex gap-[5px] pl-[15px] z-0 '>
       <Avatar className='custom-shadow2' boxSize={12} src={user?.avatarURL} />
       <div className="flex flex-col min-w-[50%] max-w-[70%]">
@@ -155,10 +154,11 @@ function formatTimeAgo(timestamp:any) {
 
     useEffect(() => {
       const fetchData = async () => {
-
-        const fetchuser = await fetch('http://127.0.0.1:3001/users/getuser/' + userId)
-        const response = await fetchuser.json()
-        setUser(response)
+        if (userId) {
+          const fetchuser = await fetch(`http://127.0.0.1:3001/users/getuser/${userId}`);
+          const response = await fetchuser.json()
+          setUser(response)
+        }
       }
       fetchData()
     }, [userId])
@@ -195,16 +195,15 @@ function formatTimeAgo(timestamp:any) {
         }
         else
         {
+          console.log("sifat chi7aja", selected.id, " " + selected.id)
           socket?.emit(`sendPrivateMessage`, {
             reciverId: selected.id,
             message: data.newmessage,
           });
         }
-
       reset({ newmessage: '' });
       scrollToBottom();
     };
-
 
     const getChannelMessages: any = useMutation<any, Error, any>((variables) =>
       fetch('http://127.0.0.1:3001/message/getmessages/' + variables.channelId).then((response) => {
@@ -264,10 +263,11 @@ function formatTimeAgo(timestamp:any) {
 
       });
       socket?.on("receivedPrivateMessage", (data: any) => {
-
-        console.log("waslat chi7aja", data.message);
-
-        dispatch(addMessage(data.message));
+        console.log("ana hna wsalt message private")
+        console.log("selected", user?.id, " " + data.message.authorID)
+        console.log("selectedID", selected?.id, " " + data.message.reciverName)
+        if (selected?.id === data.message.reciverName || selected?.id ===  data.message.authorID)
+          dispatch(addMessage(data.message));
 
       });
 
@@ -281,6 +281,7 @@ function formatTimeAgo(timestamp:any) {
       });
 
       return () => {
+        
         socket?.off('receivedMessage');
         socket?.off('receivedPrivateMessage');
         socket?.off('sendMessage');
@@ -288,8 +289,10 @@ function formatTimeAgo(timestamp:any) {
     }, [selected]);
 
 
+
+
     return (
-      <div className='justify-between flex-col gap-[15px] w-full h-full pt-[120px]'>
+      <div className='justify-between flex-col gap-[15px] h-full pt-[120px] flex-1'>
         <div className=' flex flex-col gap-[10px] overflow-y-scroll no-scrollbar z-0 h-[95%] pb-10' ref={chatContainer}>
 
 

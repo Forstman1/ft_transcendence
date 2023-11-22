@@ -13,6 +13,7 @@ import { motion } from "framer-motion";
 import ChatWindow from "@/components/elements/ChatPage/ChatWindow";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
+import LeftSidebar from "@/components/elements/ChatPage/leftsidebar/LeftSidebar";
 
 
 
@@ -29,14 +30,19 @@ export default function ChatPage() {
 
 
   const handleWindowResize = () => {
-    if (window.innerWidth <= 1024) {
+
+    if (window.innerWidth < 1024) {
+
       dispatch(setRight(false));
       dispatch(setMidle(false));
       dispatch(setLeft(false));
+
     } else {
+
       dispatch(setRight(true));
       dispatch(setMidle(true));
       dispatch(setLeft(true));
+
     }
   };
 
@@ -71,6 +77,7 @@ export default function ChatPage() {
 
   return (
     <div className="Chat_sub_div2 flex w-full ">
+      <LeftSidebar />
       <ChatWindow />
       {selected !== null  && selected !== undefined && "username" in selected ? (
         <RightSidebar />
@@ -78,7 +85,7 @@ export default function ChatPage() {
         <RightSidebarChannel />
       ) : (
         <Box
-          className="RightSideBar w-[375px] absolute md:block bg-opacity-80 max-md:backdrop-blur-xl md:static md:w-[465px] h-full overflow-y-auto border-l-[3px] border-l-black pb-28 right-0"
+          className="RightSideBar w-[25%] absolute md:block bg-opacity-80 max-md:backdrop-blur-xl md:static md:w-[465px] h-full overflow-y-auto border-l-[3px] border-l-black pb-28 right-0"
           as={motion.div}
           initial={false}
           animate={RightClice.RightValue ? "open" : "closed"}

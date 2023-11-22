@@ -113,8 +113,7 @@ export class MessageService {
                     roomMessages: true,
                 }
             })
-            console.log(DMroom.roomMessages)
-            if (!DMroom.roomMessages)
+            if (!DMroom)
                 return []
             return DMroom.roomMessages
           
