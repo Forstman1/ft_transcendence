@@ -49,10 +49,10 @@ export default function Profile({params}: any) {
     useEffect(() => {
         interval = setInterval(()=> {
             const profilePath = pathname.split('/')[1]; // Extract the second part of the path
-            console.log(pathname);
+            // console.log(pathname);
             if (profilePath === 'profile') {
               // Do something with the '/profile/' path
-              console.log('User is on the profile page');
+            //   console.log('User is on the profile page');
             }
             refetch();
         }, 5000);
@@ -124,11 +124,11 @@ export default function Profile({params}: any) {
             </Box>
             {/* Stats */}
             <Box className='flex-grow mb-8 p-0 mr-0 border-solid border-2 border-gray-900 custom-shadow rounded' p={4} color="black">
-                <Flex className='flex-wrap md:flex-nowrap'>
-                    <div className='bg-gray-200 border-r-2 border-black w-[100%] md:basis-1/12'>
+                <Flex className='flex-wrap md:flex-nowrap lg:w-full lg:h-full'>
+                    <div className='bg-gray-200 border-r-2 border-black w-full lg:h-full md:basis-1/12'>
                         <h4 className='font-bold text-center bg-black text-white text-xl border-r border-white md:h-[15%]'>Team</h4>
                          <div className='md:h-[85%]'>
-                            <Coalition type={'pandora'} />
+                            <Coalition type={'bios'} />
                          </div>
                     </div>
                     <div className=' border-r-2 border-black w-[100%] md:basis-7/12'>

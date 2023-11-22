@@ -239,7 +239,7 @@ async updateUser(userData: UpdateUserDto, avatar: Express.Multer.File, userId: s
         data: updateData,
       });
 
-      return updatedUser;
+      return 'User informations updated successfully';
     } catch (error) {
       throw new Error(`Error updating user: ${error.message}`);
     }

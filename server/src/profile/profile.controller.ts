@@ -1,6 +1,5 @@
 import { Controller, Get, Put, Body, Param, UseInterceptors, UploadedFile, BadRequestException, UseGuards, Request } from '@nestjs/common';
 import { StreamableFile } from '@nestjs/common';
-import { validate } from 'class-validator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProfileService } from './profile.service';
 import { UpdateUserDto } from './dto/updateuser-profile.dto';
@@ -89,15 +88,62 @@ export class ProfileController {
     @Body() body: UpdateUserDto,
     ): Promise<any> {
       try {
-        // if (!avatar) {
-        //     throw new BadRequestException('File not provided');
-        // }
 
         return this.profileService.updateUser(body, avatar, request.user.id);
       } catch (error) {
         throw new BadRequestException(error.message);
       }
     }
+
+/*----------------------------------------------------------------------------------------------------------------------------------------*/
+
+    // @Put('settings')
+    // @UseInterceptors(
+    // FileInterceptor('avatar', {
+    //     storage: diskStorage({
+    //     destination: './uploads',
+    //     filename: (req, file, cb) => {
+    //         const fileExtension = file.originalname.split('.')[1];
+    //         const newfilename = uuid() + '.' + fileExtension;
+    //         cb(null, newfilename);
+    //     },
+    //     }),
+    //     fileFilter: async (req, file, cb) => {
+    //     try {
+    //         // Check the file type
+    //         const buffer = file.buffer;
+    //         const type = await imageType(buffer);
+    //         if (!type || !type.mime.startsWith('image/')) {
+    //             throw new BadRequestException('Invalid file type. Only image files (jpg, jpeg, png, gif) are allowed.');
+    //         }
+
+    //         // Check the file extension
+    //         const fileExtension = type.ext;
+    //         const allowedExtensionsRegex = /(jpg|jpeg|png|gif)$/i;
+    //         const isValidExtension = allowedExtensionsRegex.test(fileExtension);
+    //         if (!isValidExtension) {
+    //             throw new BadRequestException('Invalid file type. Only image files (jpg, jpeg, png, gif) are allowed.');
+    //         }
+
+    //         cb(null, true);
+    //     } catch (error) {
+    //         cb(error, false);
+    //     }
+    //     },
+    // }),
+    // )
+    // async updateUser(
+    // @UploadedFile() avatar: Express.Multer.File,
+    // @Request() request: any,
+    // @Body() body: UpdateUserDto,
+    // ): Promise<any> {
+    // try {
+    //     return this.profileService.updateUser(body, avatar, request.user.id);
+    // } catch (error) {
+    //     throw new BadRequestException(error.message);
+    // }
+
+    // }
 
 /*----------------------------------------------------------------------------------------------------------------------------------------*/
     @Get('avatars/:filename')
