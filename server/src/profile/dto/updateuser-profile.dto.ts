@@ -13,9 +13,6 @@ export class UpdateUserDto {
   @IsNotEmpty({ message: 'Coalition cannot be empty' })
   @IsString({ message: 'Coalition must be a string' })
   coalition: string;
-
-  @IsNotEmpty({ message: 'IsTwoFactor cannot be empty' })
-  isTwoFactor: string;
   
   avatar: string;
   

@@ -172,6 +172,7 @@ async calculateMatchesResults(userId: string): Promise<matchesResultsType | null
         const user: userProfileData = await this.prismaService.user.findUnique({
             where: { id: userId },
             select: {
+              id: true,
               username: true,
               fullname: true,
               email: true,
@@ -214,7 +215,7 @@ async calculateMatchesResults(userId: string): Promise<matchesResultsType | null
 /*----------------------------------------------------------------------------------------------------------------------------------------*/
 
 async updateUser(userData: UpdateUserDto, avatar: Express.Multer.File, userId: string): Promise<any> {
-    const { fullname, username, coalition, isTwoFactor } = userData;
+    const { fullname, username, coalition } = userData;
 
     const updateData: any = {};
     
@@ -226,9 +227,6 @@ async updateUser(userData: UpdateUserDto, avatar: Express.Multer.File, userId: s
     }
     if (coalition) {
       updateData.coalitionName = coalition;;
-    }
-    if (isTwoFactor && isTwoFactor == 'true' || isTwoFactor == 'false') {
-      updateData.twoFactorEnabled = isTwoFactor == 'true'? true : false
     }
     if (avatar) {
       updateData.avatarURL = `${process.env.SERVER_URL}profile/avatars/${avatar.filename}`;

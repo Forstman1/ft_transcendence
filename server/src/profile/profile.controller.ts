@@ -1,5 +1,5 @@
 import { Controller, Get, Put, Body, Param, UseInterceptors, UploadedFile, BadRequestException, UseGuards, Request } from '@nestjs/common';
-import { StreamableFile } from '@nestjs/common';
+import { StreamableFile, ParseFilePipe, FileTypeValidator, MaxFileSizeValidator } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProfileService } from './profile.service';
 import { UpdateUserDto } from './dto/updateuser-profile.dto';
@@ -74,7 +74,7 @@ export class ProfileController {
             const allowedExtensionsRegex = /(jpg|jpeg|png|gif)$/i;
             const isValidExtension = allowedExtensionsRegex.test(fileExtension);
             console.log('&&&&&&&&&&&&&&&&&&&&_______________________________________________________________________________________&&&&&&&&&&&&&&&&&');
-            console.log(file.mimetype);
+
             if (file.mimetype.startsWith('image/') && isValidExtension) {
                 cb(null, true);
             } else {
@@ -83,7 +83,15 @@ export class ProfileController {
         }
     }))
     async updateUser(
-    @UploadedFile() avatar: Express.Multer.File,
+    @UploadedFile(
+        new ParseFilePipe({
+            validators: [
+              new MaxFileSizeValidator({ maxSize: 5000 }),
+              new FileTypeValidator({ fileType: /[jpg|jpeg|png]/ }),
+            ],
+          }),
+
+    ) avatar: Express.Multer.File,
     @Request() request: any,
     @Body() body: UpdateUserDto,
     ): Promise<any> {
@@ -94,6 +102,50 @@ export class ProfileController {
         throw new BadRequestException(error.message);
       }
     }
+
+// /*----------------------------------------------------------------------------------------------------------------------------------------*/
+
+//     @Put('settings')
+//     @UseInterceptors(FileInterceptor('avatar', { 
+//         storage: diskStorage({
+//             destination: './uploads',
+//             filename: (req, file, cb) => {
+//                 const fileExtension = file.originalname.split('.')[1];
+//                 const newfilename = uuid() + '.' + fileExtension;
+//                 cb(null, newfilename);
+//             }
+//         }),
+//         fileFilter: (req, file, cb) => {
+//             const fileExtension = (file.originalname.match(/\.(jpg|jpeg|png|gif)$/i) || [])[1];
+//             const allowedExtensionsRegex = /(jpg|jpeg|png|gif)$/i;
+//             const isValidExtension = allowedExtensionsRegex.test(fileExtension);
+//             console.log('&&&&&&&&&&&&&&&&&&&&_______________________________________________________________________________________&&&&&&&&&&&&&&&&&');
+
+//             (async () => {
+//                 console.log(await FileType.fromBuffer(file.buffer));
+//                 //=> {ext: 'png', mime: 'image/png'}
+//             })();
+//             // console.log(FileType.fromBuffer(file.buffer));
+//             // console.log(file.mimetype);
+//             if (file.mimetype.startsWith('image/') && isValidExtension) {
+//                 cb(null, true);
+//             } else {
+//                 cb(new BadRequestException({'avatar':'Invalid file type'}), false);
+//             }
+//         }
+//     }))
+//     async updateUser(
+//     @UploadedFile() avatar: Express.Multer.File,
+//     @Request() request: any,
+//     @Body() body: UpdateUserDto,
+//     ): Promise<any> {
+//       try {
+
+//         return this.profileService.updateUser(body, avatar, request.user.id);
+//       } catch (error) {
+//         throw new BadRequestException(error.message);
+//       }
+//     }
 
 /*----------------------------------------------------------------------------------------------------------------------------------------*/
 

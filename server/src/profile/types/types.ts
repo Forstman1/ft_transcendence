@@ -35,6 +35,7 @@ export type matchesHistoryType =  Array<{
 }>
 
 export type userProfileData = {
+    id: string;
     username: string;
     fullname: string;
     email: string;
