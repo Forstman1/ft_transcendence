@@ -56,7 +56,7 @@ export class UserService {
   }
 
   /* ------------------------------------------------------------------------------------------------------------------ */
-
+ 
   async isTwoFactorEnabled(
     userInput: Prisma.UserWhereUniqueInput,
   ): Promise<boolean> {

@@ -1,16 +1,25 @@
-
 ARG POSTGRES_USER
 ARG POSTGRES_HOST
 
 FROM node:20-alpine3.17
 
-RUN mkdir -p /usr/src/app
-
-WORKDIR /usr/src/app
-COPY . .
-RUN cd /usr/src/app && chmod +x init.sh
 RUN apk --update add postgresql-client
 
+WORKDIR /usr/src/app
+
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+
+RUN chmod +x init.sh
+
+
 EXPOSE 3001
+
 ENTRYPOINT ["sh", "/usr/src/app/init.sh"]
+
 CMD ["npm", "run", "start:dev"]

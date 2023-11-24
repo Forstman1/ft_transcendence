@@ -138,43 +138,43 @@ const NUM_USER_MESSAGES = 50;
 //     await prisma.$disconnect();
 //   });
 
-async function seed() {
-  const numberOfUsers = 2;
-  const password = await argon2.hash('password');
-  // create users
-  for (let numUser = 0; numUser < numberOfUsers; numUser++) {
-    await prisma.user.create({
-      data: {
-        username: faker.internet.userName(),
-        email: faker.internet.email(),
-        fullname: faker.internet.userName(),
-        avatarURL: faker.image.avatar(),
-        // accessToken: faker.string.uuid(),
-        // refreshToken: faker.string.uuid(),
-        isOnline: faker.datatype.boolean(),
-        hasTwoFA: faker.datatype.boolean(),
-        // games: {
-        //   create: {
-        //     status: 'win',
-        //     opponentId: '1',
-        //     userScore: 5,
-        //     opponentScore: 3,
-        //     rounds: 5,
-        //     matches: 3,
-        //   },
-        //   }
-      },
-    });
-  }
-  console.log('seeded successfully');
-  console.log(`generated users`);
-}
-seed()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+// async function seed() {
+//   const numberOfUsers = 2;
+//   const password = await argon2.hash('password');
+//   // create users
+//   for (let numUser = 0; numUser < numberOfUsers; numUser++) {
+//     await prisma.user.create({
+//       data: {
+//         username: faker.internet.userName(),
+//         email: faker.internet.email(),
+//         fullname: faker.internet.userName(),
+//         avatarURL: faker.image.avatar(),
+//         // accessToken: faker.string.uuid(),
+//         // refreshToken: faker.string.uuid(),
+//         isOnline: faker.datatype.boolean(),
+//         hasTwoFA: faker.datatype.boolean(),
+//         // games: {
+//         //   create: {
+//         //     status: 'win',
+//         //     opponentId: '1',
+//         //     userScore: 5,
+//         //     opponentScore: 3,
+//         //     rounds: 5,
+//         //     matches: 3,
+//         //   },
+//         //   }
+//       },
+//     });
+//   }
+//   console.log('seeded successfully');
+//   console.log(`generated users`);
+// }
+// seed()
+//   .then(async () => {
+//     await prisma.$disconnect();
+//   })
+//   .catch(async (e) => {
+//     console.error(e);
+//     await prisma.$disconnect();
+//     process.exit(1);
+//   });

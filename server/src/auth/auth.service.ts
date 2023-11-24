@@ -20,6 +20,7 @@ export class AuthService {
     expires: new Date(Date.now() + 86400000), // 1 day
     maxAge: 86400000,
   };
+  
 
   /* ------------------------------------------------------------------------------------------------------------------ */
 
@@ -42,6 +43,7 @@ export class AuthService {
       id: user.id,
       TwoFA_Success: false,
       isTwoFA_Token: true,
+      
     };
     return this.jwtService.sign(payload);
   }
