@@ -420,6 +420,7 @@ export class GameService {
     return;
   }
 
+  //----------------------------------------------------
   notifyFriend = async (userId: string, friendId: string): Promise<void> => {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -448,7 +449,27 @@ export class GameService {
     return;
   }
 
+  //----------------------------------------------------
   getNotifications = async (userId: string): Promise<any> => {
+    
+    await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        notifications: {
+          where: {
+            AND: [
+              { type: 'gameInvite'},
+              { read: true },
+              { createdAt: { lte: new Date(Date.now() - 86400000) } },
+            ],
+          },
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {

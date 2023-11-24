@@ -12,7 +12,7 @@ import { useAppSelector } from "@/redux/store/store";
 
 import { setMessages } from "@/redux/slices/chat/ChatSlice";
 
-function formatTimeAgo(timestamp: any) {
+export function formatTimeAgo(timestamp: any) {
   const currentTime: any = Date.now();
   const timeDiff = currentTime - timestamp;
   if (timeDiff <= 0) return "Just now";
