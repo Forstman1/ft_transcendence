@@ -13,6 +13,7 @@ import ChatWindow from "@/components/elements/ChatPage/ChatWindow";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import LeftSidebar from "@/components/elements/ChatPage/leftsidebar/LeftSidebar";
+import RestrictedRoute from "@/components/RestrictedRoute";
 
 
 
@@ -73,7 +74,8 @@ export default function ChatPage() {
 
 
   return (
-    <div className="Chat_sub_div2 flex w-full">
+    <RestrictedRoute>
+      <div className="Chat_sub_div2 flex w-full ">
       <LeftSidebar />
       <ChatWindow />
       {selected !== null  && selected !== undefined && "username" in selected ? (
@@ -90,5 +92,6 @@ export default function ChatPage() {
       )
       }
     </div>
+    </RestrictedRoute>
   );
 }

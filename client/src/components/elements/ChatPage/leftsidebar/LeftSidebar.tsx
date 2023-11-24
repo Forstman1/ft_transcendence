@@ -207,7 +207,8 @@ export default function LeftSidebar() {
         if (selected?.id === data.channel.id) {
           if (selected?.channelMember) {
             selected.channelMember.map((data1: any) => {
-              if (data1.userId === userId) dispatch(setChannelMember(data1));
+              if (data1.userId === userId) 
+                dispatch(setChannelMember(data1));
             });
           }
         }
@@ -284,6 +285,7 @@ export default function LeftSidebar() {
       }
       if (data.member && data.member.userId === userId) {
         dispatch(setChannelMember(data.member));
+        socket.emit("getChannels", { userId: userId })
       }
     });
 
@@ -307,8 +309,8 @@ export default function LeftSidebar() {
       }
 
       if (data.member && data.member.userId === userId) {
-        console.log(data.member);
         dispatch(setChannelMember(data.member));
+        socket.emit("getChannels", { userId: userId })
       }
     });
 
@@ -571,6 +573,7 @@ export default function LeftSidebar() {
           onClick={() => {
             onOpen(), setChannelOrUser(true);
           }}
+      
           className="cursor-pointer"
         >
           <Icon boxSize={10} as={SmallAddIcon} />
@@ -581,8 +584,17 @@ export default function LeftSidebar() {
         {channels &&
           channels.length != 0 &&
           channels.map((data: Channel, id: number) => {
-            if (data.name) return <Hashtag key={id} data={data} />;
+            if (data.name) return (
+             <div key={id} className='flex h-14 items-center cursor-pointer justify-between w-[80%] rounded-md hover:bg-zinc-100'
+            style={{    
+              backgroundColor: (selected && selected === data ? "#d4d4d8" : "")
+                }}
+              >
+                <Hashtag key = { id } data = { data } />
+              </div>
+              )
           })}
+         
       </div>
 
       <div className="w-[80%] flex justify-between items-center border-b-black border-b-2 mt-[20px]">
@@ -591,6 +603,7 @@ export default function LeftSidebar() {
           onClick={() => {
             onOpen(), setChannelOrUser(false);
           }}
+          
           className="cursor-pointer"
         >
           <Icon boxSize={10} as={SmallAddIcon} />
@@ -599,14 +612,15 @@ export default function LeftSidebar() {
 
       <div className=" mt-[40px] flex h-[500px] flex-col w-full  gap-1 overflow-y-scroll items-center">
         {Users.map((userData: User, id: number) => (
+
           <Box
             className="group flex justify-between w-[70%]  items-center cursor-pointer h-20 m-2  p-2 rounded-md hover:bg-zinc-300"
             key={id}
             onClick={() => {
               handelClick(id);
             }}
-            style={{
-              backgroundColor: selectedCard === id ? "#d4d4d8" : "",
+            style={{    
+              backgroundColor: (selected && selected === userData ? "#d4d4d8" : ""),
             }}
           >
             <Usercard data={userData} />

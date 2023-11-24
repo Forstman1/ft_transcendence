@@ -1,22 +1,82 @@
-import { Flex } from "@chakra-ui/react";
+import {
+  Switch, FormControl, FormLabel, Text, Modal,
+  ModalOverlay, ModalContent, ModalHeader, ModalFooter,
+  ModalBody, ModalCloseButton, Button, useDisclosure, Center
+} from '@chakra-ui/react'
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import { useMutation } from 'react-query';
+import { enable2FA, disable2FA } from '@/utils/functions/auth/fetchingUserData';
+import toast from 'react-hot-toast';
 
 
-const QRCodeModal = ({ base64QRCode }: { base64QRCode: string }) => {
+const QRCodeModal = () => {
+  const [isFirstRender, setFirstRender] = useState(true);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isChecked, setChecked] = useState(false);
+  const [isManuallySet, setManuallySet] = useState(false);
+  const [qrcode, setQrcode] = useState('');
+  const enable2fa = useMutation({
+    mutationFn: enable2FA,
+    mutationKey: ['enable2FA'],
+    onError: (error: any) => {
+      setManuallySet(true);
+      setChecked(false);
+      toast.error(error.message);
+    },
+    onSuccess: (response: any) => {
+      setQrcode(response.data.qrcode);
+      onOpen();
+    }
+  });
+  const disable2fa = useMutation({
+    mutationFn: disable2FA,
+    mutationKey: ['disable2FA'],
+    onError: (error: any) => {
+      setManuallySet(true);
+      setChecked(true);
+      toast.error(error.message);
+    },
+    onSuccess: (response: any) => {
+      toast.success(response.data.message);
+    }
+  });
+
+  useEffect(() => {
+    if (isFirstRender) {
+      setFirstRender(false);
+      return;
+    } else if (!isFirstRender && isChecked && !isManuallySet) {
+      enable2fa.mutate();
+    } else if (!isFirstRender && !isChecked && !isManuallySet) {
+      disable2fa.mutate();
+    }
+    setManuallySet(false);
+  }, [isChecked]);
   return (
-    <Flex
-      w="100%"
-      h="100%"
-      justifyContent="center"
-      alignItems="center"
-      bgColor="rgba(0,0,0,0.5)"
-      position="fixed"
-      top="0"
-      left="0"
-      zIndex="999"
-    >
-      <Image alt='QR Code to scan for the 2-Factor Authentiation activation' src={base64QRCode}/>
-    </Flex>
+    <>
+      <FormControl display='flex' alignItems='center'>
+        <FormLabel htmlFor='2fa-enable-disable' mb='0'>
+          Enable 2FA
+        </FormLabel>
+        <Switch id='2fa-enable-disable' isChecked={isChecked} onChange={(e) => setChecked(e.target.checked)} />
+      </FormControl>
+      <Modal onClose={onClose} isOpen={isOpen}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Scan this QR code</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Center>
+              <Image alt='QR Code for the 2FA activation' src={qrcode} width={200} height={200} />
+            </Center>
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={onClose}>Close</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 

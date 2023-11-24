@@ -15,6 +15,7 @@ import {
   Box,
   Avatar,
   Spinner,
+  useToast
 } from "@chakra-ui/react";
 import Image from "next/image";
 import { Search2Icon } from "@chakra-ui/icons";
@@ -41,6 +42,7 @@ export default function GameSearchFriend({ onClose }: Props) {
   const [myFriends, setMyFriends] = useState<any[]>([]);
   const [friendInviteIData, setFriendInviteIData] = useState<any[]>([]);
   const [searchInput, setSearchInput] = useState<string>("");
+  const toast = useToast();
 
   //-------------------playGame------------------------
 
@@ -116,7 +118,17 @@ export default function GameSearchFriend({ onClose }: Props) {
 
   //-----------------------------------------------
 
-  const handleInviteClick = async (friendId: string) => {
+  const handleInviteClick = async (friendId: string, isInGame: string, friendName: string) => {
+    if (isInGame === "true") {
+      toast({
+        title: "Your friend " + friendName + " is in game",
+        description: "Please wait until he finish",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
     await createRoom(friendId);
     setFriendInviteIData((prev) =>
       prev.map((friend) => {
@@ -190,12 +202,13 @@ export default function GameSearchFriend({ onClose }: Props) {
         <div className="flex w-full h-[300px]  flex-col  overflow-y-scroll no-scrollbar">
           {myFriends.length > 0 ? (
             myFriends.map((friend, index) => (
+              friend.isOnline &&
               <Box
                 key={friend.id}
                 className="flex w-[95%] p-2 flex-row justify-between items-center border-2 border-gray-300 rounded-lg  mt-5"
               >
                 <div className="flex flex-row items-center space-x-5">
-                  <Avatar size="md" src={friend.avatar} />
+                  <Avatar size="md" src={friend.avatarURL} />
                   <h1 className="text-lg font-bold">{friend.username}</h1>
                 </div>
                 {!friendInviteIData[index].isInvited ? (
@@ -211,7 +224,7 @@ export default function GameSearchFriend({ onClose }: Props) {
                         height={20}
                       />
                     }
-                    onClick={() => handleInviteClick(friend.id)}
+                    onClick={() => handleInviteClick(friend.id, friend.isInGame, friend.username)}
                   >
                     Invite
                   </Button>

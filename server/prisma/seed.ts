@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker';
 import { PrismaClient } from '@prisma/client';
-import * as argon2 from 'argon2';
 
 const prisma = new PrismaClient();
 
@@ -137,10 +136,9 @@ const NUM_USER_MESSAGES = 50;
 //   .finally(async () => {
 //     await prisma.$disconnect();
 //   });
-
+ 
 async function seed() {
   const numberOfUsers = 2;
-  const password = await argon2.hash('password');
   // create users
   for (let numUser = 0; numUser < numberOfUsers; numUser++) {
     await prisma.user.create({

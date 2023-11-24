@@ -29,7 +29,7 @@ function Componenent({ onClose }: any) {
         const fetchUsers = async () => {
           try {
             const [usersResponse, membersResponse] = await Promise.all([
-              fetch('http://127.0.0.1:3001/users/listusers/' + userId).then((api) => api.json()),
+              fetch('http://127.0.0.1:3001/users/getAllUsers/' + userId).then((api) => api.json()),
               fetch('http://127.0.0.1:3001/channel/getallmembers/' + channel.id).then((api) => api.json())
             ]);
       

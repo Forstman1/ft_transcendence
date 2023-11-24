@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-// import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateMessageDto } from './dto';
-import { MessageDto } from '../users/dtos/user.dto';
 import { UserMessage } from '@prisma/client';
 
 
@@ -124,7 +122,7 @@ export class MessageService {
           
         }
         catch (error) {
-            
+            return []
             return `${error} could not retrieve messages`
         }
     }

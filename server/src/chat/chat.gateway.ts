@@ -268,6 +268,49 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
 
   //!---------------Friend Request------------------------!//
 
+
+  @SubscribeMessage(`getNotifications`)
+  async getNotifications(
+    @ConnectedSocket() client: Socket,
+  ): Promise<any> {
+    try {
+
+      const notifications = await this.userService.getNotifications(client.handshake.auth.id);
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+        this.server.to(socket.id).emit(`getNotifications`, notifications);
+      });
+      // client.emit(`getNotifications`, notifications);
+    } catch (error) {
+      console.error(`Error in getting notifications`, error);
+    }
+  }
+
+
+@SubscribeMessage(`readNotification`)
+async readNotification(
+  @ConnectedSocket() client: Socket,
+
+): Promise<any> {
+  try {
+    const User: Prisma.UserWhereUniqueInput = {
+      id: client.handshake.auth.id,
+    };
+    
+    let notifications = await this.userService.getNotifications(client.handshake.auth.id);
+    notifications.map(async (notification) => {
+      await this.userService.readNotification(notification.id);
+    })
+    notifications = await this.userService.getNotifications(client.handshake.auth.id);
+
+    this.connectedUsers[client.handshake.auth.id].map((socket) => {
+      this.server.to(socket.id).emit(`getNotifications`, notifications);
+    });
+  } catch (error) {
+    console.error(`Error in reading notification`, error);
+  }
+}
+
+
   @SubscribeMessage(`sendFreindRequest`)
   async sendFreindRequest(
     @ConnectedSocket() client: Socket,
@@ -284,10 +327,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
         User,
         friend,
       );
+      await this.userService.notifyFriendRequest(client.handshake.auth.id, data.friendId);
       //! Will use friendRequest to check if the request was sent or not or if it was sent before
       const friendId = await this.userService.getUser(User);
+      const notifications = await this.userService.getNotifications(data.friendId);
       if (friendSocket) {
         for (const socket of friendSocket) {
+          this.server.to(socket.id).emit(`getNotifications`, notifications);
           this.server.to(socket.id).emit(`receivedFreindRequest`, friendId);
         }
       }
@@ -309,13 +355,22 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       const responce = await this.userService.acceptFriendRequest(User, friend);
       const Friend = await this.userService.getUser(User);
       
+
+      await this.userService.removeNotification(client.handshake.auth.id, data.friendId)
+
+      // const userId = await this.userService.getUser(User);
       if (responce === `Friend request accepted`) {
+      const notifications = await this.userService.getNotifications(client.handshake.auth.id);
         const userSockets = this.connectedUsers[friend.id];
         if (userSockets) {
           for (const socket of userSockets) {
             this.server.to(socket.id).emit(`friendRequestAccepted`, Friend);
           }
         }
+        this.connectedUsers[client.handshake.auth.id].map((socket) => {
+          this.server.to(socket.id).emit(`getNotifications`, notifications);
+          this.server.to(socket.id).emit(`friendRequestAccepted`);
+        })
       }
     } catch (error) {
       console.error(`Error in accepting freind request`, error);
@@ -333,10 +388,19 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       };
       const UserId = await this.userService.getUser(User);
       const userSockets = this.connectedUsers[data.friendId];
+      // await this.userService.removeNotification(client.handshake.auth.id, data.friendId)
+
+      await this.userService.removeNotification(client.handshake.auth.id, data.friendId)
+      const notifications = await this.userService.getNotifications(client.handshake.auth.id);
+
       for (const socket of userSockets) {
         this.logger.log(`here i'm sending ` + socket.id);
         this.server.to(socket.id).emit(`friendRequestRejected`, UserId);
       }
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+        this.server.to(socket.id).emit(`getNotifications`, notifications);
+        this.server.to(socket.id).emit(`friendRequestRejected`);
+      })
     } catch (error) {
       console.error(`Error in rejecting freind request`, error);
     }
@@ -411,7 +475,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       data.channelId,
     );
 
-    const user: any = await this.userService.getUser(client.handshake.auth.id);
+    const user: any = await this.userService.getUserbyId(client.handshake.auth.id);
 
     if (channel && user) {
       this.connectedUsers[client.handshake.auth.id].map((socket) => {
@@ -434,7 +498,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     const channel: any = await this.channelService.getchannelinfo(
       data.channelId,
     );
-    const user = await this.userService.getUser(client.handshake.auth.id);
+    const user = await this.userService.getUserbyId(client.handshake.auth.id);
     const member: any = await this.channelService.getchannelmemberinfo(
       data.channelId,
       client.handshake.auth.id,
@@ -480,7 +544,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     console.log('createChannel ', data);
 
     try {
-      const user = await this.userService.getUser(data.userId);
+      const user = await this.userService.getUserbyId(data.userId);
 
       const channel: any = await this.channelService.createchannel(data);
       console.log(channel);
@@ -521,7 +585,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       let channel: any = await this.channelService.getchannelinfo(
         data.channelId,
       );
-      const user: any = await this.userService.getUser(
+      const user: any = await this.userService.getUserbyId(
         client.handshake.auth.id,
       );
 
@@ -591,27 +655,26 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     @MessageBody() data: any,
   ): Promise<any> {
     try {
-      const channel: any = await this.channelService.getchannelinfo(
-        data.channelId,
-      );
-      const user: any = await this.userService.getUser(
-        client.handshake.auth.id,
-      );
-      const channelStatus = await this.channelService.leaveChannel(
-        channel.name,
-        client.handshake.auth.id,
-      );
-      const channels = await this.channelService.getallchannels(
-        client.handshake.auth.id,
-      );
+      // const channel: any = await this.channelService.getchannelinfo(
+      //   data.channelId,
+      // );
+      // const user: any = await this.userService.getUser(
+      //   client.handshake.auth.id,
+      // );
+      // const channelStatus = await this.channelService.leaveChannel(
+      //   channel.name,
+      //   client.handshake.auth.id,
+      // );
+      // const channels = await this.channelService.getallchannels(
+      //   client.handshake.auth.id,
+      // );
 
-      this.server
-        .to(channel.id)
-        .emit('channelLeft', {
-          channelId: data.channelId,
-          message: user.username + ' left the channel',
-          userId: client.handshake.auth.id,
-        });
+      const channel: any = await this.channelService.getchannelinfo(data.channelId);
+      const user: any = await this.userService.getUserbyId(client.handshake.auth.id);
+      const channelStatus = await this.channelService.leaveChannel(channel.name, client.handshake.auth.id);
+      const channels = await this.channelService.getallchannels(client.handshake.auth.id);
+
+      this.server.to(channel.id).emit('channelLeft', { channelId: data.channelId, message: user.username + " left the channel", userId: client.handshake.auth.id });
 
       const members = await this.channelService.getallmembers(data.channelId);
       this.server
@@ -695,7 +758,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
         client.handshake.auth.id,
         data.adminId,
       );
-      const user: any = await this.userService.getUser(data.adminId);
+      const user: any = await this.userService.getUserbyId(data.adminId);
 
       if (admin.status === "This member can't be set as an administrator.") {
         this.connectedUsers[client.handshake.auth.id].map((socket) => {
@@ -732,7 +795,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
         client.handshake.auth.id,
         data.adminId,
       );
-      const user: any = await this.userService.getUser(data.adminId);
+      const user: any = await this.userService.getUserbyId(data.adminId);
 
       if (member.status === "This administrator can't be removed.") {
         this.connectedUsers[client.handshake.auth.id].map((socket) => {
@@ -764,7 +827,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       const channel: any = await this.channelService.getchannelinfo(
         data.channelId,
       );
-      const user = await this.userService.getUser(client.handshake.auth.id);
+      const user = await this.userService.getUserbyId(client.handshake.auth.id);
 
       if (channel && user) {
         const newchannel: any = await this.channelService.setpassword(
@@ -774,10 +837,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
         );
 
         if (newchannel.status == 'Password is set. Channel is private now') {
-          this.server.to(channel.id).emit('setpassword', {
-            status: 'Password is set. Channel is private now',
-            channel: newchannel.channel,
-          });
+          this.server
+            .to(channel.id)
+            .emit('setpassword', {
+              status: 'Password is set. Channel is protected now',
+              channel: newchannel.channel,
+            });
         } else if (
           newchannel.status === 'You are not the owner of the channel'
         ) {
@@ -813,7 +878,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       const channel: any = await this.channelService.getchannelinfo(
         data.channelId,
       );
-      const user = await this.userService.getUser(client.handshake.auth.id);
+      const user = await this.userService.getUserbyId(client.handshake.auth.id);
 
       if (channel && user) {
         const newchannel: any = await this.channelService.removepassword(
@@ -863,7 +928,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       const channel: any = await this.channelService.getchannelinfo(
         data.channelId,
       );
-      const user = await this.userService.getUser(client.handshake.auth.id);
+      const user = await this.userService.getUserbyId(client.handshake.auth.id);
 
       if (channel && user) {
         const newchannel: any = await this.channelService.changepassword(
@@ -955,14 +1020,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     @MessageBody() data: any,
   ) {
     try {
-      console.log(
-        'channel id ',
-        data.channelId,
-        ' user id ',
-        client.handshake.auth.id,
-        ' member id ',
-        data.memberId,
-      );
+
 
       const channel: any = await this.channelService.getchannelinfo(
         data.channelId,
@@ -1084,7 +1142,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       this.connectedUsers[client.handshake.auth.id].map((socket) => {
         this.server
           .to(socket.id)
-          .emit('inviteMember', { status: "member can't be invited1" });
+          .emit('inviteMember', { status: "member can't be invited" });
       });
     }
   }

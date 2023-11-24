@@ -116,32 +116,32 @@ function formatTimeAgo(timestamp:any) {
 
 
 
-  export default function ChatWindow() {
+export default function ChatWindow() {
 
 
 
 
-    const { handleSubmit, register, reset } = useForm<any>();
-    const chatContainer = useRef<any>(null);
+  const { handleSubmit, register, reset } = useForm<any>();
+  const chatContainer = useRef<any>(null);
 
-    const selected = useSelector((state: any) => state.chat.selectedChannelorUser);
-    const messages: ChannelMessage[] = useSelector((state: any) => state.chat.messages);
-    const userId = useSelector((state: any) => state.socket.userID)
-    const dispatch = useDispatch();
+  const selected = useSelector((state: any) => state.chat.selectedChannelorUser);
+  const messages: ChannelMessage[] = useSelector((state: any) => state.chat.messages);
+  const userId = useSelector((state: any) => state.socket.userID)
+  const dispatch = useDispatch();
 
-    const [user, setUser]: any = useState()
-    const toast = useToast()
-    const socket = useAppSelector((state) => state.socket.socket);
+  const [user, setUser]: any = useState()
+  const toast = useToast()
+  const socket = useAppSelector((state) => state.socket.socket);
     
-    const scrollToBottom = () => {
-      if (chatContainer.current) {
-        chatContainer.current.scrollTop = chatContainer.current.scrollHeight;
-      }
-    };
+  const scrollToBottom = () => {
+    if (chatContainer.current) {
+      chatContainer.current.scrollTop = chatContainer.current.scrollHeight;
+    }
+  };
 
-    useEffect(() => {
-      scrollToBottom();
-    }, [messages]);
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
 
 
@@ -152,7 +152,7 @@ function formatTimeAgo(timestamp:any) {
         dispatch(setLeft(false));
       }
     }
-
+  
 
     useEffect(() => {
       const fetchData = async () => {
@@ -165,26 +165,24 @@ function formatTimeAgo(timestamp:any) {
       fetchData()
     }, [userId])
 
-    const handleNewMessage = async (data: any) => {
+  const handleNewMessage = async (data: any) => {
 
-      if (data.newmessage.trim() === '')
-        return;
-      if (selected == null)
-      {
-        reset({ newmessage: '' });
-        return 
-      }
-      if (data.newmessage.length > 500)
-      {
-        toast({
-          title: "Message too long",
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-        })
-        reset({ newmessage: '' });
-        return 
-      }
+    if (data.newmessage.trim() === '')
+      return;
+    if (selected == null) {
+      reset({ newmessage: '' });
+      return
+    }
+    if (data.newmessage.length > 500) {
+      toast({
+        title: "Message too long",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      })
+      reset({ newmessage: '' });
+      return
+    }
 
         if ('name' in selected)
         {
@@ -209,50 +207,51 @@ function formatTimeAgo(timestamp:any) {
       fetch('http://127.0.0.1:3001/message/getmessages/' + variables.channelId).then((response) => {
         return response.json()
 
-      }).catch((error) => {
-        return error
-      }))
+    }).catch((error) => {
+      return error
+    }))
 
 
-      const getUserMessages: any = useMutation<any, Error, any>((variables) =>
-        fetch('http://127.0.0.1:3001/message/getMessagesUsers/' + variables.userId + '/' + variables.reciverId).then((response) => {
-        return response.json()
+  const getUserMessages: any = useMutation<any, Error, any>((variables) =>
+    fetch('http://127.0.0.1:3001/message/getMessagesUsers/' + variables.userId + '/' + variables.reciverId).then((response) => {
+      return response.json()
 
-      }).catch((error) => {
-        return error
-      }))
+    }).catch((error) => {
+      return error
+    }))
+  
 
-    useEffect(() => {
+  useEffect(() => {
 
-      const fetchChannelMessages = async () => {
-        let messages: ChannelMessage[] = await getChannelMessages.mutateAsync({
-          channelId: selected?.id,
-        })
-        if (messages.length != 0) {
-          dispatch(setMessages(messages))
-        }
-        else
-          dispatch(setMessages([]))
+    const fetchChannelMessages = async () => {
+      let messages: ChannelMessage[] = await getChannelMessages.mutateAsync({
+        channelId: selected?.id,
+      })
+      if (messages.length != 0) {
+        dispatch(setMessages(messages))
       }
+      else
+        dispatch(setMessages([]))
+    }
 
-      const fetchUserMessages = async () => {
-        let messages: ChannelMessage[] = await getUserMessages.mutateAsync({
-          userId: userId,
-          reciverId: selected?.id
-        })
-        if (messages.length != 0) {
-          dispatch(setMessages(messages))
-        }
-        else
-          dispatch(setMessages([]))
+    const fetchUserMessages = async () => {
+      let messages: ChannelMessage[] = await getUserMessages.mutateAsync({
+        userId: userId,
+        reciverId: selected?.id
+      })
+      if (messages.length != 0) {
+        dispatch(setMessages(messages))
       }
+      else
+        dispatch(setMessages([]))
+    }
 
 
-      if (selected  && 'name' in selected && selected.id != null)
-        fetchChannelMessages()
+    if (selected && 'name' in selected && selected.id != null)
+      fetchChannelMessages()
 
-      if (selected && 'username' in selected && selected.id != null)
-        fetchUserMessages()
+    if (selected && 'username' in selected && selected.id != null)
+      fetchUserMessages()
 
       socket?.on('receivedMessage', (data: any) => {
         if (selected?.id === data.channelId) {
@@ -264,16 +263,16 @@ function formatTimeAgo(timestamp:any) {
         if (selected?.id === data.message.reciverName || selected?.id ===  data.message.authorID)
           dispatch(addMessage(data.message));
 
-      });
+    });
 
-      socket?.on('sendMessage', (data: any) => {
-        toast({
-          title: data.status,
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-        })
-      });
+    socket?.on('sendMessage', (data: any) => {
+      toast({
+        title: data.status,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      })
+    });
 
       return () => {
         
@@ -284,43 +283,32 @@ function formatTimeAgo(timestamp:any) {
     }, [selected]);
 
 
-
-
     return (
       <div className='justify-between flex-col gap-[15px] h-full pt-[120px] flex-1'>
         <div className=' flex flex-col gap-[10px] overflow-y-scroll no-scrollbar z-0 h-[95%] pb-12' ref={chatContainer}>
 
 
-          {(messages && messages.length != 0) && (messages.map((message: ChannelMessage, index: number) => {
-            if (message?.authorName === user?.username) {
+        {(messages && messages.length != 0) && (messages.map((message: ChannelMessage, index: number) => {
+          if (message?.authorName === user?.username) {
               
-              return <Own_Message key={index} message={message} user={user} />
-            }
-            return <Message_other key={index} usermessage={message} message={message.content} sender={message.authorName} time={message.createdAt} />
-          }))}
+            return <Own_Message key={index} message={message} user={user} />
+          }
+          return <Message_other key={index} usermessage={message} message={message.content} sender={message.authorName} time={message.createdAt} />
+        }))}
 
-        </div>
-        <form onSubmit={handleSubmit(handleNewMessage)} className='h-[55px] mb-[15px] flex justify-around items-center'>
-          <Input {...register("newmessage")} className='bg-[#D9D9D9] border-2 rounded-ld w-[90%] border-black h-[100%]' placeholder='Type your message here ...'
-            onClick={() => { HideMobileSideBars() }}
-          />
-          <button
-            type="submit"
-            className="bg-black w-[50px] rounded-md cursor-pointer flex justify-start items-center h-[100%]"
-          >
-            
-            <Image className=" w-[40px] " src={arrow} alt="arrow" />
-          </button>
-        </form>
       </div>
-    )
-  }
-
-
-
-
-
-
-
-
-
+      <form onSubmit={handleSubmit(handleNewMessage)} className='h-[55px] mb-[15px] flex justify-around items-center'>
+        <Input {...register("newmessage")} className='bg-[#D9D9D9] border-2 rounded-ld w-[90%] border-black h-[100%]' placeholder='Type your message here ...'
+          onClick={() => { HideMobileSideBars() }}
+        />
+        <button
+          type="submit"
+          className="bg-black w-[50px] rounded-md cursor-pointer flex justify-start items-center h-[100%]"
+        >
+            
+          <Image className=" w-[40px] " src={arrow} alt="arrow" />
+        </button>
+      </form>
+    </div>
+  )
+}
