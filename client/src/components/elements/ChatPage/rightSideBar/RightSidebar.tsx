@@ -8,6 +8,8 @@ import InviteToaGame from "../../../../../assets/icons/InviteToaGame.svg";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useToast } from "@chakra-ui/react";
+import GameModesModal from "@/app/gamePage/ui/GameModesModal";
+import { useDisclosure } from "@chakra-ui/react";
 
 import UserControls from "./UserControls";
 import { useSelector } from "react-redux";
@@ -15,6 +17,8 @@ import { useSelector } from "react-redux";
 
 export default function RightSidebar() {
   const { RightClice } = useSelector((state: any) => state.mobile);
+  const friend = useSelector((state: any) => state.chat.selectedChannelorUser);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const toast = useToast();
   const User = useSelector((state: any) => state.chat.selectedChannelorUser);
@@ -34,6 +38,20 @@ export default function RightSidebar() {
         stiffness: 100,
       },
     },
+  };
+
+  const handelInviteGame = () => {
+    onOpen();
+    // toast({
+    //   title: "Invitation sent",
+    //   position: "bottom-right",
+    //   status: "success",
+    //   duration: 1000,
+    //   containerStyle: {
+    //     width: 300,
+    //     height: 100,
+    //   },
+    // });
   };
 
   return (
@@ -96,24 +114,19 @@ export default function RightSidebar() {
           />
           <Text
             className="text-2xl cursor-pointer"
-            onClick={() =>
-              toast({
-                title: "Invitation sent",
-                position: "bottom-right",
-                status: "success",
-                duration: 1000,
-                containerStyle: {
-                  width: 300,
-                  height: 100,
-                },
-              })
-            }
+            onClick={() => handelInviteGame()}
           >
             Invite to a game
           </Text>
         </Box>
         <UserControls />
       </Box>
+      <GameModesModal
+          isOpen={isOpen}
+          onClose={onClose}
+          gameType="chatGame"
+          friend={friend}
+        />
     </Box>
   );
 }
