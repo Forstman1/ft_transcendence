@@ -35,7 +35,7 @@ export default function MobileFooter() {
           
           >
             <HiOutlineChatBubbleLeftRight/>
-            Chat List
+            List
           </Button>
           <Button className="h-14 w-32 gap-2 text-xl flex rounded-3xl"
           onClick={() => {
