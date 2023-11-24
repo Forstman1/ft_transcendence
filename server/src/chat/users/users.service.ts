@@ -146,6 +146,50 @@ export class UsersService {
     }
   }
 
+  async getAcceptedFriendRequests(
+    id: Prisma.UserWhereUniqueInput,
+  ): Promise<User[] | string> { 
+    try { 
+      const user = await this.prisma.user.findUnique({
+        where: id,
+      });
+      if (!user) {
+        return 'User not found';
+      }
+      const friendRequests = await this.prisma.friendRequest.findMany({
+        where: {
+          OR: [
+            {
+              fromUserId: user.id,
+              status: 'accepted',
+            },
+          ],
+        },
+        include: {
+          toUser: true,
+        }
+      });
+
+      const alreadyFriends = await this.prisma.user.findMany({
+        where: {
+          friends: {
+            some: {
+              id: user.id,
+            },
+          },
+        },
+      });
+      const friends = friendRequests.map((friendRequest) => friendRequest.toUser);
+      const  respondedFriends = friends.filter((friend) => {
+        return !alreadyFriends.some((alreadyFriend) => alreadyFriend.id === friend.id);
+      });
+      return respondedFriends;
+    }
+    catch (error) {
+      return [];
+    }
+  }
+
   async declineFriendRequest(
     id: Prisma.UserWhereUniqueInput,
     friendId: Prisma.UserWhereUniqueInput,
@@ -361,9 +405,6 @@ export class UsersService {
           blockedBy: true,
         },
       });
-      console.log('user.friends:', user.friends);
-      console.log('Blocked.blockedBy:', Blocked.blockedBy);
-      console.log('isBlocked: ', user.friends.includes(Blocked.blockedBy[0]));
       const friendsList = user.friends.filter((friend) => {
         return !Blocked.blockedBy.some(
           (blockedFriend) => blockedFriend.id === friend.id,
@@ -397,7 +438,7 @@ export class UsersService {
     friendId: Prisma.UserWhereUniqueInput,
   ): Promise<string> {
     try {
-      console.log(User.id, friendId.id);
+   
       const user = await this.prisma.user.findUnique({
         where: { 
           id: User.id,
@@ -585,18 +626,26 @@ export class UsersService {
   //!---------------Message Storing------------------------!//
 
   async createMessage(messageInfo: MessageDto): Promise<string | MessageDto> {
+    
     const user = await this.prisma.user.findUnique({
       where: {
         id: messageInfo.authorName,
       },
     });
+
     if (!user) return `user Not found`;
+
     const reciver = await this.prisma.dMRoom.findUnique({
       where: {
         id: messageInfo.reciverID,
       },
+      include: {
+        roomMembers: true,
+      },
     });
+
     if (!reciver) return `reciver Not found`;
+
     try {
       const message = await this.prisma.userMessage.create({
         data: {
@@ -604,10 +653,12 @@ export class UsersService {
           authorName: user.username,
           authorID: user.id,
           reciverID: reciver.id,
-          createdAt: new Date(),
+          reciverName: messageInfo.reciverName,
         },
       });
+      
       return message;
+      
     } catch (error) {
       return `${error} could not create message`;
     }
@@ -662,10 +713,47 @@ export class UsersService {
             title: data.title,
             description: data.description,
             read: data.read,
+            senderId: userId
           },
         },
       },
     });
+    return;
+  }
+
+  removeNotification = async (userId: string, friendId: string): Promise<void> => {
+    
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        notifications: {
+          deleteMany: {
+            senderId: friendId,
+            type: 'friendRequest',
+          },
+        },
+      },
+    });
+    return;
+  }
+
+  getNotifications = async (userId: string): Promise<any> => {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        notifications: true,
+      },
+    });
+    return user.notifications;
+  }
+
+  readNotification = async (notificationId: string): Promise<void> => {
+    await this.prisma.notification.update({
+      where: { id: notificationId },
+            data: {
+              read: true,
+        },
+      },);
     return;
   }
 }

@@ -10,13 +10,9 @@ import { useMutation } from "react-query";
 import { setLeft, setRight } from "@/redux/slices/chat/MobileSlice";
 import { useAppSelector } from "@/redux/store/store";
 
-import { setMessages } from '@/redux/slices/chat/ChatSlice';
+import { setMessages } from "@/redux/slices/chat/ChatSlice";
 
-
-
-
-function formatTimeAgo(timestamp:any) {
-
+function formatTimeAgo(timestamp: any) {
   const currentTime: any = Date.now();
   const timeDiff = currentTime - timestamp;
   if (timeDiff <= 0) return "Just now";
@@ -51,86 +47,91 @@ function formatTimeAgo(timestamp:any) {
   }
 }
 
-  function Message_other({ usermessage, message, sender, time }: any) {
+function Message_other({ usermessage, message, sender, time }: any) {
+  const [user, setUser]: any = useState();
+  // const selected = useSelector((state: any) => state.chat.selectedChannelorUser);
 
-    const [user, setUser]: any = useState()
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const fetchmember = await fetch(
+          "http://127.0.0.1:3001/channel/getmember/" + usermessage.authorID
+        );
+        const member = await fetchmember.json();
+        const fetchuser = await fetch(
+          "http://127.0.0.1:3001/users/getuser/" + member.userId
+        );
+        const response = await fetchuser.json();
+        setUser(response);
+      } catch (error) {
+        const fetchuser = await fetch(
+          "http://127.0.0.1:3001/users/getuser/" + usermessage.authorID
+        );
+        const response = await fetchuser.json();
+        // console.log("response "+  response.username+ " " + usermessage.authorID, " " + sender)
 
-
-
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const fetchmember = await fetch('http://127.0.0.1:3001/channel/getmember/' + usermessage.authorID)
-          const member = await fetchmember.json()
-          const fetchuser = await fetch('http://127.0.0.1:3001/users/getuser/' + member.userId)
-          const response = await fetchuser.json()
-          setUser(response)
-        } catch (error) {
-          const fetchuser = await fetch("http://127.0.0.1:3001/users/getuser/" + usermessage.authorID);
-          const response = await fetchuser.json();
-          setUser(response);
-        }
+        setUser(response);
       }
-      fetchData()
-    }, [])
-    
-    const timestamp = Date.parse(time);
-    const formattedTime = formatTimeAgo(timestamp);
+    };
+    fetchData();
+  }, [usermessage]);
 
-    return (<div className='w-full flex gap-[5px] pl-[15px] z-0 '>
-      <Avatar className='custom-shadow2' boxSize={12} src={user?.avatarURL} />
+  const timestamp = Date.parse(time);
+  const formattedTime = formatTimeAgo(timestamp);
+
+  return (
+    <div className="w-full flex gap-[5px] pl-[15px] z-0 ">
+      <Avatar className="custom-shadow2" boxSize={12} src={user?.avatarURL} />
       <div className="flex flex-col min-w-[50%] max-w-[70%]">
         <div className="w-[50%] text-grey-400 flex justify-start">
           {sender} | {formattedTime}
         </div>
         <div className="bg-white border-2 border-black rounded-2xl custom-shadow2  rounded-tl-none pl-[10px] w-full min-h-[60px] ">
-          <div  className="flex w-full h-full items-center " >{message}</div>
+          <div className="flex w-full h-full items-center ">{message}</div>
         </div>
       </div>
     </div>
-    );
-  }
+  );
+}
 
+function Own_Message({ message, user }: any) {
+  const timestamp = Date.parse(message.createdAt);
+  const formattedTime = formatTimeAgo(timestamp);
 
-
-  function Own_Message({ message, user }: any) {
-    const timestamp = Date.parse(message.createdAt);
-    const formattedTime = formatTimeAgo(timestamp);
-
-    return (
-      <div className=" w-full flex gap-[5px] justify-end pr-[15px] z-0">
-        <div className="flex flex-col min-w-[50%] max-w-[70%]">
-            <div className="w-full text-grey-400 flex justify-end">
-              {user?.username} | {formattedTime}
-            </div>
-          <div className="bg-black border-2 border-black rounded-2xl custom-shadow text-white rounded-tr-none justify-start pl-[10px] w-full min-h-[60px] ">
-            <div className="w-full h-full flex items-center">{message?.content}</div>
+  return (
+    <div className=" w-full flex gap-[5px] justify-end pr-[15px] z-0">
+      <div className="flex flex-col min-w-[50%] max-w-[70%]">
+        <div className="w-full text-grey-400 flex justify-end">
+          {user?.username} | {formattedTime}
+        </div>
+        <div className="bg-black border-2 border-black rounded-2xl custom-shadow text-white rounded-tr-none justify-start pl-[10px] w-full min-h-[60px] ">
+          <div className="w-full h-full flex items-center">
+            {message?.content}
           </div>
         </div>
-        <Avatar className="custom-shadow" boxSize={12} src={user?.avatarURL} />
       </div>
-    );
-  }
-
-
+      <Avatar className="custom-shadow" boxSize={12} src={user?.avatarURL} />
+    </div>
+  );
+}
 
 export default function ChatWindow() {
-
-
-
-
   const { handleSubmit, register, reset } = useForm<any>();
   const chatContainer = useRef<any>(null);
 
-  const selected = useSelector((state: any) => state.chat.selectedChannelorUser);
-  const messages: ChannelMessage[] = useSelector((state: any) => state.chat.messages);
-  const userId = useSelector((state: any) => state.socket.userID)
+  const selected = useSelector(
+    (state: any) => state.chat.selectedChannelorUser
+  );
+  const messages: ChannelMessage[] = useSelector(
+    (state: any) => state.chat.messages
+  );
+  const userId = useSelector((state: any) => state.socket.userID);
   const dispatch = useDispatch();
 
-  const [user, setUser]: any = useState()
-  const toast = useToast()
+  const [user, setUser]: any = useState();
+  const toast = useToast();
   const socket = useAppSelector((state) => state.socket.socket);
-    
+
   const scrollToBottom = () => {
     if (chatContainer.current) {
       chatContainer.current.scrollTop = chatContainer.current.scrollHeight;
@@ -141,34 +142,31 @@ export default function ChatWindow() {
     scrollToBottom();
   }, [messages]);
 
-
-
-
   const HideMobileSideBars = () => {
-    if (window.innerWidth <= 1024) {
+    if (window.innerWidth < 1024) {
       dispatch(setRight(false));
       dispatch(setLeft(false));
     }
-  }
-
+  };
 
   useEffect(() => {
     const fetchData = async () => {
-
-      const fetchuser = await fetch('http://127.0.0.1:3001/users/getuser/' + userId)
-      const response = await fetchuser.json()
-      setUser(response)
-    }
-    fetchData()
-  }, [userId])
+      if (userId) {
+        const fetchuser = await fetch(
+          `http://127.0.0.1:3001/users/getuser/${userId}`
+        );
+        const response = await fetchuser.json();
+        setUser(response);
+      }
+    };
+    fetchData();
+  }, [userId]);
 
   const handleNewMessage = async (data: any) => {
-
-    if (data.newmessage.trim() === '')
-      return;
+    if (data.newmessage.trim() === "") return;
     if (selected == null) {
-      reset({ newmessage: '' });
-      return
+      reset({ newmessage: "" });
+      return;
     }
     if (data.newmessage.length > 500) {
       toast({
@@ -176,137 +174,149 @@ export default function ChatWindow() {
         status: "error",
         duration: 9000,
         isClosable: true,
-      })
-      reset({ newmessage: '' });
-      return
+      });
+      reset({ newmessage: "" });
+      return;
     }
 
-    if ('name' in selected) {
-      console.log("sifat chi7aja", selected.id, " " + selected.id)
-      socket?.emit('sendMessage', {
+    if ("name" in selected) {
+      socket?.emit("sendMessage", {
         channelId: selected.id,
         userId: userId,
         message: data.newmessage,
       });
-    }
-    else {
+    } else {
       socket?.emit(`sendPrivateMessage`, {
         reciverId: selected.id,
         message: data.newmessage,
       });
     }
-
-    reset({ newmessage: '' });
+    reset({ newmessage: "" });
     scrollToBottom();
   };
 
-
   const getChannelMessages: any = useMutation<any, Error, any>((variables) =>
-    fetch('http://127.0.0.1:3001/message/getmessages/' + variables.channelId).then((response) => {
-      console.log("Channelresponse", response)
-      return response.json()
-
-    }).catch((error) => {
-      return error
-    }))
-
+    fetch("http://127.0.0.1:3001/message/getmessages/" + variables.channelId)
+      .then((response) => {
+        return response.json();
+      })
+      .catch((error) => {
+        return error;
+      })
+  );
 
   const getUserMessages: any = useMutation<any, Error, any>((variables) =>
-    fetch('http://127.0.0.1:3001/message/getMessagesUsers/' + variables.userId + '/' + variables.reciverId).then((response) => {
-      return response.json()
-
-    }).catch((error) => {
-      return error
-    }))
+    fetch(
+      "http://127.0.0.1:3001/message/getMessagesUsers/" +
+        variables.userId +
+        "/" +
+        variables.reciverId
+    )
+      .then((response) => {
+        return response.json();
+      })
+      .catch((error) => {
+        return error;
+      })
+  );
 
   useEffect(() => {
-
     const fetchChannelMessages = async () => {
       let messages: ChannelMessage[] = await getChannelMessages.mutateAsync({
         channelId: selected?.id,
-      })
+      });
       if (messages.length != 0) {
-        dispatch(setMessages(messages))
-      }
-      else
-        dispatch(setMessages([]))
-    }
+        dispatch(setMessages(messages));
+      } else dispatch(setMessages([]));
+    };
 
     const fetchUserMessages = async () => {
       let messages: ChannelMessage[] = await getUserMessages.mutateAsync({
         userId: userId,
-        reciverId: selected?.id
-      })
+        reciverId: selected?.id,
+      });
       if (messages.length != 0) {
-        dispatch(setMessages(messages))
-      }
-      else
-        dispatch(setMessages([]))
-    }
+        dispatch(setMessages(messages));
+      } else dispatch(setMessages([]));
+    };
 
+    if (selected && "name" in selected && selected.id != null)
+      fetchChannelMessages();
 
-    if (selected && 'name' in selected && selected.id != null)
-      fetchChannelMessages()
+    if (selected && "username" in selected && selected.id != null)
+      fetchUserMessages();
 
-    if (selected && 'username' in selected && selected.id != null)
-      fetchUserMessages()
-
-    socket?.on('receivedMessage', (data: any) => {
-      console.log("ana hna wsalt message dual channel")
+    socket?.on("receivedMessage", (data: any) => {
       if (selected?.id === data.channelId) {
         dispatch(addMessage(data.message));
       }
-
     });
     socket?.on("receivedPrivateMessage", (data: any) => {
-
-      dispatch(addMessage(data.message));
-
+      if (
+        selected?.id === data.message.reciverName ||
+        selected?.id === data.message.authorID
+      )
+        dispatch(addMessage(data.message));
     });
 
-    socket?.on('sendMessage', (data: any) => {
+    socket?.on("sendMessage", (data: any) => {
       toast({
         title: data.status,
         status: "error",
         duration: 9000,
         isClosable: true,
-      })
+      });
     });
 
     return () => {
-      socket?.off('receivedMessage');
-      socket?.off('receivedPrivateMessage');
-      socket?.off('sendMessage');
+      socket?.off("receivedMessage");
+      socket?.off("receivedPrivateMessage");
+      socket?.off("sendMessage");
     };
   }, [selected]);
 
-
   return (
-    <div className='justify-between flex-col gap-[15px] w-full h-full pt-[120px]'>
-      <div className=' flex flex-col gap-[10px] overflow-y-scroll no-scrollbar z-0 h-[95%] pb-10' ref={chatContainer}>
-
-
-        {(messages && messages.length != 0) && (messages.map((message: ChannelMessage, index: number) => {
-          if (message?.authorName === user?.username) {
-              
-            return <Own_Message key={index} message={message} user={user} />
-          }
-          return <Message_other key={index} usermessage={message} message={message.content} sender={message.authorName} time={message.createdAt} />
-        }))}
-
+    <div className="justify-between flex-col gap-[15px] h-full pt-[120px] flex-1">
+      <div
+        className=" flex flex-col gap-[10px] overflow-y-scroll no-scrollbar z-0 h-[95%] pb-12"
+        ref={chatContainer}
+      >
+        {messages &&
+          messages.length != 0 &&
+          messages.map((message: ChannelMessage, index: number) => {
+            if (message?.authorName === user?.username) {
+              return <Own_Message key={index} message={message} user={user} />;
+            }
+            return (
+              <Message_other
+                key={index}
+                usermessage={message}
+                message={message.content}
+                sender={message.authorName}
+                time={message.createdAt}
+              />
+            );
+          })}
       </div>
-      <form onSubmit={handleSubmit(handleNewMessage)} className='h-[55px] mb-[15px] flex justify-around items-center'>
-        <Input {...register("newmessage")} className='bg-[#D9D9D9] border-2 rounded-ld w-[90%] border-black h-[100%]' placeholder='Type your message here ...'
-          onClick={() => { HideMobileSideBars() }}
+      <form
+        onSubmit={handleSubmit(handleNewMessage)}
+        className="h-[55px] mb-[15px] flex justify-around items-center"
+      >
+        <Input
+          {...register("newmessage")}
+          className="bg-[#D9D9D9] border-2 rounded-ld w-[90%] border-black h-[100%]"
+          placeholder="Type your message here ..."
+          onClick={() => {
+            HideMobileSideBars();
+          }}
         />
         <button
           type="submit"
           className="bg-black w-[50px] rounded-md cursor-pointer flex justify-start items-center h-[100%]"
         >
-            
           <Image className=" w-[40px] " src={arrow} alt="arrow" />
         </button>
       </form>
     </div>
-  )
+  );
 }

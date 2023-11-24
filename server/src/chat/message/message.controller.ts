@@ -19,7 +19,6 @@ export class MessageController {
 
     @Get('/getMessagesUsers/:userId/:reciverId')
     async getMessagesUsers(@Param('userId') userId: string, @Param('reciverId') reciverId: string) {
-        console.log( await this.messageService.getMessagesUsers(userId, reciverId))
         return this.messageService.getMessagesUsers(userId, reciverId)
     }
 

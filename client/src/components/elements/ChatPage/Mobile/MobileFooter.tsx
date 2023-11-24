@@ -24,7 +24,7 @@ export default function MobileFooter() {
     <Box className="Footer text-xl relative z-10 md:hidden">
         <Image src={FooterWaves} priority={false} alt="FooterWave" className="w-full rotate-180 h-[17px]" />
         <Box className="w-full h-[75px] bg-neutral-950 sticky top-0 z-100 flex justify-between items-center px-3 pb-4">
-          <Button className="h-14 w-32 gap-1  flex rounded-3xl text-lg" variant={'unstyled'}
+          <Button className="h-14 w-32 gap-1  flex rounded-3xl text-lg"
           onClick={() => {
             dispatch(setLeft(!LeftClice.LeftValue))
             dispatch(setRight(false))
