@@ -288,12 +288,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
         User,
         friend,
       );
+      await this.userService.notifyFriendRequest(client.handshake.auth.id, data.friendId);
       //! Will use friendRequest to check if the request was sent or not or if it was sent before
       const friendId = await this.userService.getUser(User);
-      await this.userService.notifyFriendRequest(client.handshake.auth.id, data.friendId);
+      const notifications = await this.userService.getNotifications(data.friendId);
       if (friendSocket) {
         for (const socket of friendSocket) {
-          this.server.to(socket.id).emit(`notification`, friendId);
+          this.server.to(socket.id).emit(`getNotifications`, notifications);
           this.server.to(socket.id).emit(`receivedFreindRequest`, friendId);
         }
       }
@@ -302,7 +303,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     }
   }
 
-
+ 
 
   @SubscribeMessage(`acceptFreindRequest`)
   async acceptFreindRequest(

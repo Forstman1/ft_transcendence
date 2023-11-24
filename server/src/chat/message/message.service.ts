@@ -114,13 +114,13 @@ export class MessageService {
                 }
             })
             console.log(DMroom.roomMessages)
-            if (!DMroom.roomMessages)
+            if (!DMroom)
                 return []
             return DMroom.roomMessages
           
         }
         catch (error) {
-            
+            return []
             return `${error} could not retrieve messages`
         }
     }

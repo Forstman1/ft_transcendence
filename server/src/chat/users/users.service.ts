@@ -662,6 +662,7 @@ export class UsersService {
             title: data.title,
             description: data.description,
             read: data.read,
+            senderId: userId
           },
         },
       },

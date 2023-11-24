@@ -6,6 +6,15 @@ import {
   MenuItem,
   IconButton,
   Divider,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  Button,
+  ModalFooter,
 } from "@chakra-ui/react";
 import {
   BellIcon,
@@ -79,24 +88,43 @@ import { useSelector } from "react-redux";
 export default function Notification() {
   const [notifications, setNotifications] = useState<any>([])
   const socket = useSelector((state: any) => state.socket.socket);
+  const [counter, setCounter] = useState(0);
+  const {isOpen, onOpen, onClose} = useDisclosure();
+  const [notification, setNotification] = useState<any>(null);
+
+
+
+
   useEffect(() => {
-    // console.log("allNotifications", allNotifications);
-    socket.on("notification", (data: any) => {
-      console.log("notification", data);
-      socket.emit("getNotifications");
-    });
+
+    socket.emit("getNotifications")
 
     socket.on("getNotifications", (data: any) => {
-      console.log("getNotifications", data);
+      console.log(data)
       setNotifications(data);
+      setCounter(data.length);  
     });
 
     return () => {
-      socket.off("notification");
       socket.off("getNotifications");
     }
   }, [socket])
 
+  const onSubmit = (notification: any ) => {
+    onOpen();
+    setNotification(notification);
+  }
+
+
+  const Accept = () => {
+    socket.emit("acceptFreindRequest", notification.id);
+    onClose();
+  }
+
+  const Denie = () => {
+    socket.emit("rejectFreindRequest", notification.id);
+    onClose();
+  }
   return (
     <div>
       <Menu>
@@ -110,7 +138,7 @@ export default function Notification() {
         <div
           className={`absolute top-7 rounded-full bg-green-600 flex justify-center items-center px-1`}
         >
-          <p className="text-xs text-white text-center ">10</p>
+          <p className="text-xs text-white text-center ">{counter}</p>
         </div>
         <MenuList className="bg-white rounded-lg p-2 w-100 h-[400px]">
           <div className="flex items-center fixed top-0 w-[90%] h-8 bg-white p-2 space-x-2">
@@ -119,7 +147,7 @@ export default function Notification() {
           </div>
           <div className="bg-white rounded-lg mt-5 w-full h-[95%] overflow-y-scroll no-scrollbar">
             {notifications?.map((notification: any, index: number) => (
-              <MenuItem key={notification?.id}>
+              <MenuItem key={notification?.id} onClick={() => onSubmit(notification)}>
                 <div
                   className={`flex flex-col bg-gray-100 px-4 py-2 cursor-pointer  relative  overflow-hidden transition-all rounded hover:bg-white group`}
                 >
@@ -141,6 +169,48 @@ export default function Notification() {
           </div>
         </MenuList>
       </Menu>
+
+
+      <Modal isOpen={isOpen} onClose={onClose} isCentered size="2xl">
+      <ModalOverlay
+        style={{
+          backgroundColor: "rgba(0, 0, 0, 0.1)",
+          backdropFilter: "blur(5px)",
+        }}
+      />
+      <ModalContent
+        bg={`rgba(255, 255, 255, 0.95)`}
+        className="relative  duration-500 ease-in-out rounded-2xl shadow-2xl border-1 border-black flex justify-center items-center bg-gray-100"
+      >
+
+        <ModalHeader>Notifications</ModalHeader>
+
+        <ModalBody className='w-full'>
+          <h1 className=' font-bold text-2xl  pt-3 w-full flex justify-center items-center'>
+            {notification?.description}
+          </h1>
+        </ModalBody>
+        <ModalCloseButton />
+        <ModalFooter>
+
+          <Button
+            colorScheme="red"
+            variant="outline"
+            mr={10}
+          >
+            DENIE
+          </Button>
+          <Button
+            colorScheme="green"
+            variant="outline"
+            ml={10}
+          >
+            ACCEPT
+          </Button>
+        </ModalFooter>
+        
+      </ModalContent>
+        </Modal>
     </div>
   );
 }
