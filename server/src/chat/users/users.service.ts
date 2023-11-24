@@ -405,9 +405,6 @@ export class UsersService {
           blockedBy: true,
         },
       });
-      console.log('user.friends:', user.friends);
-      console.log('Blocked.blockedBy:', Blocked.blockedBy);
-      console.log('isBlocked: ', user.friends.includes(Blocked.blockedBy[0]));
       const friendsList = user.friends.filter((friend) => {
         return !Blocked.blockedBy.some(
           (blockedFriend) => blockedFriend.id === friend.id,
