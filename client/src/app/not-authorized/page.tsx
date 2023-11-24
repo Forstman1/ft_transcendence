@@ -1,6 +1,5 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { PageWrapper } from '@/app/animationWrapper/pageWrapper';
 import { Box, Flex, Text } from '@chakra-ui/layout';
 import Image from 'next/image';
@@ -69,7 +68,7 @@ export default function CallToActionWithIllustration() {
             text-xl md:text-2xl xl:text-xl 2xl:text-xl 3xl:text-2xl
             4xl:text-2xl 5xl:text-3xl 6xl:text-4xl"
           >
-             You&apos;re not supposed to be here my dude, so pack up your shit,<br/>and fuck off<br />
+            You&apos;re not supposed to be here my dude, so pack up your shit,<br/>and fuck off<br />
             <br />
             Respectfully,
           </p>

@@ -31,7 +31,7 @@ export default function GameInstruction({ isOpen, onClose }: Props) {
       <ModalOverlay />
       <ModalContent
         bg={`rgba(255, 255, 255, 0.50)`}
-        className="relative duration-500 ease-in-out rounded-2xl shadow-2xl border-1 border-black flex justify-between items-center bg-gray-100 "
+        className="relative duration-500 ease-in-out rounded-2xl shadow-2xl border-1 border-black flex justify-between items-center bg-gray-100 w-full"
       >
         <Lottie
           animationData={animation4}
@@ -43,7 +43,7 @@ export default function GameInstruction({ isOpen, onClose }: Props) {
           </Text>
         </ModalHeader>
         <ModalCloseButton />
-        <ModalBody className="flex flex-col space-y-2 w-[400px] overflow-y-scroll max-h-[600px]">
+        <ModalBody className="flex flex-col space-y-2 w-full overflow-y-scroll max-h-[600px]">
           <Text className="">
             <ArrowRightIcon className="inline-block mr-2" />
             General

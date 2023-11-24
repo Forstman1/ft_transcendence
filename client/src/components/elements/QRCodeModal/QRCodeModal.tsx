@@ -1,9 +1,9 @@
 import {
-  Switch, FormControl, FormLabel, Text, Modal,
+  Switch, FormControl, FormLabel, Modal,
   ModalOverlay, ModalContent, ModalHeader, ModalFooter,
   ModalBody, ModalCloseButton, Button, useDisclosure, Center
 } from '@chakra-ui/react'
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useMutation } from 'react-query';
 import { enable2FA, disable2FA } from '@/utils/functions/auth/fetchingUserData';

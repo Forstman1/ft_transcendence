@@ -26,6 +26,15 @@ module.exports = {
       'xl':'1280px',
       '2xl': '1536px',
     },
+    container: {
+        padding: {
+          DEFAULT: '0',
+          sm: '0',
+          lg: '0',
+          xl: '3rem',
+          '2xl': '12rem',
+        },
+      },
   },
   plugins: [
     require('tailwind-scrollbar-hide')

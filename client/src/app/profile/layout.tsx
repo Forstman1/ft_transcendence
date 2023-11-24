@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 
 
 export const metadata: Metadata = {
-  title: 'User Page',
+  title: 'Profile',
   description: 'more information about the user',
 }
 
