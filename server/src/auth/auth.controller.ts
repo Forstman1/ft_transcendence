@@ -141,7 +141,7 @@ export class AuthController {
 
   /* ------------------------------------------------------------------------------------------------------------------ */
 
-  @Post('2fa/enable')
+  @Put('2fa/enable')
   @UseGuards(JwtAuthGuard)
   async enableTwoFaAuth(@Req() req, @Res() res) {
     try {
@@ -172,7 +172,7 @@ export class AuthController {
 
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
  
-  @Post('2fa/disable')
+  @Put('2fa/disable')
   @UseGuards(JwtAuthGuard)
   async disableTwoFaAuth(@Req() req, @Res() res) {
     try {

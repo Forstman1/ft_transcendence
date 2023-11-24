@@ -1,60 +1,56 @@
-import {
-    Channel,
-    ChannelMember,
-    ChannelMessage,
-    User,
-  } from "@/utils/types/chat/ChatTypes";
-  import { createSlice } from "@reduxjs/toolkit";
-  
-  type ChatState = {
-    selectedChannelorUser: Channel | User | null;
-    channels: Channel[];
-    users: User[];
-    messages: ChannelMessage[];
-    ChannelMember: ChannelMember | null;
+import { Channel, ChannelMember, ChannelMessage, User } from "@/utils/types/chat/ChatTypes";
+
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+
+
+
+type ChatState = {
+    selectedChannelorUser: Channel  | User | null
+    channels: Channel[]
+    userId: string
+    messages: ChannelMessage[]
+    ChannelMember: ChannelMember | null
   };
   
   const initialState: ChatState = {
     selectedChannelorUser: null,
     channels: [],
-    users: [],
+    userId: "0d299b7d-cb87-4a18-8788-27bcd4744987",
     messages: [],
-    ChannelMember: null,
+    ChannelMember: null
   };
   
   const chatSlice = createSlice({
-    name: "chat",
+    name: 'chat',
     initialState,
     reducers: {
       setChannel: (state, action) => {
-        state.selectedChannelorUser = action.payload;
+        state.selectedChannelorUser = action.payload
+        state.messages = []
       },
       setChannelMember: (state, action) => {
-        state.ChannelMember = action.payload;
+        state.ChannelMember = action.payload
       },
       setTheUser: (state, action) => {
         state.selectedChannelorUser = action.payload;
       },
       setNewChannel: (state, action) => {
-        state.channels.push(action.payload);
+        state.channels.push(action.payload)
       },
       setChannels: (state, action) => {
-        state.channels = action.payload;
+        state.channels = action.payload
       },
       setMessages: (state, action) => {
-        state.messages = action.payload;
+        state.messages = action.payload
       },
       addMessage: (state, action) => {
-        state.messages.push(action.payload);
+        state.messages.push(action.payload)
       },
-      setUserDms: (state, action) => {
-        state.users = action.payload;
-      },
-      setNewUser: (state, action) => {
-        state.users.push(action.payload);
-      },
+ 
     },
   });
+
   
   export const {
     setChannel,

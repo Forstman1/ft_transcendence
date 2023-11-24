@@ -323,7 +323,7 @@ export class GameService {
     await this.prisma.gameHistory.create({
       data: {
         user: { connect: { id: userId } },
-        opponentId,
+        opponent: { connect: { id: opponentId } },
         status,
         userScore,
         opponentScore,

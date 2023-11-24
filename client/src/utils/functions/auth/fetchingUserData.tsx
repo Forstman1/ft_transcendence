@@ -35,7 +35,7 @@ export async function verify2FA(otp: string): Promise<any> {
 }
 
 export async function enable2FA(): Promise<any> {
-  const response = await axios.post(
+  const response = await axios.put(
     `${process.env.NEXT_PUBLIC_SERVER_URL}auth/2fa/enable`,
     {},
     { withCredentials: true },
@@ -44,7 +44,7 @@ export async function enable2FA(): Promise<any> {
 }
 
 export async function disable2FA(): Promise<any> {
-  const response = await axios.post(
+  const response = await axios.put(
     `${process.env.NEXT_PUBLIC_SERVER_URL}auth/2fa/disable`,
     {},
     { withCredentials: true },

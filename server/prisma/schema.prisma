@@ -48,7 +48,9 @@ model User {
   roomMember      DMRoom[] @relation("rooms")
   roomMessage     UserMessage[]    @relation("roommessage")
 
-  games     GameHistory[]
+//   games     GameHistory[]
+  games             GameHistory[] @relation(name: "UserGameHistories")
+  opponentHistories GameHistory[] @relation(name: "UserOpponentHistories")
   userGamesXp   Int      @default(0)
   notifications   Notification[]
 
@@ -138,8 +140,9 @@ model UserMessage {
 }
 model GameHistory {
   id        String   @id @default(uuid())
-  user      User     @relation(fields: [userId], references: [id])
+  user            User     @relation(name: "UserGameHistories", fields: [userId], references: [id])
   userId    String
+  opponent        User     @relation(name: "UserOpponentHistories", fields: [opponentId], references: [id])
   opponentId String
   status    String
   userScore Int
