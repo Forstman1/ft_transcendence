@@ -25,74 +25,12 @@ import {
 } from "@chakra-ui/icons";
 import { useSelector } from "react-redux";
 
-// const allNotifications = [
-//   {
-//     id: 1,
-//     title: "New Order Recieved",
-//     description: "Dummy text of the printing and typesetting industry.",
-//     time: "3 min ago",
-//     icon: DeleteIcon,
-//   },
-//   {
-//     id: 2,
-//     title: "New Order Recieved",
-//     description: "Dummy text of the printing and typesetting industry.",
-//     time: "3 min ago",
-//     icon: CheckCircleIcon,
-//   },
-//   {
-//     id: 3,
-//     title: "New Order Recieved",
-//     description: "Dummy text of the printing and typesetting industry.",
-//     time: "3 min ago",
-//     icon: EmailIcon,
-//   },
-//   {
-//     id: 4,
-//     title: "New Order Recieved",
-//     description: "Dummy text of the printing and typesetting industry.",
-//     time: "3 min ago",
-//     icon: WarningTwoIcon,
-//   },
-//   {
-//     id: 5,
-//     title: "New Order Recieved",
-//     description: "Dummy text of the printing and typesetting industry.",
-//     time: "3 min ago",
-//     icon: DeleteIcon,
-//   },
-//   {
-//     id: 6,
-//     title: "New Order Recieved",
-//     description: "Dummy text of the printing and typesetting industry.",
-//     time: "3 min ago",
-//     icon: DeleteIcon,
-//   },
-//   {
-//     id: 7,
-//     title: "New Order Recieved",
-//     description: "Dummy text of the printing and typesetting industry.",
-//     time: "3 min ago",
-//     icon: EmailIcon,
-//   },
-//   {
-//     id: 8,
-//     title: "New Order Recieved",
-//     description: "Dummy text of the printing and typesetting industry.",
-//     time: "3 min ago",
-//     icon: WarningTwoIcon,
-//   },
-// ];
-
-
 export default function Notification() {
   const [notifications, setNotifications] = useState<any>([])
   const socket = useSelector((state: any) => state.socket.socket);
   const [counter, setCounter] = useState(0);
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [notification, setNotification] = useState<any>(null);
-
-
 
 
   useEffect(() => {
