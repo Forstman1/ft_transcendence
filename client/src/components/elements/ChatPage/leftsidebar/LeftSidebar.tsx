@@ -10,7 +10,7 @@ import {
   useToast,
   CloseButton,
 } from "@chakra-ui/react";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import Newchannel from "./newchannel";
 import Hashtag from "./hatshtag";
 import Newmessage from "./newmessage";
@@ -108,6 +108,7 @@ export default function LeftSidebar() {
   useEffect(() => {
     socket?.emit("getChannelsFirstTime", { userId: userId });
     socket?.emit(`getChatList`);
+    
   }, [socket]);
 
   useEffect(() => {
@@ -129,9 +130,7 @@ export default function LeftSidebar() {
 
     socket?.on("channelCreated", (data: any) => {
       if (data.message === "Channel Created") {
-        console.log(data.channel, " ana hna 1");
         dispatch(setChannel(data.channel));
-        console.log(data.channel.channelMember);
         if (data.channel.channelMember) {
           data.channel.channelMember.map((data1: any) => {
             if (data1.userId === userId) dispatch(setChannelMember(data1));
@@ -200,7 +199,7 @@ export default function LeftSidebar() {
           channelId: data.channel.id,
           userId: userId,
         });
-        console.log(data.channel);
+
 
         dispatch(setChannel(data.channel));
 
@@ -324,7 +323,7 @@ export default function LeftSidebar() {
           isClosable: true,
         });
       } else if (data.status === "Password is set. Channel is private now") {
-        console.log(data);
+
         toast({
           title: data.status,
           position: `bottom-right`,

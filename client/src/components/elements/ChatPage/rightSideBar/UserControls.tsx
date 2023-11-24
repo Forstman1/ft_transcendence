@@ -1,3 +1,5 @@
+// eslint-disable-next-line react-hooks/exhaustive-deps
+"use client";
 import React, { useEffect, useState } from "react";
 import AddToFriendList from "../../../../../assets/icons/AddToFriendList.svg";
 import Remove from "../../../../../assets/icons/remove-friend.svg";

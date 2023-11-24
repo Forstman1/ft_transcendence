@@ -30,14 +30,14 @@ function Componenent({ onClose }: any) {
 
                 const usersResponse = await fetch('http://127.0.0.1:3001/channel/getallmembers/' + channel.id)
                 const users: ChannelMember[] = await usersResponse.json()
-                console.log(usersResponse)
+
 
 
                 const filteredUsers = users.filter((user: any) => {
                     return user.role !== "ADMIN" && user.role !== "OWNER";
                 });
 
-                console.log(filteredUsers)
+    
 
                 let listedusers: any = []
 
@@ -58,7 +58,7 @@ function Componenent({ onClose }: any) {
                 setUsers(usersData);
 
             } catch (error) {
-                console.error('Error fetching users and channel members:', error);
+
                 toast({
                     title: 'Error fetching users and channel members',
                     position: `bottom-right`,

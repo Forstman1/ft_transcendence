@@ -1,7 +1,5 @@
 import React from "react";
-import WavesDivider from "../../../../assets/icons/wavesOpacity.svg";
-import Image from "next/image";
-import Logo from "../../../../assets/icons/Logo.svg";
+
 
 export default function Footer() {
     return (

@@ -113,25 +113,25 @@ export default function Search() {
         fetch('http://127.0.0.1:3001/channel/getallchannelsapp/' + variables.tofound).then((res) => {
 
             return res.json()
-        }).catch((err) => [])
+        })
     )
 
     const getusers = useMutation<any, Error, any>((variables) =>
         fetch('http://127.0.0.1:3001/users/getusers/' + variables.tofound)
             .then((res) => res.json())
-            .catch((err) => [])
+            
     );
 
     const listusers = useMutation<any, Error, any>(() =>
         fetch('http://127.0.0.1:3001/users/getAllUsers/' + userId)
             .then((res) => res.json())
-            .catch((err) => [])
+            
     );
 
     const listchannels = useMutation<any, Error, any>(() =>
         fetch('http://127.0.0.1:3001/channel/getallpublicandprivatechannels').then((res) => {
             return res.json()
-        }).catch((err) => [])
+        })
     );
 
 

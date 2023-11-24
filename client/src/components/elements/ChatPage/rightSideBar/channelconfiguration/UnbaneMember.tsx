@@ -31,7 +31,7 @@ function Componenent({ onClose }: any) {
                 const users: User[] = await usersResponse.json()
                 setUsers(users);
             } catch (error) {
-                console.error('Error fetching users and channel members:', error);
+
                 toast({
                     title: 'Error fetching users and channel members',
                     position: `bottom-right`,
