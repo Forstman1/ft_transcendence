@@ -42,6 +42,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       id: client.handshake.auth.id,
     };
     const chatList = await this.userService.getChatList(User);
+    const UserSockets = this.connectedUsers[client.handshake.auth.id];
     const rooms = await this.userService.getRooms({
       id: client.handshake.auth.id,
     });
@@ -49,6 +50,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       client.join(room);
     }
     if (chatList) client.emit(`updateChatList`, chatList);
+    const friendRequest = await this.userService.getAcceptedFriendRequests(User);
+    if (friendRequest) {
+      client.emit(`updateFriendRequest`, friendRequest);
+    }
   }
 
   //!---------------DISCONNECTION------------------------!//
@@ -82,6 +87,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     }
   }
 
+  
   @SubscribeMessage(`sendNotification`)
   async sendNotification(
     @ConnectedSocket() client: Socket,
@@ -110,7 +116,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
         //   })
         // }
       }
-      // this.server.to(userID).emit(`receivedNotification`, data.message);
     } catch (error) {
       console.error(`Error in sending notification`, error);
     }
@@ -178,7 +183,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       const user: Prisma.UserWhereUniqueInput = { id: userId };
       const friend: Prisma.UserWhereUniqueInput = { id: data.reciverId };
       const room = await this.userService.getRoom(userId, data.reciverId);
-      const isInChat = await this.userService.isInChat(friend, user);
       await this.userService.addToChat(friend, user);
       const friedList = await this.userService.getChatList(friend);
       const friendSocket = this.connectedUsers[data.reciverId];
@@ -219,22 +223,20 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       await this.userService.blockUser(User, friend);
       const friendSocket = this.connectedUsers[data.friendId];
       const userSockets = this.connectedUsers[client.handshake.auth.id];
-      const userId = await this.userService.getUser(User);
+      const userId = await this.userService.getUser(friend);
       if (userSockets) {
         for (const socket of userSockets) {
-          this.server.to(socket.id).emit(`userBlocked`, User);
+          this.server.to(socket.id).emit(`userBlocked`, userId);
         }
       }
       if (friendSocket) {
         for (const socket of friendSocket) {
+          this.logger.log(`here i'm sending ` + socket.id);
           this.server.to(socket.id).emit(`userBlockedYou`, User);
+           this.server.to(socket.id).emit(`friendRemoved`, userId);
         }
       }
-      // if(userSockets){
-      //   for (const socket of userSockets) {
-      //     this.server.to(socket.id).emit(`userBlocked`, friend);
-      //   }
-      // }
+ 
     } catch (error) {
       console.error(`Error in blocking user`, error);
     }
@@ -251,6 +253,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       };
       const friend: Prisma.UserWhereUniqueInput = { id: data.friendId };
       await this.userService.unblockUser(User, friend);
+      const friendSocket = this.connectedUsers[data.friendId];
+      const userSockets = this.connectedUsers[client.handshake.auth.id];
+      const userId = await this.userService.getUser(User);
+      if (userSockets) {
+        for (const socket of userSockets) {
+          this.server.to(socket.id).emit(`userUnblocked`, userId);
+        }
+      }
     } catch (error) {
       console.error(`Error in unblocking user`, error);
     }
@@ -297,7 +307,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       };
       const friend: Prisma.UserWhereUniqueInput = { id: data.friendId };
       const responce = await this.userService.acceptFriendRequest(User, friend);
-     const Friend = await this.userService.getUser(User);
+      const Friend = await this.userService.getUser(User);
+      
       if (responce === `Friend request accepted`) {
         const userSockets = this.connectedUsers[friend.id];
         if (userSockets) {

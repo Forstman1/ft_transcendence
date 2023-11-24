@@ -10,7 +10,7 @@ import {
   useToast,
   CloseButton,
 } from "@chakra-ui/react";
-import React, { useEffect, useState, useRef, use } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Newchannel from "./newchannel";
 import Hashtag from "./hatshtag";
 import Newmessage from "./newmessage";
@@ -35,7 +35,6 @@ function Usercard(props: any) {
   const socket = useSelector((state: any) => state.socket.socket);
   const dispatch = useDispatch();
   const selected = useSelector((state: any) => state.chat.selectedChannelorUser);
-  const scroolToRef = useRef<HTMLDivElement>(null);
 
   const onSubmited = (userData: User) => {
     if (userData.id === selected?.id)
@@ -74,8 +73,11 @@ function Usercard(props: any) {
         className="opacity-0 group-hover:opacity-100"
         onClick={() => {
           socket?.emit(`removeChatUser`, { friendId: props.data.id });
-          dispatch(setTheUser(null));
-          dispatch(setMessages([]));
+
+          if (props.data.id === selected?.id) {
+            dispatch(setTheUser(null));
+            dispatch(setMessages([]));
+          }
         }}
       />
     </>
@@ -91,11 +93,9 @@ export default function LeftSidebar() {
 
   useEffect(() => {
     socket?.on(`updateChatList`, async (Users: any) => {
-
       dispatch(setUserDms(Users));
-
     });
-  }, [socket]);
+  }, [socket, dispatch]);
 
   const selected = useSelector(
     (state: any) => state.chat.selectedChannelorUser
@@ -553,6 +553,7 @@ export default function LeftSidebar() {
       setSelectedCard(id);
     }
   };
+
   return (
     <Box
       className="LeftSideBar place-items-center grid w-[20%] max-xl:w-[30%] max-md:w-[50%] max-sm:w-[80%] absolute h-full overflow-y-auto border-r-[3px] border-r-black md:static bg-opacity-80 max-md:backdrop-blur-xl z-10 pt-[100px]"
@@ -596,10 +597,10 @@ export default function LeftSidebar() {
         </div>
       </div>
 
-      <div className=" mt-[40px] flex h-[500px] flex-col w-full  gap-1 overflow-y-scroll">
+      <div className=" mt-[40px] flex h-[500px] flex-col w-full  gap-1 overflow-y-scroll items-center">
         {Users.map((userData: User, id: number) => (
           <Box
-            className="group flex justify-between items-center cursor-pointer h-20 m-2  p-2 rounded-md hover:bg-zinc-300"
+            className="group flex justify-between w-[70%]  items-center cursor-pointer h-20 m-2  p-2 rounded-md hover:bg-zinc-300"
             key={id}
             onClick={() => {
               handelClick(id);

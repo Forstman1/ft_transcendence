@@ -3,26 +3,23 @@ import AddToFriendList from "../../../../../assets/icons/AddToFriendList.svg";
 import Remove from "../../../../../assets/icons/remove-friend.svg";
 import Block from "../../../../../assets/icons/Block.svg";
 import pending from "../../../../../assets/icons/pending.svg";
-import { Box, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, Text } from "@chakra-ui/react";
 import Image from "next/image";
-import ModalWraper from "../ModalWraper";
 import { useSelector } from "react-redux";
 import Cookies from "js-cookie";
-import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/redux/store/store";
 import Unblock from "../../../../../assets/icons/Unblock.svg";
-import { setMessages } from "@/redux/slices/chat/ChatSlice";
 
 export default function UserControls() {
   const User = useSelector((state: any) => state.chat.selectedChannelorUser);
   const socket = useSelector((state: any) => state.socket.socket);
-  const dispatch = useDispatch();
+
 
   const selected = useSelector(
     (state: any) => state.chat.selectedChannelorUser
   );
 
-  const { isOpen, onClose } = useDisclosure();
+
   const allOptImages = useAppSelector(
     (state: any) => state.optImages.optImages
   );
@@ -32,13 +29,16 @@ export default function UserControls() {
     { src: Block, alt: "Block" },
   ]);
 
+
   useEffect(() => {
+
+
     const getSelectedOpt = allOptImages.find(
       (optImage: any) => optImage.key === selected.username
     );
 
     if (getSelectedOpt && getSelectedOpt.optImages !== undefined) {
-      console.log("getSelectedOpt", getSelectedOpt.optImages);
+   
       setOptImages((prevOptImages) => {
         const newOptImages = [...prevOptImages];
         newOptImages[0] = getSelectedOpt.optImages[0];
@@ -50,25 +50,33 @@ export default function UserControls() {
   useEffect(() => {
     socket.on(`friendRequestAccepted`, (Friend: any) => {
       const newValue = { src: Remove, alt: "Remove from friend list" };
-      console.log(`the new value is: `, newValue);
+
       Cookies.set(Friend.username, JSON.stringify([newValue, optImages[1]]), {
         expires: 365,
       });
 
-      setOptImages((prevOptImages) => {
-        const newOptImages = [...prevOptImages];
-        newOptImages[0] = newValue;
-        return newOptImages;
-      });
-    });
+      if (selected.username === Friend.username) {
+          
+        setOptImages((prevOptImages) => {
+          const newOptImages = [...prevOptImages];
+          newOptImages[0] = newValue;
+          return newOptImages;
+        });
+      }
 
+      });
+      
     socket.on(`friendRequestRejected`, (Friend: any) => {
       const newValue = { src: AddToFriendList, alt: "Add to friend list" };
-      setOptImages((prevOptImages) => {
-        const newOptImages = [...prevOptImages];
-        newOptImages[0] = newValue;
-        return newOptImages;
-      });
+      if (selected.username === Friend.username) {
+
+        setOptImages((prevOptImages) => {
+          const newOptImages = [...prevOptImages];
+          newOptImages[0] = newValue;
+          return newOptImages;
+        });
+
+      }
 
       Cookies.set(Friend.username, JSON.stringify([newValue, optImages[1]]), {
         expires: 365,
@@ -76,30 +84,45 @@ export default function UserControls() {
     });
 
     socket.on(`userBlocked`, (Friend: any) => {
-      const newValue = { src: Unblock, alt: "Unblock" };
-      setOptImages((prevOptImages) => {
-        const newOptImages = [...prevOptImages];
-        newOptImages[1] = newValue;
-        return newOptImages;
-      });
 
-      console.log(`the new value is: `, optImages);
+      const newValue = { src: Unblock, alt: "Unblock" };
+      
+      if (selected.username === Friend.username) {
+
+        
+        setOptImages((prevOptImages) => {
+          const newOptImages = [...prevOptImages];
+          newOptImages[1] = newValue;
+          return newOptImages;
+        });
+
+      }
+
       Cookies.set(Friend.username, JSON.stringify([optImages[0], newValue]), {
         expires: 365,
       });
     });
 
+    socket?.on(`userUnblocked`, (Friend: any) => {
+      
+      const newValue = { src: Block, alt: "Block" };
+      if (selected.username === Friend.username) {
+        
+        setOptImages((prevOptImages) => {
+          const newOptImages = [...prevOptImages];
+          newOptImages[1] = newValue;
+          return newOptImages;
+        });
+        
+      }
+      Cookies.set(Friend.username, JSON.stringify([optImages[0], newValue]), {
+        expires: 365,
+      });
+     });
 
-    socket?.on(`userBlockedYou`, (Friend: any) => {
-
-      console.log(Friend.id)
-      socket?.emit(`removeChatUser`, { friendId: Friend.id });
-      dispatch(setMessages([]));
-
-    });
 
     socket?.on(`friendRemoved`, (Friend: any) => {
-      console.log(Friend.username);
+   
 
       const newValue = { src: AddToFriendList, alt: "Add to friend list" };
 
@@ -120,11 +143,19 @@ export default function UserControls() {
       socket.off(`userBlocked`);
       socket.off(`friendRemoved`);
     };
-  }, [socket]);
+  }, [socket, selected]);
+
+
+
+
+
+
+
+
 
   useEffect(() => {
     const cookies = Cookies.get(selected.username);
-    console.log(`cookies`, selected.username);
+
     if (cookies) {
       setOptImages(JSON.parse(cookies));
     } else {
@@ -135,9 +166,12 @@ export default function UserControls() {
     }
   }, [selected]);
 
+
   const handleUserControls = (option: string) => {
+
     if (option === "Add to friend list") {
       socket.emit(`sendFreindRequest`, { friendId: User.id });
+
       const newValue = { src: pending, alt: "Pending" };
 
       setOptImages((prevOptImages) => {
@@ -149,6 +183,7 @@ export default function UserControls() {
       Cookies.set(selected.username, JSON.stringify([newValue, optImages[1]]), {
         expires: 365,
       });
+
     } else if (option === "Remove from friend list") {
       socket.emit(`removeFriend`, { friendId: User.id });
       const newValue = { src: AddToFriendList, alt: "Add to friend list" };
@@ -157,10 +192,13 @@ export default function UserControls() {
         newOptImages[0] = newValue;
         return newOptImages;
       });
+
       Cookies.set(selected.username, JSON.stringify([newValue, optImages[1]]), {
         expires: 365,
       });
+
     } else if (option === "Block") {
+
       socket.emit(`blockUser`, { friendId: User.id });
       const newValue = { src: Unblock, alt: "Unblock" };
       setOptImages((prevOptImages) => {
@@ -168,9 +206,11 @@ export default function UserControls() {
         newOptImages[1] = newValue;
         return newOptImages;
       });
+
       Cookies.set(selected.username, JSON.stringify([optImages[0], newValue]), {
         expires: 365,
       });
+
     } else if (option === "Unblock") {
       socket.emit(`unblockUser`, { friendId: User.id });
       const newValue = { src: Block, alt: "Block" };
@@ -203,7 +243,7 @@ export default function UserControls() {
         }}
       />
       <Text className="text-2xl cursor-pointer">{image.alt}</Text>
-      <ModalWraper isOpen={isOpen} onClose={onClose} />
+
     </Box>
   ));
 }

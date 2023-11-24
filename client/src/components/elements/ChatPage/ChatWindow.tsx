@@ -54,7 +54,7 @@ function formatTimeAgo(timestamp:any) {
   function Message_other({ usermessage, message, sender, time }: any) {
 
     const [user, setUser]: any = useState()
-
+    // const selected = useSelector((state: any) => state.chat.selectedChannelorUser);
 
 
     useEffect(() => {
@@ -68,11 +68,13 @@ function formatTimeAgo(timestamp:any) {
         } catch (error) {
           const fetchuser = await fetch("http://127.0.0.1:3001/users/getuser/" + usermessage.authorID);
           const response = await fetchuser.json();
+          // console.log("response "+  response.username+ " " + usermessage.authorID, " " + sender)
+
           setUser(response);
         }
       }
       fetchData()
-    }, [])
+    }, [usermessage])
     
     const timestamp = Date.parse(time);
     const formattedTime = formatTimeAgo(timestamp);
@@ -145,7 +147,7 @@ function formatTimeAgo(timestamp:any) {
 
 
     const HideMobileSideBars = () => {
-      if (window.innerWidth <= 1024) {
+      if (window.innerWidth < 1024) {
         dispatch(setRight(false));
         dispatch(setLeft(false));
       }
@@ -186,7 +188,6 @@ function formatTimeAgo(timestamp:any) {
 
         if ('name' in selected)
         {
-          console.log("sifat chi7aja", selected.id, " " + selected.id)
           socket?.emit('sendMessage', {
             channelId: selected.id,
             userId: userId,
@@ -195,7 +196,6 @@ function formatTimeAgo(timestamp:any) {
         }
         else
         {
-          console.log("sifat chi7aja", selected.id, " " + selected.id)
           socket?.emit(`sendPrivateMessage`, {
             reciverId: selected.id,
             message: data.newmessage,
@@ -207,7 +207,6 @@ function formatTimeAgo(timestamp:any) {
 
     const getChannelMessages: any = useMutation<any, Error, any>((variables) =>
       fetch('http://127.0.0.1:3001/message/getmessages/' + variables.channelId).then((response) => {
-        console.log("Channelresponse", response)
         return response.json()
 
       }).catch((error) => {
@@ -256,16 +255,12 @@ function formatTimeAgo(timestamp:any) {
         fetchUserMessages()
 
       socket?.on('receivedMessage', (data: any) => {
-        console.log("ana hna wsalt message dual channel")
         if (selected?.id === data.channelId) {
           dispatch(addMessage(data.message));
         }
 
       });
       socket?.on("receivedPrivateMessage", (data: any) => {
-        console.log("ana hna wsalt message private")
-        console.log("selected", user?.id, " " + data.message.authorID)
-        console.log("selectedID", selected?.id, " " + data.message.reciverName)
         if (selected?.id === data.message.reciverName || selected?.id ===  data.message.authorID)
           dispatch(addMessage(data.message));
 
@@ -293,7 +288,7 @@ function formatTimeAgo(timestamp:any) {
 
     return (
       <div className='justify-between flex-col gap-[15px] h-full pt-[120px] flex-1'>
-        <div className=' flex flex-col gap-[10px] overflow-y-scroll no-scrollbar z-0 h-[95%] pb-10' ref={chatContainer}>
+        <div className=' flex flex-col gap-[10px] overflow-y-scroll no-scrollbar z-0 h-[95%] pb-12' ref={chatContainer}>
 
 
           {(messages && messages.length != 0) && (messages.map((message: ChannelMessage, index: number) => {

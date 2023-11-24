@@ -1,7 +1,6 @@
 "use client";
 
 import { FC, ReactNode } from "react";
-import LeftSidebar from "@/components/elements/ChatPage/leftsidebar/LeftSidebar";
 import MobileFooter from "@/components/elements/ChatPage/Mobile/MobileFooter";
 import { Flex } from "@chakra-ui/react";
 

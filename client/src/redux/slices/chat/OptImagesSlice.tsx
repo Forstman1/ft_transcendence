@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { combineReducers } from "@reduxjs/toolkit";
 
 
 type OptImagesState = {
