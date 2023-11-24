@@ -12,15 +12,12 @@ RUN apk --update add \
 WORKDIR /usr/src/app
 
 RUN npm install -g npm@10.2.4
-RUN npm install -g next
 
 COPY package*.json ./
+RUN npm install
 
 COPY . .
 
-RUN chmod +x init.sh
-
 EXPOSE 3000
 
-ENTRYPOINT ["sh", "/usr/src/app/init.sh"]
 CMD ["npm", "run", "dev"]

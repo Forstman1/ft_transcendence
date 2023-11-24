@@ -205,7 +205,7 @@ export default function GameSearchFriend({ onClose }: Props) {
               friend.isOnline &&
               <Box
                 key={friend.id}
-                className="flex w-[95%] p-2 flex-row justify-between items-center border-2 border-gray-300 rounded-lg  mt-5"
+                className="flex w-full p-2 flex-row justify-between items-center border-2 border-gray-300 rounded-lg  mt-5"
               >
                 <div className="flex flex-row items-center space-x-5">
                   <Avatar size="md" src={friend.avatarURL} />
