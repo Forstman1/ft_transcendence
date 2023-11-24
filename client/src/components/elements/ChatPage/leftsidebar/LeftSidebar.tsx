@@ -10,7 +10,7 @@ import {
   useToast,
   CloseButton,
 } from "@chakra-ui/react";
-import React, { useEffect, useState, useRef, use } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Newchannel from "./newchannel";
 import Hashtag from "./hatshtag";
 import Newmessage from "./newmessage";
@@ -33,35 +33,51 @@ import { useAppSelector } from "@/redux/store/store";
 
 function Usercard(props: any) {
   const socket = useSelector((state: any) => state.socket.socket);
-  const scroolToRef = useRef<HTMLDivElement>(null);
+  const dispatch = useDispatch();
+  const selected = useSelector((state: any) => state.chat.selectedChannelorUser);
+
+  const onSubmited = (userData: User) => {
+    if (userData.id === selected?.id)
+      return;
+    dispatch(setTheUser(userData));
+};
+
+  
   return (
-    <>
-      <div>
-        <Avatar
-          className="custom-shadow border-[1px] border-black"
-          boxSize={14}
-          src={props.data.avatarURL}
-        >
-          <AvatarBadge
+    <> 
+      <div className="flex w-full h-full items-center justify-between"
+        onClick={() => onSubmited(props.data)}>
+        <div>
+          <Avatar
             className="custom-shadow border-[1px] border-black"
-            boxSize={4}
-            bg={props.data.isOnline ? "green.500" : "red.500"}
-          />
-        </Avatar>
-      </div>
-      <div className="ml-[7px] flex flex-col  text-left w-[40%] justify-around">
-        <div className="text-[22px] font-bold truncate">
-          {props.data.username}{" "}
+            boxSize={14}
+            src={props.data.avatarURL}
+          >
+            <AvatarBadge
+              className="custom-shadow border-[1px] border-black"
+              boxSize={4}
+              bg={props.data.isOnline ? "green.500" : "red.500"}
+            />
+          </Avatar>
         </div>
+        <div className="ml-[7px] flex flex-col  text-left w-[40%] justify-around">
+          <div className="text-[22px] font-bold truncate">
+            {props.data.username}{" "}  
+          </div>
+        </div>
+        <div className="flex flex-col items-center text-center "></div>
       </div>
-      <div className="flex flex-col items-center text-center "></div>
       <Icon
         as={CloseButton}
         h={10}
         className="opacity-0 group-hover:opacity-100"
         onClick={() => {
           socket?.emit(`removeChatUser`, { friendId: props.data.id });
-          console.log("ana hna");
+
+          if (props.data.id === selected?.id) {
+            dispatch(setTheUser(null));
+            dispatch(setMessages([]));
+          }
         }}
       />
     </>
@@ -74,15 +90,12 @@ export default function LeftSidebar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [ChannelOrUser, setChannelOrUser] = useState(false);
   const channels = useSelector((state: any) => state.chat.channels);
-  const [ranFirstEffect, setRanFirstEffect] = useState(false);
 
   useEffect(() => {
     socket?.on(`updateChatList`, async (Users: any) => {
       dispatch(setUserDms(Users));
-      // dispatch(setTheUser(Users[0]));
-      // setRanFirstEffect(!ranFirstEffect);
     });
-  }, [socket]);
+  }, [socket, dispatch]);
 
   const selected = useSelector(
     (state: any) => state.chat.selectedChannelorUser
@@ -108,6 +121,7 @@ export default function LeftSidebar() {
       });
       dispatch(setChannels(allchannels));
     });
+
     socket?.on(`getChatList`, (Users: any) => {
       dispatch(setTheUser(Users[0]));
       dispatch(setUserDms(Users));
@@ -512,38 +526,44 @@ export default function LeftSidebar() {
     };
   }, [selected, userId]);
 
-  const sidebar = {
-    open: (height = 1000) => ({
-      clipPath: `circle(${height * 2 + 200}px at 90% 90%)`,
-      transition: {
-        type: "spring",
-        stiffness: 20,
-        restDelta: 2,
-      },
-    }),
-    closed: {
-      width: 0,
-      clipPath: `circle(0px at 10% 90%)`,
-      transition: {
-        type: "spring",
-        stiffness: 400,
-        damping: 40,
-      },
+ const sidebar = {
+  open: {
+    x: 0, 
+    transition: {
+      type: "Tween",
+      stiffness: 100, 
     },
-  };
+  },
+  closed: {
+    x: "-100%",
+    transition: {
+      type: "Tween",
+      stiffness: 100, 
+    },
+  },
+};
 
-  const onSubmited = (userData: User) => {
-    dispatch(setTheUser(userData));
-  };
+
+
   
+  const [selectedCard, setSelectedCard] = useState<number | null>(null);
+
+  const handelClick = (id: number) => {
+    if (selectedCard === id) {
+      setSelectedCard(null);
+    } else {
+      setSelectedCard(id);
+    }
+  };
 
   return (
     <Box
-      className="LeftSideBar place-items-center grid min-w-[400px] absolute h-full overflow-y-auto border-r-[3px] border-r-black  md:static md:w-[400px] bg-opacity-80 max-md:backdrop-blur-xl z-10 pt-[100px]"
+      className="LeftSideBar place-items-center grid w-[20%] max-xl:w-[30%] max-md:w-[50%] max-sm:w-[80%] absolute h-full overflow-y-auto border-r-[3px] border-r-black md:static bg-opacity-80 max-md:backdrop-blur-xl z-10 pt-[100px]"
       as={motion.div}
       initial={false}
       animate={LeftClice.LeftValue ? "open" : "closed"}
       variants={sidebar}
+
     >
       <Search />
 
@@ -590,14 +610,14 @@ export default function LeftSidebar() {
         </div>
       </div>
 
-      <div className=" mt-[40px] flex h-[500px] flex-col w-full  gap-1 overflow-y-scroll">
+      <div className=" mt-[40px] flex h-[500px] flex-col w-full  gap-1 overflow-y-scroll items-center">
         {Users.map((userData: User, id: number) => (
 
           <Box
-            className="group flex justify-between items-center cursor-pointer h-20 m-2  p-2 rounded-md hover:bg-zinc-100"
+            className="group flex justify-between w-[70%]  items-center cursor-pointer h-20 m-2  p-2 rounded-md hover:bg-zinc-300"
             key={id}
             onClick={() => {
-              onSubmited(userData);
+              handelClick(id);
             }}
             style={{    
               backgroundColor: (selected && selected === userData ? "#d4d4d8" : ""),

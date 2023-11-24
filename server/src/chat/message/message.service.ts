@@ -101,7 +101,7 @@ export class MessageService {
 
             const DMroom = await this.prisma.dMRoom.findFirst({
                 where: {
-                    roomMembers: {
+                    roomMembers: {  
                         every: {
                             id: {
                                 in: [user.id, reciver.id]
@@ -110,10 +110,14 @@ export class MessageService {
                     },
                 },
                 include: {
-                    roomMessages: true,
+                    roomMessages: {
+                        orderBy: {
+                            createdAt: 'asc'
+                        }
+                    },
                 }
             })
-            console.log(DMroom.roomMessages)
+            
             if (!DMroom)
                 return []
             return DMroom.roomMessages

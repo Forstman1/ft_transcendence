@@ -146,6 +146,50 @@ export class UsersService {
     }
   }
 
+  async getAcceptedFriendRequests(
+    id: Prisma.UserWhereUniqueInput,
+  ): Promise<User[] | string> { 
+    try { 
+      const user = await this.prisma.user.findUnique({
+        where: id,
+      });
+      if (!user) {
+        return 'User not found';
+      }
+      const friendRequests = await this.prisma.friendRequest.findMany({
+        where: {
+          OR: [
+            {
+              fromUserId: user.id,
+              status: 'accepted',
+            },
+          ],
+        },
+        include: {
+          toUser: true,
+        }
+      });
+
+      const alreadyFriends = await this.prisma.user.findMany({
+        where: {
+          friends: {
+            some: {
+              id: user.id,
+            },
+          },
+        },
+      });
+      const friends = friendRequests.map((friendRequest) => friendRequest.toUser);
+      const  respondedFriends = friends.filter((friend) => {
+        return !alreadyFriends.some((alreadyFriend) => alreadyFriend.id === friend.id);
+      });
+      return respondedFriends;
+    }
+    catch (error) {
+      return [];
+    }
+  }
+
   async declineFriendRequest(
     id: Prisma.UserWhereUniqueInput,
     friendId: Prisma.UserWhereUniqueInput,
@@ -397,7 +441,7 @@ export class UsersService {
     friendId: Prisma.UserWhereUniqueInput,
   ): Promise<string> {
     try {
-      console.log(User.id, friendId.id);
+   
       const user = await this.prisma.user.findUnique({
         where: { 
           id: User.id,
@@ -585,18 +629,26 @@ export class UsersService {
   //!---------------Message Storing------------------------!//
 
   async createMessage(messageInfo: MessageDto): Promise<string | MessageDto> {
+    
     const user = await this.prisma.user.findUnique({
       where: {
         id: messageInfo.authorName,
       },
     });
+
     if (!user) return `user Not found`;
+
     const reciver = await this.prisma.dMRoom.findUnique({
       where: {
         id: messageInfo.reciverID,
       },
+      include: {
+        roomMembers: true,
+      },
     });
+
     if (!reciver) return `reciver Not found`;
+
     try {
       const message = await this.prisma.userMessage.create({
         data: {
@@ -604,10 +656,12 @@ export class UsersService {
           authorName: user.username,
           authorID: user.id,
           reciverID: reciver.id,
-          createdAt: new Date(),
+          reciverName: messageInfo.reciverName,
         },
       });
+      
       return message;
+      
     } catch (error) {
       return `${error} could not create message`;
     }

@@ -32,4 +32,8 @@ export class MessageDto {
     @IsString()
     reciverID: string
 
+    @IsNotEmpty()
+    @IsString()
+    reciverName: string
+
 }

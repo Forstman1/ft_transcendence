@@ -130,6 +130,7 @@ model UserMessage {
   content   String
   author User @relation(name: "roommessage", fields: [authorID], references: [id], onDelete: Cascade)
 	reciver DMRoom @relation(fields: [reciverID], references: [id], onDelete: Cascade)
+  reciverName String
 	reciverID String
 	authorID String
   authorName String

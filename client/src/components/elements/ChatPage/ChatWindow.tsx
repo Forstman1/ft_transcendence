@@ -54,7 +54,7 @@ function formatTimeAgo(timestamp:any) {
   function Message_other({ usermessage, message, sender, time }: any) {
 
     const [user, setUser]: any = useState()
-
+    // const selected = useSelector((state: any) => state.chat.selectedChannelorUser);
 
 
     useEffect(() => {
@@ -68,15 +68,17 @@ function formatTimeAgo(timestamp:any) {
         } catch (error) {
           const fetchuser = await fetch("http://127.0.0.1:3001/users/getuser/" + usermessage.authorID);
           const response = await fetchuser.json();
+          // console.log("response "+  response.username+ " " + usermessage.authorID, " " + sender)
+
           setUser(response);
         }
       }
       fetchData()
-    }, [])
+    }, [usermessage])
     
     const timestamp = Date.parse(time);
     const formattedTime = formatTimeAgo(timestamp);
-
+ 
     return (<div className='w-full flex gap-[5px] pl-[15px] z-0 '>
       <Avatar className='custom-shadow2' boxSize={12} src={user?.avatarURL} />
       <div className="flex flex-col min-w-[50%] max-w-[70%]">
@@ -144,23 +146,25 @@ export default function ChatWindow() {
 
 
 
-  const HideMobileSideBars = () => {
-    if (window.innerWidth <= 1024) {
-      dispatch(setRight(false));
-      dispatch(setLeft(false));
+    const HideMobileSideBars = () => {
+      if (window.innerWidth < 1024) {
+        dispatch(setRight(false));
+        dispatch(setLeft(false));
+      }
     }
-  }
+  
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-
-      const fetchuser = await fetch('http://127.0.0.1:3001/users/getuser/' + userId)
-      const response = await fetchuser.json()
-      setUser(response)
-    }
-    fetchData()
-  }, [userId])
+    useEffect(() => {
+      const fetchData = async () => {
+        if (userId) {
+          const fetchuser = await fetch(`http://127.0.0.1:3001/users/getuser/${userId}`);
+          const response = await fetchuser.json()
+          setUser(response)
+        }
+      }
+      fetchData()
+    }, [userId])
 
   const handleNewMessage = async (data: any) => {
 
@@ -181,30 +185,28 @@ export default function ChatWindow() {
       return
     }
 
-    if ('name' in selected) {
-      console.log("sifat chi7aja", selected.id, " " + selected.id)
-      socket?.emit('sendMessage', {
-        channelId: selected.id,
-        userId: userId,
-        message: data.newmessage,
-      });
-    }
-    else {
-      socket?.emit(`sendPrivateMessage`, {
-        reciverId: selected.id,
-        message: data.newmessage,
-      });
-    }
+        if ('name' in selected)
+        {
+          socket?.emit('sendMessage', {
+            channelId: selected.id,
+            userId: userId,
+            message: data.newmessage,
+          }); 
+        }
+        else
+        {
+          socket?.emit(`sendPrivateMessage`, {
+            reciverId: selected.id,
+            message: data.newmessage,
+          });
+        }
+      reset({ newmessage: '' });
+      scrollToBottom();
+    };
 
-    reset({ newmessage: '' });
-    scrollToBottom();
-  };
-
-
-  const getChannelMessages: any = useMutation<any, Error, any>((variables) =>
-    fetch('http://127.0.0.1:3001/message/getmessages/' + variables.channelId).then((response) => {
-      console.log("Channelresponse", response)
-      return response.json()
+    const getChannelMessages: any = useMutation<any, Error, any>((variables) =>
+      fetch('http://127.0.0.1:3001/message/getmessages/' + variables.channelId).then((response) => {
+        return response.json()
 
     }).catch((error) => {
       return error
@@ -251,16 +253,15 @@ export default function ChatWindow() {
     if (selected && 'username' in selected && selected.id != null)
       fetchUserMessages()
 
-    socket?.on('receivedMessage', (data: any) => {
-      console.log("ana hna wsalt message dual channel")
-      if (selected?.id === data.channelId) {
-        dispatch(addMessage(data.message));
-      }
+      socket?.on('receivedMessage', (data: any) => {
+        if (selected?.id === data.channelId) {
+          dispatch(addMessage(data.message));
+        }
 
-    });
-    socket?.on("receivedPrivateMessage", (data: any) => {
-
-      dispatch(addMessage(data.message));
+      });
+      socket?.on("receivedPrivateMessage", (data: any) => {
+        if (selected?.id === data.message.reciverName || selected?.id ===  data.message.authorID)
+          dispatch(addMessage(data.message));
 
     });
 
@@ -273,17 +274,20 @@ export default function ChatWindow() {
       })
     });
 
-    return () => {
-      socket?.off('receivedMessage');
-      socket?.off('receivedPrivateMessage');
-      socket?.off('sendMessage');
-    };
-  }, [selected]);
+      return () => {
+        
+        socket?.off('receivedMessage');
+        socket?.off('receivedPrivateMessage');
+        socket?.off('sendMessage');
+      };
+    }, [selected]);
 
 
-  return (
-    <div className='justify-between flex-col gap-[15px] w-full h-full pt-[120px]'>
-      <div className=' flex flex-col gap-[10px] overflow-y-scroll no-scrollbar z-0 h-[95%] pb-10' ref={chatContainer}>
+
+
+    return (
+      <div className='justify-between flex-col gap-[15px] h-full pt-[120px] flex-1'>
+        <div className=' flex flex-col gap-[10px] overflow-y-scroll no-scrollbar z-0 h-[95%] pb-12' ref={chatContainer}>
 
 
         {(messages && messages.length != 0) && (messages.map((message: ChannelMessage, index: number) => {
