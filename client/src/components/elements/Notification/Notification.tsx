@@ -18,16 +18,14 @@ import {
 } from "@chakra-ui/react";
 import {
   BellIcon,
-  DeleteIcon,
-  CheckCircleIcon,
-  EmailIcon,
-  WarningTwoIcon,
 } from "@chakra-ui/icons";
 import { useSelector } from "react-redux";
+import { useAppSelector } from "@/redux/store/store";
 
 export default function Notification() {
   const [notifications, setNotifications] = useState<any>([])
   const socket = useSelector((state: any) => state.socket.socket);
+  const gameSocket = useAppSelector((state) => state.globalSocketReducer.socket);
   const [counter, setCounter] = useState(0);
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [notification, setNotification] = useState<any>(null);
@@ -49,15 +47,27 @@ export default function Notification() {
       // setCounter(data.length);  
     });
 
+    gameSocket?.on("newNotification", (data: any) => {
+      setNotifications(data);
+      setCounter(0);
+      data.map((notification1: any) => {
+        if(notification1?.read === false) {
+          setCounter((prevCounter: number) => prevCounter + 1);
+        }
+      })
+    });
+
     return () => {
+      gameSocket?.off("newNotification");
       socket.off("getNotifications");
     }
   }, [socket])
 
   const onSubmit = (notification: any) => {
-    
-    onOpen();
-    setNotification(notification);
+    if (notification?.type === "friendRequest") {
+      onOpen();
+      setNotification(notification);
+    }
   }
 
 

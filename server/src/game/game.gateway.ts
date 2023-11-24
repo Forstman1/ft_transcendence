@@ -172,6 +172,9 @@ export class GameGateway {
       const room = this.server.sockets.adapter.rooms.get(roomId);
       const modalData = data.modalData;
 
+      console.log('userId: ', client.handshake.auth.id);
+      console.log('friendId: ', friendUserId);
+
       if (this.gameService.isRoomOwner(clientUserId, roomId)) {
         if (room && room.size < 2) {
           const friendSocket = this.connectedUsers[friendUserId];
@@ -179,7 +182,13 @@ export class GameGateway {
             client.emit('frinedIsInGame');
           } else if (friendSocket) {
             const friendId = client.handshake.auth.id;
-            this.gameService.notifyFriend(client.handshake.auth.id, friendId);
+            this.gameService.notifyFriend(client.handshake.auth.id, friendUserId);
+            const notifications = await this.gameService.getNotifications(
+              friendUserId,
+            );
+            this.server
+              .to(friendUserId)
+              .emit('newNotification', notifications);
             this.server
               .to(friendUserId)
               .emit('room-invitation', { roomId, modalData, friendId });
