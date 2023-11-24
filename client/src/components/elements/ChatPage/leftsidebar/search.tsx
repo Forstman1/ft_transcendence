@@ -111,25 +111,28 @@ export default function Search() {
 
     const getchannels = useMutation<any, Error, any>((variables) =>
         fetch('http://127.0.0.1:3001/channel/getallchannelsapp/' + variables.tofound).then((res) => {
-            console.log("variable", variables)
+
             return res.json()
-        }).catch((err) => console.log(err))
+        })
     )
 
     const getusers = useMutation<any, Error, any>((variables) =>
-        fetch('http://127.0.0.1:3001/users/getusers/' + variables.tofound).then((res) => {
-            return res.json()
-        }).catch((err) => console.log(err)))
+        fetch('http://127.0.0.1:3001/users/getusers/' + variables.tofound)
+            .then((res) => res.json())
+            
+    );
 
     const listusers = useMutation<any, Error, any>(() =>
-        fetch('http://127.0.0.1:3001/users/getAllUsers/' + userId).then((res) => {
-            return res.json()
-        }).catch((err) => console.log(err)))
+        fetch('http://127.0.0.1:3001/users/getAllUsers/' + userId)
+            .then((res) => res.json())
+            
+    );
 
     const listchannels = useMutation<any, Error, any>(() =>
         fetch('http://127.0.0.1:3001/channel/getallpublicandprivatechannels').then((res) => {
             return res.json()
-        }).catch((err) => console.log(err)))
+        })
+    );
 
 
 
@@ -181,7 +184,7 @@ export default function Search() {
             channelName: selectedOption.name,
             password: info.password
         })
-        console.log(check)
+
         if (check.status === "wrong password") {
             setWrongpassowrd(true)
             toast({

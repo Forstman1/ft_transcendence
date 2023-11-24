@@ -71,7 +71,7 @@ function Componenent({ onClose }: any) {
                 setUsers(usersData);
 
             } catch (error) {
-                console.error('Error fetching users and channel members:', error);
+
                 toast({
                     title: 'Error fetching users and channel members',
                     position: `bottom-right`,

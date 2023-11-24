@@ -55,7 +55,7 @@ const CreatGameGlobalSocket = (user: any) => {
 
 const CreatChatGlobalSocket = (user: any) => {
 
-  const socket = io('http://localhost:3001/chat', {
+  const socket = io(process.env.NEXT_PUBLIC_SERVER_URL + 'chat' || 'http://localhost:3001/chat', {
     transports: ["websocket"],
     upgrade: false,
     auth: {
@@ -63,8 +63,6 @@ const CreatChatGlobalSocket = (user: any) => {
     },
   });
   return socket;
-
-  // socket?.emit(`createRoom`, { userId: user.userId })
 }
 
 

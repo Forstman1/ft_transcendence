@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-// import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateMessageDto } from './dto';
-import { MessageDto } from '../users/dtos/user.dto';
 import { UserMessage } from '@prisma/client';
 
 
@@ -101,7 +99,7 @@ export class MessageService {
 
             const DMroom = await this.prisma.dMRoom.findFirst({
                 where: {
-                    roomMembers: {
+                    roomMembers: {  
                         every: {
                             id: {
                                 in: [user.id, reciver.id]
@@ -110,17 +108,21 @@ export class MessageService {
                     },
                 },
                 include: {
-                    roomMessages: true,
+                    roomMessages: {
+                        orderBy: {
+                            createdAt: 'asc'
+                        }
+                    },
                 }
             })
-            console.log(DMroom.roomMessages)
-            if (!DMroom.roomMessages)
+            
+            if (!DMroom)
                 return []
             return DMroom.roomMessages
           
         }
         catch (error) {
-            
+            return []
             return `${error} could not retrieve messages`
         }
     }

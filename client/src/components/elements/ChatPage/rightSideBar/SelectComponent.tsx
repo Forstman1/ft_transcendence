@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Button, useToast } from '@chakra-ui/react';
+import { Button } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 
 

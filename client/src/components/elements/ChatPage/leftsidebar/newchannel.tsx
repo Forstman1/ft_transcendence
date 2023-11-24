@@ -45,7 +45,7 @@ export default function Newchannel({  onClose }: Props) {
   const onSubmit = async (data: ChannelValues) => {
 
     data.userId = userId
-    console.log(data)
+
     if (data.channelName.length > 10)
     {
       toast({
