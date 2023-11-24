@@ -100,9 +100,15 @@ export default function Notification() {
     socket.emit("getNotifications")
 
     socket.on("getNotifications", (data: any) => {
-      console.log(data)
       setNotifications(data);
-      setCounter(data.length);  
+      setCounter(0);
+      data.map((notification1: any) => {
+        if(notification1?.read === false) {
+          setCounter((prevCounter: number) => prevCounter + 1);
+        }
+      })
+
+      // setCounter(data.length);  
     });
 
     return () => {
@@ -110,19 +116,20 @@ export default function Notification() {
     }
   }, [socket])
 
-  const onSubmit = (notification: any ) => {
+  const onSubmit = (notification: any) => {
+    
     onOpen();
     setNotification(notification);
   }
 
 
   const Accept = () => {
-    socket.emit("acceptFreindRequest", notification.id);
+    socket.emit("acceptFreindRequest", {friendId: notification.senderId});
     onClose();
   }
 
   const Denie = () => {
-    socket.emit("rejectFreindRequest", notification.id);
+    socket.emit("rejectFreindRequest", {friendId: notification.senderId});
     onClose();
   }
   return (
@@ -130,6 +137,7 @@ export default function Notification() {
       <Menu>
         <MenuButton
           as={IconButton}
+          onClick={() => socket.emit("readNotification")}
           isRound={true}
           className="bg-black relative hover:bg-black"
           variant="solid"
@@ -147,7 +155,7 @@ export default function Notification() {
           </div>
           <div className="bg-white rounded-lg mt-5 w-full h-[95%] overflow-y-scroll no-scrollbar">
             {notifications?.map((notification: any, index: number) => (
-              <MenuItem key={notification?.id} onClick={() => onSubmit(notification)}>
+              <MenuItem key={index} onClick={() => onSubmit(notification)}>
                 <div
                   className={`flex flex-col bg-gray-100 px-4 py-2 cursor-pointer  relative  overflow-hidden transition-all rounded hover:bg-white group`}
                 >
@@ -197,6 +205,7 @@ export default function Notification() {
             colorScheme="red"
             variant="outline"
             mr={10}
+            onClick={Denie}
           >
             DENIE
           </Button>
@@ -204,6 +213,7 @@ export default function Notification() {
             colorScheme="green"
             variant="outline"
             ml={10}
+            onClick={Accept}
           >
             ACCEPT
           </Button>

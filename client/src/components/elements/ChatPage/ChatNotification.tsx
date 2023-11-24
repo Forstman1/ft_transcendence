@@ -25,7 +25,7 @@ export default function ChatNotification() {
         const handleFreindRequest = (Friend: User) => {
             toast({
                 position: "top-right",
-                duration: 9000,
+                duration: 3500,
                 isClosable: true,
                 render: ({ onClose }) => (
                     <motion.div

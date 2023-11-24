@@ -83,35 +83,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
 
 
 
-  @SubscribeMessage(`sendNotification`)
-  async sendNotification(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data ): Promise<any> {
-
-
-    try {
-      if (data.type === "friendRequest") {
-      await this.userService.notifyFriendRequest(client.handshake.auth.id, data.friendId);
-      if (this.connectedUsers[data.friendId]) {
-        this.connectedUsers[data.friendId].map((socket) => {
-          this.server.to(socket.id).emit('receivedNotification', { message: "you have a new friend request" });
-        })
-      }
-    }
-    else if (data.type === "roomMessage") {
-      // await this.userService.notifyRoomMessage(client.handshake.auth.id, data.roomId);
-      // if (this.connectedUsers[data.friendId]) {
-      //   this.connectedUsers[data.friendId].map((socket) => {
-      //     this.server.to(socket.id).emit('receivedNotification', { message: "you have a new message" });
-      //   })
-      // }
-    }
-      // this.server.to(userID).emit(`receivedNotification`, data.message);
-    } catch (error) {
-      console.error(`Error in sending notification`, error);
-    }
-  }
-
   //!---------------CREATE ROOM------------------------!//
 
 
@@ -272,6 +243,32 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     }
   }
 
+
+@SubscribeMessage(`readNotification`)
+async readNotification(
+  @ConnectedSocket() client: Socket,
+
+): Promise<any> {
+  try {
+    const User: Prisma.UserWhereUniqueInput = {
+      id: client.handshake.auth.id,
+    };
+    
+    let notifications = await this.userService.getNotifications(client.handshake.auth.id);
+    notifications.map(async (notification) => {
+      await this.userService.readNotification(notification.id);
+    })
+    notifications = await this.userService.getNotifications(client.handshake.auth.id);
+
+    this.connectedUsers[client.handshake.auth.id].map((socket) => {
+      this.server.to(socket.id).emit(`getNotifications`, notifications);
+    });
+  } catch (error) {
+    console.error(`Error in reading notification`, error);
+  }
+}
+
+
   @SubscribeMessage(`sendFreindRequest`)
   async sendFreindRequest(
     @ConnectedSocket() client: Socket,
@@ -316,14 +313,22 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       };
       const friend: Prisma.UserWhereUniqueInput = { id: data.friendId };
       const responce = await this.userService.acceptFriendRequest(User, friend);
+
+      await this.userService.removeNotification(client.handshake.auth.id, data.friendId)
+
       // const userId = await this.userService.getUser(User);
       if (responce === `Friend request accepted`) {
+      const notifications = await this.userService.getNotifications(client.handshake.auth.id);
         const userSockets = this.connectedUsers[friend.id];
         if (userSockets) {
           for (const socket of userSockets) {
             this.server.to(socket.id).emit(`friendRequestAccepted`);
           }
         }
+        this.connectedUsers[client.handshake.auth.id].map((socket) => {
+          this.server.to(socket.id).emit(`getNotifications`, notifications);
+          this.server.to(socket.id).emit(`friendRequestAccepted`);
+        })
       }
     } catch (error) {
       console.error(`Error in accepting freind request`, error);
@@ -341,10 +346,19 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       };
       const UserId = await this.userService.getUser(User);
       const userSockets = this.connectedUsers[data.friendId];
+      // await this.userService.removeNotification(client.handshake.auth.id, data.friendId)
+
+      await this.userService.removeNotification(client.handshake.auth.id, data.friendId)
+      const notifications = await this.userService.getNotifications(client.handshake.auth.id);
+
       for (const socket of userSockets) {
         this.logger.log(`here i'm sending ` + socket.id);
         this.server.to(socket.id).emit(`friendRequestRejected`, UserId);
       }
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+        this.server.to(socket.id).emit(`getNotifications`, notifications);
+        this.server.to(socket.id).emit(`friendRequestRejected`);
+      })
     } catch (error) {
       console.error(`Error in rejecting freind request`, error);
     }

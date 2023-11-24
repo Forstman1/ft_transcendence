@@ -565,7 +565,7 @@ export default function LeftSidebar() {
           channels.length != 0 &&
           channels.map((data: Channel, id: number) => {
             if (data.name) return (
-             <div className='flex h-14 items-center cursor-pointer justify-between w-[80%] rounded-md hover:bg-zinc-100'
+             <div key={id} className='flex h-14 items-center cursor-pointer justify-between w-[80%] rounded-md hover:bg-zinc-100'
             style={{    
               backgroundColor: (selected && selected === data ? "#d4d4d8" : "")
                 }}

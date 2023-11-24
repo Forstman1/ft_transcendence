@@ -670,6 +670,22 @@ export class UsersService {
     return;
   }
 
+  removeNotification = async (userId: string, friendId: string): Promise<void> => {
+    
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        notifications: {
+          deleteMany: {
+            senderId: friendId,
+            type: 'friendRequest',
+          },
+        },
+      },
+    });
+    return;
+  }
+
   getNotifications = async (userId: string): Promise<any> => {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -678,5 +694,15 @@ export class UsersService {
       },
     });
     return user.notifications;
+  }
+
+  readNotification = async (notificationId: string): Promise<void> => {
+    await this.prisma.notification.update({
+      where: { id: notificationId },
+            data: {
+              read: true,
+        },
+      },);
+    return;
   }
 }

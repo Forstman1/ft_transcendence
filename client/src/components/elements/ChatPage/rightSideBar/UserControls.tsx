@@ -72,7 +72,7 @@ export default function UserControls() {
 
       });
 
-      Cookies.set(Friend.username, JSON.stringify([newValue, optImages[1]]), {
+      Cookies.set(Friend?.username, JSON.stringify([newValue, optImages[1]]), {
         expires: 365,
 
       });
