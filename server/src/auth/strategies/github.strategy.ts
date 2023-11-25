@@ -1,7 +1,6 @@
 import {
   Injectable,
   ServiceUnavailableException,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-github2';
@@ -54,7 +53,7 @@ export class GithubStrategy extends PassportStrategy(Strategy) {
       };
       return user;
     } catch (error) {
-      request.res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
+      return request.res.redirect(`${process.env.CLIENT_URL}/?error=true`);
     }
   }
 }

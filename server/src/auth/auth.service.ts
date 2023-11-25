@@ -36,6 +36,18 @@ export class AuthService {
 
   /* ------------------------------------------------------------------------------------------------------------------ */
 
+  async isNewUser(userInput: UserDto): Promise<boolean> {
+    const userFound = await this.userService.findUser({
+      email: userInput.email,
+    });
+    if (userFound === null) {
+      return true;
+    }
+    return false;
+  }
+
+  /* ------------------------------------------------------------------------------------------------------------------ */
+
   async issueTemporaryToken(userInput: UserDto): Promise<string> {
     const user: User = await this.validateUser(userInput);
     const payload = {

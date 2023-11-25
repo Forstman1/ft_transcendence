@@ -33,7 +33,7 @@ import { HamburgerIcon } from '@chakra-ui/icons';
 import WavesDivider from 'assets/icons/wavesOpacity.svg';
 import Logo from 'assets/icons/Logo.svg';
 import LoginThumbnail from 'assets/icons/Auth/undraw_my_password_re_ydq7.svg';
-import { io } from "socket.io-client";
+import { io } from 'socket.io-client';
 import { setSocketState } from "@/redux/slices/socket/globalSocketSlice";
 import { initialState as DefaultUserStoreData, UserState } from "@/redux/slices/authUser/authUserSlice";
 import { setChatSocketState } from '@/redux/slices/socket/chatSocketSlice';
@@ -42,7 +42,7 @@ import Notification from '../Notification/Notification';
 
 
 const CreatGameGlobalSocket = (user: any) => {
-  const socket = io(process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3001', {
+  const socket = io(`${process.env.NEXT_PUBLIC_SERVER_URL}`, {
     transports: ["websocket"],
     upgrade: false,
     auth: {
@@ -55,7 +55,7 @@ const CreatGameGlobalSocket = (user: any) => {
 
 const CreatChatGlobalSocket = (user: any) => {
 
-  const socket = io('http://localhost:3001/chat', {
+  const socket = io(`${process.env.NEXT_PUBLIC_SERVER_URL}/chat`, {
     transports: ["websocket"],
     upgrade: false,
     auth: {
@@ -78,7 +78,7 @@ export function AuthButtons() {
         return (
           <Button
             key={index} className='text-xl w-full max-w-[18rem]'
-            as='a' href={`${process.env.NEXT_PUBLIC_SERVER_URL}auth/${button.name}/login`}
+            as='a' href={`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/${button.name}/login`}
             target='_self'
             backgroundColor={button.bgClr} color={button.clr}
             border='2px' borderColor={button.borderClr}
@@ -169,14 +169,22 @@ export function UserProfileNavbarBadge() {
             </Center>
             <br />
             <MenuDivider />
-            <MenuItem as='a' href='/userPage'>Profile</MenuItem>
-            <MenuItem as='a' href='/settings'>Settings</MenuItem>
+            <Link href={`/profile/${data.userId}`}>
+              <MenuItem as='button'>
+                Profile
+              </MenuItem>
+            </Link>
+            <Link href='/profile/settings'>
+              <MenuItem as='button'>
+                Settings
+              </MenuItem>
+            </Link>
             <MenuDivider />
-            <MenuItem
-              color={'red.500'} as='a'
-              href={`${process.env.NEXT_PUBLIC_SERVER_URL}auth/logout`}>
-              Logout
-            </MenuItem>
+            <a href={`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/logout`}>
+              <MenuItem color={'red.500'} as='button'>
+                Logout
+              </MenuItem>
+            </a>
           </MenuList>
         </Menu>
       </Box>
@@ -262,19 +270,19 @@ const HeaderNavDesktop: React.FC = () => {
               <Box key={index} className='col-span-1'>
                 <Center>
                   {item.href === "/" && (
-                  <Link href={item.href} className="w-auto">
-                    <Text className="text-2xl font-semibold">
-                      {item.text}
-                    </Text>
-                    {path === item.href ? (
-                      <motion.span
-                        layoutId="underline"
-                        className="absolute w-6 h-1 bg-white rounded-full"
-                      />
-                    ) : null}
-                  </Link>
+                    <Link href={item.href} className="w-auto">
+                      <Text className="text-2xl font-semibold">
+                        {item.text}
+                      </Text>
+                      {path === item.href ? (
+                        <motion.span
+                          layoutId="underline"
+                          className="absolute w-6 h-1 bg-white rounded-full"
+                        />
+                      ) : null}
+                    </Link>
                   )}
-                  {item.href !== "/" &&  user.isAuthenticated && (
+                  {item.href !== "/" && user.isAuthenticated && (
                     <Link href={item.href} className="w-auto">
                       <Text className="text-2xl font-semibold">
                         {item.text}
@@ -324,18 +332,18 @@ const HeaderNavMobile: React.FC = () => {
           }, index: number) => {
             return (
               <Link href={item.href} key={`mobile-navbar-menu-link-${index}`}>
-                { item.href === "/" && (
-                <MenuItem
-                  key={`mobile-navbar-menu-item-${index}`} rounded='md' as={"button"}
-                  className={`bg-neutral-900 text-neutral-50 border-neutral-950`}
-                >
-                  <Text className="text-xl font-semibold">
-                    {item.text}
-                  </Text>
-                  {index != NAVBAR_ITEMS.length - 1 ? <MenuDivider /> : null}
-                </MenuItem>
+                {item.href === "/" && (
+                  <MenuItem
+                    key={`mobile-navbar-menu-item-${index}`} rounded='md' as={"button"}
+                    className={`bg-neutral-900 text-neutral-50 border-neutral-950`}
+                  >
+                    <Text className="text-xl font-semibold">
+                      {item.text}
+                    </Text>
+                    {index != NAVBAR_ITEMS.length - 1 ? <MenuDivider /> : null}
+                  </MenuItem>
                 )}
-                { item.href !== "/" && user.isAuthenticated && (
+                {item.href !== "/" && user.isAuthenticated && (
                   <MenuItem
                     key={`mobile-navbar-menu-item-${index}`} rounded='md' as={"button"}
                     className={`bg-neutral-900 text-neutral-50 border-neutral-950`}
@@ -375,13 +383,13 @@ export default function Navbar() {
     onSuccess: (response: any) => {
       setUserAuthenticated(true);
       dispatch(updateUser({ isAuthenticated: true, ...response.data }));
-      if(!socketState.socket){
+      if (!socketState.socket) {
         const gameSocket = CreatGameGlobalSocket(response.data);
         dispatch(setSocketState({
           socket: gameSocket,
         }));
       }
-      if(!ChatsocketState.socket){
+      if (!ChatsocketState.socket) {
         const chatSocket = CreatChatGlobalSocket(response.data);
         dispatch(setChatSocketState({
           socket: chatSocket,

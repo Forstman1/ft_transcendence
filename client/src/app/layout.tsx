@@ -5,7 +5,7 @@ import 'tailwindcss/tailwind.css'
 import { Geo } from "next/font/google";
 import * as React from "react";
 import { CacheProvider } from "@chakra-ui/next-js";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, ToastProviderProps } from "@chakra-ui/react";
 import Navbar from "../components/elements/Navbar/Navbar";
 import ReduxProvider from "../redux/provider";
 import SplashScreen from "@/components/elements/spalshScreen/SplashScreen";
@@ -60,10 +60,6 @@ export default function RootLayout({
                     <GlobalChatListener />
                     <ChatNotification />
                     <GameNotification />
-                    {/* <Toaster
-                      position="bottom-right"
-                      reverseOrder={false}
-                    /> */}
                     <Navbar />
 
                     {children}

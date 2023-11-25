@@ -1,5 +1,5 @@
 import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 
 @Injectable()
 export class RestrictedMiddleware implements NestMiddleware {
@@ -8,7 +8,7 @@ export class RestrictedMiddleware implements NestMiddleware {
       req._parsedUrl.pathname !== '/auth/google/callback' &&
       req._parsedUrl.pathname !== '/auth/intra/callback' &&
       req._parsedUrl.pathname !== '/auth/github/callback' &&
-      req.headers.referer !== 'http://localhost:3000/'
+      req.headers.referer !== `${process.env.CLIENT_URL}/`
     ) {
       throw new UnauthorizedException();
     }
