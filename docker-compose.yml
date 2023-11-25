@@ -37,7 +37,8 @@ services:
     image: server
     container_name: server
     volumes:
-      - ./server:/usr/src/app
+      - ./server/:/usr/src/app/
+      - /usr/src/app/node_modules
     environment:
       DATABASE_HOST: ${DATABASE_HOST}
       DATABASE_URL: ${DATABASE_URL}
@@ -63,7 +64,8 @@ services:
     image: client
     container_name: client
     volumes:
-      - ./client:/usr/src/app
+      - ./client/:/usr/src/app/
+      - /usr/src/app/node_modules
     ports:
       - "3000:3000"
     env_file:

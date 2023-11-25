@@ -8,16 +8,19 @@ RUN apk --update add \
     pixman-dev \
     pangomm-dev \
     libjpeg-turbo-dev
+    
+RUN npm install -g npm@10.2.4
 
 WORKDIR /usr/src/app
 
-RUN npm install -g npm@10.2.4
-
 COPY package*.json ./
+
 RUN npm install
+
 
 COPY . .
 
 EXPOSE 3000
 
 CMD ["npm", "run", "dev"]
+

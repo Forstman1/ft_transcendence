@@ -9,7 +9,7 @@ import ChartLine from '@/components/userPage/ChartLine';
 import FriendList from '@/components/userPage/FriendList';
 import Achievements from '@/components/userPage/Achievements'
 import MatchHistory from '@/components/userPage/MatchHistory';
-// import AddFriend from '@/components/userPage/AddFriend';
+import AddFriend from '@/components/userPage/AddFriend';
 
 import { useQuery } from 'react-query';
 import { getUser } from '@/utils/profile/fetchingProfileData'
@@ -20,7 +20,7 @@ import { useEffect } from 'react';
 
 
 type userProfileData = {
-    userId: string;
+    id: string;
     username: string;
     fullname: string;
     email: string;
@@ -111,10 +111,10 @@ export default function Profile({params}: any) {
                             <Icon as={MdSettings} /> Edit
                         </button>
                         :
-                        <button className='bg-black text-white px-4 rounded-bl-lg hover:bg-gray-700'>
-                            <Icon as={MdSettings} /> Add Friend
-                        </button>
-                        // <AddFriend userId={userData.userId} />
+                        // <button className='bg-black text-white px-4 rounded-bl-lg hover:bg-gray-700'>
+                        //     <Icon as={MdSettings} /> Add Friend
+                        // </button>
+                        <AddFriend userData={userData} />
                     }
                 </Flex>
 
