@@ -58,7 +58,7 @@ export default function AddToChannelComponent() {
       'Content-Type': 'application/json'
       },
       body: JSON.stringify(variables)})
-    .then(res => res.json()).catch(err => console.log(err)))
+    .then(res => res.json()))
 
   const onSubmit = async () => {
     if (Chosen === "Channels")

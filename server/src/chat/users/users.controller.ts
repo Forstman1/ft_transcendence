@@ -17,10 +17,11 @@ export class UsersController {
     return await this.usersService.listFriends(User);
   }
 
-  @Get(`:id`)
-  async getUser(@Param() id: Prisma.UserWhereUniqueInput) {
-    return await this.usersService.getUser(id);
-  }
+  
+    @Get('/getuser/:id')
+    async getuser(@Param('id') id: string) {
+      return await this.usersService.getUserbyId(id);
+    }
 
   @Get(`chatList/:id`)
   async getChatList(@Param() id: Prisma.UserWhereUniqueInput) {
@@ -54,13 +55,8 @@ export class UsersController {
     return await this.usersService.getAllUsers(id);
   }
 
-  @Get('/getuser/:id')
-  getuser(@Param('id') id: string) {
-    return this.usersService.getUserbyId(id);
-  }
-
   @Get('/getusers/:tofound')
-  getuserstofound(@Param('tofound') tofound: string) {
-    return this.usersService.getuserstofound(tofound);
+  async getuserstofound(@Param('tofound') tofound: string) {
+    return await this.usersService.getuserstofound(tofound);
   }
 }

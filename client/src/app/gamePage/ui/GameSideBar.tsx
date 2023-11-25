@@ -35,7 +35,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store/store";
 import { setModal } from "@/redux/slices/game/gameModalSlice";
 import { BackgroundsImg } from "@/utils/constants/game/GameConstants";
-import CheckIcon from "../../../../assets/icons/CheckIcon.svg";
+// import CheckIcon from "../../../../assets/icons/CheckIcon.svg";
 
 
 
@@ -284,11 +284,11 @@ const GameSideBar = ({
                           />
                           {canvasBgImg === bg.id && (
                             <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center">
-                              <Image
-                                src={CheckIcon}
+                              {/* <Image
+                                // src={CheckIcon}
                                 alt="check"
                                 width={20}
-                              />
+                              /> */}
                             </div>
                           )}
                         </button>

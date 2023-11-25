@@ -22,7 +22,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useQuery } from 'react-query';
 import axios from 'axios';
-import { useEffect } from 'react';
+
 
 
 
@@ -71,8 +71,8 @@ function Usercard(props: any) {
 
 export default function Newmessage({onClose}: Props) {
     
+
     const socket = useSelector((state: any) => state.socket.socket)
-    const dispatch = useDispatch();
     const toast = useToast();
     const [selectedOption, setSelectedOption]: any = useState('');
     const id = useSelector((state: any) => state.socket.userID);
@@ -90,13 +90,11 @@ export default function Newmessage({onClose}: Props) {
     };
 
     const handleSubmit = async () => {
-        try { 
+      
             socket?.emit(`updateChatList`, {frienID: selectedOption.id})
             socket?.emit(`createRoom`, {userId: id, frienID: selectedOption.id})
             onClose();
-        } catch (error) {
-            console.error("Failed to add friend:", error);
-        }
+        
     };
     
 
@@ -117,7 +115,7 @@ export default function Newmessage({onClose}: Props) {
             >
 
                 <ModalHeader>Find Friend</ModalHeader>
-                <ModalBody>
+                <ModalBody className='w-full'>
                     <InputGroup>
                         <InputLeftElement pointerEvents="none">
                             <Search2Icon color="gray.300" />
@@ -139,7 +137,9 @@ export default function Newmessage({onClose}: Props) {
                         />
                     </InputGroup>
 
-                    <div className=' mt-[20px] flex md:h-[400px] h-[200px] flex-col overflow-y-scroll'>
+                    {/* <div className=' mt-[20px] flex md:h-[400px] h-[200px] flex-col overflow-y-scroll'> */}
+                    <div className="flex w-full h-[300px]  flex-col  no-scrollbar overflow-y-scroll ">
+
                         {isLoading ? (
                             <p>Loading...</p>
                         ) : error ? (

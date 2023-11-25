@@ -63,8 +63,6 @@ const CreatChatGlobalSocket = (user: any) => {
     },
   });
   return socket;
-
-  // socket?.emit(`createRoom`, { userId: user.userId })
 }
 
 

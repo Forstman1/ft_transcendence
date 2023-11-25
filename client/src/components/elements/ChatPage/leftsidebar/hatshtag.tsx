@@ -16,7 +16,7 @@ import { Button, FormControl, FormLabel, Icon, Input } from '@chakra-ui/react';
 import { useForm } from "react-hook-form";
 import { LockIcon } from "@chakra-ui/icons";
 import { useMutation } from "react-query";
-import { setChannel, setChannelMember, setMessages } from "@/redux/slices/chat/ChatSlice";
+import { setChannel, setChannelMember } from "@/redux/slices/chat/ChatSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { Channel } from "@/utils/types/chat/ChatTypes";
 

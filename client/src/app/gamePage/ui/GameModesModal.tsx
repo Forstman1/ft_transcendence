@@ -73,7 +73,7 @@ const GameModesModal = ({ isOpen, onClose, gameType, friend }: Props) => {
   const toast = useToast();
   const socket = useAppSelector((state) => state.globalSocketReducer);
   const modalData = useAppSelector((state) => state.gameReducer);
-  const [friendId, setFriendId] = useState<string>("");
+  const [friendId, setFriendId] = useState<string>(gameType === "chatGame" ? friend.id : "");
   const [socketRoomId, setSocketRoomId] = useState<string>("");
 
   //-------------------chatGameLogic------------------------
@@ -96,15 +96,15 @@ const GameModesModal = ({ isOpen, onClose, gameType, friend }: Props) => {
     router.push("/gamePage/gameFriendPage");
   });
 
-  socket.socket?.on("friendDenyInvitation", () => {
-    toast({
-      title: "Your friend deny your invitation",
-      description: "Please try again",
-      status: "error",
-      duration: 5000,
-      isClosable: true,
-    });
-  });
+  // socket.socket?.on("friendDenyInvitation", () => {
+  //   toast({
+  //     title: "Your friend deny your invitation",
+  //     description: "Please try again",
+  //     status: "error",
+  //     duration: 5000,
+  //     isClosable: true,
+  //   });
+  // });
 
   const dispatchData = (RoomId: string) => {
     dispatch(
