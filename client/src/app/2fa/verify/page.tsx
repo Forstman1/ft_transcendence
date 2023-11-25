@@ -11,27 +11,48 @@ import {
   HStack,
   PinInput,
   PinInputField,
+  useToast,
 } from "@chakra-ui/react";
 import { useMutation } from "react-query";
 import { useState } from "react";
 import { verify2FA } from "@/utils/functions/auth/fetchingUserData";
-import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
+import { UseToastOptions, ToastId } from "@chakra-ui/react";
 
+function makeToast(
+  toast: any,
+  title: UseToastOptions['title'],
+  description: UseToastOptions['description'],
+  status: UseToastOptions['status'],
+  id: ToastId
+  ) {
+  if (!toast.isActive(id)) {
+    toast({
+      title: title,
+      description: description,
+      status: status,
+      id: id,
+      position: 'bottom-right',
+      variant: 'solid',
+      isClosable: true,
+      duration: 5000,
+    })
+  }
+}
 
 export default function TwoFactorAuthPage() {
-  const route = useRouter();
+  const toast = useToast();
   const [otp, setOtp] = useState('');
   const { mutate } = useMutation({
     mutationFn: verify2FA,
     mutationKey: ['verify2FA'],
     onError: (error: any) => {
-      toast.error(error.response.data.message);
+      makeToast(toast, 'Oopsie Whoopsie!', `${error.response.data}`, 'error', 'toast-error-3')
     },
-    onSuccess: (response) => {
-      toast.success(response.data);
+    onSuccess: (response: any) => {
+      makeToast(toast ,'Yeaaaaaaah!', `${response.data}`, 'success', 'toast-success-4');
       setTimeout(() => {
-        route.push('/');
+        redirect('/?logged=true');
       }, 2000);
     }
   });
