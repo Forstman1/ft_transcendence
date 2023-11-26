@@ -7,13 +7,16 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useMutation } from 'react-query';
 import { enable2FA, disable2FA } from '@/utils/functions/auth/fetchingUserData';
+import { useSelector } from 'react-redux';
+import { UserState } from '@/redux/slices/authUser/authUserSlice';
 
 
 const QRCodeModal = () => {
   const toast = useToast();
+  const user = useSelector((state: { authUser: UserState }) => state.authUser);
   const [isFirstRender, setFirstRender] = useState(true);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [isChecked, setChecked] = useState(false);
+  const [isChecked, setChecked] = useState(user.twoFactorEnabled);
   const [isManuallySet, setManuallySet] = useState(false);
   const [qrcode, setQrcode] = useState('');
   const enable2fa = useMutation({

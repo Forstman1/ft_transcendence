@@ -280,6 +280,7 @@ export class AuthController {
         fullname: user.fullname,
         avatarUrl: user.avatarURL,
         isOnline: user.isOnline,
+        twoFactorEnabled: user.twoFactorEnabled,
         coalitionName: user.coalitionName,
         accessToken: req.cookies.access_token,
       };
