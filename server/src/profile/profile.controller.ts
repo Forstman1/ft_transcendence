@@ -120,7 +120,6 @@ export class ProfileController {
     @Body() body: UpdateUserDto,
   ): Promise<any> {
     try {
-        console.log('Body', body);
       if (avatar) {
         const fileBuffer = await getFileBuffer(avatar.path);
         const contentTypes = [
