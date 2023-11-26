@@ -14,5 +14,5 @@ export default function RestrictedRoute({ children }: RestrictedRouteProps) {
     redirect('/?unauthorized=true');
   }
   else
-    return <>{children}</>;
-};
+    return <>{children}</>
+}

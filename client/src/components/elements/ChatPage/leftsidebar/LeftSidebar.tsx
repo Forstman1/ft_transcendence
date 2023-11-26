@@ -322,7 +322,7 @@ export default function LeftSidebar() {
           duration: 3000,
           isClosable: true,
         });
-      } else if (data.status === "Password is set. Channel is private now") {
+      } else if (data.status == 'Password is set. Channel is private now') {
 
         toast({
           title: data.status,

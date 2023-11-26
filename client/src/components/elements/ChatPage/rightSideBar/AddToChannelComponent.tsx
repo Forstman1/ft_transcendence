@@ -28,8 +28,8 @@ export default function AddToChannelComponent() {
   async function fetchChannels() {
 
     const [api1, api2] = await Promise.all([
-      fetch('http://127.0.0.1:3001/channel/getallchannels/' + userId),
-      fetch('http://127.0.0.1:3001/channel/getallchannels/' + userSelected.id)
+      fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallchannels/` + userId),
+      fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallchannels/` + userSelected.id)
     ]);
 
     const [res1, res2] = await Promise.all([api1.json(), api2.json()]);
@@ -52,7 +52,7 @@ export default function AddToChannelComponent() {
 
   }, [userSelected])
 
-  const addtochannel = useMutation<any, Error, any>((variables) => fetch('http://127.0.0.1:3001/channel/invitemember', {
+  const addtochannel = useMutation<any, Error, any>((variables) => fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/invitemember`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
