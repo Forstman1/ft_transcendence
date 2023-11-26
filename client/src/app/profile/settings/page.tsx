@@ -1,10 +1,11 @@
 "use client";
-import {FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useMutation, useQueryClient } from "react-query";
 import { updateUser } from "@/utils/profile/settings";
-import TwoFactor from '@/components/elements/QRCodeModal/QRCodeModal'
-import { useToast } from '@chakra-ui/react'
+import TwoFactor from "@/components/elements/QRCodeModal/QRCodeModal";
+import { useToast } from "@chakra-ui/react";
+import RestrictedRoute from "@/components/RestrictedRoute";
 
 import { z } from "zod";
 
@@ -19,14 +20,15 @@ const schema = z.object({
 
 export default function UserSettings() {
 	const userData = useSelector((state: any) => state.authUser);
+	console.log("userData", userData);
 	const queryClient = useQueryClient();
 
-	const [fullname, setFullname] = useState(userData.username);
-	const [username, setUsername] = useState(userData.username);
-	const [coalition, setCoalition] = useState("commodore");
+	const [fullname, setFullname] = useState<string>("");
+	const [username, setUsername] = useState<string>("");
+	const [coalition, setCoalition] = useState<string>("");
 	const [avatar, setAvatar] = useState<File | null>(null);
-	const [avatarPreview, setAvatarPreview] = useState<string | null>(userData.avatarUrl);
-    const toast = useToast();
+	const [avatarPreview, setAvatarPreview] = useState<string>("");
+	const toast = useToast();
 
 	const [formErrors, setFormErrors] = useState({
 		fullname: "",
@@ -35,28 +37,41 @@ export default function UserSettings() {
 		avatar: "",
 	});
 
+	useEffect(() => {
+		if (userData) {
+			setFullname(userData?.fullname || "");
+			setUsername(userData?.username || "");
+			setCoalition(userData?.coalitionName || "");
+			setAvatarPreview(userData?.avatarUrl || "");
+		}
+	}, [userData]);
+
 	const handleFileChange = (e: any) => {
 		const file: File | null = e.target.files ? e.target.files[0] : null;
-        if (file){
-            const validFileType = ["image/jpeg", "image/png", "image/gif"].includes(file.type);
-            const validFileSize = file?.size <= 5 * 1024 * 1024; // 5MB (adjust as needed)
-            if (validFileType && validFileSize) {
-                setFormErrors((prevState) => ({
+		if (file) {
+			const validFileType = [
+				"image/jpeg",
+				"image/jpg",
+				"image/png",
+				"image/gif",
+			].includes(file.type);
+			const validFileSize = file?.size <= 5 * 1024 * 1024; // 5MB (adjust as needed)
+			if (validFileType && validFileSize) {
+				setFormErrors((prevState) => ({
 					...prevState,
-					avatar: '',
+					avatar: "",
 				}));
-                setAvatar(file);
-                const previewURL = URL.createObjectURL(file);
-                setAvatarPreview(previewURL);
-            } else {
-                setFormErrors((prevState) => ({
+				setAvatar(file);
+				const previewURL = URL.createObjectURL(file);
+				setAvatarPreview(previewURL);
+			} else {
+				setFormErrors((prevState) => ({
 					...prevState,
-					avatar: 'Invalid file type or size',
+					avatar: "Invalid file type or size",
 				}));
-                setAvatarPreview(null);
-            }
-        }
-      
+				setAvatarPreview("");
+			}
+		}
 	};
 
 	const updateUserMutation = useMutation(
@@ -65,16 +80,16 @@ export default function UserSettings() {
 			formData.append("fullname", fullname);
 			formData.append("username", username);
 			formData.append("coalition", coalition);
-			const temp:any = {
-                fullname: fullname,
-                username: username,
-                coalition: coalition,
+			const temp: any = {
+				fullname: fullname,
+				username: username,
+				coalition: coalition,
 			};
 			if (avatar) {
 				formData.append("avatar", avatar);
 			}
-            console.log('formData fullname', formData.get("fullname"));
-            console.log('fullname state', fullname);
+			console.log("formData fullname", formData.get("fullname"));
+			console.log("fullname state", fullname);
 			console.log("myObject", temp);
 
 			const result = schema.safeParse(temp);
@@ -120,23 +135,23 @@ export default function UserSettings() {
 		},
 		{
 			onSuccess: () => {
-                toast({
-                    title: "Success!",
-                    description: "Your profile has been updated",
-                    status: "success",
-                    duration: 9000,
-                    isClosable: true,
-                });
+				toast({
+					title: "Success!",
+					description: "Your profile has been updated",
+					status: "success",
+					duration: 9000,
+					isClosable: true,
+				});
 				queryClient.invalidateQueries("userData");
 			},
-			onError: (error:any) => {
-                toast({
-                    title: "Error!",
-                    description: error?.message,
-                    status: "error",
-                    duration: 9000,
-                    isClosable: true,
-                });
+			onError: (error: any) => {
+				toast({
+					title: "Error!",
+					description: error?.message,
+					status: "error",
+					duration: 9000,
+					isClosable: true,
+				});
 				console.log(error);
 			},
 		}
@@ -149,152 +164,135 @@ export default function UserSettings() {
 	};
 
 	return (
-		<div className="py-12 text-black">
-			<div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-				<div className="custom-shadow w-full bg-white rounded-sm shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 mb-6">
-					<div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-						<div className="flex justify-center">
-							{avatarPreview !== null && (
-								<img
-									src={avatarPreview}
-									alt="Avatar Preview"
-									className="mt-2 rounded-full w-20 h-20 inline-block"
-								/>
-							)}
-						</div>
-						<form
-							className="space-y-4 md:space-y-6"
-							onSubmit={handleSubmit}
-						>
-							<div>
-								<label
-									htmlFor="avatar"
-									className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-								>
-									Profile Avatar
-								</label>
-								<input
-									type="file"
-									name="avatar"
-									id="avatar"
-                                    className="custom-shadow cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-									onChange={handleFileChange}
-									// accept="image/*" // Allow only image files
-								/>
-								<p className="text-red-500 text-xs mt-2">
-									{formErrors.avatar}
-								</p>
-							</div>
-
-							<div>
-								<label
-									htmlFor="fullname"
-									className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-								>
-									Full Name
-								</label>
-								<input
-									type="text"
-									name="fullname"
-									id="fullname"
-									className="custom-shadow bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-									value={fullname}
-									onChange={(e) =>
-										setFullname(e.target.value)
-									}
-									required
-								/>
-
-								<p className="text-red-500 text-xs mt-2">
-									{formErrors.fullname}
-								</p>
-							</div>
-
-							<div>
-								<label
-									htmlFor="username"
-									className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-								>
-									Username
-								</label>
-								<input
-									type="text"
-									name="username"
-									id="username"
-									className="custom-shadow bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-									value={username}
-									onChange={(e) =>
-										setUsername(e.target.value)
-									}
-									required
-								/>
-								<p className="text-red-500 text-xs mt-2">
-									{formErrors.username}
-								</p>
-							</div>
-
-							<div>
-								<label
-									htmlFor="coalitions"
-									className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-								>
-									Choose Coalitions
-								</label>
-								<select
-									name="coalitions"
-									id="coalitions"
-									className="custom-shadow bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-									value={coalition}
-									onChange={(e) =>
-										setCoalition(e.target.value)
-									}
-								>
-									<option value="bios">bios</option>
-									<option value="pandora">pandora</option>
-									<option value="freax">freax</option>
-									<option value="commodore">commodore</option>
-								</select>
-								<p className="text-red-500 text-xs mt-2">
-									{formErrors.coalition}
-								</p>
-							</div>
-
-							{/* <div className="flex items-start">
-								<div className="flex items-center h-5">
-									<input
-										id="twofactor"
-										aria-describedby="twofactor"
-										type="checkbox"
-										className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"
-										checked={isTwoFactor}
-										onChange={(e) =>
-											setIsTwoFactor(e.target.checked)
-										}
+			<div className="py-12 text-black">
+				<div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+					<div className="custom-shadow w-full bg-white rounded-sm shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 mb-6">
+						<div className="p-6 space-y-4 md:space-y-6 sm:p-8">
+							<div className="flex justify-center">
+								{avatarPreview !== null && (
+									<img
+										src={avatarPreview}
+										alt="Avatar Preview"
+										className="mt-2 rounded-full w-20 h-20 inline-block"
 									/>
-									<label
-										htmlFor="twofactor"
-										className="ml-2 block text-sm font-medium text-gray-900 dark:text-white"
-									>
-										Two Factor Authentication
-									</label>
-								</div>
-							</div> */}
-
-							<button
-								type="submit"
-								className="custom-shadow w-full text-white bg-black hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-sm text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+								)}
+							</div>
+							<form
+								className="space-y-4 md:space-y-6"
+								onSubmit={handleSubmit}
 							>
-								Update Information
-							</button>
-						</form>
+								<div>
+									<label
+										htmlFor="avatar"
+										className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+									>
+										Profile Avatar
+									</label>
+									<input
+										type="file"
+										name="avatar"
+										id="avatar"
+										className="custom-shadow cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+										onChange={handleFileChange}
+										// accept="image/*" // Allow only image files
+									/>
+									<p className="text-red-500 text-xs mt-2">
+										{formErrors.avatar}
+									</p>
+								</div>
+
+								<div>
+									<label
+										htmlFor="fullname"
+										className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+									>
+										Full Name
+									</label>
+									<input
+										type="text"
+										name="fullname"
+										id="fullname"
+										className="custom-shadow bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+										value={fullname}
+										onChange={(e) =>
+											setFullname(e.target.value)
+										}
+										required
+									/>
+
+									<p className="text-red-500 text-xs mt-2">
+										{formErrors.fullname}
+									</p>
+								</div>
+
+								<div>
+									<label
+										htmlFor="username"
+										className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+									>
+										Username
+									</label>
+									<input
+										type="text"
+										name="username"
+										id="username"
+										className="custom-shadow bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+										value={username}
+										onChange={(e) =>
+											setUsername(e.target.value)
+										}
+										required
+									/>
+									<p className="text-red-500 text-xs mt-2">
+										{formErrors.username}
+									</p>
+								</div>
+
+								<div>
+									<label
+										htmlFor="coalitions"
+										className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+									>
+										Choose Coalitions
+									</label>
+									<select
+										name="coalitions"
+										id="coalitions"
+										className="custom-shadow bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+										value={"bios"}
+										onChange={(e) =>
+											setCoalition(e.target.value)
+										}
+									>
+										<option value="bios">bios</option>
+										<option value="pandora">pandora</option>
+										<option value="freax">freax</option>
+										<option value="commodore">
+											commodore
+										</option>
+									</select>
+									<p className="text-red-500 text-xs mt-2">
+										{formErrors.coalition}
+									</p>
+								</div>
+								<button
+									type="submit"
+									className="custom-shadow w-full text-white bg-black hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-sm text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+								>
+									Update Information
+								</button>
+							</form>
+						</div>
+					</div>
+
+					<div className="custom-shadow w-full bg-white rounded-sm shadow dark:border md:mt-0 sm:max-w-md  dark:bg-gray-800 dark:border-gray-700 px-9 py-2">
+						<h2 className="font-bold mb-3">
+							Also for security reasons it's preferred to activate
+							2FA
+						</h2>
+						<TwoFactor />
 					</div>
 				</div>
-
-                <div className="custom-shadow w-full bg-white rounded-sm shadow dark:border md:mt-0 sm:max-w-md  dark:bg-gray-800 dark:border-gray-700 px-9 py-2">
-                    <h2 className="font-bold mb-3">Also for security reasons it's preferred to activate 2FA</h2>
-                    <TwoFactor />
-                </div>
 			</div>
-		</div>
 	);
 }
