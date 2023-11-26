@@ -55,17 +55,17 @@ function Message_other({ usermessage, message, sender, time }: any) {
     const fetchData = async () => {
       try {
         const fetchmember = await fetch(
-          "http://127.0.0.1:3001/channel/getmember/" + usermessage.authorID
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getmember/` + usermessage.authorID
         );
         const member = await fetchmember.json();
         const fetchuser = await fetch(
-          "http://127.0.0.1:3001/users/getuser/" + member.userId
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/users/getuser/` + member.userId
         );
         const response = await fetchuser.json();
         setUser(response);
       } catch (error) {
         const fetchuser = await fetch(
-          "http://127.0.0.1:3001/users/getuser/" + usermessage.authorID
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/users/getuser/` + usermessage.authorID
         );
         const response = await fetchuser.json();
         // console.log("response "+  response.username+ " " + usermessage.authorID, " " + sender)
@@ -153,7 +153,7 @@ export default function ChatWindow() {
     const fetchData = async () => {
       if (userId) {
         const fetchuser = await fetch(
-          `http://127.0.0.1:3001/users/getuser/${userId}`
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/users/getuser/${userId}`
         );
         const response = await fetchuser.json();
         setUser(response);
@@ -196,7 +196,7 @@ export default function ChatWindow() {
   };
 
   const getChannelMessages: any = useMutation<any, Error, any>((variables) =>
-    fetch("http://127.0.0.1:3001/message/getmessages/" + variables.channelId)
+    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/message/getmessages/` + variables.channelId)
       .then((response) => {
         return response.json();
       })
@@ -207,7 +207,7 @@ export default function ChatWindow() {
 
   const getUserMessages: any = useMutation<any, Error, any>((variables) =>
     fetch(
-      "http://127.0.0.1:3001/message/getMessagesUsers/" +
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/message/getMessagesUsers/` +
         variables.userId +
         "/" +
         variables.reciverId

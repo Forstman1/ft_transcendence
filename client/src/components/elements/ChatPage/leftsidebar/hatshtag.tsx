@@ -41,7 +41,7 @@ export default function Hashtag(props: any) {
 
 
     const checkpassword = useMutation<any, Error, any>((variables) =>
-        fetch('http://127.0.0.1:3001/channel/checkpassword', {
+        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/checkpassword`, {
             method: "POST",
             body: JSON.stringify(variables),
             headers: {
