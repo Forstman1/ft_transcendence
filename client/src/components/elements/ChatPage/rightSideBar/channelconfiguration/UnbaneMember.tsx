@@ -27,7 +27,7 @@ function Componenent({ onClose }: any) {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const usersResponse = await fetch('http://127.0.0.1:3001/channel/getallbannedmembers/' + channel.id)
+                const usersResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallbannedmembers/` + channel.id)
                 const users: User[] = await usersResponse.json()
                 setUsers(users);
             } catch (error) {

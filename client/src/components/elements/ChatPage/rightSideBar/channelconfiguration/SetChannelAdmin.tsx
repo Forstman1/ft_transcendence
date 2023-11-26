@@ -28,7 +28,7 @@ function Componenent({ onClose }: any) {
         const fetchUsers = async () => {
             try {
 
-                const usersResponse = await fetch('http://127.0.0.1:3001/channel/getallmembers/' + channel.id)
+                const usersResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallmembers/` + channel.id)
                 const users: ChannelMember[] = await usersResponse.json()
 
 
@@ -47,7 +47,7 @@ function Componenent({ onClose }: any) {
                 })
 
                 const usersDataPromises = listedusers.map(async (userId: string) => {
-                    const userResponse = await fetch('http://127.0.0.1:3001/users/getuser/' + userId);
+                    const userResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/getuser/` + userId);
                     const userData = await userResponse.json();
                     return userData;
                 });

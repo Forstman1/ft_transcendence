@@ -18,7 +18,7 @@ export class ChannelService {
         where: {
           name: channelData.channelName,
         },
-      });
+      }); 
       if (find) 
         return { status: 'channel already exists' };
 
