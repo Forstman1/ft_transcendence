@@ -3,7 +3,7 @@
 import { useAppSelector } from "@/redux/store/store";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setTheUser } from "@/redux/slices/chat/ChatSlice";
+import { setMessages, setTheUser } from "@/redux/slices/chat/ChatSlice";
 import Cookies from "js-cookie";
 import Remove from "../../../../assets/icons/remove-friend.svg"
 
@@ -19,11 +19,17 @@ export default function GlobalChatListener() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+
+
+    socket?.on(`FriendshipStatus`, (Friend: any) => {
+    });
+
+
     socket?.on(`userBlockedYou`, (data) => {
       socket?.emit(`removeChatUser`, { friendId: data.id });
-
       if (selected.id === data.id) {
         dispatch(setTheUser(null));
+        dispatch(setMessages([])) 
       }
     });
 

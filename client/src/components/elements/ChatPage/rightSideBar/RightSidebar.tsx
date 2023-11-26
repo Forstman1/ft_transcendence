@@ -78,7 +78,7 @@ export default function RightSidebar() {
           />
           <Text className="text-3xl">
             {" "}
-            {User.isOnline ? `Availabel` : `Unvailable`}{" "}
+            {User.isOnline ? `Available` : `Unavailable`}{" "}
           </Text>
         </Box>
       </Box>

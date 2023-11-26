@@ -119,7 +119,7 @@ export default function AddFriend({ userId }: { userId: string }) {
 
   const handleUserControls = (option: string) => {
     if (option === "Add to friend list") {
-      socket.emit(`sendFreindRequest`, { friendId: userId });
+      socket.emit(`sendFriendRequest`, { friendId: userId });
       const newValue = { src: pending, alt: "Pending" };
 
       setOptImages((prevOptImages) => {

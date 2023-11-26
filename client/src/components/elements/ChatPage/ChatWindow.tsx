@@ -12,7 +12,7 @@ import { useAppSelector } from "@/redux/store/store";
 
 import { setMessages } from "@/redux/slices/chat/ChatSlice";
 
-export function formatTimeAgo(timestamp: any) {
+ export function formatTimeAgo(timestamp: any) {
   const currentTime: any = Date.now();
   const timeDiff = currentTime - timestamp;
   if (timeDiff <= 0) return "Just now";
@@ -49,7 +49,7 @@ export function formatTimeAgo(timestamp: any) {
 
 function Message_other({ usermessage, message, sender, time }: any) {
   const [user, setUser]: any = useState();
-  // const selected = useSelector((state: any) => state.chat.selectedChannelorUser);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -152,14 +152,16 @@ export default function ChatWindow() {
   useEffect(() => {
     const fetchData = async () => {
       if (userId) {
+        const url = process.env.NEXT_PUBLIC_SERVER_URL;
         const fetchuser = await fetch(
-          `http://127.0.0.1:3001/users/getuser/${userId}`
+          `${url}users/getuser/${userId}`
         );
         const response = await fetchuser.json();
         setUser(response);
       }
     };
     fetchData();
+  
   }, [userId]);
 
   const handleNewMessage = async (data: any) => {
@@ -186,6 +188,7 @@ export default function ChatWindow() {
         message: data.newmessage,
       });
     } else {
+      
       socket?.emit(`sendPrivateMessage`, {
         reciverId: selected.id,
         message: data.newmessage,
@@ -252,6 +255,7 @@ export default function ChatWindow() {
       }
     });
     socket?.on("receivedPrivateMessage", (data: any) => {
+      console.log("receivedPrivateMessage     " + data.message);
       if (
         selected?.id === data.message.reciverName ||
         selected?.id === data.message.authorID

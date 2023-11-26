@@ -27,7 +27,6 @@ import axios from 'axios';
 
 
 
-
 type Props = {
     isOpen: boolean;
     onClose: () => void;
@@ -79,7 +78,8 @@ export default function Newmessage({onClose}: Props) {
     const {data, isLoading, error} = useQuery({
         queryKey: ["userData"],
         queryFn: async () => {
-            const { data } = await axios.get(`http://localhost:3001/users/friends`, { withCredentials: true },)
+            const Url = process.env.NEXT_PUBLIC_SERVER_URL
+            const { data } = await axios.get(`${Url}users/friends`, { withCredentials: true },)
             return data
         }
     })
@@ -91,7 +91,7 @@ export default function Newmessage({onClose}: Props) {
     const handleSubmit = async () => {
       
             socket?.emit(`updateChatList`, {frienID: selectedOption.id})
-            socket?.emit(`createRoom`, {userId: id, frienID: selectedOption.id})
+            socket?.emit(`createRoom`, {frienID: selectedOption.id})
             onClose();
         
     };

@@ -66,20 +66,20 @@ function Usercard(props: any) {
           </div>
         </div>
         <div className="flex flex-col items-center text-center "></div>
-      </div>
       <Icon
         as={CloseButton}
         h={10}
         className="opacity-0 group-hover:opacity-100"
         onClick={() => {
           socket?.emit(`removeChatUser`, { friendId: props.data.id });
-
+          
           if (props.data.id === selected?.id) {
             dispatch(setTheUser(null));
             dispatch(setMessages([]));
           }
         }}
-      />
+        />
+        </div>
     </>
   );
 }
@@ -91,19 +91,22 @@ export default function LeftSidebar() {
   const [ChannelOrUser, setChannelOrUser] = useState(false);
   const channels = useSelector((state: any) => state.chat.channels);
 
-  useEffect(() => {
-    socket?.on(`updateChatList`, async (Users: any) => {
-      dispatch(setUserDms(Users));
-    });
-  }, [socket, dispatch]);
-
+  
   const selected = useSelector(
     (state: any) => state.chat.selectedChannelorUser
-  );
-  const userId = useSelector((state: any) => state.socket.userID);
-  const Users = useSelector((state: any) => state.chat.users);
-  const toast = useToast();
+    );
+    const userId = useSelector((state: any) => state.socket.userID);
+    const Users = useSelector((state: any) => state.chat.users);
+    const toast = useToast();
   const { LeftClice } = useSelector((state: any) => state.mobile);
+  
+
+  
+    useEffect(() => {
+      socket?.on(`updateChatList`, async (Users: any) => {
+        dispatch(setUserDms(Users));
+      });
+    }, [socket, dispatch]);
 
   useEffect(() => {
     socket?.emit("getChannelsFirstTime", { userId: userId });
