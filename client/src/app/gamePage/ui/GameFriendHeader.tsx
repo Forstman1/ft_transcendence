@@ -18,8 +18,6 @@ const GameFriendHeader = ({
   const opponentId = gameMatch.opponentId;
   const [opponentData, setOpponentData] = React.useState<any>({});
 
-
-
   useEffect(() => {
     socketState.socket?.emit("getOpponentData", { opponentId }, (data: any) => {
       setOpponentData(data);

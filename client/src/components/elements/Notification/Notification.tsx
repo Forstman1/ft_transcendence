@@ -18,16 +18,18 @@ import {
 } from "@chakra-ui/react";
 import {
   BellIcon,
-  DeleteIcon,
-  CheckCircleIcon,
-  EmailIcon,
-  WarningTwoIcon,
 } from "@chakra-ui/icons";
 import { useSelector } from "react-redux";
+import { useAppSelector } from "@/redux/store/store";
+import { formatTimeAgo } from "../ChatPage/ChatWindow";
+import InviteToaGame from "../../../../assets/icons/InviteToaGame.svg";
+import AddToFriendList from "../../../../assets/icons/AddToFriendList.svg";
+import Image from "next/image";
 
 export default function Notification() {
   const [notifications, setNotifications] = useState<any>([])
   const socket = useSelector((state: any) => state.socket.socket);
+  const gameSocket = useAppSelector((state) => state.globalSocketReducer.socket);
   const [counter, setCounter] = useState(0);
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [notification, setNotification] = useState<any>(null);
@@ -38,6 +40,9 @@ export default function Notification() {
     socket.emit("getNotifications")
 
     socket.on("getNotifications", (data: any) => {
+      data.sort((a: any, b: any) => {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
       setNotifications(data);
       setCounter(0);
       data.map((notification1: any) => {
@@ -49,17 +54,31 @@ export default function Notification() {
       // setCounter(data.length);  
     });
 
+    gameSocket?.on("newNotification", (data: any) => {
+      data.sort((a: any, b: any) => {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+      setNotifications(data);
+      setCounter(0);
+      data.map((notification1: any) => {
+        if(notification1?.read === false) {
+          setCounter((prevCounter: number) => prevCounter + 1);
+        }
+      })
+    });
+    
     return () => {
+      gameSocket?.off("newNotification");
       socket.off("getNotifications");
     }
   }, [socket])
 
   const onSubmit = (notification: any) => {
-    
-    onOpen();
-    setNotification(notification);
+    if (notification?.type === "friendRequest") {
+      onOpen();
+      setNotification(notification);
+    }
   }
-
 
   const Accept = () => {
     socket.emit("acceptFreindRequest", {friendId: notification.senderId});
@@ -95,18 +114,33 @@ export default function Notification() {
             {notifications?.map((notification: any, index: number) => (
               <MenuItem key={index} onClick={() => onSubmit(notification)}>
                 <div
-                  className={`flex flex-col bg-gray-100 px-4 py-2 cursor-pointer  relative  overflow-hidden transition-all rounded hover:bg-white group`}
+                  className={`flex flex-col w-full bg-gray-100 px-4 py-2 cursor-pointer  relative  overflow-hidden transition-all rounded hover:bg-white group`}
                 >
                   <span className="w-0 h-0 rounded bg-background-primary absolute top-0 left-0 ease-out duration-500 transition-all group-hover:w-full group-hover:h-full -z-1"/>
                   <span className="w-full text-black transition-colors duration-300 ease-in-out group-hover:text-white z-10">
-                    <div className="flex row">
+                    <div className="flex row w-full items-center justify-between">
                       <h1 className="text-sm font-bold">
                         {notification?.title}
                       </h1>
-                      {/* <notification.icon className="ml-auto" /> */}
+                      {notification?.type === "gameInvite" && (
+                        <Image
+                          src={InviteToaGame}
+                          alt="InviteToaGame"
+                          className="w-4 h-4 ml-2"
+                        />
+                      )}
+                      {notification?.type === "friendRequest" && 
+                        <Image
+                          src={AddToFriendList}
+                          alt="AddToFriendList"
+                          className="w-4 h-4 ml-2"
+                        />
+                      }
                     </div>
                     <p className="text-xs">{notification?.description}</p>
-                    <p className="text-xs text-gray-400">{notification?.time}</p>
+                    <p className="text-xs text-gray-400">
+                      {formatTimeAgo(Date.parse(notification?.createdAt))}
+                    </p>
                     {index !== notifications.length - 1 && <Divider />}
                   </span>
                 </div>
@@ -115,7 +149,6 @@ export default function Notification() {
           </div>
         </MenuList>
       </Menu>
-
 
       <Modal isOpen={isOpen} onClose={onClose} isCentered size="2xl">
       <ModalOverlay

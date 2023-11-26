@@ -79,7 +79,8 @@ export default function Newmessage({onClose}: Props) {
     const {data, isLoading, error} = useQuery({
         queryKey: ["userData"],
         queryFn: async () => {
-            const { data } = await axios.get(`http://localhost:3001/users/friends`, { withCredentials: true },)
+            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/friends`, { withCredentials: true },)
+            console.log("data", data)
             return data
         }
     })

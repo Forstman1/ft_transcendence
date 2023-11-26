@@ -37,8 +37,7 @@ services:
     image: server
     container_name: server
     volumes:
-      - ./server/:/usr/src/app/
-      - /usr/src/app/node_modules
+      - ./server/src:/usr/src/app/src
     environment:
       DATABASE_HOST: ${DATABASE_HOST}
       DATABASE_URL: ${DATABASE_URL}
@@ -64,8 +63,7 @@ services:
     image: client
     container_name: client
     volumes:
-      - ./client/:/usr/src/app/
-      - /usr/src/app/node_modules
+      - ./client/src:/usr/src/app/src
     ports:
       - "3000:3000"
     env_file:
@@ -92,3 +90,4 @@ services:
 networks:
   local:
     driver: bridge
+

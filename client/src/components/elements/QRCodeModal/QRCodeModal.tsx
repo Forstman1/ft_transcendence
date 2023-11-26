@@ -1,16 +1,16 @@
 import {
   Switch, FormControl, FormLabel, Modal,
   ModalOverlay, ModalContent, ModalHeader, ModalFooter,
-  ModalBody, ModalCloseButton, Button, useDisclosure, Center
+  ModalBody, ModalCloseButton, Button, useDisclosure, Center, useToast
 } from '@chakra-ui/react'
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useMutation } from 'react-query';
 import { enable2FA, disable2FA } from '@/utils/functions/auth/fetchingUserData';
-import toast from 'react-hot-toast';
 
 
 const QRCodeModal = () => {
+  const toast = useToast();
   const [isFirstRender, setFirstRender] = useState(true);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isChecked, setChecked] = useState(false);
@@ -22,7 +22,18 @@ const QRCodeModal = () => {
     onError: (error: any) => {
       setManuallySet(true);
       setChecked(false);
-      toast.error(error.message);
+      if (!toast.isActive('toast-error-qrcode')) {
+        toast({
+          title: 'Excuse you!',
+          description: error.message,
+          status: 'error',
+          position: 'bottom-right',
+          variant: 'solid',
+          isClosable: true,
+          duration: 5000,
+          id: 'toast-error-qrcode'
+        })
+      }
     },
     onSuccess: (response: any) => {
       setQrcode(response.data.qrcode);
@@ -35,10 +46,26 @@ const QRCodeModal = () => {
     onError: (error: any) => {
       setManuallySet(true);
       setChecked(true);
-      toast.error(error.message);
+      toast({
+        title: 'Excuse you!',
+        description: error.message,
+        status: 'error',
+        position: 'bottom-right',
+        variant: 'solid',
+        isClosable: true,
+        duration: 5000,
+      })
     },
     onSuccess: (response: any) => {
-      toast.success(response.data.message);
+      toast({
+        title: 'You ask, we deliver!',
+        description: response.data.message,
+        status: 'success',
+        position: 'bottom-right',
+        variant: 'solid',
+        isClosable: true,
+        duration: 5000,
+      })
     }
   });
 

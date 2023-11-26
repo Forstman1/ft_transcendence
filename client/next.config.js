@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+
 const nextConfig = {
   async headers() {
     return [
@@ -7,7 +8,7 @@ const nextConfig = {
         headers: [
           {
             key: "Access-Control-Allow-Origin",
-            value: "http://localhost:3001"
+            value: `${process.env.NEXT_PUBLIC_SERVER_URL}`,
           },
           {
             key: "Access-Control-Allow-Methods",

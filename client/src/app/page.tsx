@@ -1,6 +1,5 @@
 "use client";
 
-
 import React, { useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -19,6 +18,9 @@ import {
   Modal,
   useDisclosure,
   Stack,
+  useToast,
+  UseToastOptions,
+  ToastId,
 } from "@chakra-ui/react";
 import { PageWrapper } from "@/app/animationWrapper/pageWrapper";
 import { motion } from "framer-motion";
@@ -31,7 +33,6 @@ import GamePreviewDesktop from "assets/icons/pongDesktopImage.svg";
 import GamePreviewMobile from "assets/icons/Frame 70.svg";
 import PageDivider1 from "assets/icons/wavesOpacityInversed.svg";
 import PageDivider2 from "assets/icons/waves.svg";
-import { toast } from "react-hot-toast";
 
 const CustomButton = ({
   inverseColorProp,
@@ -193,6 +194,7 @@ const GoToProfileButton = ({
   inverseColorProp: boolean;
   borderColorProp: boolean;
 }) => {
+  const data = useSelector((state: { authUser: UserState }) => state.authUser);
   const router = useRouter();
   const primaryColor = inverseColorProp ? "neutral-950" : "neutral-50";
   const secondaryColor = inverseColorProp ? "neutral-50" : "neutral-950";
@@ -217,35 +219,50 @@ const GoToProfileButton = ({
         transform: "translate(0.4rem, 0.4rem)",
         boxShadow: `0rem 0rem 0rem 0rem ${shadowColor}}`,
       }}
-      onClick={() => router.push("/profile")}
+      onClick={() => router.push(`/profile/${data.userId}`)}
     >
       <Center>Profile</Center>
     </Button>
   );
 };
 
+function makeToast(
+  toast: any,
+  title: UseToastOptions['title'],
+  description: UseToastOptions['description'],
+  status: UseToastOptions['status'],
+  id: ToastId
+  ) {
+  if (!toast.isActive(id)) {
+    toast({
+      title: title,
+      description: description,
+      status: status,
+      id: id,
+      position: 'bottom-right',
+      variant: 'solid',
+      isClosable: true,
+      duration: 5000,
+    })
+  }
+}
+
 export default function Homepage({ searchParams }: { searchParams: any }) {
   const data = useSelector((state: { authUser: UserState }) => state.authUser);
   const router = useRouter();
+  const toast = useToast();
   useEffect(() => {
     if (searchParams?.error === "true") {
-      toast.error("Something wrong happened, please try again later.");
-    } else if (searchParams?.logged === "true" && !data) {
-      // rida update - I add this data condition to avoid the toast message to appear when the user login
-      toast.success("Welcome back to Pong!");
+      makeToast(toast, 'Something wrong happened', "Please don't try again later", 'error', 'toast-error-1')
+    } else if (searchParams?.logged === "true") {
+      makeToast(toast, 'Welcome back!', "We haven't missed you, at all", 'success', 'toast-success-1')
     } else if (searchParams?.logged === "false") {
-      toast.success("You have been logged out successfully.");
-    } else if (searchParams?.unauthorized === "true" && !data) {
-      // rida update - I add this data condition to avoid the toast message to appear when the user refreshe the page
-      toast.error("You need to be logged in to access this page.");
+      makeToast(toast, 'Goodbye!', "We hope you never come back", 'info', 'toast-success-2')
+    } else if (searchParams?.unauthorized === "true") {
+      makeToast(toast, 'Alright Smart-A$$!', "You need to be logged in to access this page", 'warning', 'toast-warning-1')
     }
-  }, [
-    searchParams,
-    searchParams?.error,
-    searchParams?.logged,
-    searchParams?.unauthorized,
-    data,
-  ]);
+  }, [searchParams]);
+
   return (
     <PageWrapper>
       <div
