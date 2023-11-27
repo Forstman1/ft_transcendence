@@ -126,7 +126,7 @@ export default function Profile({ params }: any) {
 
 	return (
 		<RestrictedRoute>
-			<div className="w-full h-full py-40 container m-auto">
+			<div className="w-full h-full py-40 lg:px-[10%] container m-auto">
 				<Flex className="flex-wrap lg:flex-nowrap lg:space-x-8">
 					{/* Profile */}
 					<Box
