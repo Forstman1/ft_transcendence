@@ -282,7 +282,7 @@ export default function ChatWindow() {
   return (
     <div className="justify-between flex-col gap-[15px] h-full pt-[120px] flex-1">
       <div
-        className=" flex flex-col gap-[10px] overflow-y-scroll no-scrollbar z-0 h-[95%] pb-12"
+        className=" flex flex-col gap-[10px] overflow-y-scroll no-scrollbar z-0 h-[94%] pb-12 "
         ref={chatContainer}
       >
         {messages &&
