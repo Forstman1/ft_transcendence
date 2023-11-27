@@ -16,8 +16,10 @@ import {
 import { useMutation } from "react-query";
 import { useState } from "react";
 import { verify2FA } from "@/utils/functions/auth/fetchingUserData";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { UseToastOptions, ToastId } from "@chakra-ui/react";
+import { useSelector } from "react-redux";
+import { UserState } from "@/redux/slices/authUser/authUserSlice";
 
 function makeToast(
   toast: any,
@@ -41,6 +43,11 @@ function makeToast(
 }
 
 export default function TwoFactorAuthPage() {
+  const router = useRouter();
+  const user = useSelector((state: { authUser: UserState }) => state.authUser);
+  if (user.isAuthenticated) {
+    router.push('/');
+  }
   const toast = useToast();
   const [otp, setOtp] = useState('');
   const { mutate } = useMutation({
@@ -51,9 +58,7 @@ export default function TwoFactorAuthPage() {
     },
     onSuccess: (response: any) => {
       makeToast(toast ,'Yeaaaaaaah!', `${response.data}`, 'success', 'toast-success-4');
-      setTimeout(() => {
-        redirect('/?logged=true');
-      }, 2000);
+      redirect('/?logged=true');
     }
   });
   return (

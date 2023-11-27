@@ -12,6 +12,7 @@ export interface UserState {
   fullname: string,
   avatarUrl: string,
   isOnline: boolean,
+  twoFactorEnabled: boolean,
   coalitionName: string,
   accessToken: string,
 }
@@ -24,6 +25,7 @@ export const initialState = {
   fullname: null,
   avatarUrl: null,
   isOnline: false,
+  twoFactorEnabled: false,
   coalitionName: null,
   accessToken: null,
 };
@@ -40,6 +42,7 @@ export const userSlice = createSlice({
       state.fullname = action.payload?.fullname;
       state.avatarUrl = action.payload?.avatarUrl;
       state.isOnline = action.payload?.isOnline;
+      state.twoFactorEnabled = action.payload?.twoFactorEnabled;
       state.coalitionName = action.payload?.coalitionName;
       state.accessToken = action.payload?.accessToken;
     }
