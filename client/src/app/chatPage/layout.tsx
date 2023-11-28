@@ -14,7 +14,7 @@ const Layout: FC<LayoutProps> = ({children}) => {
 
     return(
         <>
-            <Flex className="w-full h-[calc(100vh_-_90px)] md:h-screen overflow-y-auto overflow-x-auto">
+            <Flex className="w-full h-[calc(100vh_-_90px)] md:h-screen overflow-y-hidden overflow-x-hidden">
                     {children}
             </Flex >
             <MobileFooter />

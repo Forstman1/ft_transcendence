@@ -27,7 +27,6 @@ import axios from 'axios';
 
 
 
-
 type Props = {
     isOpen: boolean;
     onClose: () => void;
@@ -91,7 +90,7 @@ export default function Newmessage({onClose}: Props) {
     const handleSubmit = async () => {
       
             socket?.emit(`updateChatList`, {frienID: selectedOption.id})
-            socket?.emit(`createRoom`, {userId: id, frienID: selectedOption.id})
+            socket?.emit(`createRoom`, {frienID: selectedOption.id})
             onClose();
         
     };
