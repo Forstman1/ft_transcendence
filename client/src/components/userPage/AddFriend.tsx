@@ -15,85 +15,60 @@ import { useAppSelector } from "@/redux/store/store";
 
 
 
+type userProfileData = {
+    id: string;
+    username: string;
+    fullname: string;
+    email: string;
+    avatarURL: string;
+    coalitionName: string;
+    isOnline: boolean;
+    isInGame: boolean;
+    userGamesXp: number;
+}
 
 
 
 
-
-export default function AddFriend({ userId }: { userId: string }) {
-//   const User = useSelector((state: any) => state.chat.selectedChannelorUser);
+export default function AddFriend({ userData }: { userData: userProfileData }) {
   const socket = useSelector((state: any) => state.socket.socket);
 
-  const selected = useSelector(
-    (state: any) => state.chat.selectedChannelorUser
-  );
-
-  const allOptImages = useAppSelector(
-    (state: any) => state.optImages.optImages
-  );
 
   const [optImages, setOptImages] = useState([
-    { src: AddToFriendList, alt: "Add to friend list" }
+    { src: AddToFriendList, alt: "Add friend" }
   ]);
 
-  useEffect(() => {
-    const getSelectedOpt = allOptImages.find(
-      (optImage: any) => optImage.key === selected.username
-    );
-
-    if (getSelectedOpt && getSelectedOpt.optImages !== undefined) {
-      console.log("getSelectedOpt", getSelectedOpt.optImages);
-      setOptImages((prevOptImages) => {
-        const newOptImages = [...prevOptImages];
-        newOptImages[0] = getSelectedOpt.optImages[0];
-        return newOptImages;
-      });
-    }
-  }, [allOptImages, selected]);
 
   useEffect(() => {
+    console.log(userData.id)
     socket.on(`friendRequestAccepted`, (Friend: any) => {
-      const newValue = { src: Remove, alt: "Remove from friend list" };
-      console.log(`the new value is: `, newValue);
-      Cookies.set(Friend.username, JSON.stringify([newValue, optImages[1]]), {
-        expires: 365,
-      });
+      const newValue = [{ src: Remove, alt: "Unfriend" }];
+      setOptImages(newValue);
 
-      setOptImages((prevOptImages) => {
-        const newOptImages = [...prevOptImages];
-        newOptImages[0] = newValue;
-        return newOptImages;
-      });
-    });
+      console.log(`the new value is: `, newValue);
+
+      Cookies.set(Friend.username, JSON.stringify([newValue]), {
+        expires: 365,
+      })
+    })
 
     socket.on(`friendRequestRejected`, (Friend: any) => {
-      const newValue = { src: AddToFriendList, alt: "Add to friend list" };
-      setOptImages((prevOptImages) => {
-        const newOptImages = [...prevOptImages];
-        newOptImages[0] = newValue;
-        return newOptImages;
-      });
-
-      Cookies.set(Friend.username, JSON.stringify([newValue, optImages[1]]), {
+      const newValue = [{ src: AddToFriendList, alt: "Add friend" }];
+    
+    setOptImages(newValue)
+      Cookies.set(Friend.username, JSON.stringify([newValue]), {
         expires: 365,
       });
     });
-
-
-
 
     socket?.on(`friendRemoved`, (Friend: any) => {
       console.log(Friend.username);
 
-      const newValue = { src: AddToFriendList, alt: "Add to friend list" };
+      const newValue = [{ src: AddToFriendList, alt: "Add friend" }];
+        
+      setOptImages(newValue);
 
-      setOptImages((prevOptImages) => {
-        const newOptImages = [...prevOptImages];
-        newOptImages[0] = newValue;
-        return newOptImages;
-      });
-
-      Cookies.set(Friend.username, JSON.stringify([newValue, optImages[1]]), {
+      Cookies.set(Friend.username, JSON.stringify([newValue]), {
         expires: 365,
       });
     });
@@ -106,44 +81,42 @@ export default function AddFriend({ userId }: { userId: string }) {
   }, [socket]);
 
   useEffect(() => {
-    const cookies = Cookies.get(selected.username);
-    console.log(`cookies`, selected.username);
+    const cookies = Cookies.get(userData.username);
+   
+
     if (cookies) {
       setOptImages(JSON.parse(cookies));
     } else {
       setOptImages([
-        { src: AddToFriendList, alt: "Add to friend list" },
+        { src: AddToFriendList, alt: "Add friend" },
       ]);
     }
-  }, [selected]);
+  }, [Cookies]);
 
   const handleUserControls = (option: string) => {
-    if (option === "Add to friend list") {
-      socket.emit(`sendFriendRequest`, { friendId: userId });
-      const newValue = { src: pending, alt: "Pending" };
 
-      setOptImages((prevOptImages) => {
-        const newOptImages = [...prevOptImages];
-        newOptImages[0] = newValue;
-        return newOptImages;
-      });
+    if (option === "Add friend") {
+      socket.emit(`sendFreindRequest`, { friendId: userData.id });
 
-      Cookies.set(selected.username, JSON.stringify([newValue, optImages[1]]), {
+      const newValue = [{ src: pending, alt: "Pending" }];
+
+      setOptImages(newValue)
+
+      Cookies.set(userData.username, JSON.stringify([newValue]), {
         expires: 365,
       });
-    } else if (option === "Remove from friend list") {
-      socket.emit(`removeFriend`, { friendId: userId });
-      const newValue = { src: AddToFriendList, alt: "Add to friend list" };
-      setOptImages((prevOptImages) => {
-        const newOptImages = [...prevOptImages];
-        newOptImages[0] = newValue;
-        return newOptImages;
-      });
-      Cookies.set(selected.username, JSON.stringify([newValue, optImages[1]]), {
+
+    } else if (option === "Unfriend") {
+      socket.emit(`removeFriend`, { friendId: userData.id });
+      const newValue = [{ src: AddToFriendList, alt: "Add friend" }];
+      setOptImages(newValue)
+
+      Cookies.set(userData.username, JSON.stringify([newValue]), {
         expires: 365,
       });
     }
   };
+
 
   return optImages.map((image: any) => (
     <Box

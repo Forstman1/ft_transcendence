@@ -5,8 +5,6 @@ import { UsersService } from './users/users.service';
 import { MessageService } from './message/message.service'
 import { Prisma } from '@prisma/client';
 import { ChannelService } from './channel/channel.service';
-import { fr, th } from '@faker-js/faker';
-
 
 
 
@@ -900,7 +898,8 @@ async readNotification(
       const channel: any = await this.channelService.getchannelinfo(
         data.channelId,
       );
-      const user = await this.userService.getUserbyId(client.handshake.auth.id);
+      const user = await this.userService.getUserbyId(client.handshake.auth.id)
+
 
       if (channel && user) {
         const newchannel: any = await this.channelService.setpassword(
@@ -913,7 +912,7 @@ async readNotification(
           this.server
             .to(channel.id)
             .emit('setpassword', {
-              status: 'Password is set. Channel is protected now',
+              status: newchannel.status,
               channel: newchannel.channel,
             });
         } else if (

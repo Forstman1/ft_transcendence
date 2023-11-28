@@ -52,7 +52,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
       };
       return user;
     } catch (error) {
-      request.res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
+      return request.res.redirect(`${process.env.CLIENT_URL}/?error=true`);
     }
   }
 }

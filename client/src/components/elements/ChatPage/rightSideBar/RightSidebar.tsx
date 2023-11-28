@@ -7,7 +7,6 @@ import Profile from "../../../../../assets/icons/Profile.svg";
 import InviteToaGame from "../../../../../assets/icons/InviteToaGame.svg";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useToast } from "@chakra-ui/react";
 import GameModesModal from "@/app/gamePage/ui/GameModesModal";
 import { useDisclosure } from "@chakra-ui/react";
 
@@ -20,7 +19,6 @@ export default function RightSidebar() {
   const friend = useSelector((state: any) => state.chat.selectedChannelorUser);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const toast = useToast();
   const User = useSelector((state: any) => state.chat.selectedChannelorUser);
 
   const sidebar = {
@@ -42,16 +40,6 @@ export default function RightSidebar() {
 
   const handelInviteGame = () => {
     onOpen();
-    // toast({
-    //   title: "Invitation sent",
-    //   position: "bottom-right",
-    //   status: "success",
-    //   duration: 1000,
-    //   containerStyle: {
-    //     width: 300,
-    //     height: 100,
-    //   },
-    // });
   };
 
   return (

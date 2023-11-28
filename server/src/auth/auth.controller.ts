@@ -26,9 +26,9 @@ export class AuthController {
     try {
       await res.cookie('access_token', '', { expires: new Date() });
       await res.clearCookie('access_token');
-      res.redirect(encodeURI(process.env.CLIENT_URL + '/?logged=false'));
+      return res.redirect(`${process.env.CLIENT_URL}/?logged=false`);
     } catch (error) {
-      res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
+      return res.redirect(`${process.env.CLIENT_URL}/?error=true`);
     }
   }
 
@@ -46,23 +46,28 @@ export class AuthController {
   @UseGuards(IntraAuthGuard)
   async handleIntraCallback(@Req() req, @Res({ passthrough: true }) res) {
     try {
+      const isNewUser: boolean = await this.authService.isNewUser(req.user);
       const access_token: string = await this.authService.login(req.user);
       if (!access_token) {
-        res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
+        return res.redirect(`${process.env.CLIENT_URL}/?error=true`);
       }
       await res.clearCookie('access_token');
       await res.cookie('access_token', access_token, this.authService.cookieOptions);
-      res.redirect(encodeURI(process.env.CLIENT_URL + '/?logged=true'));
+      if (isNewUser) {
+        return res.redirect(`${process.env.CLIENT_URL}/profile/settings`);
+      } else {
+        return res.redirect(`${process.env.CLIENT_URL}/`);
+      }
     } catch (error) {
       if (error instanceof UnauthorizedException && error.message === 'Two-factor Authentication Required') {
         const tempToken = await this.authService.issueTemporaryToken(req.user);
         if (!tempToken) {
-          res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
+          return res.redirect(`${process.env.CLIENT_URL}/?error=true`);
         }
         await res.cookie('access_token', tempToken, this.authService.cookieOptions);
-        res.redirect(encodeURI(process.env.CLIENT_URL + '/2fa/verify'));
+        return res.redirect(`${process.env.CLIENT_URL}/2fa/verify`);
       } else {
-        res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
+        return res.redirect(`${process.env.CLIENT_URL}/?error=true`);
       }
     }
   }
@@ -81,23 +86,28 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   async handleGoogleCallback(@Req() req, @Res({ passthrough: true }) res) {
     try {
+      const isNewUser: boolean = await this.authService.isNewUser(req.user);
       const access_token: string = await this.authService.login(req.user);
       if (!access_token) {
-        res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
+        return res.redirect(`${process.env.CLIENT_URL}/?error=true`);
       }
       await res.clearCookie('access_token');
       await res.cookie('access_token', access_token, this.authService.cookieOptions);
-      res.redirect(encodeURI(process.env.CLIENT_URL + '/?logged=true'));
+      if (isNewUser) {
+        return res.redirect(`${process.env.CLIENT_URL}/profile/settings`);
+      } else {
+        return res.redirect(`${process.env.CLIENT_URL}/`);
+      }
     } catch (error) {
       if (error instanceof UnauthorizedException && error.message === 'Two-factor Authentication Required') {
         const tempToken = await this.authService.issueTemporaryToken(req.user);
         if (!tempToken) {
-          res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
+          return res.redirect(`${process.env.CLIENT_URL}/?error=true`);
         }
         await res.cookie('access_token', tempToken, this.authService.cookieOptions);
-        res.redirect(encodeURI(process.env.CLIENT_URL + '/2fa/verify'));
+        return res.redirect(`${process.env.CLIENT_URL}/2fa/verify`);
       } else {
-        res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
+        return res.redirect(`${process.env.CLIENT_URL}/?error=true`);
       }
     }
   }
@@ -116,25 +126,30 @@ export class AuthController {
   @UseGuards(GithubAuthGuard)
   async handleGithubCallback(@Req() req, @Res({ passthrough: true }) res) {
     try {
+      const isNewUser: boolean = await this.authService.isNewUser(req.user);
       const access_token: string = await this.authService.login(req.user);
       if (!access_token) {
-        res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
+        return res.redirect(`${process.env.CLIENT_URL}/?error=true`);
       }
       await res.clearCookie('access_token');
       await res.cookie('access_token', access_token, this.authService.cookieOptions);
-      res.redirect(encodeURI(process.env.CLIENT_URL + '/?logged=true'));
+      if (isNewUser) {
+        return res.redirect(`${process.env.CLIENT_URL}/profile/settings`);
+      } else {
+        return res.redirect(`${process.env.CLIENT_URL}/`);
+      }
     } catch (error) {
       if (error instanceof UnauthorizedException && error.message === 'Two-factor Authentication Required') {
         const tempToken = await this.authService.issueTemporaryToken(req.user);
         if (!tempToken) {
-          res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
+          return res.redirect(`${process.env.CLIENT_URL}/?error=true`);
         } else if (req.cookies.access_token) {
-          res.redirect(req.headers.referer);
+          return res.redirect(req.headers.referer);
         }
         await res.cookie('access_token', tempToken, this.authService.cookieOptions);
-        res.redirect(encodeURI(process.env.CLIENT_URL + '/2fa/verify'));
+        return res.redirect(`${process.env.CLIENT_URL}/2fa/verify`);
       } else {
-        res.redirect(encodeURI(process.env.CLIENT_URL + '/?error=true'));
+        return res.redirect(`${process.env.CLIENT_URL}/?error=true`);
       }
     }
   }
@@ -147,26 +162,35 @@ export class AuthController {
     try {
       let user: User | null = await this.userService.findUser({ id: req.user.id });
       if (!user) {
-        res.status(400).send('User not found');
+        return res.status(400).send('User not found');
       } else if (user.twoFactorEnabled === true) {
-        res.status(400).send('Two-factor authentication already enabled');
+        return res.status(400).send('Two-factor authentication already enabled');
       }
       user = await this.userService.updateUserTwoFactorStatus({ id: user.id }, true);
       if (!user) {
-        res.status(500).send('Internal server error');
+        return res.status(500).send('Internal server error');
       }
       const twoFactorOtpAuthUrl = await this.authService.generateTwoFactorOtpAuthUrl(user);
       if (!twoFactorOtpAuthUrl) {
-        res.status(500).send('Internal server error');
+        await this.userService.updateUserTwoFactorStatus({ id: user.id }, false);
+        return res.status(500).send('Internal server error');
       }
       const twoFA_QRCode = await this.authService.generateQrCodeDataURL(twoFactorOtpAuthUrl);
       if (!twoFA_QRCode) {
-        res.status(500).send('Internal server error');
+        await this.userService.updateUserTwoFactorStatus({ id: user.id }, false);
+        return res.status(500).send('Internal server error');
       }
-      res.status(200).json({ qrcode: twoFA_QRCode });
+      const access_token = await this.authService.loginWithTwoFactorAuth(user);
+      if (!access_token) {
+        await this.userService.updateUserTwoFactorStatus({ id: user.id }, false);
+        return res.status(500).send('Cannot re-authenticate user, please try again later');
+      }
+      await res.clearCookie('access_token');
+      await res.cookie('access_token', access_token, this.authService.cookieOptions);
+      return res.status(200).json({ qrcode: twoFA_QRCode });
       
     } catch (error) {
-      res.status(500).send('Internal server error');
+      return res.status(500).send('Internal server error');
     }
   }
 
@@ -180,22 +204,22 @@ export class AuthController {
         id: req.user.id,
       });
       if (user === null) {
-        res.status(400).send('User not found');
+        return res.status(400).send('User not found');
       } else if (user === undefined) {
-        res.status(500).send('Internal server error');
+        return res.status(500).send('Internal server error');
       } else if (user.twoFactorEnabled === false) {
-        res.status(400).send('Two-factor authentication already disabled');
+        return res.status(400).send('Two-factor authentication already disabled');
       }
       await this.userService.updateUserTwoFactorStatus({ id: user.id }, false);
       const access_token = this.authService.login(user);
       if (!access_token) {
-        res.status(500).send('Cannot re-authenticate user, please try again later');
+        return res.status(500).send('Cannot re-authenticate user, please try again later');
       }
       await res.clearCookie('access_token');
       await res.cookie('access_token', access_token, this.authService.cookieOptions);
-      res.status(200).send('Two-factor authentication disabled');
+      return res.status(200).send('Two-factor authentication disabled');
     } catch (error) {
-      res.status(500).send('Internal server error');
+      return res.status(500).send('Internal server error');
     }
   }
 
@@ -206,34 +230,34 @@ export class AuthController {
   async verifyTwoFaAuth(@Req() req, @Res() res) {
     try {
       if (!req.body?.twoFactorAuthCode) {
-        res.status(400).send('Two-factor authentication code not provided');
+        return res.status(400).send('Two-factor authentication code not provided');
       }
-      const twofaPin: TwoFAPinDTO = req.body?.twoFactorAuthCode;
+      const twofaPin: TwoFAPinDTO = { pin: req.body?.twoFactorAuthCode };
       const user: User | null = await this.userService.findUser({ id: req.user.id });
       if (!user) {
-        res.status(400).send('User not found');
+        return res.status(400).send('User not found');
       } else if (user.twoFactorEnabled === false) {
-        res.status(400).send('Two-factor authentication not enabled for this user');
+        return res.status(400).send('Two-factor authentication not enabled for this user');
       }
       const isTwoFaAuthCodeValid = await this.authService.isTwoFaAuthCodeValid(
         twofaPin.pin,
         user,
       );
       if (isTwoFaAuthCodeValid === false) {
-        res.status(400).send('Invalid two-factor authentication code');
+        return res.status(400).send('Invalid two-factor authentication code');
       }
       const access_token = await this.authService.loginWithTwoFactorAuth(user);
       if (!access_token) {
-        res.status(500).send('Cannot re-authenticate user, please try again later');
+        return res.status(500).send('Cannot re-authenticate user, please try again later');
       }
       await res.clearCookie('access_token');
       await res.cookie('access_token', access_token, this.authService.cookieOptions);
-      res.status(200).send('Two-factor authentication successful');
+      return res.status(200).send('Two-factor authentication successful');
     } catch (error) {
       if (error instanceof ValidationError) {
-        res.status(400).send('Invalid two-factor authentication code');
+        return res.status(400).send('Invalid two-factor authentication code');
       }
-      res.status(500).send('Internal server error');
+      return res.status(500).send('Internal server error');
     }
   }
 
@@ -247,19 +271,22 @@ export class AuthController {
         id: req.user.id,
       });
       if (!user) {
-        res.status(400).send('User not found');
+        return res.status(400).send('User not found');
       }
       const data = {
         userId: user.id,
         username: user.username,
         email: user.email,
+        fullname: user.fullname,
         avatarUrl: user.avatarURL,
         isOnline: user.isOnline,
+        twoFactorEnabled: user.twoFactorEnabled,
+        coalitionName: user.coalitionName,
         accessToken: req.cookies.access_token,
       };
-      res.status(200).json(data);
+      return res.status(200).json(data);
     } catch (error) {
-      res.status(500).send('Internal server error');
+      return res.status(500).send('Internal server error');
     }
   }
 }

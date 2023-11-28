@@ -9,8 +9,11 @@ export interface UserState {
   userId: string,
   username: string,
   email: string,
+  fullname: string,
   avatarUrl: string,
   isOnline: boolean,
+  twoFactorEnabled: boolean,
+  coalitionName: string,
   accessToken: string,
 }
 
@@ -19,8 +22,11 @@ export const initialState = {
   userId: null,
   username: null,
   email: null,
+  fullname: null,
   avatarUrl: null,
   isOnline: false,
+  twoFactorEnabled: false,
+  coalitionName: null,
   accessToken: null,
 };
 
@@ -30,12 +36,15 @@ export const userSlice = createSlice({
   reducers: {
     updateUser: (state, action) => {
       state.isAuthenticated = action?.payload?.isAuthenticated;
-      state.userId = action?.payload?.userId
-      state.username = action.payload?.username
-      state.email = action.payload?.email
-      state.avatarUrl = action.payload?.avatarUrl
-      state.isOnline = action.payload?.isOnline
-      state.accessToken = action.payload?.accessToken
+      state.userId = action?.payload?.userId;
+      state.username = action.payload?.username;
+      state.email = action.payload?.email;
+      state.fullname = action.payload?.fullname;
+      state.avatarUrl = action.payload?.avatarUrl;
+      state.isOnline = action.payload?.isOnline;
+      state.twoFactorEnabled = action.payload?.twoFactorEnabled;
+      state.coalitionName = action.payload?.coalitionName;
+      state.accessToken = action.payload?.accessToken;
     }
   },
 });

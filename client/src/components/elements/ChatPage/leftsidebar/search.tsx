@@ -110,26 +110,26 @@ export default function Search() {
 
 
     const getchannels = useMutation<any, Error, any>((variables) =>
-        fetch('http://127.0.0.1:3001/channel/getallchannelsapp/' + variables.tofound).then((res) => {
+        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallchannelsapp/` + variables.tofound).then((res) => {
 
             return res.json()
         })
     )
 
     const getusers = useMutation<any, Error, any>((variables) =>
-        fetch('http://127.0.0.1:3001/users/getusers/' + variables.tofound)
+        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/getusers/` + variables.tofound)
             .then((res) => res.json())
             
     );
 
     const listusers = useMutation<any, Error, any>(() =>
-        fetch('http://127.0.0.1:3001/users/getAllUsers/' + userId)
+        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/getAllUsers/` + userId)
             .then((res) => res.json())
             
     );
 
     const listchannels = useMutation<any, Error, any>(() =>
-        fetch('http://127.0.0.1:3001/channel/getallpublicandprivatechannels').then((res) => {
+        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallpublicandprivatechannels`).then((res) => {
             return res.json()
         })
     );
@@ -164,7 +164,7 @@ export default function Search() {
 
 
     const checkpassword = useMutation<any, Error, any>((variables) =>
-        fetch('http://127.0.0.1:3001/channel/checkpassword', {
+        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/checkpassword`, {
             method: "POST",
             body: JSON.stringify(variables),
             headers: {

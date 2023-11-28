@@ -19,7 +19,7 @@ import {
     ModalCloseButton,
     Radio
 } from '@chakra-ui/react'
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useQuery } from 'react-query';
 import axios from 'axios';
 
@@ -78,8 +78,7 @@ export default function Newmessage({onClose}: Props) {
     const {data, isLoading, error} = useQuery({
         queryKey: ["userData"],
         queryFn: async () => {
-            const Url = process.env.NEXT_PUBLIC_SERVER_URL
-            const { data } = await axios.get(`${Url}users/friends`, { withCredentials: true },)
+            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/friends`, { withCredentials: true },)
             return data
         }
     })
