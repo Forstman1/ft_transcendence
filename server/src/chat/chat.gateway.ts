@@ -32,6 +32,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
   //!---------------CONNECTION------------------------!//
 
   async handleConnection(client: Socket) {
+
     this.connectedUsers[client.handshake.auth.id] = [
       ...(this.connectedUsers[client.handshake.auth.id] || []),
       client,
@@ -40,11 +41,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     this.logger.log(
       `Socket connected: ${client.handshake.auth.id}   ${client.id}`,
     );
+
     const User: Prisma.UserWhereUniqueInput = {
       id: client.handshake.auth.id,
     };
+
     const chatList = await this.userService.getChatList(User);
-    const UserSockets = await this.connectedUsers[client.handshake.auth.id];
+    // const UserSockets = await this.connectedUsers[client.handshake.auth.id];
+    const friendRequest = await this.userService.getAcceptedFriendRequests(User);
     const rooms = await this.userService.getRooms(User);
 
 
@@ -54,7 +58,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
 
     }
     if (chatList) client.emit(`updateChatList`, chatList);
-    const friendRequest = await this.userService.getAcceptedFriendRequests(User);
+
     if (friendRequest) {
       client.emit(`updateFriendRequest`, friendRequest);
     }
@@ -63,10 +67,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
   //!---------------DISCONNECTION------------------------!//
 
   async handleDisconnect(socket: Socket) {
+
     this.connectedUsers[socket.handshake.auth.id].splice(
       this.connectedUsers[socket.handshake.auth.id].indexOf(socket),
       1,
     );
+
     socket.leave(socket.id);
 
     this.logger.log(`Socket disconnected: ${socket.id}`);
@@ -200,10 +206,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       
       
       this.logger.log(`message is ${room}`);
-      client.join(room);
+      // client.join(room);
       if (friendSocket) {
         for (const socket of friendSocket) {
-          socket.join(room);
+          // socket.join(room);
           this.server.to(socket.id).emit(`updateChatList`, friedList);
         }
       }
