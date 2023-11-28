@@ -55,17 +55,17 @@ function Message_other({ usermessage, message, sender, time }: any) {
     const fetchData = async () => {
       try {
         const fetchmember = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getmember/` + usermessage.authorID
+          "http://127.0.0.1:3001/channel/getmember/" + usermessage.authorID
         );
         const member = await fetchmember.json();
         const fetchuser = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/users/getuser/` + member.userId
+          "http://127.0.0.1:3001/users/getuser/" + member.userId
         );
         const response = await fetchuser.json();
         setUser(response);
       } catch (error) {
         const fetchuser = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/users/getuser/` + usermessage.authorID
+          "http://127.0.0.1:3001/users/getuser/" + usermessage.authorID
         );
         const response = await fetchuser.json();
         // console.log("response "+  response.username+ " " + usermessage.authorID, " " + sender)
@@ -79,15 +79,15 @@ function Message_other({ usermessage, message, sender, time }: any) {
   const timestamp = Date.parse(time);
   const formattedTime = formatTimeAgo(timestamp);
 
-  return (
+return (
     <div className="w-full flex gap-[5px] pl-[15px] z-0 ">
       <Avatar className="custom-shadow2" boxSize={12} src={user?.avatarURL} />
-      <div className="flex flex-col min-w-[50%] max-w-[70%]">
-        <div className="w-[50%] text-grey-400 flex justify-start">
+      <div className="flex flex-col min-w-[50%] max-w-[60%]">
+        <div className="w-[50%] text-grey-400 flex justify-start relative">
           {sender} | {formattedTime}
         </div>
-        <div className="bg-white border-2 border-black rounded-2xl custom-shadow2  rounded-tl-none pl-[10px] w-full min-h-[60px] ">
-          <div className="flex w-full h-full items-center ">{message}</div>
+        <div className="bg-white border-2 border-black rounded-2xl custom-shadow2  rounded-tl-none pl-[10px] min-h-[60px]">
+          <div className="flex w-full h-full items-center break-all">{message}</div>
         </div>
       </div>
     </div>
@@ -100,12 +100,12 @@ function Own_Message({ message, user }: any) {
 
   return (
     <div className=" w-full flex gap-[5px] justify-end pr-[15px] z-0">
-      <div className="flex flex-col min-w-[50%] max-w-[70%]">
-        <div className="w-full text-grey-400 flex justify-end">
+      <div className="flex flex-col min-w-[50%] max-w-[60%]">
+        <div className="w-full text-grey-400 flex justify-end relative">
           {user?.username} | {formattedTime}
         </div>
         <div className="bg-black border-2 border-black rounded-2xl custom-shadow text-white rounded-tr-none justify-start pl-[10px] w-full min-h-[60px] ">
-          <div className="w-full h-full flex items-center">
+          <div className="w-full h-full flex items-cente relative break-all">
             {message?.content}
           </div>
         </div>
@@ -154,7 +154,7 @@ export default function ChatWindow() {
       if (userId) {
         const url = process.env.NEXT_PUBLIC_SERVER_URL;
         const fetchuser = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/users/getuser/${userId}`
+          `${url}/users/getuser/${userId}`
         );
         const response = await fetchuser.json();
         setUser(response);
@@ -199,7 +199,7 @@ export default function ChatWindow() {
   };
 
   const getChannelMessages: any = useMutation<any, Error, any>((variables) =>
-    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/message/getmessages/` + variables.channelId)
+    fetch("http://127.0.0.1:3001/message/getmessages/" + variables.channelId)
       .then((response) => {
         return response.json();
       })
@@ -210,7 +210,7 @@ export default function ChatWindow() {
 
   const getUserMessages: any = useMutation<any, Error, any>((variables) =>
     fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/message/getMessagesUsers/` +
+      "http://127.0.0.1:3001/message/getMessagesUsers/" +
         variables.userId +
         "/" +
         variables.reciverId
@@ -280,7 +280,7 @@ export default function ChatWindow() {
   }, [selected]);
 
   return (
-    <div className="justify-between flex-col gap-[15px] h-full pt-[120px] flex-1">
+    <div className="justify-between w-[80%] flex-col gap-[15px] h-full pt-[120px] flex-1">
       <div
         className=" flex flex-col gap-[10px] overflow-y-scroll no-scrollbar z-0 h-[94%] pb-12 "
         ref={chatContainer}

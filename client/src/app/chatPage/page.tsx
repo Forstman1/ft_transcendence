@@ -75,7 +75,7 @@ export default function ChatPage() {
 
   return (
     <RestrictedRoute>
-      <div className="Chat_sub_div2 flex w-full">
+      <div className="Chat_sub_div2 flex  w-full">
       <LeftSidebar />
       <ChatWindow />
       {selected !== null  && selected !== undefined && "username" in selected ? (
