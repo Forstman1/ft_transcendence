@@ -45,16 +45,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     };
 
     const chatList = await this.userService.getChatList(User);
-    // const UserSockets = await this.connectedUsers[client.handshake.auth.id];
     const friendRequest = await this.userService.getAcceptedFriendRequests(User);
     const rooms = await this.userService.getRooms(User);
 
 
     for (const room of rooms) {
-
       client.join(room);
-
     }
+
     if (chatList) client.emit(`updateChatList`, chatList);
 
     if (friendRequest) {
@@ -141,16 +139,18 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       let room = await this.userService.getRoom(userId, data.frienID);
       
       if (!room) {
+        console.log(`room not found`);
         room = await this.userService.creatRoom(userId, data.frienID);
       }
 
       const freindSocket = this.connectedUsers[data.frienID];
+      const userSockets = this.connectedUsers[client.handshake.auth.id];
 
-      if (client && freindSocket) {
-
-        this.server.to(room).emit(`roomCreated`, room);
-        freindSocket.join(room);
-        
+      for (const socket of freindSocket) {
+        socket.join(room);
+      }
+      for (const socket of userSockets) {
+        socket.join(room);
       }
 
       return `DMs room created`;
@@ -199,6 +199,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       const friedList = await this.userService.getChatList(friend);
       const friendSocket = this.connectedUsers[data.reciverId];
       if (!room) {
+        console.log(`room not found in here`);
         room = await this.userService.creatRoom(userId, data.reciverId);
       }
       

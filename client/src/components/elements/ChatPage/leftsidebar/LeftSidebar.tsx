@@ -3,7 +3,6 @@
 import { SmallAddIcon } from "@chakra-ui/icons";
 import {
   Avatar,
-  AvatarBadge,
   Icon,
   useDisclosure,
   Modal,
@@ -53,11 +52,6 @@ function Usercard(props: any) {
             boxSize={14}
             src={props.data.avatarURL}
           >
-            <AvatarBadge
-              className="custom-shadow border-[1px] border-black"
-              boxSize={4}
-              bg={props.data.isOnline ? "green.500" : "red.500"}
-            />
           </Avatar>
         </div>
         <div className="ml-[7px] flex flex-col  text-left w-[40%] justify-around">
