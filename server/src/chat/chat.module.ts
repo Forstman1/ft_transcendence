@@ -11,3 +11,4 @@ import { UsersModule } from './users/users.module';
   providers: [ChatGateway],
 })
 export class ChatModule {}
+

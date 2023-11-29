@@ -666,8 +666,6 @@ export class UsersService {
           },
         },
       });
-
-      console.log('rooms' + rooms);
       const roomsId = rooms.map((room) => room.id);
       return roomsId;
     } catch (error) {
