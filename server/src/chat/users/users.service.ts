@@ -34,7 +34,7 @@ export class UsersService {
         },
       });
     } catch (error) {
-      return `${error} no Users found`;
+      return [];
     }
   }
 
