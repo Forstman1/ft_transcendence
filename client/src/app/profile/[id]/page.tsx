@@ -13,7 +13,7 @@ import AddFriend from "@/components/userPage/AddFriend";
 
 import { useQuery } from "react-query";
 import { getUser } from "@/utils/profile/fetchingProfileData";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
@@ -34,8 +34,6 @@ type userProfileData = {
 export default function Profile({ params }: any) {
 	const logedUserId = useSelector((state: any) => state.authUser.userId);
 	const router = useRouter();
-	const pathname = usePathname();
-	const searchParams = useSearchParams();
 	let interval: any = null;
 
 	const {
@@ -45,20 +43,12 @@ export default function Profile({ params }: any) {
 		refetch,
 	} = useQuery("userprofiledata", () => getUser(params.id));
 
-	// useEffect(() => {
-	//     console.log(`url changed from ................`)
-	// }, [pathname, searchParams]);
 
 	useEffect(() => {
 		interval = setInterval(() => {
-			const profilePath = pathname.split("/")[1]; // Extract the second part of the path
-			console.log('profile Path: ', profilePath);
-			// if (profilePath === "profile") {
-			// 	// Do something with the '/profile/' path
-			// 	//   console.log('User is on the profile page');
-			// }
 			refetch();
 		}, 5000);
+		return () => clearInterval(interval);
 	}, []);
 
 	if (isLoading) {

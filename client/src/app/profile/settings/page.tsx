@@ -20,7 +20,7 @@ const schema = z.object({
 
 export default function UserSettings() {
 	const userData = useSelector((state: any) => state.authUser);
-	console.log("userData", userData);
+	// console.log("userData", userData);
 	const queryClient = useQueryClient();
 
 	const [fullname, setFullname] = useState<string>("");
@@ -88,13 +88,13 @@ export default function UserSettings() {
 			if (avatar) {
 				formData.append("avatar", avatar);
 			}
-			console.log("formData fullname", formData.get("fullname"));
-			console.log("fullname state", fullname);
-			console.log("myObject", temp);
+			// console.log("formData fullname", formData.get("fullname"));
+			// console.log("fullname state", fullname);
+			// console.log("myObject", temp);
 
 			const result = schema.safeParse(temp);
 
-			console.log("result", result);
+			// console.log("result", result);
 			if (result.success) {
 				setFormErrors({
 					fullname: "",
@@ -152,7 +152,7 @@ export default function UserSettings() {
 					duration: 9000,
 					isClosable: true,
 				});
-				console.log(error);
+				// console.log(error);
 			},
 		}
 	);
