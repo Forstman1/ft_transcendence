@@ -21,7 +21,7 @@ export default function GlobalChatListener() {
   useEffect(() => {
 
 
-    socket?.on(`FriendshipStatus`, (Friend: any) => {
+    socket?.on(`FriendshipStatus`, () => {
     });
 
 

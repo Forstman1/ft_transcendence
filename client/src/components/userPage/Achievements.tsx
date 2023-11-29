@@ -10,6 +10,7 @@ import achvmt6 from "@/../public/Achievements/six.png";
 
 import { useQuery } from 'react-query';
 import { getUserAchievements } from '@/utils/profile/fetchingProfileData'
+import Image from "next/image";
 
 type AchievementType = Array<{
 	title: string;
@@ -29,14 +30,14 @@ const staticData: AchievementType = [
 ];
 
 
-type dataType = {
-    Bronze: boolean;
-    Silver: boolean;
-    Gold: boolean;
-    Platinum: boolean;
-    Emerald: boolean;
-    Hamas: boolean;
-};
+// type dataType = {
+//     Bronze: boolean;
+//     Silver: boolean;
+//     Gold: boolean;
+//     Platinum: boolean;
+//     Emerald: boolean;
+//     Hamas: boolean;
+// };
 
 type propType = {
     userId: string;
@@ -129,10 +130,12 @@ export default function Achievements({ userId }: propType) {
 											: null
 									}`}
 								>
-									<img
+									<Image
 										src={item.imageSrc}
 										alt={item.title}
 										className="w-full h-full object-cover "
+										width={100}
+										height={100}
 									/>
 								</div>
 							</Tooltip>

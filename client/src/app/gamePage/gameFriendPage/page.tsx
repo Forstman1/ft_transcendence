@@ -75,16 +75,18 @@ export default function GameFriendPage() {
   const [hasInitialized, setHasInitialized] = useState(false);
   const [friendExitGame, setFriendExitGame] = useState<boolean>(false);
 
-  window?.addEventListener('offline', () => {
-    if (
-      socket &&
-      socket.io &&
-      socket.io.engine &&
-      socket.io.engine.transport
-    ) {
-      socket.io.engine.transport.close()
-    }
-  })
+  if (typeof window !== "undefined") {
+    window?.addEventListener('offline', () => {
+      if (
+        socket &&
+        socket.io &&
+        socket.io.engine &&
+        socket.io.engine.transport
+      ) {
+        socket.io.engine.transport.close()
+      }
+    })
+  }
 
   //--------------------------------Socket Code logic-------------------------------------------
 

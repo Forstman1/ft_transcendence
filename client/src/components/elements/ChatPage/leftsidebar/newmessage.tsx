@@ -74,7 +74,7 @@ export default function Newmessage({onClose}: Props) {
     const socket = useSelector((state: any) => state.socket.socket)
     const toast = useToast();
     const [selectedOption, setSelectedOption]: any = useState('');
-    const id = useSelector((state: any) => state.socket.userID);
+    // const id = useSelector((state: any) => state.socket.userID);
     const {data, isLoading, error} = useQuery({
         queryKey: ["userData"],
         queryFn: async () => {

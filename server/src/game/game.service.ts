@@ -312,6 +312,15 @@ export class GameService {
     opponentId: string,
   ): Promise<void> => {
     const { userId, status, userScore, opponentScore, rounds, matches, xp } = data;
+    try {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new Error(`User with id ${userId} not found`);
+    }
+  
     await this.prisma.user.update({
       where: { id: userId },
       data: {
@@ -333,6 +342,9 @@ export class GameService {
       },
     });
     return;
+  } catch (error) {
+    console.log(error);
+  }
   }
 
   //----------------------------------------------------
@@ -400,6 +412,15 @@ export class GameService {
 
   //----------------------------------------------------
   updateUserIsOnline = async (userId: string, isOnline: boolean): Promise<void> => {
+    try {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    
+    if (!user) {
+      throw new Error(`User with id ${userId} not found`);
+    }
+  
     await this.prisma.user.update({
       where: { id: userId },
       data: {
@@ -407,10 +428,21 @@ export class GameService {
       },
     });
     return;
+  } catch (error) {
+    console.log(error);
+  }
   }
 
   //----------------------------------------------------
   updateUserIsInGame = async (userId: string, isInGame: boolean): Promise<void> => {
+    try {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+  
+    if (!user) {
+      throw new Error(`User with id ${userId} not found`);
+    }
     await this.prisma.user.update({
       where: { id: userId },
       data: {
@@ -418,16 +450,25 @@ export class GameService {
       },
     });
     return;
+  } catch (error) {
+    console.log(error);
+  }
   }
 
   //----------------------------------------------------
   notifyFriend = async (userId: string, friendId: string): Promise<void> => {
+    try {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
         username: true,
       },
     });
+
+      if (!user) {
+        throw new Error(`User with id ${userId} not found`);
+      }
+
     const data = {
       title : "Game Invite",
       description: "You have a game invite from " + user.username,
@@ -447,6 +488,9 @@ export class GameService {
       },
     });
     return;
+  } catch (error) {
+    console.log(error);
+  }
   }
 
   //----------------------------------------------------

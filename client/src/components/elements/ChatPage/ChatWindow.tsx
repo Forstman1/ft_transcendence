@@ -68,7 +68,6 @@ function Message_other({ usermessage, message, sender, time }: any) {
           "http://127.0.0.1:3001/users/getuser/" + usermessage.authorID
         );
         const response = await fetchuser.json();
-        // console.log("response "+  response.username+ " " + usermessage.authorID, " " + sender)
 
         setUser(response);
       }
@@ -143,7 +142,7 @@ export default function ChatWindow() {
   }, [messages]);
 
   const HideMobileSideBars = () => {
-    if (window.innerWidth < 1024) {
+    if (window?.innerWidth < 1024) {
       dispatch(setRight(false));
       dispatch(setLeft(false));
     }
@@ -255,7 +254,6 @@ export default function ChatWindow() {
       }
     });
     socket?.on("receivedPrivateMessage", (data: any) => {
-      console.log("receivedPrivateMessage     " + data.message);
       if (
         selected?.id === data.message.reciverName ||
         selected?.id === data.message.authorID

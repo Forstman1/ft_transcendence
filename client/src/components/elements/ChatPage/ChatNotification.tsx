@@ -1,13 +1,8 @@
 "use client";
 
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
-import Cookies from "js-cookie";
-import Remove from "../../../../assets/icons/remove-friend.svg";
-import Block from "../../../../assets/icons/Block.svg";
 import { User } from "@/utils/types/chat/ChatTypes";
 import { useEffect } from "react";
-import { setOptAllImages } from "@/redux/slices/chat/OptImagesSlice";
-import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/redux/store/store";
 import { motion } from "framer-motion";
 import { Button, useToast, Alert } from "@chakra-ui/react";
@@ -15,7 +10,6 @@ import { Button, useToast, Alert } from "@chakra-ui/react";
 export default function ChatNotification() {
   const socket = useAppSelector((state: any) => state.socket.socket);
   const toast = useToast();
-  const dispatch = useDispatch();
 
   useEffect(() => {
     const handleFreindRequest = (Friend: User) => {
@@ -43,7 +37,7 @@ export default function ChatNotification() {
                   socket?.emit(
                     `acceptFreindRequest`,
                     { friendId: Friend.id },
-                    (Response: any) => {
+                    () => {
                       socket.emit(`AskFriendshipStatus`, {
                         friendId: Friend.id,
                       });
