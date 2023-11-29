@@ -31,7 +31,7 @@ export default function ChatPage() {
 
   const handleWindowResize = () => {
 
-    if (window.innerWidth < 1024) {
+    if (window?.innerWidth < 1024) {
 
       dispatch(setRight(false));
       dispatch(setMidle(false));
@@ -48,9 +48,9 @@ export default function ChatPage() {
 
   useEffect(() => {
     handleWindowResize();
-    window.addEventListener("resize", handleWindowResize);
+    window?.addEventListener("resize", handleWindowResize);
     return () => {
-      window.removeEventListener("resize", handleWindowResize);
+      window?.removeEventListener("resize", handleWindowResize);
     };
   }, []);
 

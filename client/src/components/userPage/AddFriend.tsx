@@ -8,7 +8,6 @@ import { Box, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 import Cookies from "js-cookie";
-import { useAppSelector } from "@/redux/store/store";
 
 
 
@@ -40,12 +39,9 @@ export default function AddFriend({ userData }: { userData: userProfileData }) {
 
 
   useEffect(() => {
-    console.log(userData.id)
     socket.on(`friendRequestAccepted`, (Friend: any) => {
       const newValue = [{ src: Remove, alt: "Unfriend" }];
       setOptImages(newValue);
-
-      console.log(`the new value is: `, newValue);
 
       Cookies.set(Friend.username, JSON.stringify([newValue]), {
         expires: 365,
@@ -62,7 +58,6 @@ export default function AddFriend({ userData }: { userData: userProfileData }) {
     });
 
     socket?.on(`friendRemoved`, (Friend: any) => {
-      console.log(Friend.username);
 
       const newValue = [{ src: AddToFriendList, alt: "Add friend" }];
         

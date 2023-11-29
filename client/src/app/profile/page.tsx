@@ -1,12 +1,12 @@
 'use client';
-import { useEffect } from 'react';
+import React,  { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import RestrictedRoute from "@/components/RestrictedRoute";
 
 
 
-export default function userPage() {
+export default function UserPage() {
     const userId = useSelector((state:any) => state.authUser.userId)
     const router = useRouter();
   

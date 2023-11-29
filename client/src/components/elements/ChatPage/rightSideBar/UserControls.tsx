@@ -1,6 +1,6 @@
 
 "use client";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import AddToFriendList from "../../../../../assets/icons/AddToFriendList.svg";
 import Remove from "../../../../../assets/icons/remove-friend.svg";
 import Block from "../../../../../assets/icons/Block.svg";
@@ -9,15 +9,11 @@ import { Box, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 import Unblock from "../../../../../assets/icons/Unblock.svg";
-import { useDispatch } from "react-redux";
-import { setOptAllImages } from "@/redux/slices/chat/OptImagesSlice";
-import { get } from "http";
 
 
 
 
 export default function UserControls() {
-  const dispatch = useDispatch();
   const OptImages = useSelector((state: any) => state.optImages.optImages);
   const Selected = useSelector((state: any) => state.chat.selectedChannelorUser);
   const socket = useSelector((state: any) => state.socket.socket);
@@ -42,7 +38,6 @@ export default function UserControls() {
           { src: Friend[2] === "Block" ? Block : Unblock, alt: Friend[2] === "Block" ? "Block" : "Unblock" },
         ]);
       }
-      console.log(`optImages`, optImages)
       });
     return () => {
         

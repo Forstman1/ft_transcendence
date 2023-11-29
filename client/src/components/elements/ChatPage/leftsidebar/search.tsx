@@ -106,7 +106,7 @@ export default function Search() {
 
     const [show, setShow] = React.useState(false)
     const handleShow = () => setShow(!show)
-    const id = useSelector((state: any) => state.socket.userID);
+    // const id = useSelector((state: any) => state.socket.userID);
 
 
     const getchannels = useMutation<any, Error, any>((variables) =>
