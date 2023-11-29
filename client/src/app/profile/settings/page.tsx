@@ -8,6 +8,7 @@ import { useToast } from "@chakra-ui/react";
 import RestrictedRoute from "@/components/RestrictedRoute";
 
 import { z } from "zod";
+import Image from "next/image";
 
 const schema = z.object({
 	fullname: z
@@ -20,7 +21,6 @@ const schema = z.object({
 
 export default function UserSettings() {
 	const userData = useSelector((state: any) => state.authUser);
-	console.log("userData", userData);
 	const queryClient = useQueryClient();
 
 	const [fullname, setFullname] = useState<string>("");
@@ -88,13 +88,9 @@ export default function UserSettings() {
 			if (avatar) {
 				formData.append("avatar", avatar);
 			}
-			console.log("formData fullname", formData.get("fullname"));
-			console.log("fullname state", fullname);
-			console.log("myObject", temp);
 
 			const result = schema.safeParse(temp);
 
-			console.log("result", result);
 			if (result.success) {
 				setFormErrors({
 					fullname: "",
@@ -152,7 +148,7 @@ export default function UserSettings() {
 					duration: 9000,
 					isClosable: true,
 				});
-				console.log(error);
+				// console.log(error);
 			},
 		}
 	);
@@ -164,16 +160,19 @@ export default function UserSettings() {
 	};
 
 	return (
+		<RestrictedRoute>
 			<div className="py-12 text-black">
 				<div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
 					<div className="custom-shadow w-full bg-white rounded-sm shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 mb-6">
 						<div className="p-6 space-y-4 md:space-y-6 sm:p-8">
 							<div className="flex justify-center">
 								{avatarPreview !== null && (
-									<img
+									<Image
 										src={avatarPreview}
 										alt="Avatar Preview"
 										className="mt-2 rounded-full w-20 h-20 inline-block"
+										height={80}
+										width={80}
 									/>
 								)}
 							</div>
@@ -287,12 +286,13 @@ export default function UserSettings() {
 
 					<div className="custom-shadow w-full bg-white rounded-sm shadow dark:border md:mt-0 sm:max-w-md  dark:bg-gray-800 dark:border-gray-700 px-9 py-2">
 						<h2 className="font-bold mb-3">
-						    for security reasons it&apos;s preferred to activate
+							Also for security reasons it&apos;s preferred to activate
 							2FA
 						</h2>
 						<TwoFactor />
 					</div>
 				</div>
 			</div>
+		</RestrictedRoute>
 	);
 }

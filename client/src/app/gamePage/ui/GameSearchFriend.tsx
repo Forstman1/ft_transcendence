@@ -44,6 +44,7 @@ export default function GameSearchFriend({ onClose }: Props) {
   const [searchInput, setSearchInput] = useState<string>("");
   const toast = useToast();
 
+  
   //-------------------playGame------------------------
 
   socket.socket?.on("playGame", () => {
@@ -52,10 +53,10 @@ export default function GameSearchFriend({ onClose }: Props) {
 
   //---------------------------------------------------
 
-  socket.socket?.on("friendDenyInvitation", (friendId: string) => {
+  socket.socket?.on("friendDenyInvitation", (myfriendId: string) => {
     setFriendInviteIData((prev) => {
       return prev.map((friend) => {
-        if (friend.id === friendId) {
+        if (friend.id === myfriendId) {
           friend.isInvited = false;
         }
         return friend;
@@ -79,17 +80,17 @@ export default function GameSearchFriend({ onClose }: Props) {
   }, []);
 
   useEffect(() => {
-    if (socketRoomId !== "") {
+    if (socketRoomId !== "" && friendId !== "") {
       inviteFriend();
     }
-  }, [socketRoomId]);
+  }, [socketRoomId, friendId]);
 
   //-----------------------------------------------
 
-  const createRoom = async (friendId: string) => {
+  const createRoom = async (myfriendId: string) => {
     await socket.socket?.emit("createRoom", (RoomId: any) => {
-      setFriendId(friendId);
-      dispatchData(RoomId);
+      setFriendId(myfriendId);
+      dispatchData(RoomId, myfriendId);
     });
   };
 
@@ -105,12 +106,12 @@ export default function GameSearchFriend({ onClose }: Props) {
 
   //-----------------------------------------------
 
-  const dispatchData = (RoomId: string) => {
+  const dispatchData = (RoomId: string, myfriendId: string) => {
     dispatch(
       setGameMatchState({
         isOwner: true,
         roomId: RoomId,
-        opponentId: friendId,
+        opponentId: myfriendId,
       })
     );
     setSocketRoomId(RoomId);

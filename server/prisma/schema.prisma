@@ -48,13 +48,17 @@ model User {
   roomMember      DMRoom[] @relation("rooms")
   roomMessage     UserMessage[]    @relation("roommessage")
 
-//   games     GameHistory[]
+
   games             GameHistory[] @relation(name: "UserGameHistories")
   opponentHistories GameHistory[] @relation(name: "UserOpponentHistories")
   userGamesXp   Int      @default(0)
   notifications   Notification[]
 
 }
+
+
+
+
 
 
 model Notification {
@@ -92,15 +96,11 @@ model Channel {
 }
 
 
-
-
 model DMRoom {
   id        String   @id @default(uuid())
   roomMembers User[]    @relation("rooms")
   roomMessages UserMessage[]
 }
-
-
 
 
 model ChannelMember {

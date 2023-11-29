@@ -16,6 +16,7 @@ import { extendTheme } from '@chakra-ui/react'
 import ChatNotification from "../components/elements/ChatPage/ChatNotification";
 import GlobalChatListener from "@/components/elements/ChatPage/GlobalChatListener";
 
+
 const breakpoints = {
   'base': '0px',
   'xs': '350px',

@@ -11,7 +11,7 @@ RUN apk --update add \
     
 RUN npm install -g npm@10.2.4
 
-WORKDIR /usr/src/app
+WORKDIR /App
 
 COPY package*.json ./
 
@@ -19,7 +19,9 @@ RUN npm install
 
 COPY . .
 
+RUN npm run build
+
 EXPOSE 3000
 
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start"]
 

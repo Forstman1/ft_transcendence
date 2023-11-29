@@ -75,16 +75,18 @@ export default function GameFriendPage() {
   const [hasInitialized, setHasInitialized] = useState(false);
   const [friendExitGame, setFriendExitGame] = useState<boolean>(false);
 
-  window?.addEventListener('offline', () => {
-    if (
-      socket &&
-      socket.io &&
-      socket.io.engine &&
-      socket.io.engine.transport
-    ) {
-      socket.io.engine.transport.close()
-    }
-  })
+  if (typeof window !== "undefined") {
+    window?.addEventListener('offline', () => {
+      if (
+        socket &&
+        socket.io &&
+        socket.io.engine &&
+        socket.io.engine.transport
+      ) {
+        socket.io.engine.transport.close()
+      }
+    })
+  }
 
   //--------------------------------Socket Code logic-------------------------------------------
 
@@ -220,7 +222,7 @@ export default function GameFriendPage() {
       xp = gameSettings.mode === "EASY" ? 5 : gameSettings.mode === "MEDIUM" ? 10 : 15;
     }
     const data: any = {
-      // userId: socket?.auth?.id,
+      userId: (socket?.auth as { id: string })?.id,
       status: status,
       userScore: userScore,
       opponentScore: opponentScore,
