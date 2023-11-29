@@ -45,14 +45,6 @@ export default function ChatNotification() {
               <Button
                 onClick={() => {
                     socket?.emit(`acceptFreindRequest`, { friendId: Friend.id });
-                    Cookies.set(
-                        Friend.username,
-                        JSON.stringify([
-                            { src: Remove, alt: "Remove from friend list" },
-                            { src: Block, alt: "Block" },
-                        ]),
-                        { expires: 365 }
-                        );
                         dispatch(
                             setOptAllImages([
                                 {

@@ -9,7 +9,7 @@ import achvmt5 from "@/../public/Achievements/five.png";
 import achvmt6 from "@/../public/Achievements/six.png";
 
 import { useQuery } from 'react-query';
-import { getUserAchievements } from '@/utils/profile/fetchingProfileData'
+import { getUserAchievements } from '@/utils/functions/profile/fetchingProfileData'
 import Image from "next/image";
 
 type AchievementType = Array<{

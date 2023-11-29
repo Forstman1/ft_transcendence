@@ -1,39 +1,18 @@
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Pie } from 'react-chartjs-2';
 
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Filler,
-  Legend,
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Filler,
-  Legend
-);
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 import { useQuery } from 'react-query';
-import { getChartLineData } from '@/utils/profile/fetchingProfileData'
+import { getMatchesResults } from '@/utils/functions/profile/fetchingProfileData'
 
-
-export default function ChartLine({userId}: {userId: string}) {
+export default function ChartPie({userId}: {userId: string}) {
     
 	const { 
         data: chartData,
         error,
         isLoading
-    } = useQuery("activitieshistory", () => getChartLineData(userId));
+    } = useQuery("matchesresults", () => getMatchesResults(userId));
 
 
     if(isLoading){
@@ -48,42 +27,60 @@ export default function ChartLine({userId}: {userId: string}) {
         }
     if(error){
         return(
-            <h2>Opps User activities error</h2>
+            <h2>Opps Matches Resultss error</h2>
         );
     }
 
+    const {wins = 0, loses = 0, draws = 0} = chartData || {};
+    const status: number[] = [loses, wins, draws];
 
-
-    
-
-    const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'top' as const,
-            },
-            title: {
-                display: true,
-                text: 'Matches played each month',
-            },
-        },
-    };
-    
-    const labels = chartData.labels;
-    
     const data = {
-      labels,
+      labels: ['Loses','Wins', 'Draws'],
       datasets: [
         {
-          fill: true,
-          label: 'matches',
-          data: chartData.values,
-          borderColor: 'rgb(53, 162, 235)',
-          backgroundColor: 'rgba(53, 162, 235, 0.5)',
+          label: '# matches',
+          data: status,
+          backgroundColor: [
+            '#E57070',
+            '#60BA64',
+            '#7D7D7D',
+          ],
         },
       ],
     };
 
-  return <Line options={options} data={data} />;
+const options: any = {
+    responsive: true,
+    maintainAspectRatio: false,
+    layout: {
+        autoPadding: true,
+        padding: 10,
+    },
+    plugins: {
+      legend: {
+        display: true,
+        position: 'right',
+        rtl: true,
+        labels: {
+            boxWidth: 15,
+            color: 'black',
+            font: {
+                family: '__Geo_655df6',
+            }
+        },
+      },
+      outlabels: {
+        text: '%l %p',
+        color: 'white',
+        stretch: 35,
+        font: {
+          resizable: false,
+          minSize: 12,
+          maxSize: 18,
+        },
+      },
+    },
+  };
+
+  return <Pie data={data} options={options} />;
 }

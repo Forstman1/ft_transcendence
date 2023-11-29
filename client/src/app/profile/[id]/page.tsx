@@ -3,16 +3,16 @@
 import { Flex, Box, Avatar, Icon } from "@chakra-ui/react";
 import { MdSettings } from "react-icons/md";
 
-import ChartPie from "@/components/userPage/ChartPie";
-import Coalition from "@/components/userPage/Coalitions";
-import ChartLine from "@/components/userPage/ChartLine";
-import FriendList from "@/components/userPage/FriendList";
-import Achievements from "@/components/userPage/Achievements";
-import MatchHistory from "@/components/userPage/MatchHistory";
-import AddFriend from "@/components/userPage/AddFriend";
+import ChartPie from "@/components/elements/userPage/ChartPie";
+import Coalition from "@/components/elements/userPage/Coalitions";
+import ChartLine from "@/components/elements/userPage/ChartLine";
+import FriendList from "@/components/elements/userPage/FriendList";
+import Achievements from "@/components/elements/userPage/Achievements";
+import MatchHistory from "@/components/elements/userPage/MatchHistory";
+import AddFriend from "@/components/elements/userPage/AddFriend";
 
 import { useQuery } from "react-query";
-import { getUser } from "@/utils/profile/fetchingProfileData";
+import { getUser } from "@/utils/functions/profile/fetchingProfileData";
 import { useRouter } from "next/navigation";
 
 import { useSelector } from "react-redux";
@@ -146,9 +146,6 @@ export default function Profile({ params }: any) {
                   <Icon as={MdSettings} /> Edit
                 </button>
               ) : (
-                // <button className='bg-black text-white px-4 rounded-bl-lg hover:bg-gray-700'>
-                //     <Icon as={MdSettings} /> Add Friend
-                // </button>
                 <AddFriend userData={userData} />
               )}
             </Flex>
@@ -180,7 +177,7 @@ export default function Profile({ params }: any) {
                   Team
                 </h4>
                 <div className="md:h-[85%]">
-                  <Coalition type={"bios"} />
+                  <Coalition type={userData.coalitionName} />
                 </div>
               </div>
               <div className=" border-r-2 border-black w-[100%] md:basis-7/12">
@@ -205,7 +202,7 @@ export default function Profile({ params }: any) {
 
         <div className="h-[540px]  lg:grid grid-rows-2 grid-cols-2 grid-flow-col gap-8">
           <div className="lg:col-span-1 lg:row-span-2 h-full w-full mb-8 lg:mb-0 border-black border-2 rounded custom-shadow">
-            <FriendList />
+            <FriendList userId={params.id} />
           </div>
 
           <div className="lg:col-span-1  min-h-[250px] lg:h-full w-full  mb-8 lg:mb-0 border-black border-2 rounded custom-shadow">

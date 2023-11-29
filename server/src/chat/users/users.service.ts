@@ -296,6 +296,29 @@ export class UsersService {
     }
   }
 
+  
+  //!------------------Get friend list-----------------------!//
+  
+  async getFriendList(userId: string) {
+    console.log('userId', userId);
+    const User = await this.prisma.user.findFirst({
+        where: { id: userId },
+        include: {
+          friends: true,
+          friendOf: true,
+        },
+      });
+
+      if (!User) return [];
+      const mergedFriends = [...User.friends, ...User.friendOf];
+    
+      const uniqueFriends = mergedFriends.filter(
+        (friend, index, self) => index === self.findIndex((f) => f.id === friend.id)
+      );
+      const filteredFriends = uniqueFriends.filter((friend) => friend.id !== userId);
+      return filteredFriends;
+}
+
   //!---------------Block && UNBLOCK------------------------!//
 
   async blockUser(

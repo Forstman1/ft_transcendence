@@ -2,13 +2,13 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useMutation, useQueryClient } from "react-query";
-import { updateUser } from "@/utils/profile/settings";
+import { updateUser } from "@/utils/functions/profile/settings";
 import TwoFactor from "@/components/elements/QRCodeModal/QRCodeModal";
 import { useToast } from "@chakra-ui/react";
 import RestrictedRoute from "@/components/RestrictedRoute";
+import { Avatar } from "@chakra-ui/react"
 
 import { z } from "zod";
-import Image from "next/image";
 
 const schema = z.object({
 	fullname: z
@@ -167,13 +167,12 @@ export default function UserSettings() {
 						<div className="p-6 space-y-4 md:space-y-6 sm:p-8">
 							<div className="flex justify-center">
 								{avatarPreview !== null && (
-									<Image
-										src={avatarPreview}
-										alt="Avatar Preview"
-										className="mt-2 rounded-full w-20 h-20 inline-block"
-										height={80}
-										width={80}
-									/>
+                                    <Avatar
+                                        className="border-solid border-2 border-gray-900 custom-shadow"
+                                        size="xl"
+                                        name={userData.fullname}
+                                        src={avatarPreview}
+                                    />
 								)}
 							</div>
 							<form
@@ -193,7 +192,7 @@ export default function UserSettings() {
 										id="avatar"
 										className="custom-shadow cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 										onChange={handleFileChange}
-										// accept="image/*" // Allow only image files
+										accept="image/*"
 									/>
 									<p className="text-red-500 text-xs mt-2">
 										{formErrors.avatar}
@@ -258,17 +257,16 @@ export default function UserSettings() {
 										name="coalitions"
 										id="coalitions"
 										className="custom-shadow bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-										value={"bios"}
+										value={coalition}
 										onChange={(e) =>
 											setCoalition(e.target.value)
 										}
 									>
-										<option value="bios">bios</option>
-										<option value="pandora">pandora</option>
-										<option value="freax">freax</option>
-										<option value="commodore">
-											commodore
-										</option>
+										<option value="Factionless">Factionless</option>
+										<option value="Bios">Bios</option>
+										<option value="Pandora">Pandora</option>
+										<option value="Freax">Freax</option>
+										<option value="Commodore">Commodore</option>
 									</select>
 									<p className="text-red-500 text-xs mt-2">
 										{formErrors.coalition}

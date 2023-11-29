@@ -57,6 +57,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     }
     if (chatList) client.emit(`updateChatList`, chatList);
 
+
     if (friendRequest) {
       client.emit(`updateFriendRequest`, friendRequest);
     }
@@ -94,6 +95,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     }
   }
 
+  @SubscribeMessage(`getFriendList`)
+  async getFriendList(
+    @ConnectedSocket() clinet: Socket,
+    @MessageBody() userId: string
+  ) : Promise<any> {
+    console.log('getFriendList', userId)
+    const FriendList = await this.userService.getFriendList(userId);
+    console.log('FriendList', FriendList);
+    clinet.emit(`updateFriendList`,  FriendList)
+    return FriendList
+  }
   
   @SubscribeMessage(`sendNotification`)
   async sendNotification(
