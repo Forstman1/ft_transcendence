@@ -6,7 +6,7 @@ import RestrictedRoute from "@/components/RestrictedRoute";
 
 
 
-export default function userPage() {
+export default function UserPage() {
     const userId = useSelector((state:any) => state.authUser.userId)
     const router = useRouter();
   

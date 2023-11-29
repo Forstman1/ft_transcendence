@@ -13,7 +13,7 @@ import AddFriend from "@/components/userPage/AddFriend";
 
 import { useQuery } from "react-query";
 import { getUser } from "@/utils/profile/fetchingProfileData";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
@@ -34,9 +34,6 @@ type userProfileData = {
 export default function Profile({ params }: any) {
 	const logedUserId = useSelector((state: any) => state.authUser.userId);
 	const router = useRouter();
-	const pathname = usePathname();
-	const searchParams = useSearchParams();
-	let interval: any = null;
 
 	const {
 		data: fetchedData,
@@ -45,18 +42,9 @@ export default function Profile({ params }: any) {
 		refetch,
 	} = useQuery("userprofiledata", () => getUser(params.id));
 
-	// useEffect(() => {
-	//     console.log(`url changed from ................`)
-	// }, [pathname, searchParams]);
 
 	useEffect(() => {
-		interval = setInterval(() => {
-			const profilePath = pathname.split("/")[1]; // Extract the second part of the path
-			console.log('profile Path: ', profilePath);
-			// if (profilePath === "profile") {
-			// 	// Do something with the '/profile/' path
-			// 	//   console.log('User is on the profile page');
-			// }
+		setInterval(() => {
 			refetch();
 		}, 5000);
 	}, []);
@@ -113,8 +101,7 @@ export default function Profile({ params }: any) {
 						className="absolute -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2"
 					>
 						<h2 className=" text-4xl">
-							{" "}
-							404 | Cannot find user with Id: "{params.id}"
+							404 | Cannot find user with Id: {params.id}
 						</h2>
 					</div>
 				</div>

@@ -287,7 +287,7 @@ export default function UserSettings() {
 
 					<div className="custom-shadow w-full bg-white rounded-sm shadow dark:border md:mt-0 sm:max-w-md  dark:bg-gray-800 dark:border-gray-700 px-9 py-2">
 						<h2 className="font-bold mb-3">
-							Also for security reasons it's preferred to activate
+						    for security reasons it&apos;s preferred to activate
 							2FA
 						</h2>
 						<TwoFactor />
