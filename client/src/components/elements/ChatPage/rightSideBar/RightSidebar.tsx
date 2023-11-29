@@ -84,7 +84,7 @@ export default function RightSidebar() {
               height: "30px",
             }}
           />
-          <Link href={"/gamePage"} className="text-2xl cursor-pointer">
+          <Link href={`/profile/${User.id}`} className="text-2xl cursor-pointer">
             View Profile
           </Link>
         </Box>
