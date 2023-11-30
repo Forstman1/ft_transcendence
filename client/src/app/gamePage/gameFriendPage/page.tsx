@@ -90,7 +90,6 @@ export default function GameFriendPage() {
 
   //--------------------------------Socket Code logic-------------------------------------------
 
-
   useEffect(() => {
 
     if (socket !== null && roomId !== "") {
