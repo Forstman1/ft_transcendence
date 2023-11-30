@@ -97,7 +97,7 @@ export default function GameNotification() {
               <AlertIcon />
               <Box flex="1">
                 <strong>Game Notification</strong>
-                <p>Your opponent is exit the game</p>
+                <p>Your opponent exited the game</p>
               </Box>
             </Alert>
           </motion.div>
