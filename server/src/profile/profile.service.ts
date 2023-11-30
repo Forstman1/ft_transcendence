@@ -255,7 +255,7 @@ export class ProfileService {
       updateData.coalitionName = coalition;
     }
     if (avatar) {
-      updateData.avatarURL = `${process.env.SERVER_URL}profile/avatars/${avatar.filename}`;
+      updateData.avatarURL = `${process.env.SERVER_URL}/profile/avatars/${avatar.filename}`;
     }
 
     try {
