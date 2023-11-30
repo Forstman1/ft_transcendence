@@ -66,7 +66,6 @@ function Usercard(props: any) {
         className="opacity-0 group-hover:opacity-100"
         onClick={() => {
           socket?.emit(`removeChatUser`, { friendId: props.data.id });
-          
           if (props.data.id === selected?.id) {
             dispatch(setTheUser(null));
             dispatch(setMessages([]));

@@ -27,7 +27,7 @@ export default function GlobalChatListener() {
 
     socket?.on(`userBlockedYou`, (data) => {
       socket?.emit(`removeChatUser`, { friendId: data.id });
-      if (selected.id === data.id) {
+      if (selected?.id === data?.id) {
         dispatch(setTheUser(null));
         dispatch(setMessages([])) 
       }

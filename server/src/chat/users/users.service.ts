@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Room, MessageDto } from './dtos/user.dto';
+import { Room, MessageDto, user } from './dtos/user.dto';
 import { Prisma, User } from '@prisma/client';
-import { fr } from '@faker-js/faker';
+
 
 
 @Injectable()
@@ -12,13 +12,20 @@ export class UsersService {
 
   //!------------------------User------------------------!//
 
-  async getUser(id: Prisma.UserWhereUniqueInput): Promise<User | string> {
+  async getUser(id: Prisma.UserWhereUniqueInput): Promise<user | string> {
     try {
       const user = await this.prisma.user.findUnique({
         where: id,
+        select:{
+          id: true,
+          username: true,      
+          email:    true,      
+          fullname: true,       
+          avatarURL:   true,
+          isOnline: true,
+        }
       });
-
-      return user || 'User not found';
+      return user;
     } catch (error) {
       return `${error} could not find the user`;
     }
@@ -212,6 +219,7 @@ export class UsersService {
       if (!friend) {
         return 'Friend not found';
       }
+      console.log(user.id, friend.id);
      const  friendRequest = await this.prisma.friendRequest.findFirst({
         where: {
           fromUserId: friend.id,
@@ -219,6 +227,7 @@ export class UsersService {
           status: 'Pending',
         },
       })
+     
       await this.prisma.friendRequest.delete({
         where: {
           id: friendRequest.id, 
@@ -464,19 +473,29 @@ export class UsersService {
   }
   //!-------------------------ChatList---------------------------------!//
 
+  
   async getChatList(
     User: Prisma.UserWhereUniqueInput,
-  ): Promise<User[] | string> {
+  ): Promise<user[] | string> {
     try {
       const chatList = await this.prisma.user.findUnique({
         where: User,
         include: {
-          chatWith: true,
+          chatWith: {
+            select: {
+              id: true,
+              username: true,      
+              email:    true,      
+              fullname: true,       
+              avatarURL:   true,
+              isOnline: true,
+            },
+          }
         },
       });
       return chatList.chatWith;
     } catch (error) {
-      return `${error} could not retrieve chat list`;
+      return [];
     }
   }
 
@@ -851,7 +870,9 @@ export class UsersService {
           },
         },    
       });
-  
+      if(friendRequest){
+        friendRequest.status = friendRequest.status === 'Pending' && friendRequest.toUserId === user.id ? 'accept' : friendRequest.status;
+      }
       let name = friend ? friend.username : 'User not found';
       const alt1 = friendRequest ? friendRequest.status : 'Add to friend list';
       const alt2 = Blockingstatus.blocked.length ? 'Unblock' : 'Block';
