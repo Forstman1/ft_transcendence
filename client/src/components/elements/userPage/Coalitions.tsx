@@ -18,8 +18,20 @@ type CoalitionType = {
     'Pandora': [Pandora, 'bg-[#b61282]'],
     'Factionless': [Factionless, 'bg-[#292d]'],
   };
+
+  function validateType(type: string): string {
+    const validTypes = ['Bios', 'Freax', 'Commodore', 'Pandora'];
+  
+    if (validTypes.includes(type)) {
+      return type;
+    } else {
+      return 'Factionless';
+    }
+  }
+
   
 export default function Coalition({ type }: { type: string }) {
+    type =  validateType(type);
     return (
       <div className={`${Coalitions[type][1]} w-full h-full flex justify-center`}>
         <Image src={Coalitions[type][0]} alt={type} className='w-16' />

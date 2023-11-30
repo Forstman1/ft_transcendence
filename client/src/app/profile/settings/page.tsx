@@ -190,7 +190,7 @@ export default function UserSettings() {
 										type="file"
 										name="avatar"
 										id="avatar"
-										className="custom-shadow cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+										className="custom-shadow cursor-pointer bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
 										onChange={handleFileChange}
 										accept="image/*"
 									/>
@@ -202,7 +202,7 @@ export default function UserSettings() {
 								<div>
 									<label
 										htmlFor="fullname"
-										className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+										className="block mb-2 text-sm font-medium text-gray-900"
 									>
 										Full Name
 									</label>
@@ -210,7 +210,7 @@ export default function UserSettings() {
 										type="text"
 										name="fullname"
 										id="fullname"
-										className="custom-shadow bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+										className="custom-shadow bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
 										value={fullname}
 										onChange={(e) =>
 											setFullname(e.target.value)
@@ -226,7 +226,7 @@ export default function UserSettings() {
 								<div>
 									<label
 										htmlFor="username"
-										className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+										className="block mb-2 text-sm font-medium text-gray-900"
 									>
 										Username
 									</label>
@@ -234,7 +234,7 @@ export default function UserSettings() {
 										type="text"
 										name="username"
 										id="username"
-										className="custom-shadow bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+										className="custom-shadow bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
 										value={username}
 										onChange={(e) =>
 											setUsername(e.target.value)
@@ -249,14 +249,14 @@ export default function UserSettings() {
 								<div>
 									<label
 										htmlFor="coalitions"
-										className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+										className="block mb-2 text-sm font-medium text-gray-900"
 									>
 										Choose Coalitions
 									</label>
 									<select
 										name="coalitions"
 										id="coalitions"
-										className="custom-shadow bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+										className="custom-shadow bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
 										value={coalition}
 										onChange={(e) =>
 											setCoalition(e.target.value)
@@ -274,7 +274,7 @@ export default function UserSettings() {
 								</div>
 								<button
 									type="submit"
-									className="custom-shadow w-full text-white bg-black hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-sm text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+									className="custom-shadow w-full text-white bg-black hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-sm text-sm px-5 py-2.5 text-center"
 								>
 									Update Information
 								</button>
@@ -282,7 +282,7 @@ export default function UserSettings() {
 						</div>
 					</div>
 
-					<div className="custom-shadow w-full bg-white rounded-sm shadow dark:border md:mt-0 sm:max-w-md  dark:bg-gray-800 dark:border-gray-700 px-9 py-2">
+					<div className="custom-shadow w-full bg-white rounded-sm shadow md:mt-0 sm:max-w-md px-9 py-2">
 						<h2 className="font-bold mb-3">
 							Also for security reasons it&apos;s preferred to activate
 							2FA

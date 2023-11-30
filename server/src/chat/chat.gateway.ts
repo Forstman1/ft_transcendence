@@ -626,8 +626,11 @@ async readNotification(
     console.log('createChannel ', data);
 
     try {
-      const user = await this.userService.getUserbyId(data.userId);
-
+    //   const user = await this.userService.getUserbyId(data.userId);
+      const user: any = await this.userService.getUserbyId(
+        client.handshake.auth.id,
+      );
+      data.userId = user.id;
       const channel: any = await this.channelService.createchannel(data);
       console.log(channel);
       if (channel.status === 'channel created') {
