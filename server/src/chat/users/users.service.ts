@@ -34,7 +34,7 @@ export class UsersService {
         },
       });
     } catch (error) {
-      return `${error} no Users found`;
+      return [];
     }
   }
 
@@ -710,8 +710,6 @@ export class UsersService {
           },
         },
       });
-
-      console.log('rooms' + rooms);
       const roomsId = rooms.map((room) => room.id);
       return roomsId;
     } catch (error) {

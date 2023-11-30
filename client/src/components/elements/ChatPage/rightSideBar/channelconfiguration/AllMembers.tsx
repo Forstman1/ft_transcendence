@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Avatar, AvatarBadge, Box, Button, ModalFooter, Text, useDisclosure } from '@chakra-ui/react'
+import { Avatar,  Box, Button, ModalFooter, Text, useDisclosure } from '@chakra-ui/react'
 import { useSelector } from 'react-redux'
 import ModalWraper from '../../ModalWraper'
 import Image from 'next/image'
@@ -41,7 +41,6 @@ function Usercard(props: any) {
         <div className='flex justify-around items-center border-2  w-full cursor-pointer m-2 ml-0 p-2  rounded-md '>
             <div>
                 <Avatar boxSize={12} src={user?.avatarURL}>
-                    <AvatarBadge boxSize={6} bg={user?.isOnline ? 'green.500' : 'gray.500'} />
                 </Avatar>
             </div>
 

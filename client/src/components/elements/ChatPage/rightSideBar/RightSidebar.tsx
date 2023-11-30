@@ -41,10 +41,9 @@ export default function RightSidebar() {
   const handelInviteGame = () => {
     onOpen();
   };
-
   return (
     <Box
-      className="UserRightSideBar items-center w-[20%] max-xl:w-[30%] max-md:w-[50%] max-sm:w-[80%] fixed md:block bg-opacity-80 max-md:backdrop-blur-xl md:static h-full overflow-y-auto border-l-[3px] border-l-black pb-28 right-0 pt-[150px]"
+      className="UserRightSideBar items-center w-[20%] max-xl:w-[30%] max-md:w-[50%] max-sm:w-[80%] fixed md:block max-md:bg-white  md:static h-full overflow-y-auto border-l-[3px] border-l-black pb-28 right-0 pt-[150px]"
       as={motion.div}
       initial={false}
       animate={RightClice.RightValue ? "open" : "closed"}
@@ -84,7 +83,7 @@ export default function RightSidebar() {
               height: "30px",
             }}
           />
-          <Link href={`/profile/${User.id}`} className="text-2xl cursor-pointer">
+          <Link href={`/profile/${User?.id}`} className="text-2xl cursor-pointer">
             View Profile
           </Link>
         </Box>
