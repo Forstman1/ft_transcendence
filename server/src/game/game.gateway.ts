@@ -73,15 +73,21 @@ export class GameGateway {
 
   // ---------------- userWantToExitTheGame----------------------------------
   @SubscribeMessage('userWantToExitTheGame')
-  userWantToExitTheGame(@ConnectedSocket() client: Socket): void {
+  async userWantToExitTheGame(@ConnectedSocket() client: Socket): Promise<void> {
     try {
       console.log('-----------------userWantToExitTheGame-----------------');
       const roomId = this.gameService.getRoomIdByUserId(client.id);
       if (roomId) {
-        this.server.sockets.in(roomId).emit('friendExitGame1');
-        this.server.sockets.in(roomId).emit('friendExitGame2');
+        const sockets = this.server.in(roomId).fetchSockets();
+        const opponentSocket = (await sockets).find(
+          (socket) => socket?.handshake?.auth?.id !== client.handshake.auth.id,
+        );
+        opponentSocket.emit('friendExitGame1');
+        opponentSocket.emit('friendExitGame2');
         this.gameService.updateUserIsInGame(client.handshake.auth.id, false);
         this.gameService.resetGameDate(roomId);
+        this.gameService.deleteRoom(roomId);
+        this.server.in(roomId).socketsLeave(roomId);
       }
     } catch (error) {
       console.error('Error in userWantToExitTheGame:', error);
@@ -103,8 +109,8 @@ export class GameGateway {
   async endGame(@ConnectedSocket() client: Socket, @Body() roomId: string): Promise<void> {
     try {
       console.log('-----------------endGame-----------------');
-      this.isAllReady[roomId] += 1;
-      if (this.isAllReady[roomId] === 2) {
+      // this.isAllReady[roomId] += 1;
+      // if (this.isAllReady[roomId] === 2) {
         const userId = client.handshake.auth.id;
         const sockets = this.server.in(roomId).fetchSockets();
         const opponentSocket = (await sockets).find(
@@ -119,7 +125,7 @@ export class GameGateway {
         this.gameService.setRoomPause(roomId, true);
         this.gameService.deleteRoom(roomId);
         this.server.in(roomId).socketsLeave(roomId);
-      }
+      // }
     } catch (error) {
       console.error('Error in endGame:', error);
     }

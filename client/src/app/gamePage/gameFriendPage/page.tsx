@@ -31,6 +31,13 @@ import {
   initialRightPaddle,
   initialGameEndStatic,
 } from "@/utils/constants/game/GameConstants";
+import { Button } from "@chakra-ui/react";
+import denyIcon from "../../../../assets/icons/deny.svg";
+import { useRouter } from "next/navigation";
+import upButton from "../../../../assets/icons/up-arrow.svg";
+import downButton from "../../../../assets/icons/down-arrow.svg";
+import spaceButton from "../../../../assets/icons/space-button.svg";
+import { getTextColor } from "@/utils/functions/game/GetGameColor";
 
 
 export default function GameFriendPage() {
@@ -74,6 +81,8 @@ export default function GameFriendPage() {
   const [gamePause, setGamePause] = useState<boolean>(false);
   const [hasInitialized, setHasInitialized] = useState(false);
   const [friendExitGame, setFriendExitGame] = useState<boolean>(false);
+  const router = useRouter();
+  
 
   if (typeof window !== "undefined") {
     window?.addEventListener('offline', () => {
@@ -414,77 +423,110 @@ export default function GameFriendPage() {
 
   //---------------------------------------------------------------------------
 
+  const handleGameExit = () => {
+    socket?.emit("userWantToExitTheGame");
+    router.back();
+  }
+
 
   return (
     <PageWrapper>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-        >
-            <div className="flex-col w-full">
-              <div className="flex flex-row">
-                <GameSideBar
-                  tableResults={tableResults}
-                  gamePause={gamePause}
-                  setGamePause={setGamePause}
-                  gameEnded={gameEnded}
-                  gameStarted={gameStarted}
-                  gameMode="FRIEND"
-                />
-                <div className="flex flex-col space-y-10 w-full mx-[10%] h-screen justify-center items-center" >
-                  <GameHeader leftScore={leftScore} rightScore={rightScore} />
-                  <div
-                    id="canvas-container"
-                    className="relative flex items-center bg-background-primary rounded-lg h-[50vh] w-full max-w-[1200px]"
-                  >
-                    <div className="absolute top-0 left-0 w-full h-full rounded-lg z-10">
-                      {!gameStarted && !gameEnded  && (
-                        <div className="w-full h-full">
-                          <Countdown
-                            seconds={3}
-                            onCountdownEnd={handleCountdownEnd}
-                            RoundNumber={RoundNumber}
-                            gamePause={gamePause}
-                          />
-                        </div>
-                      )}
-                      {gameEnded && (
-                        <>
-                          <div className="w-full h-full">
-                            <GameEndStatic
-                              opponent={gameEndStatic.bot}
-                              user={gameEndStatic.user}
-                              isFriendMode={true}
-                            />
-                          </div>
-                        </>
-                      )}
-                    </div>
-                    <div className="relative w-full h-full">
-                      {gameSettings.backgroundImg !== -1 && (
-                        <Image
-                          src={BackgroundsImg[gameSettings.backgroundImg].src}
-                          alt="Background"
-                          className={`object-cover w-full h-full rounded-lg opacity-60 ${gameSettings.playgroundtheme.playgroundColor}}`}
-                        />
-                      )}
-                      <canvas
-                        ref={canvasRef}
-                        width={canvasSize.width}
-                        height={canvasSize.height}
-                        className={`w-full h-full rounded-lg absolute top-0 left-0 ${
-                          gameSettings.backgroundImg === -1
-                            ? gameSettings.playgroundtheme.playgroundColor
-                            : ""
-                        }`}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+      >
+        <div className="flex-col w-full">
+          <div className="flex flex-row">
+            <GameSideBar
+              tableResults={tableResults}
+              gamePause={gamePause}
+              setGamePause={setGamePause}
+              gameEnded={gameEnded}
+              gameStarted={gameStarted}
+              gameMode="FRIEND"
+            />
+            <div className="flex flex-col space-y-10 w-full mx-[10%] h-screen justify-center items-center">
+              <GameHeader leftScore={leftScore} rightScore={rightScore} />
+              <div
+                id="canvas-container"
+                className="relative flex items-center bg-background-primary rounded-lg h-[50vh] w-full max-w-[1200px]"
+              >
+                <div className="absolute top-0 left-0 w-full h-full rounded-lg z-10">
+                  {!gameStarted && !gameEnded && (
+                    <div className="w-full h-full">
+                      <Countdown
+                        seconds={3}
+                        onCountdownEnd={handleCountdownEnd}
+                        RoundNumber={RoundNumber}
+                        gamePause={gamePause}
                       />
+                    </div>
+                  )}
+                  {gameEnded && (
+                    <>
+                      <div className="w-full h-full">
+                        <GameEndStatic
+                          opponent={gameEndStatic.bot}
+                          user={gameEndStatic.user}
+                          isFriendMode={true}
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="relative w-full h-full">
+                  {gameSettings.backgroundImg !== -1 && (
+                    <Image
+                      src={BackgroundsImg[gameSettings.backgroundImg].src}
+                      alt="Background"
+                      className={`object-cover w-full h-full rounded-lg opacity-60 ${gameSettings.playgroundtheme.playgroundColor}}`}
+                    />
+                  )}
+                  <canvas
+                    ref={canvasRef}
+                    width={canvasSize.width}
+                    height={canvasSize.height}
+                    className={`w-full h-full rounded-lg absolute top-0 left-0 ${
+                      gameSettings.backgroundImg === -1
+                        ? gameSettings.playgroundtheme.playgroundColor
+                        : ""
+                    }`}
+                  />
+                </div>
+              </div>
+              <div className={`flex flex-row w-full max-w-[1200px] justify-around max-md:justify-center items-center drop-shadow-2xl  border-black rounded-lg py-2 ${gameSettings.playgroundtheme.balColor}`}>
+                <Button
+                  variant="outline"
+                  colorScheme="red"
+                  onClick={handleGameExit}
+                  leftIcon={<Image src={denyIcon} alt="deny" width={20} />}
+                  className="max-md:hidden"
+                >
+                  Exit
+                </Button>
+                <div className="flex flex-col space-y-2">
+                  <strong>Controls</strong>
+                  <div className="flex flex-row space-x-5">
+                    <div className="flex flex-col space-y-1">
+                      <h1 className={`text-sm ${getTextColor(gameSettings)}`}>move up</h1>
+                      <Image src={upButton} alt="up" width={30} />
+                    </div>
+                    <div className="flex flex-col space-y-1">
+                      <h1 className={`text-sm ${getTextColor(gameSettings)}`}>move down</h1>
+                      <Image src={downButton} alt="down" width={30} />
+                    </div>
+                    <div className="flex flex-col space-y-1">
+                      <h1 className={`text-sm ${getTextColor(gameSettings)}`}>game settings</h1>
+                      <Image src={spaceButton} alt="space" width={60}/>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-        </motion.div>
+          </div>
+        </div>
+      </motion.div>
     </PageWrapper>
   );
 }
