@@ -2,7 +2,6 @@
 
 
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
-import Cookies from "js-cookie";
 import Remove from "@/../assets/icons/remove-friend.svg";
 import Block from "@/../assets/icons/Block.svg";
 import { User } from "@/utils/types/chat/ChatTypes";

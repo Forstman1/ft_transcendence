@@ -300,12 +300,33 @@ export class UsersService {
   //!------------------Get friend list-----------------------!//
   
   async getFriendList(userId: string) {
-    console.log('userId', userId);
     const User = await this.prisma.user.findFirst({
         where: { id: userId },
         include: {
-          friends: true,
-          friendOf: true,
+          friends: {
+            select: {
+                id: true,
+                fullname: true,
+                username: true,
+                email: true,
+                avatarURL: true,
+                coalitionName: true,
+                isOnline: true,
+                userGamesXp: true,
+            }
+          },
+          friendOf: {
+            select: {
+                avatarURL: true,
+                coalitionName: true,
+                email: true,
+                fullname: true,
+                id: true,
+                isOnline: true,
+                userGamesXp: true,
+                username: true,
+            }
+          },
         },
       });
 

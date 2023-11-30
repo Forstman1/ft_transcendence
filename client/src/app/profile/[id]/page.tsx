@@ -53,7 +53,7 @@ export default function Profile({ params }: any) {
   if (isLoading) {
     return (
       <RestrictedRoute>
-        <div className=" relative h-full w-full text-center">
+        <div className=" relative h-full w-full text-center mb-10">
           <div
             role="status"
             className="absolute -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2"
@@ -115,7 +115,7 @@ export default function Profile({ params }: any) {
 
   return (
     <RestrictedRoute>
-      <div className="w-full h-full py-40 container m-auto">
+      <div className="w-full h-full py-44 container m-auto">
         <Flex className="flex-wrap lg:flex-nowrap lg:space-x-8">
           {/* Profile */}
           <Box
@@ -200,7 +200,7 @@ export default function Profile({ params }: any) {
           </Box>
         </Flex>
 
-        <div className="h-[540px]  lg:grid grid-rows-2 grid-cols-2 grid-flow-col gap-8">
+        <div className="h-[540px]  lg:grid grid-rows-2 grid-cols-2 grid-flow-col gap-8 mb-8">
           <div className="lg:col-span-1 lg:row-span-2 h-full w-full mb-8 lg:mb-0 border-black border-2 rounded custom-shadow">
             <FriendList userId={params.id} />
           </div>
@@ -208,7 +208,7 @@ export default function Profile({ params }: any) {
           <div className="lg:col-span-1  min-h-[250px] lg:h-full w-full  mb-8 lg:mb-0 border-black border-2 rounded custom-shadow">
             <Achievements userId={params.id} />
           </div>
-          <div className="lg:col-span-1 min-h-[250px] lg:h-full w-full  mb-8 lg:mb-0 border-black border-2 rounded custom-shadow">
+          <div className="lg:col-span-1 min-h-[250px] lg:h-full w-full mb-10 lg:mb-0 border-black border-2 rounded custom-shadow">
             <MatchHistory userId={params.id} />
           </div>
         </div>

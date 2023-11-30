@@ -100,9 +100,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     @ConnectedSocket() clinet: Socket,
     @MessageBody() userId: string
   ) : Promise<any> {
-    console.log('getFriendList', userId)
     const FriendList = await this.userService.getFriendList(userId);
-    console.log('FriendList', FriendList);
     clinet.emit(`updateFriendList`,  FriendList)
     return FriendList
   }
