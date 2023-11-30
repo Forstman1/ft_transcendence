@@ -71,6 +71,23 @@ export class GameGateway {
     }
   }
 
+  // ---------------- userWantToExitTheGame----------------------------------
+  @SubscribeMessage('userWantToExitTheGame')
+  userWantToExitTheGame(@ConnectedSocket() client: Socket): void {
+    try {
+      console.log('-----------------userWantToExitTheGame-----------------');
+      const roomId = this.gameService.getRoomIdByUserId(client.id);
+      if (roomId) {
+        this.server.sockets.in(roomId).emit('friendExitGame1');
+        this.server.sockets.in(roomId).emit('friendExitGame2');
+        this.gameService.updateUserIsInGame(client.handshake.auth.id, false);
+        this.gameService.resetGameDate(roomId);
+      }
+    } catch (error) {
+      console.error('Error in userWantToExitTheGame:', error);
+    }
+  }
+
   // ---------------- updatePaddles------------------------------------------
   @SubscribeMessage('updatePaddles')
   updatePaddles(@Body() data): void {
@@ -143,6 +160,10 @@ export class GameGateway {
     try {
       console.log('-----------------createRoom-----------------');
       const clientUserId = client.id;
+      if (this.gameService.checkFriendIsInOtherRoom(clientUserId)) {
+        client.emit('uAreInGame');
+        return 'uAreInGame';
+      }
       const roomId = this.gameService.createRoom(clientUserId);
       client.join(roomId);
       this.isAllReady[roomId] = 0;
@@ -171,9 +192,6 @@ export class GameGateway {
       const friendUserId = data.friendId;
       const room = this.server.sockets.adapter.rooms.get(roomId);
       const modalData = data.modalData;
-
-      console.log('userId: ', client.handshake.auth.id);
-      console.log('friendId: ', friendUserId);
 
       if (this.gameService.isRoomOwner(clientUserId, roomId)) {
         if (room && room.size < 2) {

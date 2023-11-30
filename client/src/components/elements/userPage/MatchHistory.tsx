@@ -3,7 +3,7 @@ import { Flex, Icon, Avatar } from '@chakra-ui/react'
 import { TriangleDownIcon } from '@chakra-ui/icons'
 
 import { useQuery } from 'react-query';
-import { getMatchesHistory } from '@/utils/profile/fetchingProfileData'
+import { getMatchesHistory } from '@/utils/functions/profile/fetchingProfileData'
 
 
 type matchInfoType =  Array<{

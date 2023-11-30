@@ -55,6 +55,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     // this.logger.log(`  the friend request is `, friendRequest);
     if (chatList) client.emit(`updateChatList`, chatList);
 
+
+
     // if (friendRequest) {
     //   client.emit(`updateFriendRequest`, friendRequest);
     // }
@@ -92,6 +94,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     }
   }
 
+  @SubscribeMessage(`getFriendList`)
+  async getFriendList(
+    @ConnectedSocket() clinet: Socket,
+    @MessageBody() userId: string
+  ) : Promise<any> {
+    const FriendList = await this.userService.getFriendList(userId);
+    clinet.emit(`updateFriendList`,  FriendList)
+    return FriendList
+  }
   
   @SubscribeMessage(`sendNotification`)
   async sendNotification(
@@ -602,8 +613,11 @@ async readNotification(
     console.log('createChannel ', data);
 
     try {
-      const user = await this.userService.getUserbyId(data.userId);
-
+    //   const user = await this.userService.getUserbyId(data.userId);
+      const user: any = await this.userService.getUserbyId(
+        client.handshake.auth.id,
+      );
+      data.userId = user.id;
       const channel: any = await this.channelService.createchannel(data);
       console.log(channel);
       if (channel.status === 'channel created') {
