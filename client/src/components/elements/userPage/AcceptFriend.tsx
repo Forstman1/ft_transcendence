@@ -2,7 +2,6 @@
 
 
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
-import Cookies from "js-cookie";
 import Remove from "@/../assets/icons/remove-friend.svg";
 import Block from "@/../assets/icons/Block.svg";
 import { User } from "@/utils/types/chat/ChatTypes";
@@ -45,14 +44,6 @@ export default function ChatNotification() {
               <Button
                 onClick={() => {
                     socket?.emit(`acceptFreindRequest`, { friendId: Friend.id });
-                    Cookies.set(
-                        Friend.username,
-                        JSON.stringify([
-                            { src: Remove, alt: "Remove from friend list" },
-                            { src: Block, alt: "Block" },
-                        ]),
-                        { expires: 365 }
-                        );
                         dispatch(
                             setOptAllImages([
                                 {

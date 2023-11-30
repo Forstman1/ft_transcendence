@@ -22,9 +22,31 @@ const nextConfig = {
       },
     ];
   },
+
   images: {
-    domains: ['cdn.intra.42.fr', 'lh3.googleusercontent.com', 'avatars.githubusercontent.com'],
+    remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: 'cdn.intra.42.fr',
+        },
+        {
+          protocol: 'https',
+          hostname: 'lh3.googleusercontent.com',
+        },
+        {
+          protocol: 'https',
+          hostname: 'avatars.githubusercontent.com',
+        },
+        {
+          protocol: 'http',
+          hostname: 'localhost',
+          port: '3001',
+          pathname: '/profile/avatars/**',
+        }
+      ],
   },
+
+
 };
 
 module.exports = nextConfig;
