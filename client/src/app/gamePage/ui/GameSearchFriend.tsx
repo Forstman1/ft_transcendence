@@ -89,8 +89,9 @@ export default function GameSearchFriend({ onClose }: Props) {
 
   const createRoom = async (myfriendId: string) => {
     await socket.socket?.emit("createRoom", (RoomId: any) => {
+      if (RoomId !== "uAreInGame") {
       setFriendId(myfriendId);
-      dispatchData(RoomId, myfriendId);
+      dispatchData(RoomId, myfriendId);}
     });
   };
 
