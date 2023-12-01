@@ -24,11 +24,15 @@ export default function FriendList({ userId }: { userId: string }) {
 		if (userId) {
 			socket?.emit(`getFriendList`, userId);
 			socket?.on(`updateFriendList`, async (Users: any) => {
+                console.log(`updateFriendList`, Users)
 				setUserData(Users);
 			});
 			socket?.on(`friendRequestAccepted`, async () => {
 				socket?.emit(`getFriendList`, userId);
 			});
+            socket?.on(`friendRemoved`, async () => {
+                socket?.emit(`getFriendList`, userId);
+            })
 		}
 		return () => {
 			socket?.off(`updateChatList`);

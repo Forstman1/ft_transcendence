@@ -54,8 +54,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     }
 
     if (chatList) client.emit(`updateChatList`, chatList);
-
-
     if (friendRequest) {
       client.emit(`updateFriendRequest`, friendRequest);
     }
@@ -476,7 +474,9 @@ async readNotification(
       const friendId = await this.userService.getUser(friend);
       const FriendResponce = await this.userService.AskFriendshipStatus(User, friend);
       const UserResponce = await this.userService.AskFriendshipStatus(friend, User);
+      const Users = await this.userService.getFriendList(data.friendId)
 
+      this.logger.log(Users);
       if (responce === `Friend removed`) {
         const friendSocket = this.connectedUsers[data.friendId];
         const userSockets = this.connectedUsers[client.handshake.auth.id];
