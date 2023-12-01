@@ -2,7 +2,7 @@
 import { useToast, Alert, AlertIcon, Box, Button } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useAppSelector } from "@/redux/store/store";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter} from "next/navigation";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store/store";
 import { setGameMatchState } from "@/redux/slices/game/gameMatchSlice";
