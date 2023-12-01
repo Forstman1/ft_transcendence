@@ -97,6 +97,17 @@ export default function GameFriendPage() {
     })
   }
 
+  useEffect(() => {
+    socket?.on("ExitfromGame", () => {
+      router.back();
+    }
+    );
+    return () => {
+      socket?.off("ExitfromGame");
+    };
+  }, [socket]);
+
+
   //--------------------------------Socket Code logic-------------------------------------------
 
   useEffect(() => {
@@ -107,36 +118,36 @@ export default function GameFriendPage() {
       
       socket.on("GetGameData", (data:GameUpdateData) => {
         setBall({
-          x: (data.ball.x * canvasSize.width) / 100,
-          y: (data.ball.y * canvasSize.height) / 100,
-          speedX: (data.ball.speedX * canvasSize.width) / 100,
-          speedY: (data.ball.speedY * canvasSize.height) / 100,
-          radius: (data.ball.radius * canvasSize.height) / 100,
+          x: (data?.ball.x * canvasSize.width) / 100,
+          y: (data?.ball.y * canvasSize.height) / 100,
+          speedX: (data?.ball.speedX * canvasSize.width) / 100,
+          speedY: (data?.ball.speedY * canvasSize.height) / 100,
+          radius: (data?.ball.radius * canvasSize.height) / 100,
         });
         setLeftPaddle({
-          x: (data.leftPaddle.x * canvasSize.width) / 100,
-          y: (data.leftPaddle.y * canvasSize.height) / 100,
-          width: (data.leftPaddle.width * canvasSize.width) / 100,
-          height: (data.leftPaddle.height * canvasSize.height) / 100,
+          x: (data?.leftPaddle.x * canvasSize.width) / 100,
+          y: (data?.leftPaddle.y * canvasSize.height) / 100,
+          width: (data?.leftPaddle.width * canvasSize.width) / 100,
+          height: (data?.leftPaddle.height * canvasSize.height) / 100,
         });
         setRightPaddle({
-          x: (data.rightPaddle.x * canvasSize.width) / 100,
-          y: (data.rightPaddle.y * canvasSize.height) / 100,
-          width: (data.rightPaddle.width * canvasSize.width) / 100,
-          height: (data.rightPaddle.height * canvasSize.height) / 100,
+          x: (data?.rightPaddle.x * canvasSize.width) / 100,
+          y: (data?.rightPaddle.y * canvasSize.height) / 100,
+          width: (data?.rightPaddle.width * canvasSize.width) / 100,
+          height: (data?.rightPaddle.height * canvasSize.height) / 100,
         });
         if (!gameEnded) {
-          setLeftScore(data.leftScore);
-          setRightScore(data.rightScore);
-          if (prevLeftScore < data.leftScore) {
+          setLeftScore(data?.leftScore);
+          setRightScore(data?.rightScore);
+          if (prevLeftScore < data?.leftScore) {
             setGameMatches((prev) => prev - 1);
             setUserPoints((prev) => prev + 1);
-          } else if (prevRightScore < data.rightScore) {
+          } else if (prevRightScore < data?.rightScore) {
             setGameMatches((prev) => prev - 1);
             setFriendPoints((prev) => prev + 1);
           }
-          prevLeftScore = data.leftScore;
-          prevRightScore = data.rightScore;
+          prevLeftScore = data?.leftScore;
+          prevRightScore = data?.rightScore;
         }
       });
     }
@@ -487,7 +498,7 @@ export default function GameFriendPage() {
                     ref={canvasRef}
                     width={canvasSize.width}
                     height={canvasSize.height}
-                    className={`w-full h-full rounded-lg absolute top-0 left-0 ${
+                    className={`w-full h-full rounded-lg absolute drop-shadow-2xl top-0 left-0 ${
                       gameSettings.backgroundImg === -1
                         ? gameSettings.playgroundtheme.playgroundColor
                         : ""
@@ -495,13 +506,12 @@ export default function GameFriendPage() {
                   />
                 </div>
               </div>
-              <div className={`flex flex-row w-full max-w-[1200px] justify-around max-md:justify-center items-center drop-shadow-2xl  border-black rounded-lg py-2 ${gameSettings.playgroundtheme.balColor}`}>
+              <div className={`flex flex-row max-md:flex-col w-full max-w-[1200px] justify-around max-md:justify-center items-center drop-shadow-2xl  border-black rounded-lg py-2 ${gameSettings.playgroundtheme.balColor}`}>
                 <Button
                   variant="outline"
                   colorScheme="red"
                   onClick={handleGameExit}
                   leftIcon={<Image src={denyIcon} alt="deny" width={20} />}
-                  className="max-md:hidden"
                 >
                   Exit
                 </Button>
