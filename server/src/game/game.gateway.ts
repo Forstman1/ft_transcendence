@@ -110,6 +110,9 @@ export class GameGateway {
     try {
       console.log('-----------------endGame-----------------');
       // this.isAllReady[roomId] += 1;
+      this.gameService.setRoomPause(roomId, true);
+      // this.gameService.resetGameDate(roomId);
+      // this.gameService.deleteRoom(roomId);
       // if (this.isAllReady[roomId] === 2) {
         const userId = client.handshake.auth.id;
         const sockets = this.server.in(roomId).fetchSockets();
@@ -122,9 +125,9 @@ export class GameGateway {
         this.gameService.updateUserIsInGame(userId, false);
        
         this.gameService.resetGameDate(roomId);
-        this.gameService.setRoomPause(roomId, true);
         this.gameService.deleteRoom(roomId);
-        this.server.in(roomId).socketsLeave(roomId);
+        client.leave(roomId);
+        // this.server.in(roomId).socketsLeave(roomId);
       // }
     } catch (error) {
       console.error('Error in endGame:', error);
@@ -289,9 +292,17 @@ export class GameGateway {
 
   //-------------leaveRoom---------------------------------------------------
   @SubscribeMessage('leaveRoom')
-  leaveRoom(@ConnectedSocket() client: Socket, @Body() roomId: string): void {
+  async leaveRoom(@ConnectedSocket() client: Socket, @Body() roomId: string): Promise<void> {
     try {
       console.log('-----------------leaveRoom-----------------');
+      const sockets = this.server.in(roomId).fetchSockets();
+        const opponentSocket = (await sockets).find(
+          (socket) => socket?.handshake?.auth?.id !== client.handshake.auth.id,
+        );
+        opponentSocket?.emit('friendExitGame1');
+        opponentSocket?.emit('friendExitGame2');
+        this.gameService.updateUserIsInGame(client.handshake.auth.id, false);
+        this.gameService.resetGameDate(roomId);
       client.leave(roomId);
       this.gameService.deleteRoom(roomId);
     } catch (error) {
@@ -388,7 +399,7 @@ export class GameGateway {
       console.error('Error in SearchFriend:', error);
     }
   }
-  
+
   //-------------getOpponentData---------------------------------------------------
   @SubscribeMessage('getOpponentData')
   async getOpponentData(

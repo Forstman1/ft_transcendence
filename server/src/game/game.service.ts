@@ -276,14 +276,6 @@ export class GameService {
         isFriendInOtherRoom = true;
       }
     });
-    //check size of friend room
-    if (isFriendInOtherRoom) {
-      const room = this.rooms.get(this.getRoomIdByUserId(friendId));
-      if (room && room.players.length < 2) {
-        this.deleteRoom(this.getRoomIdByUserId(friendId));
-        isFriendInOtherRoom = false;
-      }
-    }
     return isFriendInOtherRoom;
   }
 
