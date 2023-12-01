@@ -47,7 +47,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     const chatList = await this.userService.getChatList(User);
     // const friendRequest = await this.userService.getAcceptedFriendRequests(User);
     const rooms = await this.userService.getRooms(User);
+    const userSockets = this.connectedUsers[client.handshake.auth.id];
 
+    for(const socket of userSockets) {
+      socket.join(client.handshake.auth.id);
+    }
 
     for (const room of rooms) {
       client.join(room);
@@ -201,16 +205,23 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       await this.userService.addToChat(friend, user);
       const friedList = await this.userService.getChatList(friend);
       const friendSocket = this.connectedUsers[data.reciverId];
+      const userSockets = this.connectedUsers[client.handshake.auth.id];
       if (!room) {
-
         room = await this.userService.creatRoom(userId, data.reciverId);
       }
 
+      for (const socket of friendSocket) {
+        socket.join(room);
+      }
+      for (const socket of userSockets) {
+        socket.join(room);
+      }
       if (friendSocket) {
         for (const socket of friendSocket) {
           this.server.to(socket.id).emit(`updateChatList`, friedList);
         }
       }
+
       const message = await this.userService.createMessage({
         authorName: userId,
         reciverID: room,
@@ -303,7 +314,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       this.connectedUsers[client.handshake.auth.id].map((socket) => {
         this.server.to(socket.id).emit(`getNotifications`, notifications);
       });
-      // client.emit(`getNotifications`, notifications);
     } catch (error) {
       console.error(`Error in getting notifications`, error);
     }
@@ -356,8 +366,10 @@ async readNotification(
 
       const friendId = await this.userService.getUser(User);
       const notifications = await this.userService.getNotifications(data.friendId);
-    
       const responce = await this.userService.AskFriendshipStatus(User, friend);
+
+
+
       if (friendSocket) {
         for (const socket of friendSocket) {
           this.server.to(socket.id).emit(`getNotifications`, notifications);
