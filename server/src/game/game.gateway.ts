@@ -82,12 +82,12 @@ export class GameGateway {
         const opponentSocket = (await sockets).find(
           (socket) => socket?.handshake?.auth?.id !== client.handshake.auth.id,
         );
-        opponentSocket.emit('friendExitGame1');
-        opponentSocket.emit('friendExitGame2');
+        opponentSocket?.emit('friendExitGame1');
+        opponentSocket?.emit('friendExitGame2');
         this.gameService.updateUserIsInGame(client.handshake.auth.id, false);
         this.gameService.resetGameDate(roomId);
         this.gameService.deleteRoom(roomId);
-        this.server.in(roomId).socketsLeave(roomId);
+        client.leave(roomId);
       }
     } catch (error) {
       console.error('Error in userWantToExitTheGame:', error);
@@ -166,6 +166,12 @@ export class GameGateway {
     try {
       console.log('-----------------createRoom-----------------');
       const clientUserId = client.id;
+      const room = this.gameService.getRoomIdByUserId(clientUserId);
+      const roomSize = this.server.sockets.adapter.rooms.get(room)?.size;
+      if (roomSize < 2) {
+        this.gameService.deleteRoom(room);
+        this.server.in(room).socketsLeave(room);
+      }
       if (this.gameService.checkFriendIsInOtherRoom(clientUserId)) {
         client.emit('uAreInGame');
         return 'uAreInGame';
@@ -210,6 +216,7 @@ export class GameGateway {
             const notifications = await this.gameService.getNotifications(
               friendUserId,
             );
+            this.server.to(friendUserId).emit('ExitfromGame');
             this.server
               .to(friendUserId)
               .emit('newNotification', notifications);

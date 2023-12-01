@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import React, { useRef, useEffect, useState} from "react";
+import React, { useRef, useEffect, useState, use} from "react";
 import { PageWrapper } from "../../animationWrapper/pageWrapper";
 import Countdown from "../ui/Countdown";
 import GameHeader from "../ui/GameFriendHeader";
@@ -96,6 +96,16 @@ export default function GameFriendPage() {
       }
     })
   }
+
+  useEffect(() => {
+    socket?.on("ExitfromGame", () => {
+      router.back();
+    }
+    );
+    return () => {
+      socket?.off("ExitfromGame");
+    };
+  }, [socket]);
 
   //--------------------------------Socket Code logic-------------------------------------------
 
@@ -495,13 +505,12 @@ export default function GameFriendPage() {
                   />
                 </div>
               </div>
-              <div className={`flex flex-row w-full max-w-[1200px] justify-around max-md:justify-center items-center drop-shadow-2xl  border-black rounded-lg py-2 ${gameSettings.playgroundtheme.balColor}`}>
+              <div className={`flex flex-row max-md:flex-col w-full max-w-[1200px] justify-around max-md:justify-center items-center drop-shadow-2xl  border-black rounded-lg py-2 ${gameSettings.playgroundtheme.balColor}`}>
                 <Button
                   variant="outline"
                   colorScheme="red"
                   onClick={handleGameExit}
                   leftIcon={<Image src={denyIcon} alt="deny" width={20} />}
-                  className="max-md:hidden"
                 >
                   Exit
                 </Button>
