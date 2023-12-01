@@ -52,8 +52,7 @@ export default function Profile({ params }: any) {
 
   if (isLoading) {
     return (
-      <RestrictedRoute>
-        <div className=" relative h-full w-full text-center mb-10">
+        <div className="py-40 relative h-full w-full text-center mb-10">
           <div
             role="status"
             className="absolute -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2"
@@ -76,13 +75,11 @@ export default function Profile({ params }: any) {
             </svg>
           </div>
         </div>
-      </RestrictedRoute>
     );
   }
   if (error) {
     return (
-      <RestrictedRoute>
-        <div className=" relative h-full w-full text-center">
+        <div className="py-40 relative h-full w-full text-center">
           <div
             role="status"
             className="absolute -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2"
@@ -90,24 +87,20 @@ export default function Profile({ params }: any) {
             <h2>Opps an error caused try again</h2>
           </div>
         </div>
-      </RestrictedRoute>
     );
   }
   if (!fetchedData) {
     return (
-      <RestrictedRoute>
-        <div className="relative h-full w-full text-center">
+        <div className="py-40 relative h-full w-full text-center">
           <div
             role="status"
             className="absolute -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2"
           >
-            <h2 className=" text-4xl">
-              {" "}
+            <h2 className=" text-2xl text-black">
               404 | Cannot find user with Id: {params.id}
             </h2>
           </div>
         </div>
-      </RestrictedRoute>
     );
   }
 

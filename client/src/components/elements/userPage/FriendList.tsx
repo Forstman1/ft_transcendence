@@ -24,7 +24,6 @@ export default function FriendList({ userId }: { userId: string }) {
 		if (userId) {
 			socket?.emit(`getFriendList`, userId);
 			socket?.on(`updateFriendList`, async (Users: any) => {
-                console.log(`updateFriendList`, Users)
 				setUserData(Users);
 			});
 			socket?.on(`friendRequestAccepted`, async () => {
@@ -51,7 +50,7 @@ export default function FriendList({ userId }: { userId: string }) {
 				<div className="h-[calc(100%-30px)] overflow-y-scroll">
 					{!userData.length ? (
 						<h2 className=" font-bold text-xl text-center">
-							What a fucking lonly
+							What a fricking lonly
 						</h2>
 					) : (
 						userData.map((user) => (
