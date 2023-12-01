@@ -98,10 +98,9 @@ export default function UserSettings() {
 					coalition: "",
 					avatar: "",
 				});
-
 				const Response = await updateUser(formData);
 				formData.delete;
-				return Response;
+				return Response.data;
 			} else {
 				const formatedErrors = result.error.format();
 
@@ -143,12 +142,11 @@ export default function UserSettings() {
 			onError: (error: any) => {
 				toast({
 					title: "Error!",
-					description: error?.message,
+					description: error?.response?.data?.message,
 					status: "error",
 					duration: 9000,
 					isClosable: true,
 				});
-				// console.log(error);
 			},
 		}
 	);

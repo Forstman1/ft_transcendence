@@ -38,7 +38,7 @@ export default function FriendList({ userId }: { userId: string }) {
 			socket?.off(`updateChatList`);
 			socket?.off(`updateFriendList`);
 		};
-	}, [socket, userId]);
+	}, [socket]);
 
 	return (
 		<>

@@ -55,7 +55,7 @@ export default function AddFriend({ userData }: { userData: userProfileData }) {
   
       }
   
-     }, [socket])
+     }, [socket, userData])
   
   
     const handleUserControls = (option: string) => {
