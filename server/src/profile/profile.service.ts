@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   achievementsType,
@@ -248,14 +248,29 @@ export class ProfileService {
     if (fullname) {
       updateData.fullname = fullname;
     }
-    if (username) {
-      updateData.username = username;
-    }
     if (coalition) {
-      updateData.coalitionName = coalition;
+        updateData.coalitionName = coalition;
     }
     if (avatar) {
-      updateData.avatarURL = `${process.env.SERVER_URL}/profile/avatars/${avatar.filename}`;
+        updateData.avatarURL = `${process.env.SERVER_URL}/profile/avatars/${avatar.filename}`;
+    }
+    if (username) {
+        try {
+          // Check if the provided username already exists for another user
+          const existingUser = await this.prismaService.user.findUnique({
+            where: {
+              username: username
+            }
+          });
+    
+          if (existingUser && existingUser.id !== userId) {
+            throw new NotAcceptableException('Username already exists. Please choose a different username.');
+          }
+    
+          updateData.username = username;
+        } catch (error) {
+            throw new NotAcceptableException(error);
+        }
     }
 
     try {
@@ -266,9 +281,10 @@ export class ProfileService {
 
       return 'User informations updated successfully';
     } catch (error) {
-      throw new Error(`Error updating user: ${error.message}`);
+      console.log(error);
     }
   }
+  
+  /*----------------------------------------------------------------------------------------------------------------------------------------*/
 }
 
-/*----------------------------------------------------------------------------------------------------------------------------------------*/
