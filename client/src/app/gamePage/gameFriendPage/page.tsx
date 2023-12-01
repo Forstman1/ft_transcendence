@@ -107,6 +107,7 @@ export default function GameFriendPage() {
     };
   }, [socket]);
 
+
   //--------------------------------Socket Code logic-------------------------------------------
 
   useEffect(() => {
@@ -497,7 +498,7 @@ export default function GameFriendPage() {
                     ref={canvasRef}
                     width={canvasSize.width}
                     height={canvasSize.height}
-                    className={`w-full h-full rounded-lg absolute top-0 left-0 ${
+                    className={`w-full h-full rounded-lg absolute drop-shadow-2xl top-0 left-0 ${
                       gameSettings.backgroundImg === -1
                         ? gameSettings.playgroundtheme.playgroundColor
                         : ""

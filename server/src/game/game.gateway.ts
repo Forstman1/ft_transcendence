@@ -71,6 +71,28 @@ export class GameGateway {
     }
   }
 
+  // ---------------- userLeaveGameRoom--------------------------------------
+  @SubscribeMessage('userLeaveGameRoom')
+  async userLeaveGameRoom(@ConnectedSocket() client: Socket): Promise<void> {
+    try {
+      console.log('-----------------userLeaveGameRoom-----------------');
+      const roomId = this.gameService.getRoomIdByUserId(client.id);
+      if (roomId) {
+        const sockets = this.server.in(roomId).fetchSockets();
+        const opponentSocket = (await sockets).find(
+          (socket) => socket?.handshake?.auth?.id !== client.handshake.auth.id,
+        );
+        opponentSocket?.emit('friendExitGame1');
+        opponentSocket?.emit('friendExitGame2');
+        this.gameService.updateUserIsInGame(client.handshake.auth.id, false);
+        this.gameService.resetGameDate(roomId);
+        client.leave(roomId);
+      }
+    } catch (error) {
+      console.error('Error in userLeaveGameRoom:', error);
+    }
+  }
+
   // ---------------- userWantToExitTheGame----------------------------------
   @SubscribeMessage('userWantToExitTheGame')
   async userWantToExitTheGame(@ConnectedSocket() client: Socket): Promise<void> {
