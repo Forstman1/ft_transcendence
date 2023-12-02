@@ -2,11 +2,10 @@ import { IsNotEmpty, IsString } from "class-validator";
 
 export type user = {
     id:                string
-    socketID:          string  
     username:          string      
     email:             string      
     fullname:          string       
-    avatar:            string
+    avatarURL:            string
     isOnline:          Boolean
 }
 

@@ -55,20 +55,19 @@ function Message_other({ usermessage, message, sender, time }: any) {
     const fetchData = async () => {
       try {
         const fetchmember = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getmember/` + usermessage.authorID
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getmember/` + usermessage.authorID, { credentials: 'include' }
         );
         const member = await fetchmember.json();
         const fetchuser = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/users/getuser/` + member.userId
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/users/getuser/` + member.userId, { credentials: 'include' }
         );
         const response = await fetchuser.json();
         setUser(response);
       } catch (error) {
         const fetchuser = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/users/getuser/` + usermessage.authorID
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/users/getuser/` + usermessage.authorID, { credentials: 'include' }
         );
         const response = await fetchuser.json();
-
         setUser(response);
       }
     };
@@ -104,7 +103,7 @@ function Own_Message({ message, user }: any) {
           {user?.username} | {formattedTime}
         </div>
         <div className="bg-black border-2 border-black rounded-2xl custom-shadow text-white rounded-tr-none justify-start pl-[10px] w-full min-h-[60px] ">
-          <div className="w-full h-full flex items-cente relative break-all">
+          <div className="w-full h-full flex items-center  break-all">
             {message?.content}
           </div>
         </div>
@@ -153,7 +152,7 @@ export default function ChatWindow() {
       if (userId) {
         const url = process.env.NEXT_PUBLIC_SERVER_URL;
         const fetchuser = await fetch(
-          `${url}/users/getuser/${userId}`
+          `${url}/users/getuser/${userId}` , { credentials: 'include' }
         );
         const response = await fetchuser.json();
         setUser(response);
@@ -198,7 +197,7 @@ export default function ChatWindow() {
   };
 
   const getChannelMessages: any = useMutation<any, Error, any>((variables) =>
-    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/message/getmessages/` + variables.channelId)
+    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/message/getmessages/` + variables.channelId, { credentials: 'include' }) 
       .then((response) => {
         return response.json();
       })
@@ -212,7 +211,7 @@ export default function ChatWindow() {
       `${process.env.NEXT_PUBLIC_SERVER_URL}/message/getMessagesUsers/` +
         variables.userId +
         "/" +
-        variables.reciverId
+        variables.reciverId, { credentials: 'include' }
     )
       .then((response) => {
         return response.json();
