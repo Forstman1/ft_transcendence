@@ -80,10 +80,10 @@ export default function FriendList({ userId }: { userId: string }) {
 										</Avatar>
 									</button>
 									<div className="font-bold">
-										<h2 className="text-black text-xl">
+										<h2 className="text-black text-xl truncate">
 											{user.fullname}
 										</h2>
-										<h2 className="text-gray-400 text-lg">
+										<h2 className="text-gray-400 text-lg truncate">
 											{user.username}
 										</h2>
 									</div>
@@ -93,7 +93,7 @@ export default function FriendList({ userId }: { userId: string }) {
 								</div>
 								<Flex className="basis-1/2 text-black items-center justify-around border-black border-r-2">
 									<h2 className="text-3xl">
-										{user.userGamesXp} XP
+										{user.userGamesXp} xp
 									</h2>
 								</Flex>
 							</Flex>
