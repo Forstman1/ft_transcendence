@@ -133,7 +133,7 @@ export default function Search() {
             .then((res) => { return res.json() })
 
     );
-    const listchannels = useMutation<any, Error, any>(() =>
+    const listchannels: any = useMutation<any, Error, any>(() =>
         fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallpublicandprivatechannels`, {credentials: 'include'}).then((res) => {
             return res.json()
         })
@@ -143,7 +143,8 @@ export default function Search() {
 
 
     const handleSearchClick = async () => {
-
+        setSelectedOption(null)
+        
         if (search.trim() === "") {
             try {
                 const searchchannelarray = await listchannels.mutateAsync({})
@@ -157,8 +158,6 @@ export default function Search() {
             } catch (error) {
                 setAllSearchUsers([])
             }
-            console.log(allSearchChannels)
-            console.log(allSearchUsers)
             return;
         }
 
@@ -298,6 +297,7 @@ export default function Search() {
                     })
                 }
                 onClose();
+                setSelectedOption(null)
                 return;
             }
             else {
@@ -305,6 +305,7 @@ export default function Search() {
                     socket.emit('enterChannel', {
                         channelId: selectedOption.id,
                     })
+                    setSelectedOption(null)
                     onClose()
                 }
                 else {
@@ -313,6 +314,8 @@ export default function Search() {
                     setOpenSearch(true)
                 }
             }
+            setSelectedOption(null)
+
         }
         else {
             socket?.emit(`updateChatList`, { frienID: selectedOption.id })

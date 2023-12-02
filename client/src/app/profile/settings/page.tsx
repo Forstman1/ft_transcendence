@@ -1,4 +1,5 @@
 "use client";
+
 import { FormEvent, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useMutation, useQueryClient } from "react-query";
@@ -160,9 +161,9 @@ export default function UserSettings() {
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
         
-        const hasErrors = Object.values(formErrors).some(error => error !== "");
+        const hasErrors = Object.values(formErrors).some((error) => error !== "");
         if (!hasErrors) {
-		    updateUserMutation.mutate();
+			updateUserMutation.mutate()
         }
 	};
 

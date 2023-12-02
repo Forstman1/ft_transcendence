@@ -925,7 +925,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
         }
       }
     } catch (error) {
-      console.log(error);
       this.connectedUsers[client.handshake.auth.id].map((socket) => {
         this.server
           .to(socket.id)
@@ -975,7 +974,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
         }
       }
     } catch (error) {
-      console.log(error);
       this.connectedUsers[client.handshake.auth.id].map((socket) => {
         this.server
           .to(socket.id)
@@ -1070,7 +1068,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
           });
         }
     } catch (error) {
-      console.log(error);
       this.connectedUsers[client.handshake.auth.id].map((socket) => {
         this.server
           .to(socket.id)
@@ -1115,7 +1112,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
         });
       }
     } catch (error) {
-      console.log(error);
       this.connectedUsers[client.handshake.auth.id].map((socket) => {
         this.server
           .to(socket.id)
