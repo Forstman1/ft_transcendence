@@ -8,7 +8,7 @@ import { Prisma } from '@prisma/client';
 @Controller(`users`)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
+  
   @Get(`friends`)
   async listFriends(@Request() request) {
     const User: Prisma.UserWhereUniqueInput = {
@@ -65,5 +65,11 @@ export class UsersController {
   async getblockedusers(@Request() request) {
     const id = request.user.id;
     return await this.usersService.getblockedusers(id);
+  }
+
+  @Get('/getblockedbyusers')
+  async getblockedbyusers(@Request() request) {
+    const id = request.user.id;
+    return await this.usersService.getblockedbyusers(id);
   }
 }

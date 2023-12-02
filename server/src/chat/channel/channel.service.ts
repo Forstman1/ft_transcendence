@@ -542,7 +542,6 @@ export class ChannelService {
         return { status: 'you left the channel' };
       } else {
 
-        console.log("delete channel");
 
         await this.prisma.channel.delete({
           where: {

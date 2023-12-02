@@ -939,7 +939,24 @@ export class UsersService {
       });
       return getblockedusers.blocked;
     } catch (error) {
-      return error;
+      return [];
+    }
+  }
+
+
+  async getblockedbyusers(id: string) {
+    try {
+      const getblockedbyusers = await this.prisma.user.findUnique({
+        where: {
+          id: id,
+        },
+        include: {
+          blockedBy: true,
+        },
+      });
+      return getblockedbyusers.blockedBy;
+    } catch (error) {
+      return [];
     }
   }
 }

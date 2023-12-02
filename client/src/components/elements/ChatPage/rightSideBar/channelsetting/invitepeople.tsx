@@ -29,8 +29,8 @@ function Componenent({ onClose }: any) {
         const fetchUsers = async () => {
           try {
             const [usersResponse, membersResponse] = await Promise.all([
-              fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/getAllUsers/` + userId).then((api) => api.json()),
-              fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallmembers/` + channel.id).then((api) => api.json())
+              fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/getAllUsers/` + userId, {credentials: 'include'}).then((api) => api.json()),
+              fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallmembers/` + channel.id, {credentials: 'include'}).then((api) => api.json())
             ]);
       
             const memberUserIds = membersResponse.map((member: any) => member.userId);

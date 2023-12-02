@@ -110,45 +110,61 @@ export default function Search() {
 
 
     const getchannels = useMutation<any, Error, any>((variables) =>
-        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallchannelsapp/` + variables.tofound).then((res) => {
+        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallchannelsapp/` + variables.tofound,
+        {
+            credentials: 'include',
+        }
+      ).then((res) => {
 
             return res.json()
         })
     )
 
     const getusers = useMutation<any, Error, any>((variables) =>
-        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/getusers/` + variables.tofound)
-            .then((res) => res.json())
-            
+        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/getusers/` + variables.tofound, 
+        {   
+            credentials: 'include',})
+            .then((res) => { return res.json() })
+
     );
 
     const listusers = useMutation<any, Error, any>(() =>
-        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/getAllUsers/` + userId)
-            .then((res) => res.json())
-            
-            );
-            const listchannels = useMutation<any, Error, any>(() =>
-            fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallpublicandprivatechannels`).then((res) => {
-                return res.json()
-            })
-            );
-            
-            
-            
-            
-        const handleSearchClick = async () => {
-                
-            if (search.trim() === "") {
-            const searchchannelarray = await listchannels.mutateAsync({})
-            const searchuserarray = await listusers.mutateAsync({})
-            setAllSearchChannels(searchchannelarray)
-            setAllSearchUsers(searchuserarray)
+        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/getAllUsers/` + userId, {credentials: 'include',})
+            .then((res) => { return res.json() })
+
+    );
+    const listchannels = useMutation<any, Error, any>(() =>
+        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallpublicandprivatechannels`, {credentials: 'include'}).then((res) => {
+            return res.json()
+        })
+    );
+
+
+
+
+    const handleSearchClick = async () => {
+
+        if (search.trim() === "") {
+            try {
+                const searchchannelarray = await listchannels.mutateAsync({})
+                setAllSearchChannels(searchchannelarray)
+            } catch (error) {
+                setAllSearchChannels([])
+            }
+            try {
+                const searchuserarray = await listusers.mutateAsync({})
+                setAllSearchUsers(searchuserarray)
+            } catch (error) {
+                setAllSearchUsers([])
+            }
+            console.log(allSearchChannels)
+            console.log(allSearchUsers)
             return;
         }
 
         const allchannel = await getchannels.mutateAsync({ tofound: search })
         let allusers = await getusers.mutateAsync({ tofound: search })
-        allusers =  allusers.filter((user: any) => {
+        allusers = allusers.filter((user: any) => {
             if (user.id === userId) {
                 return false
             }
@@ -172,7 +188,9 @@ export default function Search() {
             body: JSON.stringify(variables),
             headers: {
                 "content-type": "application/json",
-            }
+            },
+            credentials: "include",
+
         }).then((response) => {
             return response.json()
 
@@ -296,10 +314,9 @@ export default function Search() {
                 }
             }
         }
-        else
-        {
-            socket?.emit(`updateChatList`, {frienID: selectedOption.id})
-            socket?.emit(`createRoom`, { frienID: selectedOption.id});
+        else {
+            socket?.emit(`updateChatList`, { frienID: selectedOption.id })
+            socket?.emit(`createRoom`, { frienID: selectedOption.id });
             dispatch(setTheUser(selectedOption))
             onClose()
         }
@@ -361,7 +378,7 @@ export default function Search() {
                         />
                     </InputGroup>
                     <div className="flex w-full h-[300px]  flex-col  no-scrollbar overflow-y-scroll ">
-                        {allSearchChannels.map((channels: Channel, id: number) => {
+                        {allSearchChannels?.map((channels: Channel, id: number) => {
                             return <Box key={id} className="flex p-2 flex-row justify-between items-center border-2 border-gray-200 rounded-lg  mt-5">
 
                                 <Hashtag
@@ -373,7 +390,7 @@ export default function Search() {
                             </Box>
 
                         })}
-                        {allSearchUsers.map((users: User, id: number) => {
+                        {allSearchUsers?.map((users: User, id: number) => {
                             return (<Usercard
                                 key={id}
                                 user={users}

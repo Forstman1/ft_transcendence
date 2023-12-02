@@ -16,7 +16,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     private messageService: MessageService,
     private channelService: ChannelService,
     private userService: UsersService,
-  ) {}
+  ) { }
 
   @WebSocketServer()
   server: Server;
@@ -49,7 +49,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     const rooms = await this.userService.getRooms(User);
     const userSockets = this.connectedUsers[client.handshake.auth.id];
 
-    for(const socket of userSockets) {
+    for (const socket of userSockets) {
       socket.join(client.handshake.auth.id);
     }
 
@@ -102,12 +102,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
   async getFriendList(
     @ConnectedSocket() clinet: Socket,
     @MessageBody() userId: string
-  ) : Promise<any> {
+  ): Promise<any> {
     const FriendList = await this.userService.getFriendList(userId);
-    clinet.emit(`updateFriendList`,  FriendList)
+    clinet.emit(`updateFriendList`, FriendList)
     return FriendList
   }
-  
+
   @SubscribeMessage(`sendNotification`)
   async sendNotification(
     @ConnectedSocket() client: Socket,
@@ -145,7 +145,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
 
       const userId = client.handshake.auth.id;
       let room = await this.userService.getRoom(userId, data.frienID);
-      
+
       if (!room) {
         room = await this.userService.creatRoom(userId, data.frienID);
       }
@@ -201,7 +201,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       const friend: Prisma.UserWhereUniqueInput = { id: data.reciverId };
       let room = await this.userService.getRoom(userId, data.reciverId);
       let userBlocked = await this.userService.checkIfBlocked(user, friend);
-      if(userBlocked) return;
+      if (userBlocked) return;
       await this.userService.addToChat(friend, user);
       const friedList = await this.userService.getChatList(friend);
       const friendSocket = this.connectedUsers[data.reciverId];
@@ -252,9 +252,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       const friendSocket = this.connectedUsers[data.friendId];
       const userSockets = this.connectedUsers[client.handshake.auth.id];
       const userId = await this.userService.getUser(User);
-    
+
       const responce = await this.userService.AskFriendshipStatus(User, friend);
-    
+
       if (userSockets) {
         for (const socket of userSockets) {
           this.server.to(socket.id).emit(`userBlocked`, userId);
@@ -265,7 +265,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
         for (const socket of friendSocket) {
 
           this.server.to(socket.id).emit(`userBlockedYou`, User);
-           this.server.to(socket.id).emit(`friendRemoved`, userId);
+          this.server.to(socket.id).emit(`friendRemoved`, userId);
         }
       }
       return "User blocked";
@@ -320,29 +320,29 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
   }
 
 
-@SubscribeMessage(`readNotification`)
-async readNotification(
-  @ConnectedSocket() client: Socket,
+  @SubscribeMessage(`readNotification`)
+  async readNotification(
+    @ConnectedSocket() client: Socket,
 
-): Promise<any> {
-  try {
-    const User: Prisma.UserWhereUniqueInput = {
-      id: client.handshake.auth.id,
-    };
-    
-    let notifications = await this.userService.getNotifications(client.handshake.auth.id);
-    notifications.map(async (notification) => {
-      await this.userService.readNotification(notification.id);
-    })
-    notifications = await this.userService.getNotifications(client.handshake.auth.id);
+  ): Promise<any> {
+    try {
+      const User: Prisma.UserWhereUniqueInput = {
+        id: client.handshake.auth.id,
+      };
 
-    this.connectedUsers[client.handshake.auth.id].map((socket) => {
-      this.server.to(socket.id).emit(`getNotifications`, notifications);
-    });
-  } catch (error) {
-    console.error(`Error in reading notification`, error);
+      let notifications = await this.userService.getNotifications(client.handshake.auth.id);
+      notifications.map(async (notification) => {
+        await this.userService.readNotification(notification.id);
+      })
+      notifications = await this.userService.getNotifications(client.handshake.auth.id);
+
+      this.connectedUsers[client.handshake.auth.id].map((socket) => {
+        this.server.to(socket.id).emit(`getNotifications`, notifications);
+      });
+    } catch (error) {
+      console.error(`Error in reading notification`, error);
+    }
   }
-}
 
 
   @SubscribeMessage(`sendFriendRequest`)
@@ -374,7 +374,7 @@ async readNotification(
         for (const socket of friendSocket) {
           this.server.to(socket.id).emit(`getNotifications`, notifications);
           this.server.to(socket.id).emit(`receivedFreindRequest`, friendId);
-        
+
           this.server.to(socket.id).emit(`FriendshipStatus`, responce);
         }
       }
@@ -403,14 +403,14 @@ async readNotification(
       const responce = await this.userService.acceptFriendRequest(User, friend);
       const Friend: any = await this.userService.getUser(friend);
       // const user : any = await this.userService.getUser(User);
-     
+
       await this.userService.removeNotification(client.handshake.auth.id, data.friendId)
 
       if (responce === `Friend request accepted`) {
-      const notifications = await this.userService.getNotifications(client.handshake.auth.id);
-      const userSockets = this.connectedUsers[friend.id];
-      const FriendResponce = await this.userService.AskFriendshipStatus(User, friend);
-      const UserResponce = await this.userService.AskFriendshipStatus(friend, User);
+        const notifications = await this.userService.getNotifications(client.handshake.auth.id);
+        const userSockets = this.connectedUsers[friend.id];
+        const FriendResponce = await this.userService.AskFriendshipStatus(User, friend);
+        const UserResponce = await this.userService.AskFriendshipStatus(friend, User);
         if (userSockets) {
           for (const socket of userSockets) {
 
@@ -444,7 +444,7 @@ async readNotification(
       const UserId = await this.userService.getUser(User);
       const userSockets = this.connectedUsers[data.friendId];
       const friend: Prisma.UserWhereUniqueInput = { id: data.friendId };
-      
+
       await this.userService.declineFriendRequest(User, friend);
       await this.userService.removeNotification(client.handshake.auth.id, data.friendId)
       const notifications = await this.userService.getNotifications(client.handshake.auth.id);
@@ -477,7 +477,7 @@ async readNotification(
       const responce = await this.userService.removeFriend(User, friend);
       const userId = await this.userService.getUser(User);
       const friendId = await this.userService.getUser(friend);
-      
+
       const FriendResponce = await this.userService.AskFriendshipStatus(User, friend);
       const UserResponce = await this.userService.AskFriendshipStatus(friend, User);
 
@@ -485,7 +485,7 @@ async readNotification(
         const friendSocket = this.connectedUsers[data.friendId];
         const userSockets = this.connectedUsers[client.handshake.auth.id];
         if (friendSocket) {
-          for (const socket of friendSocket) { 
+          for (const socket of friendSocket) {
             this.server.to(socket.id).emit(`friendRemoved`, userId);
             this.server.to(socket.id).emit(`FriendshipStatus`, UserResponce);
           }
@@ -531,21 +531,21 @@ async readNotification(
 
   @SubscribeMessage(`AskFriendshipStatus`)
   async AskFriendshipStatus(
-  @ConnectedSocket() client: Socket,
-  @MessageBody() data: { friendId: string },
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { friendId: string },
   ):
     Promise<any> {
-       const User: Prisma.UserWhereUniqueInput = {
-        id: client.handshake.auth.id,
-       };
+    const User: Prisma.UserWhereUniqueInput = {
+      id: client.handshake.auth.id,
+    };
     const friend: Prisma.UserWhereUniqueInput = { id: data.friendId };
     const UserSockets = this.connectedUsers[client.handshake.auth.id];
     const responce = await this.userService.AskFriendshipStatus(User, friend);
     this.logger.log(`responce is ${responce}`);
-    for(const socket of UserSockets) {
+    for (const socket of UserSockets) {
       this.server.to(socket.id).emit(`FriendshipStatus`, responce);
     }
-    }
+  }
 
   @SubscribeMessage('joinChannel')
   async joinChannel(
@@ -622,16 +622,15 @@ async readNotification(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: any,
   ): Promise<any> {
-    console.log('createChannel ', data);
 
     try {
-    //   const user = await this.userService.getUserbyId(data.userId);
+      //   const user = await this.userService.getUserbyId(data.userId);
       const user: any = await this.userService.getUserbyId(
         client.handshake.auth.id,
       );
       data.userId = user.id;
       const channel: any = await this.channelService.createchannel(data);
-      console.log(channel);
+      
       if (channel.status === 'channel created') {
         this.connectedUsers[client.handshake.auth.id].map((socket) => {
           socket.join(channel.channel.id);
@@ -739,19 +738,6 @@ async readNotification(
     @MessageBody() data: any,
   ): Promise<any> {
     try {
-      // const channel: any = await this.channelService.getchannelinfo(
-      //   data.channelId,
-      // );
-      // const user: any = await this.userService.getUser(
-      //   client.handshake.auth.id,
-      // );
-      // const channelStatus = await this.channelService.leaveChannel(
-      //   channel.name,
-      //   client.handshake.auth.id,
-      // );
-      // const channels = await this.channelService.getallchannels(
-      //   client.handshake.auth.id,
-      // );
 
       const channel: any = await this.channelService.getchannelinfo(data.channelId);
       const user: any = await this.userService.getUserbyId(client.handshake.auth.id);
@@ -1106,16 +1092,16 @@ async readNotification(
   ) {
     try {
 
-
       const channel: any = await this.channelService.getchannelinfo(
         data.channelId,
       );
-
+      
       const member: any = await this.channelService.getchannelmemberinfo(
         data.channelId,
         data.memberId,
-      );
-      if (member.role != 'OWNER') {
+        );
+        if (member.role != 'OWNER') {
+        await this.channelService.leaveChannel(channel.name, data.memberId);
         if (this.connectedUsers[data.memberId]) {
           this.connectedUsers[data.memberId].map((socket) => {
             this.server
