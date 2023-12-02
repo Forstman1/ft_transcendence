@@ -24,16 +24,19 @@ export class GameGateway {
 // ---------------- connection----------------------------------------------
   handleConnection(@ConnectedSocket() client: Socket) {
       console.log('-----------------connection-----------------');
-      console.log('connection userId:', client.handshake.auth.id);
+      try {
       const userId = client.handshake.auth.id;
       this.connectedUsers[userId] = client;
       this.gameService.updateUserIsOnline(userId, true);
+      } catch (error) {
+        console.error('Error in connection:', error);
+      }
   }
 
 // ---------------- disconnect----------------------------------------------
   handleDisconnect(@ConnectedSocket() client: Socket) {
       console.log('-----------------disconnect-----------------');
-      console.log('disconnect userId:', client.handshake.auth.id);
+      try {
       const roomId = this.gameService.getRoomIdByUserId(client.id);
       if (roomId) {
         this.server.sockets.in(roomId).emit('friendExitGame1');
@@ -42,6 +45,9 @@ export class GameGateway {
         this.gameService.resetGameDate(roomId);
       }
       this.gameService.updateUserIsOnline(client.handshake.auth.id, false);
+    } catch (error) {
+      console.error('Error in disconnect:', error);
+    }
   }
 
   // ---------------- sendGameData------------------------------------------
@@ -159,13 +165,21 @@ export class GameGateway {
   @SubscribeMessage('pauseGame')
   pauseGame(@Body() roomId: string): void {
     console.log('-----------------pauseGame-----------------');
+    try {
     this.gameService.setRoomPause(roomId, true);
+    } catch (error) {
+      console.error('Error in pauseGame:', error);
+    }
   }
 
   // ---------------- resumeGame---------------------------------------------
   @SubscribeMessage('resumeGame')
   resumeGame(@Body() roomId: string): void {
+    try {
     this.gameService.setRoomPause(roomId, false);
+    } catch (error) {
+      console.error('Error in resumeGame:', error);
+    }
   }
 
   // ---------------- createRoomNotifacaion----------------------------------
