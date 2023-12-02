@@ -21,7 +21,7 @@ import { UseToastOptions, ToastId } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import { UserState } from "@/redux/slices/authUser/authUserSlice";
 
-function makeToast(
+export function makeToast(
   toast: any,
   title: UseToastOptions['title'],
   description: UseToastOptions['description'],
@@ -100,6 +100,7 @@ export default function TwoFactorAuthPage() {
             </FormControl>
             <Stack spacing={6}>
               <Button
+                disabled={otp.length !== 6}
                 onClick={() => mutate(otp)}
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold"
               >
