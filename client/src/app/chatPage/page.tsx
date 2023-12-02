@@ -15,12 +15,6 @@ import { useEffect } from "react";
 import LeftSidebar from "@/components/elements/ChatPage/leftsidebar/LeftSidebar";
 import RestrictedRoute from "@/components/RestrictedRoute";
 
-
-
-
-
-
-
 export default function ChatPage() {
   const { RightClice } = useSelector((state: any) => state.mobile);
   const dispatch = useDispatch();

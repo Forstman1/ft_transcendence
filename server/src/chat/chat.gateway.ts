@@ -45,20 +45,19 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     };
 
     const chatList = await this.userService.getChatList(User);
-    const friendRequest = await this.userService.getAcceptedFriendRequests(User);
+    // const friendRequest = await this.userService.getAcceptedFriendRequests(User);
     const rooms = await this.userService.getRooms(User);
+    const userSockets = this.connectedUsers[client.handshake.auth.id];
 
+    for(const socket of userSockets) {
+      socket.join(client.handshake.auth.id);
+    }
 
     for (const room of rooms) {
       client.join(room);
     }
-
     if (chatList) client.emit(`updateChatList`, chatList);
 
-
-    if (friendRequest) {
-      client.emit(`updateFriendRequest`, friendRequest);
-    }
   }
 
   //!---------------DISCONNECTION------------------------!//
@@ -123,13 +122,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
               });
           });
         }
-      } else if (data.type === 'roomMessage') {
-        // await this.userService.notifyRoomMessage(client.handshake.auth.id, data.roomId);
-        // if (this.connectedUsers[data.friendId]) {
-        //   this.connectedUsers[data.friendId].map((socket) => {
-        //     this.server.to(socket.id).emit('receivedNotification', { message: "you have a new message" });
-        //   })
-        // }
       }
     } catch (error) {
       console.error(`Error in sending notification`, error);
@@ -149,7 +141,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       let room = await this.userService.getRoom(userId, data.frienID);
       
       if (!room) {
-        console.log(`room not found`);
         room = await this.userService.creatRoom(userId, data.frienID);
       }
 
@@ -208,27 +199,29 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       await this.userService.addToChat(friend, user);
       const friedList = await this.userService.getChatList(friend);
       const friendSocket = this.connectedUsers[data.reciverId];
+      const userSockets = this.connectedUsers[client.handshake.auth.id];
       if (!room) {
-        console.log(`room not found in here`);
         room = await this.userService.creatRoom(userId, data.reciverId);
       }
-      
-      
-      this.logger.log(`message is ${room}`);
-      // client.join(room);
+
+      for (const socket of friendSocket) {
+        socket.join(room);
+      }
+      for (const socket of userSockets) {
+        socket.join(room);
+      }
       if (friendSocket) {
         for (const socket of friendSocket) {
-          // socket.join(room);
           this.server.to(socket.id).emit(`updateChatList`, friedList);
         }
       }
+
       const message = await this.userService.createMessage({
         authorName: userId,
         reciverID: room,
         content: data.message,
         reciverName: data.reciverId,
       });
-      this.logger.log(`message is ${message}`);
       this.server.to(room).emit(`receivedPrivateMessage`, { message });
 
     } catch (error) {
@@ -252,7 +245,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       const friendSocket = this.connectedUsers[data.friendId];
       const userSockets = this.connectedUsers[client.handshake.auth.id];
       const userId = await this.userService.getUser(User);
+    
       const responce = await this.userService.AskFriendshipStatus(User, friend);
+    
       if (userSockets) {
         for (const socket of userSockets) {
           this.server.to(socket.id).emit(`userBlocked`, userId);
@@ -312,7 +307,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       this.connectedUsers[client.handshake.auth.id].map((socket) => {
         this.server.to(socket.id).emit(`getNotifications`, notifications);
       });
-      // client.emit(`getNotifications`, notifications);
     } catch (error) {
       console.error(`Error in getting notifications`, error);
     }
@@ -365,19 +359,22 @@ async readNotification(
 
       const friendId = await this.userService.getUser(User);
       const notifications = await this.userService.getNotifications(data.friendId);
-    
-      const responce = await this.userService.AskFriendshipStatus(User, friend);
+      const UserResponce = await this.userService.AskFriendshipStatus(User, friend);
+      const FriendResponce = await this.userService.AskFriendshipStatus(friend, User);
+      
+
+
+
       if (friendSocket) {
         for (const socket of friendSocket) {
           this.server.to(socket.id).emit(`getNotifications`, notifications);
           this.server.to(socket.id).emit(`receivedFreindRequest`, friendId);
-        
-          this.server.to(socket.id).emit(`FriendshipStatus`, responce);
+          this.server.to(socket.id).emit(`FriendshipStatus`, FriendResponce);
         }
       }
       if (UserSockets) {
         for (const socket of UserSockets) {
-          this.server.to(socket.id).emit(`FriendshipStatus`, responce);
+          this.server.to(socket.id).emit(`FriendshipStatus`, UserResponce);
         }
       }
 
@@ -399,8 +396,8 @@ async readNotification(
       const friend: Prisma.UserWhereUniqueInput = { id: data.friendId };
       const responce = await this.userService.acceptFriendRequest(User, friend);
       const Friend: any = await this.userService.getUser(friend);
-      const user : any = await this.userService.getUser(User);
-      
+      // const user : any = await this.userService.getUser(User);
+     
       await this.userService.removeNotification(client.handshake.auth.id, data.friendId)
 
       if (responce === `Friend request accepted`) {
@@ -474,6 +471,7 @@ async readNotification(
       const responce = await this.userService.removeFriend(User, friend);
       const userId = await this.userService.getUser(User);
       const friendId = await this.userService.getUser(friend);
+      
       const FriendResponce = await this.userService.AskFriendshipStatus(User, friend);
       const UserResponce = await this.userService.AskFriendshipStatus(friend, User);
 
@@ -511,7 +509,6 @@ async readNotification(
       const friend: Prisma.UserWhereUniqueInput = { id: data.friendId };
       const responce = await this.userService.removeFromChat(User, friend);
       const friedList = await this.userService.getChatList(User);
-      this.logger.log(`users are `);
       if (responce === `User removed from chat list`) {
         const userSockets = this.connectedUsers[client.handshake.auth.id];
         if (userSockets) {
@@ -537,16 +534,10 @@ async readNotification(
     const friend: Prisma.UserWhereUniqueInput = { id: data.friendId };
     const UserSockets = this.connectedUsers[client.handshake.auth.id];
     const responce = await this.userService.AskFriendshipStatus(User, friend);
-    
     for(const socket of UserSockets) {
       this.server.to(socket.id).emit(`FriendshipStatus`, responce);
     }
     }
-
-
-
-
-
 
   @SubscribeMessage('joinChannel')
   async joinChannel(

@@ -71,7 +71,6 @@ export default function Newmessage({onClose}: Props) {
     const socket = useSelector((state: any) => state.socket.socket)
     const toast = useToast();
     const [selectedOption, setSelectedOption]: any = useState('');
-    // const id = useSelector((state: any) => state.socket.userID);
     const {data, isLoading, error} = useQuery({
         queryKey: ["userData"],
         queryFn: async () => {
@@ -132,7 +131,6 @@ export default function Newmessage({onClose}: Props) {
                         />
                     </InputGroup>
 
-                    {/* <div className=' mt-[20px] flex md:h-[400px] h-[200px] flex-col overflow-y-scroll'> */}
                     <div className="flex w-full h-[300px]  flex-col  no-scrollbar overflow-y-scroll ">
 
                         {isLoading ? (
