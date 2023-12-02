@@ -7,6 +7,7 @@ import {
   UseInterceptors,
   UploadedFile,
   BadRequestException,
+  NotAcceptableException,
   UseGuards,
   Request,
 } from '@nestjs/common';
@@ -135,7 +136,7 @@ export class ProfileController {
       }
       return this.profileService.updateUser(body, avatar, request.user.id);
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new NotAcceptableException(error.message);
     }
   }
 

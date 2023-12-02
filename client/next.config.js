@@ -39,7 +39,7 @@ const nextConfig = {
         },
         {
           protocol: 'http',
-          hostname: 'localhost',
+          hostname: process.env.DOMAIN_NAME,
           port: '3001',
           pathname: '/profile/avatars/**',
         }

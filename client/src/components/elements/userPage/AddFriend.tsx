@@ -43,7 +43,6 @@ export default function AddFriend({ userData }: { userData: userProfileData }) {
   
       socket?.emit(`AskFriendshipStatus`, { friendId: userData.id });
       socket?.on(`FriendshipStatus`, (Friend: any) => {
-  
         if (Friend[0] === userData.username) {
           setOptImages([
             { src: Friend[1] === "Pending" ? pending : Friend[1] === "accepted" ? Remove : AddToFriendList, alt: Friend[1] === "Pending" ? "Pending" : Friend[1] === "accepted" ? "Remove from friend list" : "Add to friend list" },
@@ -56,16 +55,15 @@ export default function AddFriend({ userData }: { userData: userProfileData }) {
   
       }
   
-     }, [socket])
+     }, [socket, userData])
   
   
     const handleUserControls = (option: string) => {
       if (option === "Add to friend list")
-        socket.emit(`sendFriendRequest`, { friendId: userData.id });
-      else if (option === "Remove from friend list")
-        socket.emit(`removeFriend`, { friendId: userData.id});
-        
-        socket?.emit(`getFriendList`, userData.id);
+        socket?.emit(`sendFriendRequest`, { friendId: userData.id });
+    else if (option === "Remove from friend list") {
+        socket?.emit(`removeFriend`, { friendId: userData.id});
+      }   
     };
   
     return optImages.map((image: any) => (

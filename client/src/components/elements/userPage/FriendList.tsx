@@ -3,6 +3,7 @@ import Collection from "./Coalitions";
 import { useAppSelector } from "@/redux/store/store";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { truncateString } from "@/utils/functions/profile/utils" 
 
 type friendsType = Array<{
 	id: string;
@@ -29,12 +30,15 @@ export default function FriendList({ userId }: { userId: string }) {
 			socket?.on(`friendRequestAccepted`, async () => {
 				socket?.emit(`getFriendList`, userId);
 			});
+            socket?.on(`friendRemoved`, async () => {
+                socket?.emit(`getFriendList`, userId);
+            })
 		}
 		return () => {
 			socket?.off(`updateChatList`);
 			socket?.off(`updateFriendList`);
 		};
-	}, [socket, userId]);
+	}, [socket]);
 
 	return (
 		<>
@@ -47,7 +51,7 @@ export default function FriendList({ userId }: { userId: string }) {
 				<div className="h-[calc(100%-30px)] overflow-y-scroll">
 					{!userData.length ? (
 						<h2 className=" font-bold text-xl text-center">
-							What a fucking lonly
+							What a fricking lonly
 						</h2>
 					) : (
 						userData.map((user) => (
@@ -77,11 +81,11 @@ export default function FriendList({ userId }: { userId: string }) {
 										</Avatar>
 									</button>
 									<div className="font-bold">
-										<h2 className="text-black text-xl">
-											{user.fullname}
+										<h2 className="text-black text-md lg:text-xl truncate">
+											{truncateString(user.fullname, 15)}
 										</h2>
-										<h2 className="text-gray-400 text-lg">
-											{user.username}
+										<h2 className="text-gray-400 text-sm lg:text-xl truncate">
+											{truncateString(user.username, 15)}
 										</h2>
 									</div>
 								</Flex>
@@ -90,7 +94,7 @@ export default function FriendList({ userId }: { userId: string }) {
 								</div>
 								<Flex className="basis-1/2 text-black items-center justify-around border-black border-r-2">
 									<h2 className="text-3xl">
-										#{user.userGamesXp}
+										{user.userGamesXp} xp
 									</h2>
 								</Flex>
 							</Flex>
