@@ -10,6 +10,15 @@ export class UserService {
 
   /* ------------------------------------------------------------------------------------------------------------------ */
 
+  async findUserOrThrow(userInput: Prisma.UserWhereUniqueInput): Promise<User | null> {
+    const user: User | null = await this.prismaService.user.findUniqueOrThrow({
+      where: userInput,
+    });
+    return user;
+  }
+
+  /* ------------------------------------------------------------------------------------------------------------------ */
+
   async findUser(userInput: Prisma.UserWhereUniqueInput): Promise<User | null> {
     const user: User | null = await this.prismaService.user.findUnique({
       where: userInput,
@@ -29,10 +38,10 @@ export class UserService {
       coalitionColor: userInput.coalitionColor,
       coalitionName: userInput.coalitionName,
     };
-    const user: User | null = await this.prismaService.user.create({
+    const createdUser: User | null = await this.prismaService.user.create({
       data: userData,
     });
-    return user;
+    return createdUser;
   }
  
   /* ------------------------------------------------------------------------------------------------------------------ */
@@ -40,29 +49,58 @@ export class UserService {
   async updateUserTwoFactorStatus(
     userInput: Prisma.UserWhereUniqueInput,
     twoFactorStatus: boolean,
+    inputTwoFactorSecret: string,
   ): Promise<User | null> {
-    const generatedTwoFactorSecret = twoFactorStatus
-      ? authenticator.generateSecret()
-      : null;
-      console.log(generatedTwoFactorSecret);
-      const user: User | null = await this.prismaService.user.update({
+    const updatedUser = await this.prismaService.user.update({ // throws RecordNotFound
       where: userInput,
       data: {
         twoFactorEnabled: twoFactorStatus,
-        twoFactorSecret: generatedTwoFactorSecret,
+        twoFactorSecret: (twoFactorStatus ? inputTwoFactorSecret : null),
       },
     });
-    return user;
+    return updatedUser;
   }
+ 
+  /* ------------------------------------------------------------------------------------------------------------------ */
+
+  // async createUserTwoFactorKey(
+  //   userInput: Prisma.UserWhereUniqueInput,
+  // ): Promise<User | null> {
+  //   const generatedTwoFactorSecret = authenticator.generateSecret();
+  //   if (!generatedTwoFactorSecret) {
+  //     throw new Error('Two Factor Secret is not set');
+  //   }
+  //   const updatedUser: User | null = await this.prismaService.user.update({
+  //     where: userInput,
+  //     data: {
+  //       twoFactorSecret: generatedTwoFactorSecret,
+  //     },
+  //   });
+  //   return updatedUser;
+  // }
+
+  /* ------------------------------------------------------------------------------------------------------------------ */
+
+  // async deleteUserTwoFactorKey(
+  //   userInput: Prisma.UserWhereUniqueInput,
+  // ): Promise<User | null> {
+  //   const updatedUser: User | null = await this.prismaService.user.update({
+  //     where: userInput,
+  //     data: {
+  //       twoFactorSecret: null,
+  //     },
+  //   });
+  //   return updatedUser;
+  // }
 
   /* ------------------------------------------------------------------------------------------------------------------ */
  
   async isTwoFactorEnabled(
     userInput: Prisma.UserWhereUniqueInput,
   ): Promise<boolean> {
-    const user = await this.prismaService.user.findUnique({
+    const foundUser = await this.prismaService.user.findUniqueOrThrow({
       where: userInput,
     });
-    return user.twoFactorEnabled;
+    return foundUser.twoFactorEnabled;
   }
 }

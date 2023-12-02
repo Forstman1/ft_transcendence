@@ -52,7 +52,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
       };
       return user;
     } catch (error) {
-      return request.res.redirect(`${process.env.CLIENT_URL}/?error=true`);
+      console.log(error);
+      return request.res.redirect(`${process.env.CLIENT_URL}/?errorttt=true`);
     }
   }
 }
