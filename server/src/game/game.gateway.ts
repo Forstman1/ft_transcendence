@@ -283,6 +283,11 @@ export class GameGateway {
       console.log('-----------------acceptInvitation-----------------');
       const roomId = data.roomId;
       const room = this.server.sockets.adapter.rooms.get(roomId);
+      
+      if (this.gameService.checkFriendIsInOtherRoom(client.handshake.auth.id)) {
+        client.emit('uAreInGame');
+        return;
+      }
       if (room && room.size < 2) {
         client.join(roomId);
         this.gameService.addPlayerToRoom(roomId, client.id);
