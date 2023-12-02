@@ -24,16 +24,19 @@ export class GameGateway {
 // ---------------- connection----------------------------------------------
   handleConnection(@ConnectedSocket() client: Socket) {
       console.log('-----------------connection-----------------');
-      console.log('connection userId:', client.handshake.auth.id);
+      try {
       const userId = client.handshake.auth.id;
       this.connectedUsers[userId] = client;
       this.gameService.updateUserIsOnline(userId, true);
+      } catch (error) {
+        console.error('Error in connection:', error);
+      }
   }
 
 // ---------------- disconnect----------------------------------------------
   handleDisconnect(@ConnectedSocket() client: Socket) {
       console.log('-----------------disconnect-----------------');
-      console.log('disconnect userId:', client.handshake.auth.id);
+      try {
       const roomId = this.gameService.getRoomIdByUserId(client.id);
       if (roomId) {
         this.server.sockets.in(roomId).emit('friendExitGame1');
@@ -42,6 +45,9 @@ export class GameGateway {
         this.gameService.resetGameDate(roomId);
       }
       this.gameService.updateUserIsOnline(client.handshake.auth.id, false);
+    } catch (error) {
+      console.error('Error in disconnect:', error);
+    }
   }
 
   // ---------------- sendGameData------------------------------------------
@@ -131,26 +137,25 @@ export class GameGateway {
   async endGame(@ConnectedSocket() client: Socket, @Body() roomId: string): Promise<void> {
     try {
       console.log('-----------------endGame-----------------');
-      // this.isAllReady[roomId] += 1;
-      this.gameService.setRoomPause(roomId, true);
-      // this.gameService.resetGameDate(roomId);
-      // this.gameService.deleteRoom(roomId);
-      // if (this.isAllReady[roomId] === 2) {
+      this.isAllReady[roomId] += 1;
+      if (this.isAllReady[roomId] === 2) {
+        delete this.isAllReady[roomId];
         const userId = client.handshake.auth.id;
         const sockets = this.server.in(roomId).fetchSockets();
         const opponentSocket = (await sockets).find(
           (socket) => socket?.handshake?.auth?.id !== userId,
-        );
-        const opponentId = opponentSocket?.handshake?.auth?.id;
-        
-        this.gameService.updateUserIsInGame(opponentId, false);
-        this.gameService.updateUserIsInGame(userId, false);
-       
+          );
+          const opponentId = opponentSocket?.handshake?.auth?.id;
+          
+          this.gameService.updateUserIsInGame(opponentId, false);
+          this.gameService.updateUserIsInGame(userId, false);
+          
+          this.gameService.setRoomPause(roomId, true);
         this.gameService.resetGameDate(roomId);
         this.gameService.deleteRoom(roomId);
         client.leave(roomId);
-        // this.server.in(roomId).socketsLeave(roomId);
-      // }
+        this.server.in(roomId).socketsLeave(roomId);
+      }
     } catch (error) {
       console.error('Error in endGame:', error);
     }
@@ -160,13 +165,21 @@ export class GameGateway {
   @SubscribeMessage('pauseGame')
   pauseGame(@Body() roomId: string): void {
     console.log('-----------------pauseGame-----------------');
+    try {
     this.gameService.setRoomPause(roomId, true);
+    } catch (error) {
+      console.error('Error in pauseGame:', error);
+    }
   }
 
   // ---------------- resumeGame---------------------------------------------
   @SubscribeMessage('resumeGame')
   resumeGame(@Body() roomId: string): void {
+    try {
     this.gameService.setRoomPause(roomId, false);
+    } catch (error) {
+      console.error('Error in resumeGame:', error);
+    }
   }
 
   // ---------------- createRoomNotifacaion----------------------------------
@@ -270,6 +283,11 @@ export class GameGateway {
       console.log('-----------------acceptInvitation-----------------');
       const roomId = data.roomId;
       const room = this.server.sockets.adapter.rooms.get(roomId);
+      
+      if (this.gameService.checkFriendIsInOtherRoom(client.handshake.auth.id)) {
+        client.emit('uAreInGame');
+        return;
+      }
       if (room && room.size < 2) {
         client.join(roomId);
         this.gameService.addPlayerToRoom(roomId, client.id);
