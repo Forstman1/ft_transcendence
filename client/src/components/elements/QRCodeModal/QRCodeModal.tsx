@@ -1,22 +1,21 @@
 import {
   Switch, FormControl, FormLabel, Modal, Stack, HStack, PinInput, PinInputField,
-  ModalOverlay, ModalContent, ModalHeader, ModalFooter,
+  ModalOverlay, ModalContent, ModalHeader,
   ModalBody, ModalCloseButton, Button, useDisclosure, Center, useToast
 } from '@chakra-ui/react'
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { redirect } from 'next/navigation';
 import { useMutation } from 'react-query';
 import { enable2FA, disable2FA } from '@/utils/functions/auth/fetchingUserData';
 import { useSelector } from 'react-redux';
 import { UserState } from '@/redux/slices/authUser/authUserSlice';
-import { makeToast } from '@/app/2fa/verify/page';
+import { makeToast } from '@/utils/functions/auth/fetchingUserData';
 import { generateTwoFaData, verifyTwoFaPin } from '@/utils/functions/auth/fetchingUserData';
 import { placeholderImage } from '@/utils/constants/auth/AuthConstants';
 
 /* ------------------------------------------------------------------------------------------------------------------ */
 
-function EnableTwoFactorAuthModel(props: { toast: any, user: UserState, verify: (b: boolean) => void, close: () => void }) {
+function EnableTwoFactorAuthModel(props: { toast: any, user: UserState, close: () => void }) {
   const [isFirstRender, setIsFirstRender] = useState(true);
   const [twoFaData, setTwoFaData] = useState({ secret: '', otpUrl: '', qrcode: '' });
   if (isFirstRender) {
@@ -59,7 +58,6 @@ function EnableTwoFactorAuthModel(props: { toast: any, user: UserState, verify: 
         'toast-success-qrcode'
       );
       setDisabled(true);
-      props.verify(true);
       props.close();
     }
   });
@@ -127,7 +125,7 @@ function EnableTwoFactorAuthModel(props: { toast: any, user: UserState, verify: 
 
 /* ------------------------------------------------------------------------------------------------------------------ */
 
-function DisableTwoFactorAuthModel(props: { toast: any, user: UserState, verify: (b: boolean) => void, close: () => void  }) {
+function DisableTwoFactorAuthModel(props: { toast: any, user: UserState, close: () => void  }) {
   const [submit, setSubmit] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const [otp, setOtp] = useState('');
@@ -152,7 +150,6 @@ function DisableTwoFactorAuthModel(props: { toast: any, user: UserState, verify:
         'toast-success-qrcode'
       );
       setDisabled(true);
-      props.verify(true);
       props.close();
     }
   });
@@ -202,10 +199,8 @@ function QRCodeModal() {
   const toast = useToast();
   const user = useSelector((state: { authUser: UserState }) => state.authUser);
 
-  const [success, setSuccess] = useState(false);
   const [switchClicked, setSwitchClicked] = useState(false);
   const [switchDisabled, setSwitchDisabled] = useState(true);
-  const [dataLoaded, setDataLoaded] = useState(false);
 
   const { onOpen, onClose, isOpen } = useDisclosure();
 
@@ -264,8 +259,8 @@ function QRCodeModal() {
 
             {
               isChecked ?
-                <EnableTwoFactorAuthModel toast={toast} user={user} verify={setSuccess} close={onClose}/> :
-                <DisableTwoFactorAuthModel toast={toast} user={user} verify={setSuccess} close={onClose}/>
+                <EnableTwoFactorAuthModel toast={toast} user={user} close={onClose}/> :
+                <DisableTwoFactorAuthModel toast={toast} user={user} close={onClose}/>
             }
 
           </ModalBody>
@@ -306,6 +301,6 @@ function QRCodeModal() {
       {/* ---------------------------------------------------------------------------------------------------------- */}
     </>
   );
-};
+}
 
 export default QRCodeModal;
