@@ -18,7 +18,7 @@ model User {
   fullname          String       
   avatarURL         String            @default("https://iintra.freekb.es/imgs/user.png")
   coalitionURL      String            @default("https://profile.intra.42.fr/assets/coalitions/factionless-05b8cd65bda8f5eaf56ecf1d16493f41908801cfd66aa97fb27c9611064f4f36.svg")
-  coalitionColor    String            @default("#292d")
+  coalitionColor    String            @default("#292d39")
   coalitionName     String            @default("Factionless")
   twoFactorEnabled  Boolean           @default(false)
   twoFactorSecret   String?

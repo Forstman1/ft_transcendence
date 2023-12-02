@@ -39,7 +39,7 @@ const Footer = () => {
   );
 };
 
-export default function CallToActionWithIllustration() {
+export default function NotAuthorizedPage() {
   return (
     <PageWrapper>
       <div
@@ -53,14 +53,14 @@ export default function CallToActionWithIllustration() {
             className="w-full text-neutral-950 text-left text-4xl sm:text-6xl 
             xl:text-5xl 2xl:text-5xl 3xl:text-6xl 4xl:text-7xl 5xl:text-8xl 6xl:text-9xl"
           >
-            Fuck u doing here ???
+            401 Unauthorized - Fuck u doing here ???
           </p>
           <p
             className="w-full text-neutral-600 text-left
             text-xl sm:text-2xl md:text-4xl xl:text-3xl 2xl:text-3xl
             3xl:text-4xl 4xl:text-5xl 5xl:text-6xl 6xl:text-7xl"
           >
-            Get the fuck outta here lil n****
+            Ummm..., I don&apos;t think ur supposed to be here
           </p>
           <br/><br/>
           <p
@@ -68,7 +68,7 @@ export default function CallToActionWithIllustration() {
             text-xl md:text-2xl xl:text-xl 2xl:text-xl 3xl:text-2xl
             4xl:text-2xl 5xl:text-3xl 6xl:text-4xl"
           >
-            You&apos;re not supposed to be here my dude, so pack up your shit,<br/>and fuck off<br />
+            Can you please fuck off 😊
             <br />
             Respectfully,
           </p>
