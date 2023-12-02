@@ -46,7 +46,8 @@ export default function Hashtag(props: any) {
             body: JSON.stringify(variables),
             headers: {
                 "content-type": "application/json",
-            }
+            },
+            credentials: "include",
         }).then((response) => {
             return response.json()
 

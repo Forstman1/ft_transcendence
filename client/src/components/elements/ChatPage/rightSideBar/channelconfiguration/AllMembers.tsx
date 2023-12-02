@@ -24,7 +24,7 @@ function Usercard(props: any) {
     useEffect(() => {
 
         const fetchUser = async () => {
-            const userResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/getuser/` + data.userId);
+            const userResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/getuser/` + data.userId, { credentials: 'include' });
             let userData = await userResponse.json();
             userData.username = cutString(userData.username, 10);
             setUser(userData);

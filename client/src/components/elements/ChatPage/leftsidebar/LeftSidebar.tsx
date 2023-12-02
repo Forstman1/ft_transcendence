@@ -337,6 +337,7 @@ export default function LeftSidebar() {
           isClosable: true,
         });
       }
+      socket.emit("getChannels", { userId: userId });
     });
 
     socket?.on("removepassword", (data: any) => {
@@ -409,6 +410,7 @@ export default function LeftSidebar() {
 
     socket?.on("kickmember", (data: any) => {
       if (data.status === "you have been kicked from channel") {
+        socket?.emit("getChannels", { userId: userId });
         toast({
           title: data.status,
           position: `bottom-right`,

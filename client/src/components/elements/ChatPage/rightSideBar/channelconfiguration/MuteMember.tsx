@@ -40,7 +40,7 @@ function Componenent({ onClose }: any) {
         const fetchUsers = async () => {
             try {
 
-                const usersResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallmembers/` + channel.id)
+                const usersResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallmembers/` + channel.id, { credentials: 'include' })
                 const users: ChannelMember[] = await usersResponse.json()
 
 
@@ -60,7 +60,7 @@ function Componenent({ onClose }: any) {
                 })
 
                 const usersDataPromises = listedusers.map(async (userId: string) => {
-                    const userResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/getuser/` + userId);
+                    const userResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/getuser/` + userId, { credentials: 'include'});
                     const userData = await userResponse.json();
                     return userData;
                 });

@@ -28,8 +28,8 @@ export default function AddToChannelComponent() {
   async function fetchChannels() {
 
     const [api1, api2] = await Promise.all([
-      fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallchannels/` + userId),
-      fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallchannels/` + userSelected.id)
+      fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallchannels/` + userId, { credentials: 'include' }),
+      fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallchannels/` + userSelected.id, { credentials: 'include' })
     ]);
 
     const [res1, res2] = await Promise.all([api1.json(), api2.json()]);
@@ -57,7 +57,9 @@ export default function AddToChannelComponent() {
     headers: {
       'Content-Type': 'application/json'
       },
-      body: JSON.stringify(variables)})
+      body: JSON.stringify(variables),
+      credentials: 'include'
+    })
     .then(res => res.json()))
 
   const onSubmit = async () => {

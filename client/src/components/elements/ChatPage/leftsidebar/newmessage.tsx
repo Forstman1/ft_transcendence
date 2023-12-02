@@ -1,13 +1,8 @@
 "use client";
 
-import { Search2Icon,} from '@chakra-ui/icons';
 import React, { useState } from 'react'
 import {
     useToast,
-    InputRightElement,
-    InputLeftElement,
-    InputGroup,
-    Input,
     Button,
     Avatar,
     ModalOverlay,
@@ -58,7 +53,7 @@ function Usercard(props: any) {
             className='md:w-[30px] md:h-[30px] w-[20px] h-[20px] rounded-sm'
             value={data.username}
             onChange={handleChange}
-            isChecked={selectedOption.username === data.username}
+            isChecked={selectedOption?.username === data?.username}
         >
         </Radio>
     </div>)
@@ -69,8 +64,7 @@ export default function Newmessage({onClose}: Props) {
     
 
     const socket = useSelector((state: any) => state.socket.socket)
-    const toast = useToast();
-    const [selectedOption, setSelectedOption]: any = useState('');
+    const [selectedOption, setSelectedOption]: any = useState(null);
     const {data, isLoading, error} = useQuery({
         queryKey: ["userData"],
         queryFn: async () => {
@@ -85,12 +79,11 @@ export default function Newmessage({onClose}: Props) {
 
     const handleSubmit = async () => {
       
-            socket?.emit(`updateChatList`, {frienID: selectedOption.id})
-            socket?.emit(`createRoom`, {frienID: selectedOption.id})
+            socket?.emit(`updateChatList`, {frienID: selectedOption?.id})
+            socket?.emit(`createRoom`, {frienID: selectedOption?.id})
             onClose();
-        
+            setSelectedOption(null)
     };
-    
 
     return (
 
@@ -110,27 +103,7 @@ export default function Newmessage({onClose}: Props) {
 
                 <ModalHeader>Find Friend</ModalHeader>
                 <ModalBody className='w-full'>
-                    <InputGroup>
-                        <InputLeftElement pointerEvents="none">
-                            <Search2Icon color="gray.300" />
-                        </InputLeftElement>
-                        <InputRightElement width="4.5rem" height={12}>
-                            <Button
-                                variant="outline"
-                                h="2rem"
-                                size="sm"
-                            >
-                                Search
-                            </Button>
-                        </InputRightElement>
-                        <Input
-                            type="tel"
-                            placeholder="Search for a friend"
-                            height={12}
-                            borderEndEndRadius={0}
-                        />
-                    </InputGroup>
-
+                    
                     <div className="flex w-full h-[300px]  flex-col  no-scrollbar overflow-y-scroll ">
 
                         {isLoading ? (
@@ -166,16 +139,7 @@ export default function Newmessage({onClose}: Props) {
 
                         onClick={() => {
                             handleSubmit();
-                            onClose(); toast({
-                                title: "DM added",
-                                position: `bottom-right`,
-                                status: 'success',
-                                duration: 900,
-                                containerStyle: {
-                                    width: 300,
-                                    height: 100,
-                                }
-                            }); 
+                            onClose(); 
                         }}
                     >
                         Confirm

@@ -40,7 +40,7 @@ function Componenent({ onClose }: any) {
         const fetchUsers = async () => {
             try {
 
-                const usersResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallmembers/` + channel.id)
+                const usersResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallmembers/` + channel.id, { credentials: 'include' })
                 const users: ChannelMember[] = await usersResponse.json()
 
 
@@ -57,7 +57,7 @@ function Componenent({ onClose }: any) {
                 })
 
                 const usersDataPromises = listedusers.map(async (userId: string) => {
-                    const userResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/getuser/` + userId);
+                    const userResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/getuser/` + userId, { credentials: 'include' });
                     const userData = await userResponse.json();
                     return userData;
                 });
@@ -98,7 +98,7 @@ function Componenent({ onClose }: any) {
 
     return (<div className='flex gap-5 flex-col justify-center'  >
         <h1 className=' font-thin text-xl text-red-700 pt-3'>
-            Are you sure you want to mute this member for 5 minutes
+            Are you sure you want to kick this member
         </h1>
         <div className=' mt-[40px] flex  h-[500px] flex-col w-full  gap-6 overflow-y-scroll no-scrollbar '>
 
