@@ -19,8 +19,6 @@ import {
   useDisclosure,
   Stack,
   useToast,
-  UseToastOptions,
-  ToastId,
 } from "@chakra-ui/react";
 import { PageWrapper } from "@/app/animationWrapper/pageWrapper";
 import { motion } from "framer-motion";
@@ -28,6 +26,7 @@ import { AuthButtons } from "@/components/elements/Navbar/Navbar";
 import LoginThumbnail from "assets/icons/Auth/undraw_my_password_re_ydq7.svg";
 import { useSelector } from "react-redux";
 import { UserState } from "@/redux/slices/authUser/authUserSlice";
+import { makeToast } from "@/utils/functions/auth/fetchingUserData";
 
 import GamePreviewDesktop from "assets/icons/pongDesktopImage.svg";
 import GamePreviewMobile from "assets/icons/Frame 70.svg";
@@ -225,27 +224,6 @@ const GoToProfileButton = ({
     </Button>
   );
 };
-
-function makeToast(
-  toast: any,
-  title: UseToastOptions['title'],
-  description: UseToastOptions['description'],
-  status: UseToastOptions['status'],
-  id: ToastId
-  ) {
-  if (!toast.isActive(id)) {
-    toast({
-      title: title,
-      description: description,
-      status: status,
-      id: id,
-      position: 'bottom-right',
-      variant: 'solid',
-      isClosable: true,
-      duration: 5000,
-    })
-  }
-}
 
 export default function Homepage({ searchParams }: { searchParams: any }) {
   const data = useSelector((state: { authUser: UserState }) => state.authUser);
