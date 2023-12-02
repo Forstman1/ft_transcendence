@@ -7,6 +7,7 @@ import TwoFactor from "@/components/elements/QRCodeModal/QRCodeModal";
 import { useToast } from "@chakra-ui/react";
 import RestrictedRoute from "@/components/RestrictedRoute";
 import { Avatar } from "@chakra-ui/react"
+import { useRouter } from "next/navigation";
 
 import { z } from "zod";
 
@@ -22,6 +23,7 @@ const schema = z.object({
 export default function UserSettings() {
 	const userData = useSelector((state: any) => state.authUser);
 	const queryClient = useQueryClient();
+    const router = useRouter();
 
 	const [fullname, setFullname] = useState<string>("");
 	const [username, setUsername] = useState<string>("");
@@ -287,6 +289,9 @@ export default function UserSettings() {
 						</h2>
 						<TwoFactor />
 					</div>
+                    <div className="flex justify-end w-full bg-white rounded-sm mt-4 sm:max-w-md py-2">
+                        <button className=" bg-blue-500 text-white py-2 px-4 rounded-md custom-shadow" onClick={() => {router.push('/')}}>Skip</button>
+                    </div>
 				</div>
 			</div>
 		</RestrictedRoute>

@@ -93,7 +93,7 @@ export default function FriendList({ userId }: { userId: string }) {
 								</div>
 								<Flex className="basis-1/2 text-black items-center justify-around border-black border-r-2">
 									<h2 className="text-3xl">
-										#{user.userGamesXp}
+										{user.userGamesXp} XP
 									</h2>
 								</Flex>
 							</Flex>
