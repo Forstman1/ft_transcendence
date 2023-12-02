@@ -1,4 +1,6 @@
+"use client";
 import {FC, ReactNode} from 'react';
+import RestrictedRoute from "@/components/RestrictedRoute";
 
 export interface ILayoutProps {
     children: ReactNode;
@@ -7,7 +9,9 @@ export interface ILayoutProps {
  const Layout: FC<ILayoutProps> = ({children}) => {
     return (
         <div>
-            {children}
+            <RestrictedRoute>
+                {children}
+            </RestrictedRoute>
         </div>
     );
 }
