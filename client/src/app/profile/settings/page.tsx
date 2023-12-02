@@ -148,7 +148,7 @@ export default function UserSettings() {
 					duration: 9000,
 					isClosable: true,
 				});
-				// console.log(error);
+
 			},
 		}
 	);

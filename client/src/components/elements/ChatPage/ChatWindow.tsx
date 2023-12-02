@@ -68,9 +68,6 @@ function Message_other({ usermessage, message, sender, time }: any) {
           `${process.env.NEXT_PUBLIC_SERVER_URL}/users/getuser/` + usermessage.authorID, { credentials: 'include' }
         );
         const response = await fetchuser.json();
-        const blockedusers = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/users/blockedusers`, { credentials: 'include' }
-        );
         setUser(response);
       }
     };

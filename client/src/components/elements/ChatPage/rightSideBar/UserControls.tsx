@@ -1,6 +1,6 @@
 
 "use client";
-import React, { use, useEffect, useState } from "react";
+import React, {useEffect, useState } from "react";
 import AddToFriendList from "../../../../../assets/icons/AddToFriendList.svg";
 import Remove from "../../../../../assets/icons/remove-friend.svg";
 import Block from "../../../../../assets/icons/Block.svg";
@@ -11,8 +11,6 @@ import { useSelector } from "react-redux";
 import Unblock from "../../../../../assets/icons/Unblock.svg";
 import accept from "../../../../../assets/icons/acceptFriend.svg"
 import NotificationModal from "../../Notification/NotificationModal";
-import { useDisclosure } from "@chakra-ui/react";
-import { set } from "animejs";
 
 
 
@@ -37,7 +35,6 @@ export default function UserControls() {
 
     socket?.emit(`AskFriendshipStatus`, { friendId: Selected.id });
     socket?.on(`FriendshipStatus`, (Friend: any) => {
-      console.log(`here `, Friend[0]);
       if (Friend[0] === Selected.username) {
         setOptImages([
           { src: Friend[1] === "accept" ? accept : Friend[1] === "Pending" ? pending : Friend[1] === "accepted" ? Remove : AddToFriendList, alt: Friend[1] === "accept" ? "accept friend request" : Friend[1] === "Pending" ? "Pending" : Friend[1] === "accepted" ? "Remove from friend list" : "Add to friend list" },

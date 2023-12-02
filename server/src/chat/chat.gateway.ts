@@ -56,14 +56,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     for (const room of rooms) {
       client.join(room);
     }
-    // this.logger.log(`  the friend request is `, friendRequest);
     if (chatList) client.emit(`updateChatList`, chatList);
 
-
-
-    // if (friendRequest) {
-    //   client.emit(`updateFriendRequest`, friendRequest);
-    // }
   }
 
   //!---------------DISCONNECTION------------------------!//
@@ -228,7 +222,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
         content: data.message,
         reciverName: data.reciverId,
       });
-      this.logger.log(`message is ${message}`);
       this.server.to(room).emit(`receivedPrivateMessage`, { message });
 
     } catch (error) {
@@ -516,7 +509,6 @@ async readNotification(
       const friend: Prisma.UserWhereUniqueInput = { id: data.friendId };
       const responce = await this.userService.removeFromChat(User, friend);
       const friedList = await this.userService.getChatList(User);
-      this.logger.log(`users are `);
       if (responce === `User removed from chat list`) {
         const userSockets = this.connectedUsers[client.handshake.auth.id];
         if (userSockets) {
@@ -542,7 +534,6 @@ async readNotification(
     const friend: Prisma.UserWhereUniqueInput = { id: data.friendId };
     const UserSockets = this.connectedUsers[client.handshake.auth.id];
     const responce = await this.userService.AskFriendshipStatus(User, friend);
-    this.logger.log(`responce is ${responce}`);
     for(const socket of UserSockets) {
       this.server.to(socket.id).emit(`FriendshipStatus`, responce);
     }
