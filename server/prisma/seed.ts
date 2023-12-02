@@ -164,8 +164,6 @@ async function seed() {
       },
     });
   }
-  console.log('seeded successfully');
-  console.log(`generated users`);
 }
 seed()
   .then(async () => {

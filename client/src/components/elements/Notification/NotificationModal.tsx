@@ -2,7 +2,7 @@
 import React from "react"
 import { Button, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from "@chakra-ui/react"
 import { useSelector } from "react-redux";
-import { useDisclosure } from "@chakra-ui/react";
+
 
 
 export default function NotificationModal({isOpen, onClose, Friend}: any) {
@@ -10,7 +10,6 @@ export default function NotificationModal({isOpen, onClose, Friend}: any) {
 const socket = useSelector((state: any) => state.socket.socket);
 
 const Denie = () => {
-    console.log(`prprprprprprprprprprprprp `, Friend.id)
     socket?.emit("rejectFreindRequest", { friendId: Friend.id });
     onClose();
 };

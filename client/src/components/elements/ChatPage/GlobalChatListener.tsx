@@ -10,6 +10,7 @@ import Remove from "../../../../assets/icons/remove-friend.svg"
 
 
 
+
 export default function GlobalChatListener() {
   const socket = useAppSelector((state) => state.socket.socket);
   const selected = useSelector(
@@ -19,10 +20,6 @@ export default function GlobalChatListener() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-
-
-    socket?.on(`FriendshipStatus`, () => {
-    });
 
 
     socket?.on(`userBlockedYou`, (data) => {
