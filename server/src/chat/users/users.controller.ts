@@ -4,12 +4,12 @@ import { UsersService } from './users.service';
 import { Prisma } from '@prisma/client';
 
 
+@UseGuards(JwtAuthGuard)
 @Controller(`users`)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get(`friends`)
-  @UseGuards(JwtAuthGuard)
   async listFriends(@Request() request) {
     const User: Prisma.UserWhereUniqueInput = {
       id: request.user.id,
@@ -56,7 +56,14 @@ export class UsersController {
   }
 
   @Get('/getusers/:tofound')
-  async getuserstofound(@Param('tofound') tofound: string) {
-    return await this.usersService.getuserstofound(tofound);
+  async getuserstofound(@Param('tofound') tofound: string, @Request() request) {
+    const id = request.user.id;
+    return await this.usersService.getuserstofound(tofound, id);
+  }
+
+  @Get('/blockedusers')
+  async getblockedusers(@Request() request) {
+    const id = request.user.id;
+    return await this.usersService.getblockedusers(id);
   }
 }

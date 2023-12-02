@@ -787,10 +787,13 @@ export class UsersService {
     }
   }
 
-  async getuserstofound(tofound: string) {
+  async getuserstofound(tofound: string, id: string) {
     try {
       const getuserstofound = await this.prisma.user.findMany({
         where: {
+          NOT: {
+            OR: [{ id: id }, { blocked: { some: { id: id } } }],
+          },
           username: {
             contains: tofound,
           },
@@ -922,5 +925,21 @@ export class UsersService {
       const alt2 = Blockingstatus.blocked.length ? 'Unblock' : 'Block';
       const status = [name, alt1, alt2]
       return status;
+  }
+
+  async getblockedusers(id: string) {
+    try {
+      const getblockedusers = await this.prisma.user.findUnique({
+        where: {
+          id: id,
+        },
+        include: {
+          blocked: true,
+        },
+      });
+      return getblockedusers.blocked;
+    } catch (error) {
+      return error;
+    }
   }
 }
