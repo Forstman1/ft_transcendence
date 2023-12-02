@@ -131,26 +131,25 @@ export class GameGateway {
   async endGame(@ConnectedSocket() client: Socket, @Body() roomId: string): Promise<void> {
     try {
       console.log('-----------------endGame-----------------');
-      // this.isAllReady[roomId] += 1;
-      this.gameService.setRoomPause(roomId, true);
-      // this.gameService.resetGameDate(roomId);
-      // this.gameService.deleteRoom(roomId);
-      // if (this.isAllReady[roomId] === 2) {
+      this.isAllReady[roomId] += 1;
+      if (this.isAllReady[roomId] === 2) {
+        delete this.isAllReady[roomId];
         const userId = client.handshake.auth.id;
         const sockets = this.server.in(roomId).fetchSockets();
         const opponentSocket = (await sockets).find(
           (socket) => socket?.handshake?.auth?.id !== userId,
-        );
-        const opponentId = opponentSocket?.handshake?.auth?.id;
-        
-        this.gameService.updateUserIsInGame(opponentId, false);
-        this.gameService.updateUserIsInGame(userId, false);
-       
+          );
+          const opponentId = opponentSocket?.handshake?.auth?.id;
+          
+          this.gameService.updateUserIsInGame(opponentId, false);
+          this.gameService.updateUserIsInGame(userId, false);
+          
+          this.gameService.setRoomPause(roomId, true);
         this.gameService.resetGameDate(roomId);
         this.gameService.deleteRoom(roomId);
         client.leave(roomId);
-        // this.server.in(roomId).socketsLeave(roomId);
-      // }
+        this.server.in(roomId).socketsLeave(roomId);
+      }
     } catch (error) {
       console.error('Error in endGame:', error);
     }
