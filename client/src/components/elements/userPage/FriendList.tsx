@@ -3,6 +3,7 @@ import Collection from "./Coalitions";
 import { useAppSelector } from "@/redux/store/store";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { truncateString } from "@/utils/functions/profile/utils" 
 
 type friendsType = Array<{
 	id: string;
@@ -80,11 +81,11 @@ export default function FriendList({ userId }: { userId: string }) {
 										</Avatar>
 									</button>
 									<div className="font-bold">
-										<h2 className="text-black text-xl truncate">
-											{user.fullname}
+										<h2 className="text-black text-md lg:text-xl truncate">
+											{truncateString(user.fullname, 15)}
 										</h2>
-										<h2 className="text-gray-400 text-lg truncate">
-											{user.username}
+										<h2 className="text-gray-400 text-sm lg:text-xl truncate">
+											{truncateString(user.username, 15)}
 										</h2>
 									</div>
 								</Flex>

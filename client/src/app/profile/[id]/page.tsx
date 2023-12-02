@@ -13,6 +13,7 @@ import AddFriend from "@/components/elements/userPage/AddFriend";
 
 import { useQuery } from "react-query";
 import { getUser } from "@/utils/functions/profile/fetchingProfileData";
+import { truncateString } from "@/utils/functions/profile/utils" 
 import { useRouter } from "next/navigation";
 
 import { useSelector } from "react-redux";
@@ -152,8 +153,8 @@ export default function Profile({ params }: any) {
             <Flex className="w-full h-[calc(100%-36px)] items-center">
               <Flex className="justify-around items-center w-full h-full py-6">
                 <div className="flex flex-col justify-center font-bold text-3xl">
-                  <h3 className="truncate">{userData.fullname}</h3>
-                  <h3 className="text-gray-400 truncate">@{userData.username}</h3>
+                  <h3 className="lg:text-xl xl:text-3xl">{truncateString(userData.fullname, 15)}</h3>
+                  <h3 className="text-gray-400 lg:text-xl xl:text-3xl">@{truncateString(userData.username, 15)}</h3>
                 </div>
                 <Avatar
                   className="border-solid border-2 border-gray-900 custom-shadow"
