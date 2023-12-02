@@ -474,7 +474,9 @@ async readNotification(
       
       const FriendResponce = await this.userService.AskFriendshipStatus(User, friend);
       const UserResponce = await this.userService.AskFriendshipStatus(friend, User);
+      const Users = await this.userService.getFriendList(data.friendId)
 
+      this.logger.log(Users);
       if (responce === `Friend removed`) {
         const friendSocket = this.connectedUsers[data.friendId];
         const userSockets = this.connectedUsers[client.handshake.auth.id];

@@ -7,6 +7,7 @@ import TwoFactor from "@/components/elements/QRCodeModal/QRCodeModal";
 import { useToast } from "@chakra-ui/react";
 import RestrictedRoute from "@/components/RestrictedRoute";
 import { Avatar } from "@chakra-ui/react"
+import { useRouter } from "next/navigation";
 
 import { z } from "zod";
 
@@ -22,6 +23,7 @@ const schema = z.object({
 export default function UserSettings() {
 	const userData = useSelector((state: any) => state.authUser);
 	const queryClient = useQueryClient();
+    const router = useRouter();
 
 	const [fullname, setFullname] = useState<string>("");
 	const [username, setUsername] = useState<string>("");
@@ -37,6 +39,7 @@ export default function UserSettings() {
 		avatar: "",
 	});
 
+
 	useEffect(() => {
 		if (userData) {
 			setFullname(userData?.fullname || "");
@@ -45,6 +48,7 @@ export default function UserSettings() {
 			setAvatarPreview(userData?.avatarUrl || "");
 		}
 	}, [userData]);
+    
 
 	const handleFileChange = (e: any) => {
 		const file: File | null = e.target.files ? e.target.files[0] : null;
@@ -80,11 +84,13 @@ export default function UserSettings() {
 			formData.append("fullname", fullname);
 			formData.append("username", username);
 			formData.append("coalition", coalition);
+            
 			const temp: any = {
 				fullname: fullname,
 				username: username,
 				coalition: coalition,
 			};
+
 			if (avatar) {
 				formData.append("avatar", avatar);
 			}
@@ -98,10 +104,9 @@ export default function UserSettings() {
 					coalition: "",
 					avatar: "",
 				});
-
 				const Response = await updateUser(formData);
 				formData.delete;
-				return Response;
+				return Response.data;
 			} else {
 				const formatedErrors = result.error.format();
 
@@ -143,27 +148,29 @@ export default function UserSettings() {
 			onError: (error: any) => {
 				toast({
 					title: "Error!",
-					description: error?.message,
+					description: error?.response?.data?.message,
 					status: "error",
 					duration: 9000,
 					isClosable: true,
 				});
-
 			},
 		}
 	);
 
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-
-		updateUserMutation.mutate();
+        
+        const hasErrors = Object.values(formErrors).some(error => error !== "");
+        if (!hasErrors) {
+		    updateUserMutation.mutate();
+        }
 	};
 
 	return (
 		<RestrictedRoute>
 			<div className="py-12 text-black">
 				<div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-					<div className="custom-shadow w-full bg-white rounded-sm shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 mb-6">
+					<div className="custom-shadow w-full bg-white rounded-sm shadow md:mt-0 sm:max-w-md xl:p-0 mb-6">
 						<div className="p-6 space-y-4 md:space-y-6 sm:p-8">
 							<div className="flex justify-center">
 								{avatarPreview !== null && (
@@ -182,7 +189,7 @@ export default function UserSettings() {
 								<div>
 									<label
 										htmlFor="avatar"
-										className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+										className="block mb-2 text-sm font-medium text-gray-900"
 									>
 										Profile Avatar
 									</label>
@@ -289,6 +296,9 @@ export default function UserSettings() {
 						</h2>
 						<TwoFactor />
 					</div>
+                    <div className="flex justify-end w-full bg-white rounded-sm mt-4 sm:max-w-md py-2">
+                        <button className=" bg-blue-500 text-white py-2 px-4 rounded-md custom-shadow" onClick={() => {router.push('/')}}>Skip</button>
+                    </div>
 				</div>
 			</div>
 		</RestrictedRoute>
