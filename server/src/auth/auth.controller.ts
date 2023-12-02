@@ -172,7 +172,7 @@ export class AuthController {
   //     return res.status(200).json({ qrcode: qrcode });
   //   } catch (error) {
   //     await this.userService.deleteUserTwoFactorKey({ id: req.user.id });
-  //     return res.status(500).send(error?.message ? error?.message  : 'Internal server error');
+  //     return res.status(400).send(error?.message ? error?.message  : 'Well I think u need to try this later Error');
   //   }
   // }
 
@@ -205,7 +205,7 @@ export class AuthController {
   //     if (error instanceof ValidationError) {
   //       return res.status(400).send('Invalid two-factor authentication code');
   //     }
-  //     return res.status(500).send(error?.message ? error?.message  : 'Internal server error');
+  //     return res.status(400).send(error?.message ? error?.message  : 'Well I think u need to try this later Error');
   //   }
   // }
 
@@ -236,7 +236,7 @@ export class AuthController {
 
     } catch (error) {
       await this.userService.updateUserTwoFactorStatus({ id: req.user.id }, false, null);
-      return res.status(500).send(error?.message ? error?.message  : 'Internal server error');
+      return res.status(400).send(error?.message ? error?.message  : 'Well I think u need to try this later Error');
     }
   }
 
@@ -284,7 +284,7 @@ export class AuthController {
       if (error instanceof ValidationError) {
         return res.status(400).send('Invalid two-factor authentication code');
       }
-      return res.status(500).send(error?.message ? error?.message  : 'Internal server error');
+      return res.status(400).send(error?.message ? error?.message  : 'Well I think u need to try this later Error');
     }
   }
 
@@ -322,7 +322,7 @@ export class AuthController {
       if (error instanceof ValidationError) {
         return res.status(400).send('Invalid two-factor authentication code');
       }
-      return res.status(500).send(error?.message ? error?.message  : 'Internal server error');
+      return res.status(400).send(error?.message ? error?.message  : 'Well I think u need to try this later Error');
     }
   }
 
@@ -351,7 +351,7 @@ export class AuthController {
       };
       return res.status(200).json(data);
     } catch (error) {
-      return res.status(500).send('Internal server error');
+      return res.status(400).send('Well I think u need to try this later Error');
     }
   }
 }

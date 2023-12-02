@@ -2,6 +2,7 @@ import { UserState } from '@/redux/slices/authUser/authUserSlice';
 import { toDataURL } from 'qrcode';
 import { authenticator } from 'otplib';
 import axios from 'axios';
+import { UseToastOptions, ToastId } from '@chakra-ui/react';
 
 /* ------------------------------------------------------------------------------------------------------------------ */
 
@@ -85,4 +86,27 @@ export function verifyTwoFaPin(pin: string, secret: string): boolean {
     secret: secret,
   });
   return isValid;
+}
+
+/* ------------------------------------------------------------------------------------------------------------------ */
+
+export function makeToast(
+  toast: any,
+  title: UseToastOptions['title'],
+  description: UseToastOptions['description'],
+  status: UseToastOptions['status'],
+  id: ToastId
+  ) {
+  if (!toast.isActive(id)) {
+    toast({
+      title: title,
+      description: description,
+      status: status,
+      id: id,
+      position: 'bottom-right',
+      variant: 'solid',
+      isClosable: true,
+      duration: 5000,
+    })
+  }
 }
