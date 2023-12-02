@@ -77,6 +77,17 @@ export class AuthService {
 
   /* ------------------------------------------------------------------------------------------------------------------ */
 
+  async loginAfter2faDisable(user: User): Promise<string> {
+    const payload = {
+      id: user.id,
+      TwoFA_Success: false,
+      isTwoFA_Token: false,
+    };
+    return this.jwtService.sign(payload);
+  }
+
+  /* ------------------------------------------------------------------------------------------------------------------ */
+
   async loginWithTwoFactorAuth(user: User): Promise<string> {
     if (!user.twoFactorEnabled) {
       throw new UnauthorizedException('Two-factor Authentication Disabled');
@@ -97,13 +108,20 @@ export class AuthService {
       'Pong',
       user.twoFactorSecret,
     );
+    if (!otpAuthUrl) {
+      throw new Error('Cannot generate Two Factor Auth URL');
+    }
     return otpAuthUrl;
   }
 
   /* ------------------------------------------------------------------------------------------------------------------ */
 
   async generateQrCodeDataURL(otpAuthUrl: string): Promise<string> {
-    return toDataURL(otpAuthUrl);
+    const qrcode: string = toDataURL(otpAuthUrl)
+    if (!qrcode) {
+      throw new Error('Cannot generate QR Code');
+    }
+    return qrcode;
   }
 
   /* ------------------------------------------------------------------------------------------------------------------ */

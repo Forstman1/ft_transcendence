@@ -17,30 +17,9 @@ import { useMutation } from "react-query";
 import { useState } from "react";
 import { verify2FA } from "@/utils/functions/auth/fetchingUserData";
 import { redirect, useRouter } from "next/navigation";
-import { UseToastOptions, ToastId } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import { UserState } from "@/redux/slices/authUser/authUserSlice";
-
-function makeToast(
-  toast: any,
-  title: UseToastOptions['title'],
-  description: UseToastOptions['description'],
-  status: UseToastOptions['status'],
-  id: ToastId
-  ) {
-  if (!toast.isActive(id)) {
-    toast({
-      title: title,
-      description: description,
-      status: status,
-      id: id,
-      position: 'bottom-right',
-      variant: 'solid',
-      isClosable: true,
-      duration: 5000,
-    })
-  }
-}
+import { makeToast } from "@/utils/functions/auth/fetchingUserData";
 
 export default function TwoFactorAuthPage() {
   const router = useRouter();
@@ -100,6 +79,7 @@ export default function TwoFactorAuthPage() {
             </FormControl>
             <Stack spacing={6}>
               <Button
+                disabled={otp.length !== 6}
                 onClick={() => mutate(otp)}
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold"
               >
