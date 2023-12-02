@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import LeftSidebar from "@/components/elements/ChatPage/leftsidebar/LeftSidebar";
 import RestrictedRoute from "@/components/RestrictedRoute";
+import { useRouter } from "next/navigation";
 
 
 
@@ -22,6 +23,9 @@ import RestrictedRoute from "@/components/RestrictedRoute";
 
 
 export default function ChatPage() {
+
+  const router = useRouter();
+  const socket = useSelector((state: any) => state.socket.socket);
   const { RightClice } = useSelector((state: any) => state.mobile);
   const dispatch = useDispatch();
   const selected: Channel | User | null = useSelector(
@@ -70,7 +74,6 @@ export default function ChatPage() {
     },
   },
 };
-
 
 
   return (

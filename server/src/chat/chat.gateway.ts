@@ -366,7 +366,9 @@ async readNotification(
 
       const friendId = await this.userService.getUser(User);
       const notifications = await this.userService.getNotifications(data.friendId);
-      const responce = await this.userService.AskFriendshipStatus(User, friend);
+      const UserResponce = await this.userService.AskFriendshipStatus(User, friend);
+      const FriendResponce = await this.userService.AskFriendshipStatus(friend, User);
+      
 
 
 
@@ -374,13 +376,12 @@ async readNotification(
         for (const socket of friendSocket) {
           this.server.to(socket.id).emit(`getNotifications`, notifications);
           this.server.to(socket.id).emit(`receivedFreindRequest`, friendId);
-        
-          this.server.to(socket.id).emit(`FriendshipStatus`, responce);
+          this.server.to(socket.id).emit(`FriendshipStatus`, FriendResponce);
         }
       }
       if (UserSockets) {
         for (const socket of UserSockets) {
-          this.server.to(socket.id).emit(`FriendshipStatus`, responce);
+          this.server.to(socket.id).emit(`FriendshipStatus`, UserResponce);
         }
       }
 

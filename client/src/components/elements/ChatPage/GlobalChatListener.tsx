@@ -6,12 +6,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { setMessages, setTheUser } from "@/redux/slices/chat/ChatSlice";
 import Cookies from "js-cookie";
 import Remove from "../../../../assets/icons/remove-friend.svg"
+import { useRouter } from "next/navigation";
 
 
 
 
 export default function GlobalChatListener() {
   const socket = useAppSelector((state) => state.socket.socket);
+  const router = useRouter();
   const selected = useSelector(
     (state: any) => state.chat.selectedChannelorUser
   );
@@ -21,8 +23,10 @@ export default function GlobalChatListener() {
   useEffect(() => {
 
 
-    socket?.on(`FriendshipStatus`, () => {
-    });
+    // socket?.on(`FriendshipStatus2`, () => {
+    //   console.log('hello');
+    //   router.refresh();
+    // });
 
 
     socket?.on(`userBlockedYou`, (data) => {

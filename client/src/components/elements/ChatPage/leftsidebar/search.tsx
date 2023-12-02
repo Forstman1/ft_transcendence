@@ -110,25 +110,25 @@ export default function Search() {
 
 
     const getchannels = useMutation<any, Error, any>((variables) =>
-        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallchannelsapp/` + variables.tofound).then((res) => {
+        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallchannelsapp/` + variables.tofound, { credentials: 'include' }).then((res) => {
 
             return res.json()
         })
     )
 
     const getusers = useMutation<any, Error, any>((variables) =>
-        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/getusers/` + variables.tofound)
+        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/getusers/` + variables.tofound, { credentials: 'include' })
             .then((res) => res.json())
             
     );
 
     const listusers = useMutation<any, Error, any>(() =>
-        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/getAllUsers/` + userId)
+        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/getAllUsers/` + userId, { credentials: 'include' })
             .then((res) => res.json())
             
             );
             const listchannels = useMutation<any, Error, any>(() =>
-            fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallpublicandprivatechannels`).then((res) => {
+            fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallpublicandprivatechannels`, { credentials: 'include' }).then((res) => {
                 return res.json()
             })
             );

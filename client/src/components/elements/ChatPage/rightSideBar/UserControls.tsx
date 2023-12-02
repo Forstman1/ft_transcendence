@@ -37,7 +37,7 @@ export default function UserControls() {
 
     socket?.emit(`AskFriendshipStatus`, { friendId: Selected.id });
     socket?.on(`FriendshipStatus`, (Friend: any) => {
-      console.log(Friend[1])
+      console.log(`here `, Friend[0]);
       if (Friend[0] === Selected.username) {
         setOptImages([
           { src: Friend[1] === "accept" ? accept : Friend[1] === "Pending" ? pending : Friend[1] === "accepted" ? Remove : AddToFriendList, alt: Friend[1] === "accept" ? "accept friend request" : Friend[1] === "Pending" ? "Pending" : Friend[1] === "accepted" ? "Remove from friend list" : "Add to friend list" },
