@@ -106,7 +106,7 @@ export default function Search() {
 
     const [show, setShow] = React.useState(false)
     const handleShow = () => setShow(!show)
-    const id = useSelector((state: any) => state.socket.userID);
+    // const id = useSelector((state: any) => state.socket.userID);
 
 
     const getchannels = useMutation<any, Error, any>((variables) =>
@@ -126,20 +126,19 @@ export default function Search() {
         fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/users/getAllUsers/` + userId)
             .then((res) => res.json())
             
-    );
-
-    const listchannels = useMutation<any, Error, any>(() =>
-        fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallpublicandprivatechannels`).then((res) => {
-            return res.json()
-        })
-    );
-
-
-
-
-    const handleSearchClick = async () => {
-
-        if (search.trim() === "") {
+            );
+            const listchannels = useMutation<any, Error, any>(() =>
+            fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/channel/getallpublicandprivatechannels`).then((res) => {
+                return res.json()
+            })
+            );
+            
+            
+            
+            
+        const handleSearchClick = async () => {
+                
+            if (search.trim() === "") {
             const searchchannelarray = await listchannels.mutateAsync({})
             const searchuserarray = await listusers.mutateAsync({})
             setAllSearchChannels(searchchannelarray)
@@ -148,11 +147,15 @@ export default function Search() {
         }
 
         const allchannel = await getchannels.mutateAsync({ tofound: search })
-        const allusers = await getusers.mutateAsync({ tofound: search })
+        let allusers = await getusers.mutateAsync({ tofound: search })
+        allusers =  allusers.filter((user: any) => {
+            if (user.id === userId) {
+                return false
+            }
+            return true
+        })
         setAllSearchChannels(allchannel)
         setAllSearchUsers(allusers)
-
-
         setSearch("")
         onOpen()
     };
@@ -228,10 +231,19 @@ export default function Search() {
     };
 
     const confirm = async () => {
-
-        if (!selectedOption)
+        if (!selectedOption) {
+            toast({
+                title: "Please select a channel or user",
+                position: `bottom-right`,
+                status: 'error',
+                duration: 1000,
+                containerStyle: {
+                    width: 300,
+                    height: 100,
+                }
+            })
             return;
-        
+        }
         if ('name' in selectedOption) {
 
             let newchannels = channels
@@ -287,7 +299,7 @@ export default function Search() {
         else
         {
             socket?.emit(`updateChatList`, {frienID: selectedOption.id})
-            socket?.emit(`createRoom`, { userId: id, frienID: selectedOption.id});
+            socket?.emit(`createRoom`, { frienID: selectedOption.id});
             dispatch(setTheUser(selectedOption))
             onClose()
         }

@@ -6,8 +6,6 @@ services:
   db:
     image: postgres:10.5-alpine
     container_name: db
-    volumes:
-      - ./data/postgresql/:/var/lib/postgresql/data/
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -36,8 +34,6 @@ services:
   #       - DATABASE_HOST=${DATABASE_HOST}
   #   image: server
   #   container_name: server
-  #   volumes:
-  #     - ./server/src:/usr/src/app/src
   #   environment:
   #     DATABASE_HOST: ${DATABASE_HOST}
   #     DATABASE_URL: ${DATABASE_URL}
@@ -62,8 +58,6 @@ services:
   #     dockerfile: Dockerfile.client
   #   image: client
   #   container_name: client
-  #   volumes:
-  #     - ./client/src:/usr/src/app/src
   #   ports:
   #     - "3000:3000"
   #   env_file:

@@ -1,4 +1,4 @@
-import { Avatar, AvatarBadge, Radio } from "@chakra-ui/react";
+import { Avatar, Radio } from "@chakra-ui/react";
 
 
 
@@ -19,7 +19,6 @@ export default function Usercard(props: any) {
         <div onClick={handleChange} className='flex justify-around items-center border-2   cursor-pointer m-2 ml-0 p-2  rounded-md'>
             <div>
                 <Avatar boxSize={12} src={data?.avatarURL}>
-                    <AvatarBadge boxSize={6} bg={data?.isOnline ? 'green.500' : 'gray.500'} />
                 </Avatar>
             </div>
 

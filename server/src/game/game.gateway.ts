@@ -71,6 +71,51 @@ export class GameGateway {
     }
   }
 
+  // ---------------- userLeaveGameRoom--------------------------------------
+  @SubscribeMessage('userLeaveGameRoom')
+  async userLeaveGameRoom(@ConnectedSocket() client: Socket): Promise<void> {
+    try {
+      console.log('-----------------userLeaveGameRoom-----------------');
+      const roomId = this.gameService.getRoomIdByUserId(client.id);
+      if (roomId) {
+        const sockets = this.server.in(roomId).fetchSockets();
+        const opponentSocket = (await sockets).find(
+          (socket) => socket?.handshake?.auth?.id !== client.handshake.auth.id,
+        );
+        opponentSocket?.emit('friendExitGame1');
+        opponentSocket?.emit('friendExitGame2');
+        this.gameService.updateUserIsInGame(client.handshake.auth.id, false);
+        this.gameService.resetGameDate(roomId);
+        client.leave(roomId);
+      }
+    } catch (error) {
+      console.error('Error in userLeaveGameRoom:', error);
+    }
+  }
+
+  // ---------------- userWantToExitTheGame----------------------------------
+  @SubscribeMessage('userWantToExitTheGame')
+  async userWantToExitTheGame(@ConnectedSocket() client: Socket): Promise<void> {
+    try {
+      console.log('-----------------userWantToExitTheGame-----------------');
+      const roomId = this.gameService.getRoomIdByUserId(client.id);
+      if (roomId) {
+        const sockets = this.server.in(roomId).fetchSockets();
+        const opponentSocket = (await sockets).find(
+          (socket) => socket?.handshake?.auth?.id !== client.handshake.auth.id,
+        );
+        opponentSocket?.emit('friendExitGame1');
+        opponentSocket?.emit('friendExitGame2');
+        this.gameService.updateUserIsInGame(client.handshake.auth.id, false);
+        this.gameService.resetGameDate(roomId);
+        this.gameService.deleteRoom(roomId);
+        client.leave(roomId);
+      }
+    } catch (error) {
+      console.error('Error in userWantToExitTheGame:', error);
+    }
+  }
+
   // ---------------- updatePaddles------------------------------------------
   @SubscribeMessage('updatePaddles')
   updatePaddles(@Body() data): void {
@@ -86,8 +131,11 @@ export class GameGateway {
   async endGame(@ConnectedSocket() client: Socket, @Body() roomId: string): Promise<void> {
     try {
       console.log('-----------------endGame-----------------');
-      this.isAllReady[roomId] += 1;
-      if (this.isAllReady[roomId] === 2) {
+      // this.isAllReady[roomId] += 1;
+      this.gameService.setRoomPause(roomId, true);
+      // this.gameService.resetGameDate(roomId);
+      // this.gameService.deleteRoom(roomId);
+      // if (this.isAllReady[roomId] === 2) {
         const userId = client.handshake.auth.id;
         const sockets = this.server.in(roomId).fetchSockets();
         const opponentSocket = (await sockets).find(
@@ -99,10 +147,10 @@ export class GameGateway {
         this.gameService.updateUserIsInGame(userId, false);
        
         this.gameService.resetGameDate(roomId);
-        this.gameService.setRoomPause(roomId, true);
         this.gameService.deleteRoom(roomId);
-        this.server.in(roomId).socketsLeave(roomId);
-      }
+        client.leave(roomId);
+        // this.server.in(roomId).socketsLeave(roomId);
+      // }
     } catch (error) {
       console.error('Error in endGame:', error);
     }
@@ -143,6 +191,16 @@ export class GameGateway {
     try {
       console.log('-----------------createRoom-----------------');
       const clientUserId = client.id;
+      const room = this.gameService.getRoomIdByUserId(clientUserId);
+      const roomSize = this.server.sockets.adapter.rooms.get(room)?.size;
+      if (roomSize < 2) {
+        this.gameService.deleteRoom(room);
+        this.server.in(room).socketsLeave(room);
+      }
+      if (this.gameService.checkFriendIsInOtherRoom(clientUserId)) {
+        client.emit('uAreInGame');
+        return 'uAreInGame';
+      }
       const roomId = this.gameService.createRoom(clientUserId);
       client.join(roomId);
       this.isAllReady[roomId] = 0;
@@ -172,9 +230,6 @@ export class GameGateway {
       const room = this.server.sockets.adapter.rooms.get(roomId);
       const modalData = data.modalData;
 
-      console.log('userId: ', client.handshake.auth.id);
-      console.log('friendId: ', friendUserId);
-
       if (this.gameService.isRoomOwner(clientUserId, roomId)) {
         if (room && room.size < 2) {
           const friendSocket = this.connectedUsers[friendUserId];
@@ -186,6 +241,7 @@ export class GameGateway {
             const notifications = await this.gameService.getNotifications(
               friendUserId,
             );
+            this.server.to(friendUserId).emit('ExitfromGame');
             this.server
               .to(friendUserId)
               .emit('newNotification', notifications);
@@ -258,9 +314,17 @@ export class GameGateway {
 
   //-------------leaveRoom---------------------------------------------------
   @SubscribeMessage('leaveRoom')
-  leaveRoom(@ConnectedSocket() client: Socket, @Body() roomId: string): void {
+  async leaveRoom(@ConnectedSocket() client: Socket, @Body() roomId: string): Promise<void> {
     try {
       console.log('-----------------leaveRoom-----------------');
+      const sockets = this.server.in(roomId).fetchSockets();
+        const opponentSocket = (await sockets).find(
+          (socket) => socket?.handshake?.auth?.id !== client.handshake.auth.id,
+        );
+        opponentSocket?.emit('friendExitGame1');
+        opponentSocket?.emit('friendExitGame2');
+        this.gameService.updateUserIsInGame(client.handshake.auth.id, false);
+        this.gameService.resetGameDate(roomId);
       client.leave(roomId);
       this.gameService.deleteRoom(roomId);
     } catch (error) {
@@ -357,7 +421,7 @@ export class GameGateway {
       console.error('Error in SearchFriend:', error);
     }
   }
-  
+
   //-------------getOpponentData---------------------------------------------------
   @SubscribeMessage('getOpponentData')
   async getOpponentData(

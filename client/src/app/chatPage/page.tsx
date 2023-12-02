@@ -31,7 +31,7 @@ export default function ChatPage() {
 
   const handleWindowResize = () => {
 
-    if (window.innerWidth < 1024) {
+    if (window?.innerWidth < 1024) {
 
       dispatch(setRight(false));
       dispatch(setMidle(false));
@@ -48,9 +48,9 @@ export default function ChatPage() {
 
   useEffect(() => {
     handleWindowResize();
-    window.addEventListener("resize", handleWindowResize);
+    window?.addEventListener("resize", handleWindowResize);
     return () => {
-      window.removeEventListener("resize", handleWindowResize);
+      window?.removeEventListener("resize", handleWindowResize);
     };
   }, []);
 
@@ -75,7 +75,7 @@ export default function ChatPage() {
 
   return (
     <RestrictedRoute>
-      <div className="Chat_sub_div2 flex w-full ">
+      <div className="Chat_sub_div2 flex  w-full">
       <LeftSidebar />
       <ChatWindow />
       {selected !== null  && selected !== undefined && "username" in selected ? (

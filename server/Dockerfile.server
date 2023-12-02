@@ -3,10 +3,9 @@ ARG POSTGRES_HOST
 
 FROM node:20-alpine3.17
 
+WORKDIR /App
+
 RUN apk --update add postgresql-client
-
-WORKDIR /usr/src/app
-
 
 COPY package*.json ./
 
@@ -14,12 +13,10 @@ RUN npm install
 
 COPY . .
 
-
 RUN chmod +x init.sh
-
 
 EXPOSE 3001
 
-ENTRYPOINT ["sh", "/usr/src/app/init.sh"]
+ENTRYPOINT ["sh", "/App/init.sh"]
 
-CMD ["npm", "run", "start:dev"]
+CMD ["npm", "run", "start:prod"]

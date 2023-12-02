@@ -190,13 +190,7 @@ export class GameService {
   //------------------ create room ------------------
 
   createRoom(ownerId: string): string {
-    //check if user already has room and return room id
-    // this.rooms.forEach((room, key) => {
-    //   if (room.players.includes(ownerId)) {
-    //     roomId = key;
-    //   }
-    // });
-    // if (roomId) return roomId;
+    if (ownerId === undefined) return;
     const roomId = uuidv4();
     const gameData: GameServiceData = {
       id: roomId,
@@ -231,6 +225,7 @@ export class GameService {
   }
 
   isRoomOwner(userId: string, roomId: string): boolean {
+    if (userId === undefined) return false;
     const room = this.rooms.get(roomId);
     return room && room.owner === userId;
   }
@@ -241,6 +236,7 @@ export class GameService {
   }
 
   addPlayerToRoom(roomId: string, userId: string): void {
+    if (userId === undefined) return;
     const room = this.rooms.get(roomId);
     if (room && room.players.length < 2) {
       this.rooms.set(roomId, {
@@ -284,6 +280,7 @@ export class GameService {
   }
 
   getRoomIdByUserId(userId: string): string | undefined {
+    if (userId === undefined) return;
     let roomId;
     this.rooms.forEach((room, key) => {
       if (room.players.includes(userId)) {
@@ -312,6 +309,16 @@ export class GameService {
     opponentId: string,
   ): Promise<void> => {
     const { userId, status, userScore, opponentScore, rounds, matches, xp } = data;
+    if (userId === undefined || opponentId === undefined) return;
+    try {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new Error(`User with id ${userId} not found`);
+    }
+  
     await this.prisma.user.update({
       where: { id: userId },
       data: {
@@ -333,11 +340,15 @@ export class GameService {
       },
     });
     return;
+  } catch (error) {
+    console.log(error);
+  }
   }
 
   //----------------------------------------------------
 
   getMyFriends = async (userId: string): Promise<any> => {
+    if (userId === undefined) return;
     const friends = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -359,6 +370,7 @@ export class GameService {
 
   //----------------------------------------------------
   searchFriend = async (userId: string, search: string): Promise<any> => {
+    if (userId === undefined) return;
     const friends = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -384,6 +396,7 @@ export class GameService {
 
   //----------------------------------------------------
   getOpponentData = async (opponentId: string): Promise<any> => {
+    if (opponentId === undefined) return;
     const opponentData = await this.prisma.user.findUnique({
       where: { id: opponentId },
       select: {
@@ -400,6 +413,16 @@ export class GameService {
 
   //----------------------------------------------------
   updateUserIsOnline = async (userId: string, isOnline: boolean): Promise<void> => {
+    if (userId === undefined) return;
+    try {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    
+    if (!user) {
+      throw new Error(`User with id ${userId} not found`);
+    }
+  
     await this.prisma.user.update({
       where: { id: userId },
       data: {
@@ -407,10 +430,22 @@ export class GameService {
       },
     });
     return;
+  } catch (error) {
+    console.log(error);
+  }
   }
 
   //----------------------------------------------------
   updateUserIsInGame = async (userId: string, isInGame: boolean): Promise<void> => {
+    if (userId === undefined) return;
+    try {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+  
+    if (!user) {
+      throw new Error(`User with id ${userId} not found`);
+    }
     await this.prisma.user.update({
       where: { id: userId },
       data: {
@@ -418,16 +453,26 @@ export class GameService {
       },
     });
     return;
+  } catch (error) {
+    console.log(error);
+  }
   }
 
   //----------------------------------------------------
   notifyFriend = async (userId: string, friendId: string): Promise<void> => {
+    if (userId === undefined) return;
+    try {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
         username: true,
       },
     });
+
+      if (!user) {
+        throw new Error(`User with id ${userId} not found`);
+      }
+
     const data = {
       title : "Game Invite",
       description: "You have a game invite from " + user.username,
@@ -447,11 +492,14 @@ export class GameService {
       },
     });
     return;
+  } catch (error) {
+    console.log(error);
+  }
   }
 
   //----------------------------------------------------
   getNotifications = async (userId: string): Promise<any> => {
-    
+    if (userId === undefined) return;
     await this.prisma.user.findUnique({
       where: { id: userId },
       select: {

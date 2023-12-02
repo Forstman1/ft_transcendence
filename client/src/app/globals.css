@@ -35,7 +35,6 @@ html,body {
 }
 
 @layer utilities {
-  @variants responsive {
     .no-scrollbar::-webkit-scrollbar {
         display: none;
     }
@@ -45,5 +44,4 @@ html,body {
         scrollbar-width: none;
     }
   }
-}
 

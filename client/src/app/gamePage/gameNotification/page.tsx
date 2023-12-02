@@ -2,7 +2,7 @@
 import { useToast, Alert, AlertIcon, Box, Button } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useAppSelector } from "@/redux/store/store";
-import { useRouter } from "next/navigation";
+import { useRouter} from "next/navigation";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store/store";
 import { setGameMatchState } from "@/redux/slices/game/gameMatchSlice";
@@ -20,7 +20,7 @@ export default function GameNotification() {
   const dispatch = useDispatch<AppDispatch>();
 
   socket.socket?.on("playGame", () => {
-    router.push("/gamePage/gameFriendPage");
+      router.push("/gamePage/gameFriendPage");
   });
 
   useEffect(() => {
@@ -97,7 +97,7 @@ export default function GameNotification() {
               <AlertIcon />
               <Box flex="1">
                 <strong>Game Notification</strong>
-                <p>Your opponent is exit the game</p>
+                <p>Your opponent exited the game</p>
               </Box>
             </Alert>
           </motion.div>
@@ -158,12 +158,52 @@ export default function GameNotification() {
       });
     };
 
+    const ImInOtherGameRome = () => {
+      toast({
+        position: "top-right",
+        duration: 5000,
+        isClosable: true,
+        render: ({ onClose }) => (
+          <motion.div
+            initial={{ opacity: 0, x: "50%" }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
+            <Alert
+              status="success"
+              variant="top-accent"
+              className=" space-x-2 border-white"
+            >
+              <AlertIcon />
+              <Box flex="1">
+                <strong>Game Notification</strong>
+                <p>You are in other game room Please exit first</p>
+              </Box>
+              <Button
+                variant="outline"
+                colorScheme="red"
+                onClick={() => {
+                  socket.socket?.emit("userWantToExitTheGame");
+                  onClose();
+                }}
+                leftIcon={<Image src={denyIcon} alt="deny" width={20} />}
+              >
+                Exit
+              </Button>
+            </Alert>
+          </motion.div>
+        ),
+      });
+    }
+
+    socket.socket?.on("uAreInGame", ImInOtherGameRome);
     socket.socket?.on("room-invitation", handleRoomInvitation);
     socket.socket?.on("friendDenyInvitation", handelDenyInvitation);
     socket.socket?.on("frinedIsInGame", handelfrinedIsInGame);
     socket.socket?.on("friendExitGame2", friendExitGame);
 
     return () => {
+      socket.socket?.off("uAreInGame", ImInOtherGameRome);
       socket.socket?.off("room-invitation", handleRoomInvitation);
       socket.socket?.off("friendDenyInvitation", handelDenyInvitation);
       socket.socket?.off("frinedIsInGame", handelfrinedIsInGame);

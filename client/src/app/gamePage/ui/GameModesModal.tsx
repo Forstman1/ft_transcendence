@@ -118,9 +118,11 @@ const GameModesModal = ({ isOpen, onClose, gameType, friend }: Props) => {
   };
 
   const createRoom = async (friendId: string) => {
-    await socket.socket?.emit("createRoom", (RoomId: any) => {
-      setFriendId(friendId);
-      dispatchData(RoomId);
+    await socket.socket?.emit("createRoom", (RoomId: any ) => {
+      if (RoomId !== "uAreInGame") {
+        setFriendId(friendId);
+        dispatchData(RoomId);
+      }
     });
   };
 

@@ -3,7 +3,6 @@
 import { SmallAddIcon } from "@chakra-ui/icons";
 import {
   Avatar,
-  AvatarBadge,
   Icon,
   useDisclosure,
   Modal,
@@ -53,11 +52,6 @@ function Usercard(props: any) {
             boxSize={14}
             src={props.data.avatarURL}
           >
-            <AvatarBadge
-              className="custom-shadow border-[1px] border-black"
-              boxSize={4}
-              bg={props.data.isOnline ? "green.500" : "red.500"}
-            />
           </Avatar>
         </div>
         <div className="ml-[7px] flex flex-col  text-left w-[40%] justify-around">
@@ -66,20 +60,20 @@ function Usercard(props: any) {
           </div>
         </div>
         <div className="flex flex-col items-center text-center "></div>
-      </div>
       <Icon
         as={CloseButton}
         h={10}
         className="opacity-0 group-hover:opacity-100"
         onClick={() => {
           socket?.emit(`removeChatUser`, { friendId: props.data.id });
-
+          
           if (props.data.id === selected?.id) {
             dispatch(setTheUser(null));
             dispatch(setMessages([]));
           }
         }}
-      />
+        />
+        </div>
     </>
   );
 }
@@ -91,19 +85,22 @@ export default function LeftSidebar() {
   const [ChannelOrUser, setChannelOrUser] = useState(false);
   const channels = useSelector((state: any) => state.chat.channels);
 
-  useEffect(() => {
-    socket?.on(`updateChatList`, async (Users: any) => {
-      dispatch(setUserDms(Users));
-    });
-  }, [socket, dispatch]);
-
+  
   const selected = useSelector(
     (state: any) => state.chat.selectedChannelorUser
-  );
-  const userId = useSelector((state: any) => state.socket.userID);
-  const Users = useSelector((state: any) => state.chat.users);
-  const toast = useToast();
+    );
+    const userId = useSelector((state: any) => state.socket.userID);
+    const Users = useSelector((state: any) => state.chat.users);
+    const toast = useToast();
   const { LeftClice } = useSelector((state: any) => state.mobile);
+  
+
+  
+    useEffect(() => {
+      socket?.on(`updateChatList`, async (Users: any) => {
+        dispatch(setUserDms(Users));
+      });
+    }, [socket, dispatch]);
 
   useEffect(() => {
     socket?.emit("getChannelsFirstTime", { userId: userId });
@@ -557,7 +554,7 @@ export default function LeftSidebar() {
 
   return (
     <Box
-      className="LeftSideBar place-items-center grid w-[20%] max-xl:w-[30%] max-md:w-[50%] max-sm:w-[80%] absolute h-full overflow-y-auto border-r-[3px] border-r-black md:static bg-opacity-80 max-md:backdrop-blur-xl z-10 pt-[100px]"
+      className="LeftSideBar place-items-center grid w-[20%] max-xl:w-[30%] max-md:w-[50%] max-sm:w-[80%] absolute h-full overflow-y-auto border-r-[3px] border-r-black md:static max-md:bg-white z-10 pt-[100px]"
       as={motion.div}
       initial={false}
       animate={LeftClice.LeftValue ? "open" : "closed"}

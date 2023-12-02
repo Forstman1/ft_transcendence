@@ -34,6 +34,10 @@ import {
   initialRightPaddle,
   initialGameEndStatic,
 } from "@/utils/constants/game/GameConstants";
+import upButton from "../../../../assets/icons/up-arrow.svg";
+import downButton from "../../../../assets/icons/down-arrow.svg";
+import spaceButton from "../../../../assets/icons/space-button.svg";
+import { getTextColor } from "@/utils/functions/game/GetGameColor";
 
 export default function GameBotPage() {
   let gameSettings = useAppSelector((state) => state.gameReducer);
@@ -367,6 +371,25 @@ export default function GameBotPage() {
                     />
                   </div>
                 </div>
+                <div className={`flex flex-row w-full max-w-[1200px] justify-center items-center drop-shadow-2xl  border-black rounded-lg py-2 ${gameSettings.playgroundtheme.balColor}`}>
+                <div className="flex flex-col space-y-2">
+                  <strong className={`${getTextColor(gameSettings)}`}>Controls</strong>
+                  <div className="flex flex-row space-x-5">
+                    <div className="flex flex-col space-y-1">
+                      <h1 className={`text-sm ${getTextColor(gameSettings)}`}>move up</h1>
+                      <Image src={upButton} alt="up" width={30} />
+                    </div>
+                    <div className="flex flex-col space-y-1">
+                      <h1 className={`text-sm ${getTextColor(gameSettings)}`}>move down</h1>
+                      <Image src={downButton} alt="down" width={30} />
+                    </div>
+                    <div className="flex flex-col space-y-1">
+                      <h1 className={`text-sm ${getTextColor(gameSettings)}`}>pause game</h1>
+                      <Image src={spaceButton} alt="space" width={60}/>
+                    </div>
+                  </div>
+                </div>
+              </div>
               </div>
             </div>
           </div>

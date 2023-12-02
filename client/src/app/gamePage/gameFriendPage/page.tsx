@@ -31,6 +31,13 @@ import {
   initialRightPaddle,
   initialGameEndStatic,
 } from "@/utils/constants/game/GameConstants";
+import { Button } from "@chakra-ui/react";
+import denyIcon from "../../../../assets/icons/deny.svg";
+import { useRouter } from "next/navigation";
+import upButton from "../../../../assets/icons/up-arrow.svg";
+import downButton from "../../../../assets/icons/down-arrow.svg";
+import spaceButton from "../../../../assets/icons/space-button.svg";
+import { getTextColor } from "@/utils/functions/game/GetGameColor";
 
 
 export default function GameFriendPage() {
@@ -74,20 +81,34 @@ export default function GameFriendPage() {
   const [gamePause, setGamePause] = useState<boolean>(false);
   const [hasInitialized, setHasInitialized] = useState(false);
   const [friendExitGame, setFriendExitGame] = useState<boolean>(false);
+  const router = useRouter();
+  
 
-  window?.addEventListener('offline', () => {
-    if (
-      socket &&
-      socket.io &&
-      socket.io.engine &&
-      socket.io.engine.transport
-    ) {
-      socket.io.engine.transport.close()
+  if (typeof window !== "undefined") {
+    window?.addEventListener('offline', () => {
+      if (
+        socket &&
+        socket.io &&
+        socket.io.engine &&
+        socket.io.engine.transport
+      ) {
+        socket.io.engine.transport.close()
+      }
+    })
+  }
+
+  useEffect(() => {
+    socket?.on("ExitfromGame", () => {
+      router.back();
     }
-  })
+    );
+    return () => {
+      socket?.off("ExitfromGame");
+    };
+  }, [socket]);
+
 
   //--------------------------------Socket Code logic-------------------------------------------
-
 
   useEffect(() => {
 
@@ -97,36 +118,36 @@ export default function GameFriendPage() {
       
       socket.on("GetGameData", (data:GameUpdateData) => {
         setBall({
-          x: (data.ball.x * canvasSize.width) / 100,
-          y: (data.ball.y * canvasSize.height) / 100,
-          speedX: (data.ball.speedX * canvasSize.width) / 100,
-          speedY: (data.ball.speedY * canvasSize.height) / 100,
-          radius: (data.ball.radius * canvasSize.height) / 100,
+          x: (data?.ball.x * canvasSize.width) / 100,
+          y: (data?.ball.y * canvasSize.height) / 100,
+          speedX: (data?.ball.speedX * canvasSize.width) / 100,
+          speedY: (data?.ball.speedY * canvasSize.height) / 100,
+          radius: (data?.ball.radius * canvasSize.height) / 100,
         });
         setLeftPaddle({
-          x: (data.leftPaddle.x * canvasSize.width) / 100,
-          y: (data.leftPaddle.y * canvasSize.height) / 100,
-          width: (data.leftPaddle.width * canvasSize.width) / 100,
-          height: (data.leftPaddle.height * canvasSize.height) / 100,
+          x: (data?.leftPaddle.x * canvasSize.width) / 100,
+          y: (data?.leftPaddle.y * canvasSize.height) / 100,
+          width: (data?.leftPaddle.width * canvasSize.width) / 100,
+          height: (data?.leftPaddle.height * canvasSize.height) / 100,
         });
         setRightPaddle({
-          x: (data.rightPaddle.x * canvasSize.width) / 100,
-          y: (data.rightPaddle.y * canvasSize.height) / 100,
-          width: (data.rightPaddle.width * canvasSize.width) / 100,
-          height: (data.rightPaddle.height * canvasSize.height) / 100,
+          x: (data?.rightPaddle.x * canvasSize.width) / 100,
+          y: (data?.rightPaddle.y * canvasSize.height) / 100,
+          width: (data?.rightPaddle.width * canvasSize.width) / 100,
+          height: (data?.rightPaddle.height * canvasSize.height) / 100,
         });
         if (!gameEnded) {
-          setLeftScore(data.leftScore);
-          setRightScore(data.rightScore);
-          if (prevLeftScore < data.leftScore) {
+          setLeftScore(data?.leftScore);
+          setRightScore(data?.rightScore);
+          if (prevLeftScore < data?.leftScore) {
             setGameMatches((prev) => prev - 1);
             setUserPoints((prev) => prev + 1);
-          } else if (prevRightScore < data.rightScore) {
+          } else if (prevRightScore < data?.rightScore) {
             setGameMatches((prev) => prev - 1);
             setFriendPoints((prev) => prev + 1);
           }
-          prevLeftScore = data.leftScore;
-          prevRightScore = data.rightScore;
+          prevLeftScore = data?.leftScore;
+          prevRightScore = data?.rightScore;
         }
       });
     }
@@ -220,7 +241,7 @@ export default function GameFriendPage() {
       xp = gameSettings.mode === "EASY" ? 5 : gameSettings.mode === "MEDIUM" ? 10 : 15;
     }
     const data: any = {
-      // userId: socket?.auth?.id,
+      userId: (socket?.auth as { id: string })?.id,
       status: status,
       userScore: userScore,
       opponentScore: opponentScore,
@@ -413,77 +434,109 @@ export default function GameFriendPage() {
 
   //---------------------------------------------------------------------------
 
+  const handleGameExit = () => {
+    socket?.emit("userWantToExitTheGame");
+    router.back();
+  }
+
 
   return (
     <PageWrapper>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-        >
-            <div className="flex-col w-full">
-              <div className="flex flex-row">
-                <GameSideBar
-                  tableResults={tableResults}
-                  gamePause={gamePause}
-                  setGamePause={setGamePause}
-                  gameEnded={gameEnded}
-                  gameStarted={gameStarted}
-                  gameMode="FRIEND"
-                />
-                <div className="flex flex-col space-y-10 w-full mx-[10%] h-screen justify-center items-center" >
-                  <GameHeader leftScore={leftScore} rightScore={rightScore} />
-                  <div
-                    id="canvas-container"
-                    className="relative flex items-center bg-background-primary rounded-lg h-[50vh] w-full max-w-[1200px]"
-                  >
-                    <div className="absolute top-0 left-0 w-full h-full rounded-lg z-10">
-                      {!gameStarted && !gameEnded  && (
-                        <div className="w-full h-full">
-                          <Countdown
-                            seconds={3}
-                            onCountdownEnd={handleCountdownEnd}
-                            RoundNumber={RoundNumber}
-                            gamePause={gamePause}
-                          />
-                        </div>
-                      )}
-                      {gameEnded && (
-                        <>
-                          <div className="w-full h-full">
-                            <GameEndStatic
-                              opponent={gameEndStatic.bot}
-                              user={gameEndStatic.user}
-                              isFriendMode={true}
-                            />
-                          </div>
-                        </>
-                      )}
-                    </div>
-                    <div className="relative w-full h-full">
-                      {gameSettings.backgroundImg !== -1 && (
-                        <Image
-                          src={BackgroundsImg[gameSettings.backgroundImg].src}
-                          alt="Background"
-                          className={`object-cover w-full h-full rounded-lg opacity-60 ${gameSettings.playgroundtheme.playgroundColor}}`}
-                        />
-                      )}
-                      <canvas
-                        ref={canvasRef}
-                        width={canvasSize.width}
-                        height={canvasSize.height}
-                        className={`w-full h-full rounded-lg absolute top-0 left-0 ${
-                          gameSettings.backgroundImg === -1
-                            ? gameSettings.playgroundtheme.playgroundColor
-                            : ""
-                        }`}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+      >
+        <div className="flex-col w-full">
+          <div className="flex flex-row">
+            <GameSideBar
+              tableResults={tableResults}
+              gamePause={gamePause}
+              setGamePause={setGamePause}
+              gameEnded={gameEnded}
+              gameStarted={gameStarted}
+              gameMode="FRIEND"
+            />
+            <div className="flex flex-col space-y-10 w-full mx-[10%] h-screen justify-center items-center">
+              <GameHeader leftScore={leftScore} rightScore={rightScore} />
+              <div
+                id="canvas-container"
+                className="relative flex items-center bg-background-primary rounded-lg h-[50vh] w-full max-w-[1200px]"
+              >
+                <div className="absolute top-0 left-0 w-full h-full rounded-lg z-10">
+                  {!gameStarted && !gameEnded && (
+                    <div className="w-full h-full">
+                      <Countdown
+                        seconds={3}
+                        onCountdownEnd={handleCountdownEnd}
+                        RoundNumber={RoundNumber}
+                        gamePause={gamePause}
                       />
+                    </div>
+                  )}
+                  {gameEnded && (
+                    <>
+                      <div className="w-full h-full">
+                        <GameEndStatic
+                          opponent={gameEndStatic.bot}
+                          user={gameEndStatic.user}
+                          isFriendMode={true}
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="relative w-full h-full">
+                  {gameSettings.backgroundImg !== -1 && (
+                    <Image
+                      src={BackgroundsImg[gameSettings.backgroundImg].src}
+                      alt="Background"
+                      className={`object-cover w-full h-full rounded-lg opacity-60 ${gameSettings.playgroundtheme.playgroundColor}}`}
+                    />
+                  )}
+                  <canvas
+                    ref={canvasRef}
+                    width={canvasSize.width}
+                    height={canvasSize.height}
+                    className={`w-full h-full rounded-lg absolute drop-shadow-2xl top-0 left-0 ${
+                      gameSettings.backgroundImg === -1
+                        ? gameSettings.playgroundtheme.playgroundColor
+                        : ""
+                    }`}
+                  />
+                </div>
+              </div>
+              <div className={`flex flex-row max-md:flex-col w-full max-w-[1200px] justify-around max-md:justify-center items-center drop-shadow-2xl  border-black rounded-lg py-2 ${gameSettings.playgroundtheme.balColor}`}>
+                <Button
+                  variant="outline"
+                  colorScheme="red"
+                  onClick={handleGameExit}
+                  leftIcon={<Image src={denyIcon} alt="deny" width={20} />}
+                >
+                  Exit
+                </Button>
+                <div className="flex flex-col space-y-2">
+                  <strong>Controls</strong>
+                  <div className="flex flex-row space-x-5">
+                    <div className="flex flex-col space-y-1">
+                      <h1 className={`text-sm ${getTextColor(gameSettings)}`}>move up</h1>
+                      <Image src={upButton} alt="up" width={30} />
+                    </div>
+                    <div className="flex flex-col space-y-1">
+                      <h1 className={`text-sm ${getTextColor(gameSettings)}`}>move down</h1>
+                      <Image src={downButton} alt="down" width={30} />
+                    </div>
+                    <div className="flex flex-col space-y-1">
+                      <h1 className={`text-sm ${getTextColor(gameSettings)}`}>game settings</h1>
+                      <Image src={spaceButton} alt="space" width={60}/>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-        </motion.div>
+          </div>
+        </div>
+      </motion.div>
     </PageWrapper>
   );
 }
