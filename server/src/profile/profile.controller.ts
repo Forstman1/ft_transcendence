@@ -13,10 +13,7 @@ import {
 } from '@nestjs/common';
 import {
   StreamableFile,
-  ParseFilePipe,
-  FileTypeValidator,
-  MaxFileSizeValidator,
-  UnprocessableEntityException,
+  UnsupportedMediaTypeException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProfileService } from './profile.service';
@@ -131,12 +128,12 @@ export class ProfileController {
         if (!mimeType || !contentTypes.includes(mimeType)) {
           await deleteFile(avatar.path);
           avatar = null;
-          throw new UnprocessableEntityException('Invalid file type');
+          throw new UnsupportedMediaTypeException('Invalid file type');
         }
       }
       return this.profileService.updateUser(body, avatar, request.user.id);
     } catch (error) {
-      throw new NotAcceptableException(error.message);
+      throw new UnsupportedMediaTypeException(error.message);
     }
   }
 
