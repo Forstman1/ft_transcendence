@@ -13,10 +13,7 @@ import { useRouter } from "next/navigation";
 import { z } from "zod";
 
 const schema = z.object({
-	fullname: z
-		.string()
-		.min(4, { message: "Must be 5 or more characters long" })
-		.max(30, { message: "Must be 5 or fewer characters long" }),
+	fullname: z.string().min(4).max(30),
 	username: z.string().min(4).max(20),
 	coalition: z.string().optional(),
 });
@@ -86,54 +83,15 @@ export default function UserSettings() {
 			formData.append("username", username);
 			formData.append("coalition", coalition);
             
-			const temp: any = {
-				fullname: fullname,
-				username: username,
-				coalition: coalition,
-			};
 
 			if (avatar) {
 				formData.append("avatar", avatar);
 			}
 
-			const result = schema.safeParse(temp);
-
-			if (result.success) {
-				setFormErrors({
-					fullname: "",
-					username: "",
-					coalition: "",
-					avatar: "",
-				});
-				const Response = await updateUser(formData);
-				formData.delete;
-				return Response.data;
-			} else {
-				const formatedErrors = result.error.format();
-
-				setFormErrors((prevState) => ({
-					...prevState,
-					fullname: `${
-						formatedErrors.fullname?._errors.join(", ") || ""
-					}`,
-				}));
-
-				setFormErrors((prevState) => ({
-					...prevState,
-					username: `${
-						formatedErrors.username?._errors.join(", ") || ""
-					}`,
-				}));
-
-				setFormErrors((prevState) => ({
-					...prevState,
-					coalition: `${
-						formatedErrors.coalition?._errors.join(", ") || ""
-					}`,
-				}));
-
-				return null;
-			}
+            const Response = await updateUser(formData);
+            formData.delete;
+            return Response.data;
+		
 		},
 		{
 			onSuccess: () => {
@@ -160,11 +118,49 @@ export default function UserSettings() {
 
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-        
-        const hasErrors = Object.values(formErrors).some((error) => error !== "");
-        if (!hasErrors) {
-			updateUserMutation.mutate()
+
+
+        const temp: any = {
+            fullname: fullname,
+            username: username,
+            coalition: coalition,
+        };
+
+
+        const result = schema.safeParse(temp);
+
+        if (result.success && formErrors.avatar === "") {
+            setFormErrors({
+                fullname: "",
+                username: "",
+                coalition: "",
+                avatar: "",
+            });
+            updateUserMutation.mutate()
+        } else if(!result.success) {
+            const formatedErrors = result?.error.format();
+            setFormErrors((prevState) => ({
+                ...prevState,
+                fullname: `${
+                    formatedErrors.fullname?._errors.join(", ") || ""
+                }`,
+            }));
+
+            setFormErrors((prevState) => ({
+                ...prevState,
+                username: `${
+                    formatedErrors.username?._errors.join(", ") || ""
+                }`,
+            }));
+
+            setFormErrors((prevState) => ({
+                ...prevState,
+                coalition: `${
+                    formatedErrors.coalition?._errors.join(", ") || ""
+                }`,
+            }));
         }
+
 	};
 
 	return (

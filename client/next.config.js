@@ -45,6 +45,9 @@ const nextConfig = {
         }
       ],
   },
+  compiler: {
+    removeConsole: true,
+  },
 
 
 };
