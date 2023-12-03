@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react'
 import {
-    useToast,
     Button,
     Avatar,
     ModalOverlay,
