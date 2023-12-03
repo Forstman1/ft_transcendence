@@ -1,0 +1,87 @@
+
+version: '3'
+services:
+
+#---------------------------------db-------------------------------------------
+  db:
+    image: postgres:10.5-alpine
+    container_name: db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+      - "5555:5432"
+    env_file:
+      - .env
+    networks:
+      - local
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'user', '-d', 'transcendance']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: always
+
+#---------------------------------server---------------------------------------
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.server
+      args:
+        - POSTGRES_USER=${POSTGRES_USER}
+        - DATABASE_HOST=${DATABASE_HOST}
+    image: server
+    container_name: server
+    environment:
+      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_URL: ${DATABASE_URL}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    networks:
+      - local
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    restart: always
+
+
+#---------------------------------client---------------------------------------
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.client
+    image: client
+    container_name: client
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - server
+    networks:
+      - local
+    restart: always
+
+
+#---------------------------------adminer--------------------------------------
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - local
+
+
+#---------------------------------networks-------------------------------------
+networks:
+  local:
+    driver: bridge
+

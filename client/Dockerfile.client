@@ -1,0 +1,27 @@
+FROM node:20-alpine3.17
+
+RUN apk --update add \
+    build-base \
+    cairo-dev \
+    pango-dev \
+    giflib-dev \
+    pixman-dev \
+    pangomm-dev \
+    libjpeg-turbo-dev
+    
+RUN npm install -g npm@10.2.4
+
+WORKDIR /App
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+EXPOSE 3000
+
+CMD ["npm", "run", "start"]
+

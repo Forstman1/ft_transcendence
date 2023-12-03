@@ -1,0 +1,7 @@
+data
+node_modules
+.env
+dist
+migrations
+request_example.yml
+request_example2.yml

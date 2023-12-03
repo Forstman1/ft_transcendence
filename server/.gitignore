@@ -1,6 +1,9 @@
 # compiled output
-/dist
-/node_modules
+dist
+node_modules
+uploads/*
+prisma/generated
+prisma/migrations
 
 # Logs
 logs
@@ -26,6 +29,7 @@ lerna-debug.log*
 *.launch
 .settings/
 *.sublime-workspace
+core
 
 # IDE - VSCode
 .vscode/*

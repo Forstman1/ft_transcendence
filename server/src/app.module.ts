@@ -1,11 +1,14 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { GameModule } from './game/game.module';
+import { ChatModule } from './chat/chat.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { AuthModule } from './auth/auth.module';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
-  imports: [GameModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [ChatModule, PrismaModule, GameModule, AuthModule, ProfileModule],
+  controllers: [],
+  providers: [],
 })
-export class AppModule {}
+
+export class AppModule {};
